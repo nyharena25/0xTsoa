@@ -1,63 +1,150 @@
-# Contribuer à 0xTsoa
+# Contributing to 0xTsoa
 
-Bienvenue ! 0xTsoa est un registre communautaire open source décentralisé et statique répertoriant des configurations, dotfiles, thèmes et personnalisations Linux.
+Thank you for your interest in contributing to **0xTsoa**! 
 
-## Principes fondamentaux
-- **Zéro base de données, zéro inscription** : Tout le contenu est versionné dans Git au format JSON standardisé dans le dossier `configs/<auteur>/<slug>.json`.
-- **Validation CI stricte** : Chaque proposition fait l'objet de vérifications de sécurité automatisées (schéma Zod, URL de captures autorisées, scripts d'installation vérifiés par hash SHA-256).
-- **Reproductibilité** : Les références vers les dépôts externes doivent pointer vers des commits immuables ou des tags de version fixes.
+0xTsoa is a community-curated, zero-database Linux desktop architecture registry. We maintain strict standards of reproducibility, security, and aesthetics to ensure that every configuration published on the platform can be audited and deployed safely by users.
 
 ---
 
-## Deux manières de soumettre votre configuration
+## 📋 Ways to Contribute
 
-### Option 1 : Via Pull Request (Recommandée aux développeurs)
-1. Forkez le dépôt `0xTsoa`.
-2. Créez votre fichier `configs/<votre-user-github>/<slug>.json`.
-3. Assurez-vous que le nom du dossier correspond exactement à votre nom d'utilisateur GitHub.
-4. Lancez la validation locale :
-   ```bash
-   npm run validate
-   ```
-5. Ouvrez une Pull Request vers la branche `main`.
+You can submit your setup in one of two ways:
 
-### Option 2 : Via Formulaire GitHub Issue (Sans manipuler de JSON)
-1. Rendez-vous sur l'onglet **Issues** du dépôt.
-2. Choisissez **Nouvelle configuration Linux (Submission)**.
-3. Remplissez les champs (nom, distribution, captures d'écran, repo dotfiles...).
-4. Notre GitHub Action analysera automatiquement votre ticket, calculera les condensats de sécurité et ouvrira une PR à votre nom.
+1. **Option A: GitHub Issue Form (Recommended)**  
+   Fill out the [New Configuration Submission Form](https://github.com/nyharena25/0xtsoa/issues/new?template=new-config.yml).  
+   Our automated GitHub Actions bot (`issue-to-config`) will parse your form, validate the JSON schema, and open a Pull Request automatically on your behalf.
+
+2. **Option B: Direct Pull Request**  
+   Create your configuration file directly in the repository under:  
+   `configs/<your-github-username>/<config-slug>.json`.
 
 ---
 
-## Schéma JSON & Spécifications
+## 🛡️ Security & Quality Guidelines
 
-Le schéma de validation officiel se trouve dans [`schema/config.schema.json`](./schema/config.schema.json).
-Pour régénérer le schéma après modification des types TypeScript :
+Every submitted configuration must adhere to the following rules:
+
+### 1. Immutable Upstream Reference
+- Your configuration must point to an explicit Git commit hash or tagged release (`ref`) in your public GitHub repository:
+  ```json
+  "source": {
+    "repo": "https://github.com/your-name/your-dotfiles",
+    "ref": "a1b2c3d4e5f6...",
+    "readme": "README.md"
+  }
+  ```
+- Floating branch references such as `main` or `master` are disallowed in production configs to guarantee reproducibility.
+
+### 2. Installation Integrity & Checksums
+- If providing a custom shell install script, an authentic **SHA-256 checksum** is mandatory:
+  ```json
+  "script": {
+    "url": "https://raw.githubusercontent.com/user/dots/commit/install.sh",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shell": "bash"
+  }
+  ```
+- Install scripts must not invoke unverified binary blobs, obfuscated base64 payloads, or silent privilege escalations.
+
+### 3. Allowed Screenshot Hosts
+To protect users against tracking and cross-site scripting:
+- Screenshots must be hosted on:
+  - `https://raw.githubusercontent.com/...`
+  - `https://user-images.githubusercontent.com/...`
+  - `https://github.com/user-attachments/assets/...`
+  - `https://i.imgur.com/...`
+- Images should feature clean desktop workspaces, bar previews, or terminal fastfetch outputs at standard resolutions (1080p / 1440p).
+
+---
+
+## 🧪 Local Testing & Verification Workflow
+
+Before opening a Pull Request, verify your changes locally:
+
 ```bash
-npm run schema
-```
-
-### Règles de sécurité :
-1. **Captures d'écran** : Hébergées sur des hôtes autorisés (`raw.githubusercontent.com`, `user-images.githubusercontent.com`, `i.imgur.com`, `i.redd.it`).
-2. **Scripts d'installation (.sh)** : Si vous fournissez une commande `curl | bash`, l'URL doit être HTTPS et fixée à un commit SHA ou tag fixe, accompagnée de son condensat `sha256` exact de 64 caractères hexadécimaux.
-
----
-
-## Développement local
-
-```bash
-# Installation des dépendances
+# 1. Install project dependencies
 npm install
 
-# Lancement du serveur de développement Astro
-npm run dev
-
-# Exécution des tests unitaires
-npm test
-
-# Validation des configurations
+# 2. Run the automated schema validator
 npm run validate
 
-# Build de production statique et index Pagefind
+# 3. Run the unit test suite
+npm test
+
+# 4. Test the full production build
 npm run build
 ```
+
+---
+
+## 📐 JSON Specification Example
+
+Below is a minimal valid specification template:
+
+```json
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Nordic Minimal Wayland",
+  "author": {
+    "name": "Jane Doe",
+    "github": "janedoe"
+  },
+  "lang": "en",
+  "summary": "Lightweight, keyboard-driven Hyprland desktop with Waybar and Foot.",
+  "description": "A focus-oriented desktop configuration for Arch Linux featuring bespoke Catppuccin color accents, dynamic workspace transitions, and sub-300 MiB idle RAM footprint.",
+  "license": "MIT",
+  "version": "v1.2.0",
+  "updatedAt": "2026-10-15",
+  "distros": ["arch", "fedora"],
+  "wm": "hyprland",
+  "themeStyle": "minimalist",
+  "displayServer": "wayland",
+  "tags": ["hyprland", "waybar", "foot", "minimalist"],
+  "specs": {
+    "bar": "Waybar",
+    "terminal": "Foot",
+    "launcher": "Rofi (Wayland)",
+    "notifications": "Mako",
+    "theme": "Nordic Frost",
+    "shell": "fish",
+    "editor": "Neovim",
+    "ramIdleMiB": 240,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/janedoe/dots/commit/assets/desktop.png",
+      "alt": "Full desktop overview with tiling layout",
+      "caption": "01_DESKTOP_OVERVIEW.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/janedoe/dots",
+    "ref": "2f2a376fdb2ad738bf55f693dd0b474b64bb0ab8",
+    "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "clone",
+        "title": "Clone dotfiles repository",
+        "commands": ["git clone https://github.com/janedoe/dots ~/.dotfiles"]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + RETURN",
+      "action": "exec, foot",
+      "effect": "Open Foot terminal"
+    }
+  ],
+  "example": false
+}
+```
+
+---
+
+## ⚖️ Code of Conduct
+
+We are committed to providing a welcoming, inclusive, and harassment-free experience for everyone. Be respectful, provide constructive feedback during code review, and respect upstream author licenses.
