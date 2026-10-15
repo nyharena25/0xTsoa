@@ -55,10 +55,6 @@ if (data.install.script) {
   scriptBlobUrl = rawToBlobUrl(data.install.script.url);
 }
 
-const archiveDownloadUrl =
-  data.install.packages?.find((p) => p.type === 'tar.gz')?.url ||
-  `${data.source.repo}/archive/refs/tags/${data.source.ref}.tar.gz`;
-
 const installScriptContent = `#!/usr/bin/env bash
 # ==============================================================================
 # 0xTSOA AUTOMATED INSTALLER // ${data.name.toUpperCase()}
@@ -214,41 +210,17 @@ echo "======================================================================"
 
         <!-- Action Toolbar -->
         <div class="border border-zinc-200 rounded-xl bg-zinc-50 p-3 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5">
-          <a
-            href={archiveDownloadUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="min-h-[44px] inline-flex items-center justify-center gap-2 border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-800 px-3.5 py-2 rounded-lg font-mono text-xs font-semibold shadow-2xs transition-colors no-underline cursor-pointer flex-1 sm:flex-initial"
-          >
-            <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            <span class="truncate">Download archive (.tar.gz)</span>
-          </a>
-
           <button
             type="button"
             id="btn-download-sh"
             data-filename={`${entry.id.replace('/', '-')}-install.sh`}
             data-script={installScriptContent}
-            class="min-h-[44px] inline-flex items-center justify-center gap-2 border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-800 px-3.5 py-2 rounded-lg font-mono text-xs font-semibold shadow-2xs transition-colors cursor-pointer flex-1 sm:flex-initial"
+            class="min-h-[44px] inline-flex items-center justify-center gap-2 border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-800 px-4 py-2 rounded-lg font-mono text-xs font-semibold shadow-2xs transition-colors cursor-pointer flex-1 sm:flex-initial"
           >
             <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
             </svg>
             <span class="truncate">Download script (.sh)</span>
-          </button>
-
-          <button
-            type="button"
-            id="btn-copy-install-full"
-            data-copy={defaultInstallCmd}
-            class="min-h-[44px] inline-flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white px-3.5 py-2 rounded-lg font-mono text-xs font-semibold shadow-2xs transition-colors cursor-pointer flex-1 sm:flex-initial"
-          >
-            <svg class="w-4 h-4 text-zinc-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            <span id="btn-copy-install-label" class="truncate">Copy command</span>
           </button>
         </div>
 
@@ -452,31 +424,6 @@ echo "======================================================================"
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
-        });
-      }
-
-      // 2. Full Copy install script button
-      const btnCopyFull = document.getElementById('btn-copy-install-full');
-      const labelCopy = document.getElementById('btn-copy-install-label');
-      if (btnCopyFull && labelCopy && !btnCopyFull.dataset.bound) {
-        btnCopyFull.dataset.bound = 'true';
-        btnCopyFull.addEventListener('click', async () => {
-          const cmd = btnCopyFull.getAttribute('data-copy') || '';
-          const originalText = labelCopy.textContent || 'Copy Install Command';
-          try {
-            await navigator.clipboard.writeText(cmd);
-            labelCopy.textContent = 'Command Copied!';
-            btnCopyFull.classList.add('bg-emerald-700');
-            setTimeout(() => {
-              labelCopy.textContent = originalText;
-              btnCopyFull.classList.remove('bg-emerald-700');
-            }, 1500);
-          } catch {
-            labelCopy.textContent = 'Clipboard Error';
-            setTimeout(() => {
-              labelCopy.textContent = originalText;
-            }, 1500);
-          }
         });
       }
     }

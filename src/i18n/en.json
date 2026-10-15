@@ -107,7 +107,7 @@
     "fullscreen": "Fullscreen view"
   },
   "contribute": {
-    "title": "CONTRIBUTE TO 0XTSOA",
+    "title": "CONTRIBUTE TO 0xTsoa",
     "subtitle": "A decentralized registry without logins: everything runs through GitHub.",
     "method1Title": "Method 1 • Direct Pull Request",
     "method1Desc": "Create your config file configs/<your-user>/<your-slug>.json and open a PR. Our CI automatically validates schemas and URLs.",
