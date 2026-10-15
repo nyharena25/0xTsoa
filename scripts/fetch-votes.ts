@@ -1,6 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { REPO_OWNER, REPO_NAME, VOTES_CATEGORY } from '../site.config';
+import {
+  fetchShowcaseIssues,
+  fetchIssueReactions,
+  calculatePopularityScore,
+  parseShowcaseIssueBody,
+  parseGitHubRepo,
+} from './ingest-configs';
 
 interface DiscussionNode {
   title: string;
@@ -26,8 +33,14 @@ async function main() {
     return;
   }
 
-  console.log(`Fetching votes for ${REPO_OWNER}/${REPO_NAME} (Category: ${VOTES_CATEGORY})...`);
+  const owner = process.env.REPO_OWNER || REPO_OWNER;
+  const repo = process.env.REPO_NAME || REPO_NAME;
 
+  console.log(`Fetching votes for ${owner}/${repo} (Category: ${VOTES_CATEGORY})...`);
+
+  const votesMap: Record<string, { votes: number; discussionUrl: string }> = {};
+
+  // 1. Fetch from GitHub Discussions GraphQL
   const query = `
     query($owner: String!, $repo: String!) {
       repository(owner: $owner, name: $repo) {
@@ -54,40 +67,79 @@ async function main() {
       },
       body: JSON.stringify({
         query,
-        variables: { owner: REPO_OWNER, repo: REPO_NAME },
+        variables: { owner, repo },
       }),
     });
 
-    if (!res.ok) {
-      console.warn(`GitHub API returned ${res.status}: ${res.statusText}`);
-      if (!fs.existsSync(outFile)) fs.writeFileSync(outFile, JSON.stringify({}, null, 2), 'utf-8');
-      return;
+    if (res.ok) {
+      const json = (await res.json()) as any;
+      const nodes: DiscussionNode[] = json?.data?.repository?.discussions?.nodes ?? [];
+      for (const node of nodes) {
+        const match = node.title.match(/^\[0xTsoa\]\s+([a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)/);
+        if (match) {
+          const configId = match[1];
+          votesMap[configId] = {
+            votes: node.reactions.totalCount,
+            discussionUrl: node.url,
+          };
+        }
+      }
+    } else {
+      console.warn(`GitHub Discussions GraphQL API returned ${res.status}: ${res.statusText}`);
     }
+  } catch (err) {
+    console.warn('Failed to fetch votes from GitHub GraphQL API:', err);
+  }
 
-    const json = (await res.json()) as any;
-    const nodes: DiscussionNode[] = json?.data?.repository?.discussions?.nodes ?? [];
+  // 2. Fetch from GitHub Issues Reactions (label: showcase-submission)
+  try {
+    console.log(`Scanning showcase submission issues in ${owner}/${repo} for reactions...`);
+    const issues = await fetchShowcaseIssues(owner, repo, token);
+    for (const issue of issues) {
+      const metadata = parseShowcaseIssueBody(issue.body || '');
+      const reactions = await fetchIssueReactions(owner, repo, issue.number, token);
+      const score = calculatePopularityScore(reactions);
 
-    const votesMap: Record<string, { votes: number; discussionUrl: string }> = {};
+      let targetId = '';
+      if (metadata.repoUrl) {
+        try {
+          const parsed = parseGitHubRepo(metadata.repoUrl);
+          targetId = `${parsed.owner}/${parsed.repo}`;
+        } catch {}
+      }
+      if (!targetId && metadata.projectName) {
+        targetId = `${metadata.authorGithub || 'community'}/${metadata.projectName.toLowerCase().replace(/[^a-z0-9_-]/g, '-')}`;
+      }
 
-    for (const node of nodes) {
-      const match = node.title.match(/^\[0xTsoa\]\s+([a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)/);
-      if (match) {
-        const configId = match[1];
-        votesMap[configId] = {
-          votes: node.reactions.totalCount,
-          discussionUrl: node.url,
+      if (targetId) {
+        const existing = votesMap[targetId];
+        votesMap[targetId] = {
+          votes: (existing?.votes || 0) + score,
+          discussionUrl: existing?.discussionUrl || `https://github.com/${owner}/${repo}/issues/${issue.number}`,
         };
       }
     }
-
-    fs.writeFileSync(outFile, JSON.stringify(votesMap, null, 2), 'utf-8');
-    console.log(`✓ Synchronized ${Object.keys(votesMap).length} discussion vote counters to ${outFile}`);
   } catch (err) {
-    console.warn('Failed to fetch votes from GitHub GraphQL API:', err);
-    if (!fs.existsSync(outFile)) {
-      fs.writeFileSync(outFile, JSON.stringify({}, null, 2), 'utf-8');
-    }
+    console.warn('Failed to fetch showcase issues reactions:', err);
+  }
+
+  fs.writeFileSync(outFile, JSON.stringify(votesMap, null, 2), 'utf-8');
+  console.log(`✓ Synchronized ${Object.keys(votesMap).length} vote counters to ${outFile}`);
+
+  // 3. Update featured.json if top voted items exist
+  const sortedIds = Object.entries(votesMap)
+    .sort(([, a], [, b]) => b.votes - a.votes)
+    .map(([id]) => id)
+    .slice(0, 5);
+
+  if (sortedIds.length > 0) {
+    const featuredPath = path.resolve(process.cwd(), 'featured.json');
+    try {
+      fs.writeFileSync(featuredPath, JSON.stringify({ pinned: sortedIds }, null, 2), 'utf-8');
+      console.log(`✓ Synchronized top ${sortedIds.length} setups to featured.json`);
+    } catch {}
   }
 }
 
 main().catch(console.error);
+
