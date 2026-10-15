@@ -2,6 +2,7 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { useTranslations } from '../lib/i18n';
+import { withBase } from '../../site.config';
 import '../styles/global.css';
 
 interface Props {
@@ -27,6 +28,8 @@ const t = useTranslations('en');
 const pageTitle = title ? `${title} — 0xTSOA` : t('site.title');
 const pageDesc = description || t('site.description');
 const currentPath = Astro.url.pathname;
+const canonicalUrl = new URL(currentPath, Astro.site).href;
+const ogImage = new URL(withBase('/og.png'), Astro.site).href;
 
 let resolvedPrefix = propPrefix;
 let resolvedInitial = propInitial;
@@ -60,12 +63,28 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDesc} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href={canonicalUrl} />
 
     <!-- OpenGraph / Social -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="0xTsoa" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDesc} />
-    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="526" />
+    <meta property="og:image:alt" content="0xTsoa — Linux desktop configuration registry" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDesc} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="alternate" type="text/plain" title="LLM summary" href={withBase('/llms.txt')} />
 
     <!-- Favicon SVG Data URI -->
     <link
@@ -73,7 +92,7 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230F172A'/><text x='50' y='66' font-size='44' font-family='monospace' font-weight='bold' fill='white' text-anchor='middle'>0xT</text></svg>"
     />
 
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
   </head>
   <body class="min-h-screen flex flex-col font-sans antialiased text-[#0F172A] bg-[#FBFBFA] selection:bg-[#0F172A] selection:text-white overflow-x-hidden w-full max-w-full">
     <Header

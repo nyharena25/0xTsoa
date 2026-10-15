@@ -21,7 +21,7 @@ const isGitHubActions = Boolean(env.GITHUB_ACTIONS);
 
 /**
  * Base path resolution:
- * - When deployed on Vercel, Netlify, Cloudflare: root "" (served at https://0x-tsoa.vercel.app/)
+ * - When deployed on Vercel, Netlify, Cloudflare: root "" (served at https://0xtsoa.vercel.app/)
  * - When deployed in GitHub Actions without custom domain: `/${REPO_NAME}` (served at https://<owner>.github.io/<repo>/)
  * - In local dev (default): "" (served at http://localhost:4321/)
  * - Explicit override via BASE_PATH env var takes highest precedence.
@@ -45,7 +45,8 @@ export const BASE_PATH = resolveBasePath();
 /** Public site origin */
 function resolveSiteUrl(): string {
   if (env.SITE_URL) return env.SITE_URL.replace(/\/$/, '');
-  if (env.VERCEL_URL) return `https://${env.VERCEL_URL}`;
+  // Not VERCEL_URL: it's the per-deployment hash URL, which would leak into canonical/sitemap.
+  if (isVercel) return 'https://0xtsoa.vercel.app';
   return `https://${REPO_OWNER.toLowerCase()}.github.io`;
 }
 

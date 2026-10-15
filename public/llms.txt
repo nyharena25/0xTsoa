@@ -1,0 +1,32 @@
+# 0xTsoa
+
+> Open-source, zero-database community registry of reproducible Linux desktop configurations (dotfiles, themes, window manager setups for Wayland and X11), each with verified install scripts, screenshots and community sign-off.
+
+0xTsoa is a static website (Astro, deployed on Vercel at https://0xtsoa.vercel.app). There is no backend and no database: every configuration is a typed JSON file in the GitHub repository (`configs/<author>/<slug>.json`), validated against a JSON Schema in CI and compiled into static pages at build time.
+
+Key facts:
+
+- Each configuration describes a desktop setup: compositor/window manager (Hyprland, Niri, Sway, BSPWM, i3, AwesomeWM...), supported distributions, components, idle RAM footprint, style tags, screenshots and a one-click install command.
+- External install scripts are pinned with SHA-256 checksums and pinned Git commits; screenshots are restricted to a whitelist of image hosts.
+- Community approval = 👍 ❤️ 🎉 reactions on one GitHub "vote" issue per configuration, snapshotted at build time.
+- Submissions arrive through a GitHub Issue Form; a GitHub Actions bot converts the issue into a config JSON and opens a pull request.
+- Stack: Astro (static output), Tailwind CSS v4, Zod + JSON Schema, Pagefind (client-side search), Marked + sanitize-html, GitHub Actions.
+- Licenses: platform code MIT; registry data (`configs/`) CC BY 4.0; each dotfiles project keeps its upstream license.
+
+## Pages
+
+- [Home](https://0xtsoa.vercel.app/): spotlight showcase and search
+- [Catalogue](https://0xtsoa.vercel.app/catalogue/): every configuration, filterable by compositor, distribution and style
+- [Contribute](https://0xtsoa.vercel.app/contribute/): how to submit a configuration
+- Configuration detail pages: `https://0xtsoa.vercel.app/configs/<author>/<slug>/` (architecture spec, install protocol, rendered upstream README)
+
+## Machine-readable data
+
+- [index.json](https://0xtsoa.vercel.app/index.json): full registry as a JSON array (one object per configuration)
+- [Sitemap](https://0xtsoa.vercel.app/sitemap-index.xml): every indexable URL
+
+## Source
+
+- [GitHub repository](https://github.com/nyharena25/0xTsoa)
+- [Config JSON Schema](https://github.com/nyharena25/0xTsoa/blob/main/schema/config.schema.json)
+- [Contribution guidelines](https://github.com/nyharena25/0xTsoa/blob/main/CONTRIBUTING.md)

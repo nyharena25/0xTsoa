@@ -7,7 +7,8 @@ export default defineConfig({
   site: SITE_URL,
   base: BASE_PATH || '/',
   output: 'static',
-  integrations: [sitemap()],
+  // /contribuer/ is a legacy redirect page, keep it out of the index.
+  integrations: [sitemap({ filter: (page) => !page.includes('/contribuer') })],
   vite: {
     plugins: [tailwindcss()],
   },
