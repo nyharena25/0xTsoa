@@ -35,7 +35,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       # One issue per config collects the ✓ Sign-Off reactions (needs `issues: write`).
       - name: Ensure a vote issue exists for every config

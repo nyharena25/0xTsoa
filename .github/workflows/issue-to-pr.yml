@@ -24,24 +24,27 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       # Untrusted input goes through env vars, never inlined into the script (shell injection).
       - name: Save issue body
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
-        run: printf '%s\n' "$ISSUE_BODY" > /tmp/issue_body.md
+        run: printf '%s\n' "$ISSUE_BODY" > temp_issue_body.md
 
       - name: Convert Issue to Configuration JSON
         env:
           ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
-        run: npx tsx scripts/issue-to-config.ts /tmp/issue_body.md "$ISSUE_AUTHOR"
+        run: npm run issue-to-config -- temp_issue_body.md "$ISSUE_AUTHOR"
+
+      - name: Clean temporary issue body
+        run: rm -f temp_issue_body.md
 
       - name: Run Schema Validation
         run: npm run validate
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "feat(config): add configuration from issue #${{ github.event.issue.number }}"

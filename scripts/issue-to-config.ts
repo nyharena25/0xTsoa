@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import crypto from 'node:crypto';
 import { configSchema, type ConfigInput } from '../src/lib/schema';
 
@@ -81,7 +82,7 @@ export async function convertIssueToConfig(
 
   const screenshots = screenshotUrls.map((url, idx) => ({
     url,
-    alt: `Capture ${idx + 1} de la configuration ${name}`,
+    alt: `Screenshot ${idx + 1} of ${name}`,
     caption: `SHOT_${String(idx + 1).padStart(2, '0')}`,
   }));
 
@@ -118,7 +119,7 @@ export async function convertIssueToConfig(
       name: issueAuthor,
       github: issueAuthor,
     },
-    lang: 'fr',
+    lang: 'en',
     summary,
     description: description || undefined,
     license,
@@ -151,6 +152,43 @@ export async function convertIssueToConfig(
   return { config, author: issueAuthor, slug };
 }
 
+function safeReadPath(filePath: string): string {
+  const resolved = fs.realpathSync(filePath);
+  const baseDir = fs.realpathSync(process.cwd());
+  const tmpDir = fs.realpathSync(os.tmpdir());
+  const isInside = (dir: string) => resolved === dir || resolved.startsWith(dir + path.sep);
+  if (!isInside(baseDir) && !isInside(tmpDir)) {
+    throw new Error(`path '${filePath}' is outside the allowed directory`);
+  }
+  return resolved;
+}
+
+function safeOutputDir(baseDir: string, author: string): string {
+  const cleanAuthor = author.replace(/[^a-zA-Z0-9_-]/g, '');
+  if (!cleanAuthor) {
+    throw new Error(`Invalid author '${author}'`);
+  }
+  const resolvedBase = fs.realpathSync(baseDir);
+  const target = path.resolve(resolvedBase, cleanAuthor);
+  if (target !== resolvedBase && !target.startsWith(resolvedBase + path.sep)) {
+    throw new Error(`path '${target}' is outside the allowed directory`);
+  }
+  return target;
+}
+
+function safeOutputFile(dir: string, slug: string): string {
+  const cleanSlug = slug.replace(/[^a-z0-9_-]/g, '');
+  if (!cleanSlug) {
+    throw new Error(`Invalid slug '${slug}'`);
+  }
+  const resolvedDir = fs.realpathSync(dir);
+  const target = path.resolve(resolvedDir, `${cleanSlug}.json`);
+  if (target !== resolvedDir && !target.startsWith(resolvedDir + path.sep)) {
+    throw new Error(`path '${target}' is outside the allowed directory`);
+  }
+  return target;
+}
+
 async function main() {
   const issueFile = process.argv[2];
   const issueAuthor = process.argv[3];
@@ -160,7 +198,8 @@ async function main() {
     return;
   }
 
-  const body = fs.readFileSync(issueFile, 'utf-8');
+  const validFilePath = safeReadPath(issueFile);
+  const body = fs.readFileSync(validFilePath, 'utf-8');
   const { config, author, slug } = await convertIssueToConfig(issueAuthor, body);
 
   const parsed = configSchema.safeParse(config);
@@ -172,12 +211,13 @@ async function main() {
     process.exit(1);
   }
 
-  const outDir = path.resolve(process.cwd(), 'configs', author);
+  const configsDir = path.resolve(process.cwd(), 'configs');
+  const outDir = safeOutputDir(configsDir, author);
   if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true });
   }
 
-  const outFile = path.join(outDir, `${slug}.json`);
+  const outFile = safeOutputFile(outDir, slug);
   fs.writeFileSync(outFile, JSON.stringify(parsed.data, null, 2), 'utf-8');
   console.log(`✓ Successfully created configuration: ${outFile}`);
 }

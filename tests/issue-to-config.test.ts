@@ -118,4 +118,92 @@ _No response_
     const parsed = configSchema.safeParse(config);
     expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
   });
+
+  // Headings must match the labels in .github/ISSUE_TEMPLATE/new-config.yml.
+  const englishRendered = `### Configuration Name
+
+Hyprland Paper Minimal
+
+### Slug
+
+hyprland-paper-minimal
+
+### Short Summary
+
+Blazing-fast Wayland desktop on Arch Linux with Waybar and Kitty.
+
+### Description
+
+_No response_
+
+### License (SPDX)
+
+GPL-3.0-only
+
+### Window Manager
+
+COSMIC
+
+### Display Server
+
+wayland
+
+### Distributions
+
+- [X] Arch
+- [X] openSUSE
+- [ ] Mint
+
+### Tags
+
+minimal, waybar
+
+### Screenshots URLs
+
+https://raw.githubusercontent.com/test-user/dots/v1.0.0/screen.png
+
+### Source Repository
+
+https://github.com/test-user/dots
+
+### Git Ref
+
+v1.0.0
+
+### Install Script URL
+
+_No response_
+
+### Script SHA-256
+
+_No response_
+
+### Shell
+
+zsh
+
+### Idle RAM
+
+280
+
+### Battery Profile
+
+Yes (tlp / auto-cpufreq / power-profiles-daemon)
+
+### Submission Checklist
+
+- [X] My Git ref is a commit SHA or a tag, not a branch.
+`;
+
+  it('converts the English issue form into a valid config', async () => {
+    const { config, slug } = await convertIssueToConfig('test-user', englishRendered);
+    expect(slug).toBe('hyprland-paper-minimal');
+    expect(config.license).toBe('GPL-3.0-only');
+    expect(config.wm).toBe('cosmic');
+    expect(config.distros).toEqual(['arch', 'opensuse']);
+    expect(config.specs).toMatchObject({ shell: 'zsh', ramIdleMiB: 280, batteryProfile: true });
+    expect(config.lang).toBe('en');
+    const parsed = configSchema.safeParse(config);
+    expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
+  });
 });

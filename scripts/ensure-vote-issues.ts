@@ -45,7 +45,8 @@ async function main() {
   if (!labelRes.ok && labelRes.status !== 422) throw new Error(`Cannot create label: ${labelRes.status}`);
 
   for (const id of missing) {
-    const configUrl = `${SITE_URL}${withBase(`/configs/${id}/`)}`;
+    const configPath = withBase(`/configs/${id}/`);
+    const configUrl = `${SITE_URL}${configPath}`;
     const body =
       `### Community sign-off for \`${id}\`\n\n` +
       `- 📋 **Config page:** ${configUrl}\n` +
@@ -60,7 +61,9 @@ async function main() {
   }
 }
 
-main().catch((err) => {
+try {
+  await main();
+} catch (err) {
   console.error(err);
   process.exit(1);
-});
+}

@@ -19,7 +19,8 @@
     "schema": "tsx scripts/generate-schema.ts",
     "votes": "tsx scripts/fetch-votes.ts",
     "vote-issues": "tsx scripts/ensure-vote-issues.ts",
-    "ingest": "tsx scripts/ingest-configs.ts"
+    "ingest": "tsx scripts/ingest-configs.ts",
+    "issue-to-config": "tsx scripts/issue-to-config.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
@@ -38,6 +39,7 @@
     "@astrojs/check": "^0.9.10",
     "@types/node": "^26.6.5",
     "@types/sanitize-html": "^2.16.2",
+    "@vitest/coverage-v8": "^5.0.4",
     "pagefind": "^1.5.2",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",

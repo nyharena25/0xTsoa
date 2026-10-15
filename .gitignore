@@ -3,6 +3,8 @@ dist/
 node_modules/
 .astro/
 .cache/
+coverage/
+.agents
 
 # Generated runtime data
 src/generated/votes.json
@@ -15,3 +17,4 @@ src/generated/votes.json
 # OS files
 .DS_Store
 Thumbs.db
+temp_issue_body.md
