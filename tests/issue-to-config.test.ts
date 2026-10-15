@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parseIssueBody, convertIssueToConfig } from '../scripts/issue-to-config';
+import { configSchema } from '../src/lib/schema';
+import { parseIssueBody, convertIssueToConfig, parseChecked } from '../scripts/issue-to-config';
 
 describe('Issue Body Parser & Config Converter', () => {
   const sampleIssue = `
@@ -49,5 +50,72 @@ v1.0.0
     expect(config.wm).toBe('hyprland');
     expect(config.distros).toContain('arch');
     expect(config.distros).toContain('fedora');
+  });
+
+  // Exact markdown GitHub renders for our issue form: checkboxes and empty optional fields.
+  const githubRendered = `### Nom de la configuration
+
+Hyprland Super Fast
+
+### Identifiant court (slug)
+
+hyprland-super-fast
+
+### Résumé court (1 phrase)
+
+Environnement de fenêtrage Wayland ultra rapide avec Kitty.
+
+### Description détaillée (facultatif)
+
+_No response_
+
+### Gestionnaire de fenêtres / Compositeur
+
+Hyprland
+
+### Serveur d'affichage
+
+wayland
+
+### Distributions supportées
+
+- [X] Arch
+- [ ] Fedora
+- [X] NixOS
+- [ ] Debian
+
+### URLs des captures d'écran
+
+https://raw.githubusercontent.com/test-user/dots/v1.0/screen.png
+
+### Dépôt source des dotfiles (GitHub/GitLab/Codeberg)
+
+https://github.com/test-user/dots
+
+### Commit SHA ou Tag fixe
+
+v1.0.0
+
+### URL du script d'installation (.sh)
+
+_No response_
+
+### Condensat SHA-256 du script
+
+_No response_
+`;
+
+  it('keeps only checked checkboxes', () => {
+    expect(parseChecked('- [X] Arch\n- [ ] Fedora\n- [x] Void')).toEqual(['Arch', 'Void']);
+    expect(parseChecked('Arch, Fedora')).toEqual(['Arch', 'Fedora']);
+  });
+
+  it('converts a GitHub-rendered issue (no response fields, checkboxes) into a valid config', async () => {
+    const { config } = await convertIssueToConfig('test-user', githubRendered);
+    expect(config.distros).toEqual(['arch', 'nixos']);
+    expect(config.description).toBeUndefined();
+    expect(config.install?.script).toBeUndefined();
+    const parsed = configSchema.safeParse(config);
+    expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
   });
 });

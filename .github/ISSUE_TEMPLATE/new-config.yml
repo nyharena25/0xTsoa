@@ -165,7 +165,7 @@ body:
     id: ram_idle
     attributes:
       label: Consommation RAM au repos (MiB)
-      placeholder: 280
+      placeholder: "280"
 
   - type: dropdown
     id: battery_profile

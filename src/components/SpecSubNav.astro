@@ -33,20 +33,6 @@ const cataloguePath = withBase('/catalogue/');
       </div>
 
       <div class="flex items-center gap-1.5 shrink-0">
-        <!-- Interactive Favorite Button -->
-        <button
-          type="button"
-          id="btn-detail-fav"
-          data-config-id={configId}
-          data-label-add="Favorite"
-          data-label-favorited="Saved ✓"
-          class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-md font-mono text-xs font-semibold border border-zinc-300 bg-white text-zinc-800 hover:bg-zinc-100 transition-colors shadow-xs cursor-pointer"
-          title="Add to favorites"
-        >
-          <span id="fav-icon">★</span>
-          <span id="fav-label" class="hidden sm:inline">Favorite</span>
-        </button>
-
         <span class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-md font-mono text-xs font-bold bg-zinc-100 text-zinc-900 border border-zinc-200">
           ▲ {votes.toLocaleString()}
         </span>
@@ -56,10 +42,10 @@ const cataloguePath = withBase('/catalogue/');
           target="_blank"
           rel="noopener noreferrer"
           class="btn-solid text-xs py-1 px-2 sm:px-2.5"
-          title="Sign-Off on GitHub"
+          title="Sign off: react 👍 ❤️ 🎉 on this config's GitHub vote issue"
         >
           <span>✓</span>
-          <span class="hidden xs:inline">Sign-Off</span>
+          <span class="hidden sm:inline">Sign-Off</span>
         </a>
       </div>
     </div>
@@ -84,63 +70,3 @@ const cataloguePath = withBase('/catalogue/');
     </div>
   </div>
 </div>
-
-<script>
-  function setupFavoriteButton() {
-    const btn = document.getElementById('btn-detail-fav') as HTMLButtonElement | null;
-    const label = document.getElementById('fav-label');
-    if (!btn || !label || btn.dataset.bound) return;
-    btn.dataset.bound = 'true';
-
-    const configId = btn.getAttribute('data-config-id');
-    const labelAdd = btn.getAttribute('data-label-add') || 'Favorite';
-    const labelFavorited = btn.getAttribute('data-label-favorited') || 'Saved ✓';
-
-    function getFavs(): string[] {
-      try {
-        const stored = localStorage.getItem('0xtsoa_favorites');
-        return stored ? JSON.parse(stored) : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function isFav(): boolean {
-      if (!configId) return false;
-      return getFavs().includes(configId);
-    }
-
-    function updateUi() {
-      if (!btn || !label) return;
-      if (isFav()) {
-        btn.classList.add('bg-zinc-900', 'text-white', 'border-zinc-900');
-        btn.classList.remove('bg-white', 'text-zinc-800', 'border-zinc-300');
-        label.textContent = labelFavorited;
-      } else {
-        btn.classList.remove('bg-zinc-900', 'text-white', 'border-zinc-900');
-        btn.classList.add('bg-white', 'text-zinc-800', 'border-zinc-300');
-        label.textContent = labelAdd;
-      }
-    }
-
-    btn.addEventListener('click', () => {
-      if (!configId) return;
-      const favs = getFavs();
-      const idx = favs.indexOf(configId);
-      if (idx >= 0) {
-        favs.splice(idx, 1);
-      } else {
-        favs.push(configId);
-      }
-      try {
-        localStorage.setItem('0xtsoa_favorites', JSON.stringify(favs));
-      } catch {}
-      updateUi();
-    });
-
-    updateUi();
-  }
-
-  setupFavoriteButton();
-  document.addEventListener('astro:page-load', setupFavoriteButton);
-</script>

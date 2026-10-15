@@ -4,42 +4,12 @@ import CopyButton from '../components/CopyButton.astro';
 import BdBrickLogo from '../components/BdBrickLogo.astro';
 import { useTranslations } from '../lib/i18n';
 import { NEW_CONFIG_ISSUE_URL, REPO_URL, ALLOWED_IMAGE_HOSTS } from '../../site.config';
+// Single source for the example: validated against the schema in tests/schema.test.ts
+import exampleJsonSnippet from '../../schema/example.config.json?raw';
 
 const locale = 'en';
 const t = useTranslations(locale);
 
-const exampleJsonSnippet = `{
-  "$schema": "../../schema/config.schema.json",
-  "name": "My Clean Setup",
-  "author": { "name": "my-handle", "github": "my-handle" },
-  "lang": "en",
-  "summary": "Minimal desktop with Waybar and Kitty on Arch Linux.",
-  "license": "MIT",
-  "updatedAt": "2026-10-15",
-  "distros": ["arch"],
-  "wm": "hyprland",
-  "displayServer": "wayland",
-  "tags": ["hyprland", "arch", "battery-tuned"],
-  "specs": {
-    "bar": "Waybar",
-    "terminal": "Kitty",
-    "theme": "Paper Monochrome",
-    "ramIdleMiB": 280,
-    "batteryProfile": true
-  },
-  "screenshots": [
-    {
-      "url": "https://raw.githubusercontent.com/my-handle/dots/v1.0.0/preview.png",
-      "alt": "Screenshot of my desktop",
-      "caption": "01_DESKTOP.RAW"
-    }
-  ],
-  "source": {
-    "repo": "https://github.com/my-handle/dots",
-    "ref": "v1.0.0",
-    "readme": "README.md"
-  }
-}`;
 ---
 
 <Base
@@ -90,7 +60,7 @@ const exampleJsonSnippet = `{
         </div>
 
         <a
-          href={`${REPO_URL}/tree/main/schema`}
+          href={`${REPO_URL}/blob/main/schema/config.schema.json`}
           target="_blank"
           rel="noopener noreferrer"
           class="inline-flex items-center justify-center gap-2 border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 p-2.5 rounded-lg font-mono text-xs uppercase font-semibold text-center shadow-2xs transition-colors no-underline cursor-pointer"

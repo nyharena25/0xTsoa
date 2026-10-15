@@ -1,15 +1,17 @@
 ---
 // Redirect legacy French route /contribuer to /contribute/
+import { withBase } from '../../site.config';
+const target = withBase('/contribute/');
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0;url=/contribute/" />
-    <link rel="canonical" href="/contribute/" />
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <link rel="canonical" href={target} />
     <title>Redirecting...</title>
   </head>
   <body>
-    <p>Redirecting to <a href="/contribute/">/contribute/</a>...</p>
+    <p>Redirecting to <a href={target}>{target}</a>...</p>
   </body>
 </html>

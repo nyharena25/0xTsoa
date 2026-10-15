@@ -98,6 +98,22 @@ export function extractRawRef(url: string): string | null {
 
 export const SOURCE_HOSTS = ['github.com', 'gitlab.com', 'codeberg.org'] as const;
 
+/*
+ * JSON Schema mirrors of the refinements below. Zod drops `.refine()` when exporting,
+ * so these patterns are attached via `.meta()` and land in schema/config.schema.json
+ * (editor autocompletion + validation). Zod stays authoritative in CI.
+ */
+const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const PINNED = `(?:${SHA1.source.slice(1, -1)}|${TAG.source.slice(1, -1)})`;
+const PINNED_REF_PATTERN = `^${PINNED}$`;
+const IMAGE_URL_PATTERN = `^(?:\\.?/|https://(?:${ALLOWED_IMAGE_HOSTS.map(esc).join('|')})/)`;
+const SOURCE_REPO_PATTERN = `^https://(?:${SOURCE_HOSTS.map(esc).join('|')})/[^/]+/[^/]+`;
+const PINNED_RAW_URL_PATTERN =
+  `^https://(?:raw\\.githubusercontent\\.com/[^/]+/[^/]+/(?:refs/tags/)?${PINNED}/` +
+  `|github\\.com/[^/]+/[^/]+/raw/${PINNED}/` +
+  `|gitlab\\.com/.+/-/raw/${PINNED}/` +
+  `|codeberg\\.org/[^/]+/[^/]+/raw/(?:commit|tag)/${PINNED}/).+`;
+
 /** Parse a URL without throwing (Zod 4 keeps running refinements after a failed check). */
 export function safeUrl(v: string): URL | null {
   try { return new URL(v); } catch { return null; }
@@ -106,7 +122,8 @@ export function safeUrl(v: string): URL | null {
 const https = z
   .string()
   .url()
-  .refine((v) => v.startsWith('https://'), { message: 'Must be an https:// URL' });
+  .refine((v) => v.startsWith('https://'), { message: 'Must be an https:// URL' })
+  .meta({ pattern: '^https://' });
 
 export function isAllowedImageUrl(v: string): boolean {
   if (v.startsWith('/') || v.startsWith('./')) return true;
@@ -119,7 +136,8 @@ const imageUrl = z
   .min(1)
   .refine(isAllowedImageUrl, {
     message: `Image must be a local path (/...) or from allowed hosts: ${ALLOWED_IMAGE_HOSTS.join(', ')}`,
-  });
+  })
+  .meta({ pattern: IMAGE_URL_PATTERN, description: `Local path (/...) or https URL on: ${ALLOWED_IMAGE_HOSTS.join(', ')}` });
 
 const pinnedRawUrl = https.refine(
   (v) => {
@@ -127,7 +145,7 @@ const pinnedRawUrl = https.refine(
     return ref !== null && isPinnedRef(ref);
   },
   { message: 'Script URL must be a raw file URL pinned to a full commit SHA or a version tag (no branch names)' },
-);
+).meta({ pattern: PINNED_RAW_URL_PATTERN, description: 'Raw file URL pinned to a full commit SHA or a version tag' });
 
 const command = z.string().min(1).max(500);
 
@@ -177,8 +195,10 @@ export const configSchema = z
       repo: https.refine((v) => {
         const u = safeUrl(v);
         return !!u && (SOURCE_HOSTS as readonly string[]).includes(u.hostname) && u.pathname.split('/').filter(Boolean).length >= 2;
-      }, { message: `Source repo must be on ${SOURCE_HOSTS.join(', ')}` }),
-      ref: z.string().refine(isPinnedRef, { message: 'source.ref must be a full commit SHA or a version tag' }),
+      }, { message: `Source repo must be on ${SOURCE_HOSTS.join(', ')}` })
+        .meta({ pattern: SOURCE_REPO_PATTERN, description: `Repository on ${SOURCE_HOSTS.join(', ')}` }),
+      ref: z.string().refine(isPinnedRef, { message: 'source.ref must be a full commit SHA or a version tag' })
+        .meta({ pattern: PINNED_REF_PATTERN, description: 'Full 40-char commit SHA or version tag (never a branch)' }),
       readme: z.string().regex(/^[\w./-]+\.(md|markdown)$/i).default('README.md'),
     }),
     install: z

@@ -51,7 +51,7 @@
 
 - **100% Serverless & Decentralized**: No database, no backend session servers, no telemetry. Every desktop environment specification lives in an audit-ready, typed JSON file inside `configs/<author>/<slug>.json`.
 - **Cryptographically Verified Deployments**: Strict SHA-256 integrity checksums for external install scripts, pinned Git commit hashes, and host-whitelisted screenshot assets.
-- **GitHub Discussions Sign-Off Engine**: Community approval is driven directly through authentic 👍 reactions on linked GitHub Discussions threads, compiled into static snapshots during build time.
+- **GitHub Issues Sign-Off Engine**: Each config gets one `vote` issue; community approval is the 👍 ❤️ 🎉 reactions on it, compiled into static snapshots at build time.
 - **Live Markdown Synchronizer**: Automatically fetches and rewrites author dotfile READMEs, translating volatile GitHub user attachment URLs into permanent assets and resolving relative path hierarchies.
 - **Neo-Brutalist « Paper & Ink » Design**: High-contrast, accessibility-focused UI built with *Space Grotesk*, *Geist*, *JetBrains Mono*, and authentic *BD Brick* glyph typography.
 - **Full Offline Client Search**: Instant sub-millisecond local filtering across window managers, idle memory footprints (<300 MiB), battery profiles, and aesthetic styles powered by Pagefind.
@@ -103,7 +103,7 @@
 | **Schema & Validation** | [Zod](https://zod.dev/) & [JSON Schema](https://json-schema.org/) | Strict schema validation (`schema/config.schema.json`) for CI pipelines |
 | **Search Engine** | [Pagefind](https://pagefind.app/) | Zero-infrastructure static indexer for sub-millisecond full-text lookups |
 | **Markdown Engine** | [Marked](https://marked.js.org/) + [Sanitize-HTML](https://github.com/apostrophecms/sanitize-html) | Safe GitHub-flavored markdown parsing, alert containers, and URL rewriting |
-| **Automation & CI/CD** | [GitHub Actions](https://github.com/features/actions) | Automatic issue-to-config conversion, discussion creation, and Pages deploy |
+| **Automation & CI/CD** | [GitHub Actions](https://github.com/features/actions) | Automatic issue-to-config conversion, vote-issue creation, and Pages deploy |
 
 ---
 
@@ -156,7 +156,7 @@ npm run build
 ├── scripts/
 │   ├── validate-configs.ts       # CI sanity & schema validation runner
 │   ├── seed-real-configs.ts      # Real-world initial reference configs
-│   ├── fetch-votes.ts            # GitHub Discussions GraphQL reaction scraper
+│   ├── fetch-votes.ts            # Vote-issue reaction counter (works without a token)
 │   └── issue-to-config.ts        # Automated Issue Form -> Config JSON converter
 ├── src/
 │   ├── components/               # Accessible Neo-brutalist UI components

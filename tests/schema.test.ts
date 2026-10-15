@@ -129,3 +129,17 @@ describe('Config Schema & Validation Rules', () => {
     expect(idFromPath('invalid/path.json')).toBeNull();
   });
 });
+
+describe('Published JSON Schema & example', () => {
+  it('schema/config.schema.json is up to date (run `npm run schema`)', async () => {
+    const fs = await import('node:fs');
+    const { buildJsonSchema, serialize, SCHEMA_PATH } = await import('../scripts/generate-schema');
+    expect(fs.readFileSync(SCHEMA_PATH, 'utf-8')).toBe(serialize(buildJsonSchema()));
+  });
+
+  it('the example shown on /contribute is a valid config', async () => {
+    const example = (await import('../schema/example.config.json')).default;
+    const parsed = configSchema.safeParse(example);
+    expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
+  });
+});

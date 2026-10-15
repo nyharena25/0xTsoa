@@ -12,7 +12,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
-  discussions: write
+  issues: write
 
 concurrency:
   group: 'pages'
@@ -37,29 +37,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Ensure GitHub Discussions for configs
+      # One issue per config collects the ✓ Sign-Off reactions (needs `issues: write`).
+      - name: Ensure a vote issue exists for every config
         continue-on-error: true
-        run: npm run discussions
+        run: npm run vote-issues
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: ${{ github.repository_owner }}
-          REPO_NAME: ${{ github.event.repository.name }}
 
-      - name: Fetch community votes from Discussions
-        continue-on-error: true
-        run: npm run votes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: ${{ github.repository_owner }}
-          REPO_NAME: ${{ github.event.repository.name }}
-
+      # `prebuild` fetches the votes. Owner/repo/base path come from GITHUB_REPOSITORY
+      # (see site.config.ts), which is set on every trigger including the nightly cron.
       - name: Build static site & Pagefind index
         run: npm run build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: ${{ github.repository_owner }}
-          REPO_NAME: ${{ github.event.repository.name }}
-          BASE_PATH: /${{ github.event.repository.name }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

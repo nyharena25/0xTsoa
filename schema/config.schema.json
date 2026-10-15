@@ -1,7 +1,389 @@
 {
-  "$ref": "#/definitions/ConfigSchema",
-  "definitions": {
-    "ConfigSchema": {}
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 80
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "github": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$"
+        }
+      },
+      "required": [
+        "name",
+        "github"
+      ]
+    },
+    "lang": {
+      "default": "en",
+      "type": "string",
+      "enum": [
+        "fr",
+        "en"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 200
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "license": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9.+-]+( (AND|OR|WITH) [A-Za-z0-9.+-]+)*$"
+    },
+    "version": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "updatedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "distros": {
+      "minItems": 1,
+      "maxItems": 8,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "arch",
+          "endeavouros",
+          "manjaro",
+          "fedora",
+          "nixos",
+          "debian",
+          "ubuntu",
+          "mint",
+          "void",
+          "opensuse",
+          "gentoo",
+          "alpine",
+          "any"
+        ]
+      }
+    },
+    "wm": {
+      "type": "string",
+      "enum": [
+        "hyprland",
+        "sway",
+        "river",
+        "niri",
+        "wayfire",
+        "labwc",
+        "i3",
+        "bspwm",
+        "awesome",
+        "qtile",
+        "xmonad",
+        "dwm",
+        "herbstluftwm",
+        "openbox",
+        "gnome",
+        "kde",
+        "xfce",
+        "cinnamon",
+        "cosmic",
+        "other"
+      ]
+    },
+    "themeStyle": {
+      "default": "minimalist",
+      "type": "string",
+      "enum": [
+        "minimalist",
+        "cyberpunk",
+        "nord",
+        "gruvbox",
+        "dracula",
+        "tokyo-night",
+        "catppuccin",
+        "solarized",
+        "monochrome",
+        "other"
+      ]
+    },
+    "displayServer": {
+      "type": "string",
+      "enum": [
+        "wayland",
+        "x11",
+        "both"
+      ]
+    },
+    "tags": {
+      "default": [],
+      "maxItems": 10,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]{0,29}$"
+      }
+    },
+    "specs": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "bar": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "terminal": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "launcher": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "notifications": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "theme": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "shell": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "editor": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "ramIdleMiB": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 16384
+        },
+        "batteryProfile": {
+          "type": "boolean"
+        }
+      }
+    },
+    "screenshots": {
+      "minItems": 1,
+      "maxItems": 8,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?:\\.?/|https://(?:raw\\.githubusercontent\\.com|user-images\\.githubusercontent\\.com|private-user-images\\.githubusercontent\\.com|github\\.com|i\\.imgur\\.com|i\\.redd\\.it)/)",
+            "description": "Local path (/...) or https URL on: raw.githubusercontent.com, user-images.githubusercontent.com, private-user-images.githubusercontent.com, github.com, i.imgur.com, i.redd.it"
+          },
+          "alt": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 200
+          },
+          "caption": {
+            "type": "string",
+            "maxLength": 60
+          }
+        },
+        "required": [
+          "url",
+          "alt"
+        ]
+      }
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "repo": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://(?:github\\.com|gitlab\\.com|codeberg\\.org)/[^/]+/[^/]+",
+          "description": "Repository on github.com, gitlab.com, codeberg.org"
+        },
+        "ref": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|(v?\\d+(\\.\\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+))$",
+          "description": "Full 40-char commit SHA or version tag (never a branch)"
+        },
+        "readme": {
+          "default": "README.md",
+          "type": "string",
+          "pattern": "^[\\w./-]+\\.(md|markdown)$"
+        }
+      },
+      "required": [
+        "repo",
+        "ref"
+      ]
+    },
+    "install": {
+      "default": {
+        "steps": [],
+        "packages": []
+      },
+      "type": "object",
+      "properties": {
+        "script": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://(?:raw\\.githubusercontent\\.com/[^/]+/[^/]+/(?:refs/tags/)?(?:[0-9a-f]{40}|(v?\\d+(\\.\\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+))/|github\\.com/[^/]+/[^/]+/raw/(?:[0-9a-f]{40}|(v?\\d+(\\.\\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+))/|gitlab\\.com/.+/-/raw/(?:[0-9a-f]{40}|(v?\\d+(\\.\\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+))/|codeberg\\.org/[^/]+/[^/]+/raw/(?:commit|tag)/(?:[0-9a-f]{40}|(v?\\d+(\\.\\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+))/).+",
+              "description": "Raw file URL pinned to a full commit SHA or a version tag"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "shell": {
+              "default": "bash",
+              "type": "string",
+              "enum": [
+                "sh",
+                "bash"
+              ]
+            }
+          },
+          "required": [
+            "url",
+            "sha256"
+          ]
+        },
+        "steps": {
+          "default": [],
+          "maxItems": 3,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "enum": [
+                  "deps",
+                  "dotfiles",
+                  "reload"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 80
+              },
+              "commands": {
+                "minItems": 1,
+                "maxItems": 30,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                }
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "commands"
+            ]
+          }
+        },
+        "packages": {
+          "default": [],
+          "maxItems": 6,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "tar.gz",
+                  "zip",
+                  "deb",
+                  "rpm",
+                  "aur",
+                  "nix",
+                  "flatpak"
+                ]
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://"
+              }
+            },
+            "required": [
+              "type",
+              "url"
+            ]
+          }
+        }
+      }
+    },
+    "keybindings": {
+      "default": [],
+      "maxItems": 30,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "keys": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "action": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "effect": {
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "required": [
+          "keys",
+          "action"
+        ]
+      }
+    },
+    "example": {
+      "default": false,
+      "type": "boolean"
+    }
   },
-  "$schema": "http://json-schema.org/draft-07/schema#"
+  "required": [
+    "name",
+    "author",
+    "summary",
+    "license",
+    "updatedAt",
+    "distros",
+    "wm",
+    "displayServer",
+    "screenshots",
+    "source"
+  ],
+  "additionalProperties": false,
+  "$id": "https://github.com/nyharena25/0xTsoa/blob/main/schema/config.schema.json",
+  "title": "0xTsoa configuration",
+  "description": "A Linux desktop configuration entry: configs/<author.github>/<slug>.json"
 }

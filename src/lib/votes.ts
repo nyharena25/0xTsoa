@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { VOTES_CATEGORY, REPO_URL } from '../../site.config';
+import { REPO_URL, VOTE_LABEL, voteIssueTitle } from '../../site.config';
 
 export interface VoteData {
   votes: number;
+  /** URL of the config's vote issue (name kept from the former Discussions backend). */
   discussionUrl?: string;
   updatedAt?: string;
 }
@@ -32,13 +33,62 @@ export function getVotesForConfig(configId: string): number {
   return map[configId]?.votes ?? 0;
 }
 
+/** Where the ✓ Sign-Off button points: the config's vote issue. */
 export function getDiscussionUrlForConfig(configId: string): string {
-  const map = getVotesMap();
-  if (map[configId]?.discussionUrl) {
-    return map[configId].discussionUrl!;
+  const url = getVotesMap()[configId]?.discussionUrl;
+  if (url) return url;
+  // Vote issue not synced into this build yet: an exact-title search still lands on it once it exists.
+  const q = `is:issue label:${VOTE_LABEL} in:title "${voteIssueTitle(configId)}"`;
+  return `${REPO_URL}/issues?q=${encodeURIComponent(q)}`;
+}
+
+export interface VoteIssue {
+  number: number;
+  title: string;
+  html_url: string;
+  reactions?: Record<string, number>;
+  pull_request?: unknown;
+}
+
+const POSITIVE_REACTIONS = ['+1', 'heart', 'hooray'];
+const VOTE_TITLE_RE = /^\[0xTsoa\]\s+([\w.-]+\/[\w.-]+)$/;
+
+/**
+ * Every issue labelled VOTE_LABEL (open and closed, all pages).
+ * Works without a token on a public repo. Throws on API errors so callers never
+ * mistake a failed listing for "no vote issues yet" (that would create duplicates).
+ */
+export async function listVoteIssues(owner: string, repo: string, token?: string): Promise<VoteIssue[]> {
+  const issues: VoteIssue[] = [];
+  for (let page = 1; ; page++) {
+    const res = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/issues?labels=${VOTE_LABEL}&state=all&per_page=100&page=${page}`,
+      {
+        headers: {
+          Accept: 'application/vnd.github+json',
+          'User-Agent': '0xTsoa-Votes/1.0',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        signal: AbortSignal.timeout(10000),
+      },
+    );
+    if (!res.ok) throw new Error(`GitHub issues API returned ${res.status} ${res.statusText}`);
+    const batch = (await res.json()) as VoteIssue[];
+    issues.push(...batch.filter((i) => !i.pull_request));
+    if (batch.length < 100) return issues;
   }
-  // Generic fallback: link to discussions category search
-  return `${REPO_URL}/discussions/categories/${encodeURIComponent(VOTES_CATEGORY.toLowerCase())}`;
+}
+
+/** Vote issues → { configId: { votes, discussionUrl } }, counting 👍 ❤️ 🎉 reactions. */
+export function votesFromIssues(issues: VoteIssue[]): VotesMap {
+  const map: VotesMap = {};
+  for (const issue of issues) {
+    const id = issue.title.trim().match(VOTE_TITLE_RE)?.[1];
+    if (!id || map[id]) continue;
+    const votes = POSITIVE_REACTIONS.reduce((n, k) => n + (issue.reactions?.[k] ?? 0), 0);
+    map[id] = { votes, discussionUrl: issue.html_url };
+  }
+  return map;
 }
 
 export function getFeaturedIds(): string[] {

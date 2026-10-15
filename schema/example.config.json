@@ -1,0 +1,56 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "My Clean Setup",
+  "author": { "name": "My Name", "github": "my-handle" },
+  "lang": "en",
+  "summary": "Minimal Hyprland desktop with Waybar and Kitty on Arch Linux.",
+  "description": "Optional long description: layout philosophy, workflow, ergonomics tips.",
+  "license": "MIT",
+  "version": "v1.0.0",
+  "updatedAt": "2026-10-15",
+  "distros": ["arch"],
+  "wm": "hyprland",
+  "themeStyle": "monochrome",
+  "displayServer": "wayland",
+  "tags": ["hyprland", "arch", "battery-tuned"],
+  "specs": {
+    "bar": "Waybar",
+    "terminal": "Kitty",
+    "launcher": "Rofi",
+    "notifications": "Dunst",
+    "theme": "Paper Monochrome",
+    "shell": "zsh",
+    "editor": "Neovim",
+    "ramIdleMiB": 280,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/my-handle/dots/v1.0.0/preview.png",
+      "alt": "Screenshot of my desktop",
+      "caption": "01_DESKTOP.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/my-handle/dots",
+    "ref": "v1.0.0",
+    "readme": "README.md"
+  },
+  "install": {
+    "script": {
+      "url": "https://raw.githubusercontent.com/my-handle/dots/v1.0.0/install.sh",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "shell": "bash"
+    },
+    "steps": [
+      { "id": "deps", "title": "Install dependencies", "commands": ["sudo pacman -S --needed hyprland waybar kitty rofi-wayland dunst"] },
+      { "id": "dotfiles", "title": "Deploy dotfiles", "commands": ["git clone --branch v1.0.0 https://github.com/my-handle/dots ~/dots", "cp -r ~/dots/.config/* ~/.config/"] },
+      { "id": "reload", "title": "Reload Hyprland", "commands": ["hyprctl reload"] }
+    ],
+    "packages": []
+  },
+  "keybindings": [
+    { "keys": "SUPER + Return", "action": "exec, kitty", "effect": "Open terminal" },
+    { "keys": "SUPER + Q", "action": "killactive", "effect": "Close window" }
+  ]
+}

@@ -18,7 +18,7 @@
     "validate": "tsx scripts/validate-configs.ts",
     "schema": "tsx scripts/generate-schema.ts",
     "votes": "tsx scripts/fetch-votes.ts",
-    "discussions": "tsx scripts/ensure-discussions.ts",
+    "vote-issues": "tsx scripts/ensure-vote-issues.ts",
     "ingest": "tsx scripts/ingest-configs.ts"
   },
   "dependencies": {
@@ -41,7 +41,6 @@
     "pagefind": "^1.5.2",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
-    "vitest": "^5.0.4",
-    "zod-to-json-schema": "^3.25.2"
+    "vitest": "^5.0.4"
   }
 }

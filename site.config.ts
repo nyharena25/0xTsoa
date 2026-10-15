@@ -69,9 +69,9 @@ export function withBase(path: string = '/'): string {
   return `${cleanBase}${cleanPath}`;
 }
 
-/** GitHub Discussions category used for votes (👍 = sign-off). */
-export const VOTES_CATEGORY = 'Votes';
-export const discussionTitle = (id: string) => `[0xTsoa] ${id}`;
+/** One GitHub issue per config, carrying this label, collects the votes (👍 ❤️ 🎉 = sign-off). */
+export const VOTE_LABEL = 'vote';
+export const voteIssueTitle = (id: string) => `[0xTsoa] ${id}`;
 
 /** Only screenshots hosted here are accepted (CI + Astro image service). */
 export const ALLOWED_IMAGE_HOSTS = [
