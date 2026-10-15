@@ -1,6 +1,6 @@
 ---
 import { getVotesForConfig, getDiscussionUrlForConfig } from '../lib/votes';
-import { BASE_PATH } from '../../site.config';
+import { withBase } from '../../site.config';
 
 interface Props {
   configId: string;
@@ -12,7 +12,7 @@ const { configId, name } = Astro.props;
 
 const votes = getVotesForConfig(configId);
 const discussionUrl = getDiscussionUrlForConfig(configId);
-const cataloguePath = `${BASE_PATH}/catalogue/`;
+const cataloguePath = withBase('/catalogue/');
 ---
 
 <div class="sticky top-16 z-40 bg-white/95 backdrop-blur-md border-b border-zinc-200 py-2.5 shadow-xs">

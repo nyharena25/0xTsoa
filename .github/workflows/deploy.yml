@@ -31,13 +31,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Ensure GitHub Discussions for configs
+        continue-on-error: true
         run: npm run discussions
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,6 +46,7 @@ jobs:
           REPO_NAME: ${{ github.event.repository.name }}
 
       - name: Fetch community votes from Discussions
+        continue-on-error: true
         run: npm run votes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -54,8 +56,10 @@ jobs:
       - name: Build static site & Pagefind index
         run: npm run build
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO_OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
+          BASE_PATH: /${{ github.event.repository.name }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

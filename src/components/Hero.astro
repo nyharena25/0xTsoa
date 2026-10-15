@@ -1,6 +1,6 @@
 ---
 import { useTranslations } from '../lib/i18n';
-import { BASE_PATH } from '../../site.config';
+import { withBase } from '../../site.config';
 import BdBrickLogo from './BdBrickLogo.astro';
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const t = useTranslations('en');
-const cataloguePath = `${BASE_PATH}/catalogue/`;
+const cataloguePath = withBase('/catalogue/');
 ---
 
 <section class="w-full max-w-full bg-white border border-zinc-200 rounded-xl shadow-xs px-5 py-7 sm:px-8 sm:py-10 lg:px-10 lg:py-12 relative overflow-hidden">

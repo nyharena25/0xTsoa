@@ -5,7 +5,7 @@ import Spotlight from '../components/Spotlight.astro';
 import Manifesto from '../components/Manifesto.astro';
 import { getCollection } from 'astro:content';
 import { getTop5Configs } from '../lib/votes';
-import { BASE_PATH } from '../../site.config';
+import { withBase } from '../../site.config';
 
 const allConfigs = await getCollection('configs');
 const spotlightConfigs = getTop5Configs(allConfigs);
@@ -30,22 +30,22 @@ const spotlightConfigs = getTop5Configs(allConfigs);
         </span>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <a href={`${BASE_PATH}/catalogue/?wm=hyprland`} class="tag-pill">
+        <a href={withBase('/catalogue/?wm=hyprland')} class="tag-pill">
           Hyprland
         </a>
-        <a href={`${BASE_PATH}/catalogue/?wm=sway`} class="tag-pill">
+        <a href={withBase('/catalogue/?wm=sway')} class="tag-pill">
           Sway
         </a>
-        <a href={`${BASE_PATH}/catalogue/?style=cyberpunk`} class="tag-pill">
+        <a href={withBase('/catalogue/?style=cyberpunk')} class="tag-pill">
           Cyberpunk
         </a>
-        <a href={`${BASE_PATH}/catalogue/?style=minimalist`} class="tag-pill">
+        <a href={withBase('/catalogue/?style=minimalist')} class="tag-pill">
           Minimalist
         </a>
-        <a href={`${BASE_PATH}/catalogue/?style=nord`} class="tag-pill">
+        <a href={withBase('/catalogue/?style=nord')} class="tag-pill">
           Nord
         </a>
-        <a href={`${BASE_PATH}/catalogue/`} class="btn-solid text-xs py-1 px-3">
+        <a href={withBase('/catalogue/')} class="btn-solid text-xs py-1 px-3">
           <span>View all</span>
           <span>&rarr;</span>
         </a>

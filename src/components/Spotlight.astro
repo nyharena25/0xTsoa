@@ -3,7 +3,7 @@ import CopyButton from './CopyButton.astro';
 import { useTranslations, type Locale } from '../lib/i18n';
 import { getVotesForConfig, getDiscussionUrlForConfig } from '../lib/votes';
 import { WM_LABELS, DISTRO_LABELS, type ConfigData } from '../lib/schema';
-import { BASE_PATH } from '../../site.config';
+import { withBase } from '../../site.config';
 
 interface SpotlightItem {
   id: string;
@@ -24,7 +24,7 @@ const serializedSetups = configs.map((c, idx) => {
   const discussionUrl = getDiscussionUrlForConfig(c.id);
   const distroLabel = c.data.distros.map((d) => DISTRO_LABELS[d] || d).join(', ');
   const wmLabel = WM_LABELS[c.data.wm] || c.data.wm;
-  const specPath = `${BASE_PATH}/configs/${c.id}/`;
+  const specPath = withBase(`/configs/${c.id}/`);
 
   let installCmd = `git clone ${c.data.source.repo} ~/.dotfiles`;
   if (c.data.install.script) {
@@ -40,7 +40,7 @@ const serializedSetups = configs.map((c, idx) => {
         caption: s.caption || `Capture #${String(sIdx + 1).padStart(2, '0')}`,
       }))
     : [{
-        url: '/0xtsoa/screenshots/fallback-terminal.svg',
+        url: withBase('/screenshots/fallback-terminal.svg'),
         alt: `${c.data.name} fallback preview`,
         caption: '01_FALLBACK.RAW',
       }];

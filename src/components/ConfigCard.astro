@@ -1,7 +1,7 @@
 ---
 import { getVotesForConfig } from '../lib/votes';
 import { type ConfigData, WM_LABELS } from '../lib/schema';
-import { BASE_PATH } from '../../site.config';
+import { withBase } from '../../site.config';
 
 interface Props {
   id: string;
@@ -12,7 +12,7 @@ interface Props {
 const { id, data } = Astro.props;
 
 const votes = getVotesForConfig(id);
-const specUrl = `${BASE_PATH}/configs/${id}/`;
+const specUrl = withBase(`/configs/${id}/`);
 const primaryShot = data.screenshots[0];
 const shortHash = `0x${id.slice(-6).toUpperCase().replace(/[^0-9A-F]/g, 'C')}`;
 const wmLabel = WM_LABELS[data.wm] || data.wm;
@@ -107,7 +107,7 @@ const wmLabel = WM_LABELS[data.wm] || data.wm;
         class="block w-full max-w-full aspect-video rounded-lg overflow-hidden border border-zinc-200 bg-zinc-950 relative group/thumb shadow-xs cursor-pointer"
       >
         <img
-          src={primaryShot?.url || '/0xtsoa/screenshots/fallback-terminal.svg'}
+          src={primaryShot?.url || withBase('/screenshots/fallback-terminal.svg')}
           alt={primaryShot?.alt || `${data.name} preview`}
           loading="lazy"
           class="w-full h-auto min-h-[160px] sm:min-h-0 sm:h-full object-cover group-hover/thumb:scale-[1.03] transition-transform duration-300"

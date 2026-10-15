@@ -1,6 +1,6 @@
 ---
 import { useTranslations } from '../lib/i18n';
-import { BASE_PATH, REPO_URL } from '../../site.config';
+import { withBase, REPO_URL } from '../../site.config';
 import BdBrickLogo from './BdBrickLogo.astro';
 
 interface Props {
@@ -9,8 +9,8 @@ interface Props {
 
 const t = useTranslations('en');
 
-const homePath = `${BASE_PATH}/`;
-const contributePath = `${BASE_PATH}/contribute/`;
+const homePath = withBase('/');
+const contributePath = withBase('/contribute/');
 ---
 
 <footer class="w-full bg-white border-t border-zinc-200 mt-16">

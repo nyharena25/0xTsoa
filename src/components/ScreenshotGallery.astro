@@ -1,4 +1,6 @@
 ---
+import { withBase } from '../../site.config';
+
 interface Screenshot {
   url: string;
   alt: string;
@@ -11,6 +13,7 @@ interface Props {
 }
 
 const { screenshots, configName } = Astro.props;
+const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
 ---
 
 <section class="w-full bg-white border border-zinc-200 rounded-xl shadow-xs p-5 sm:p-7 flex flex-col gap-4" id="screenshots">
@@ -46,7 +49,7 @@ const { screenshots, configName } = Astro.props;
             src={shot.url}
             alt={shot.alt}
             loading="lazy"
-            onerror="this.onerror=null; this.src='/0xtsoa/screenshots/fallback-terminal.svg'"
+            onerror={`this.onerror=null; this.src='${fallbackTerminalUrl}'`}
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
           <span class="absolute bottom-1 right-1 bg-zinc-900/80 backdrop-blur-xs text-white font-mono text-[10px] px-1.5 py-0.5 rounded font-medium">
@@ -89,7 +92,7 @@ const { screenshots, configName } = Astro.props;
           id="modal-active-img"
           src={screenshots[0]?.url}
           alt={screenshots[0]?.alt}
-          onerror="this.onerror=null; this.src='/0xtsoa/screenshots/fallback-terminal.svg'"
+          onerror={`this.onerror=null; this.src='${fallbackTerminalUrl}'`}
           class="max-h-[65vh] w-auto rounded-lg shadow-lg object-contain"
         />
       </div>

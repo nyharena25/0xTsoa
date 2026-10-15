@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { REPO_OWNER, REPO_NAME, VOTES_CATEGORY, discussionTitle, SITE_URL, BASE_PATH } from '../site.config';
+import { REPO_OWNER, REPO_NAME, VOTES_CATEGORY, discussionTitle, SITE_URL, withBase } from '../site.config';
 
 async function main() {
   const token = process.env.GITHUB_TOKEN;
@@ -104,7 +104,7 @@ async function main() {
       continue;
     }
 
-    const configUrl = `${SITE_URL}${BASE_PATH}/configs/${id}/`;
+    const configUrl = `${SITE_URL}${withBase(`/configs/${id}/`)}`;
     const body = `### [0xTsoa] Vote & Community Sign-Off: \`${id}\`\n\n` +
       `Cette discussion sert de registre de vote transparent pour la configuration **${id}**.\n\n` +
       `- 📋 **Fiche complète sur 0xTsoa** : [Voir sur le site](${configUrl})\n` +
