@@ -1,0 +1,110 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "i3 Tiling Classic",
+  "author": {
+    "name": "i3 Team",
+    "github": "i3"
+  },
+  "lang": "en",
+  "summary": "The iconic, rock-solid X11 tiling window manager designed for speed and clarity.",
+  "description": "The golden standard of manual tiling window managers. i3 is lightweight, extremely well-documented, clean, and runs reliably on any Linux distribution without needing composite GPU drivers.",
+  "license": "BSD-3-Clause",
+  "version": "v4.23.0",
+  "updatedAt": "2026-10-10",
+  "distros": [
+    "debian",
+    "ubuntu",
+    "arch",
+    "fedora",
+    "void",
+    "mint"
+  ],
+  "wm": "i3",
+  "themeStyle": "monochrome",
+  "displayServer": "x11",
+  "tags": [
+    "i3",
+    "x11",
+    "tiling",
+    "lightweight",
+    "speed",
+    "classic"
+  ],
+  "specs": {
+    "bar": "i3bar / i3status",
+    "terminal": "Xterm / Alacritty",
+    "launcher": "Dmenu",
+    "notifications": "Dunst",
+    "theme": "Classic Engineering Monochrome",
+    "shell": "bash",
+    "editor": "Vim",
+    "ramIdleMiB": 120,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/i3/i3/be04c853ee7fa01a82a0c81f8217565395e2627c/docs/gaps1920.png",
+      "alt": "i3 desktop with clean window tiling and gaps",
+      "caption": "01_I3_GAPS_DESKTOP.RAW"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/i3/i3/be04c853ee7fa01a82a0c81f8217565395e2627c/docs/bigpicture.png",
+      "alt": "i3 multi-monitor container layout",
+      "caption": "02_I3_BIGPICTURE.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/i3/i3",
+    "ref": "be04c853ee7fa01a82a0c81f8217565395e2627c",
+    "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install i3 package suite",
+        "commands": [
+          "sudo apt install i3 i3status dmenu alacritty dunst"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Initialize ~/.config/i3/config",
+        "commands": [
+          "mkdir -p ~/.config/i3",
+          "cp /etc/i3/config ~/.config/i3/config"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "In-place restart of i3",
+        "commands": [
+          "i3-msg restart"
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + RETURN",
+      "action": "exec, alacritty",
+      "effect": "Open terminal"
+    },
+    {
+      "keys": "SUPER + D",
+      "action": "exec, dmenu_run",
+      "effect": "Launch application menu"
+    },
+    {
+      "keys": "SUPER + SHIFT + Q",
+      "action": "kill",
+      "effect": "Kill window"
+    },
+    {
+      "keys": "SUPER + SHIFT + R",
+      "action": "restart",
+      "effect": "Restart i3 in place"
+    }
+  ],
+  "example": false
+}

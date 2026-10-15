@@ -1,0 +1,95 @@
+---
+import CopyButton from './CopyButton.astro';
+import { useTranslations, type Locale } from '../lib/i18n';
+
+interface Step {
+  id: string;
+  title: string;
+  commands: string[];
+}
+
+interface Props {
+  steps?: Step[];
+  locale?: Locale;
+}
+
+const { steps, locale = 'en' } = Astro.props;
+const t = useTranslations(locale);
+
+// Default steps if not provided by a specific config
+const displaySteps: Step[] = steps && steps.length > 0 ? steps : [
+  {
+    id: 'deps',
+    title: t('accordion.step1'),
+    commands: [
+      'sudo pacman -S --needed hyprland waybar kitty rofi-wayland dunst cliphist',
+      'systemctl --user enable --now pipewire pipewire-pulse wireplumber',
+    ],
+  },
+  {
+    id: 'dotfiles',
+    title: t('accordion.step2'),
+    commands: [
+      'git clone https://github.com/0xtsoa/hypr-rc01.git ~/.config/hypr',
+      'ln -sf ~/.config/hypr/waybar ~/.config/waybar',
+      'ln -sf ~/.config/hypr/kitty ~/.config/kitty',
+    ],
+  },
+  {
+    id: 'reload',
+    title: t('accordion.step3'),
+    commands: [
+      'hyprctl reload && killall waybar && waybar &',
+    ],
+  },
+];
+---
+
+<section class="w-full bg-white border border-zinc-200 rounded-xl shadow-xs p-5 flex flex-col gap-3">
+  <div class="border-b border-zinc-200 pb-3 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+      <h3 class="font-mono text-xs uppercase font-bold text-zinc-900 tracking-wider">
+        {t('accordion.title')}
+      </h3>
+    </div>
+    <span class="font-mono text-[11px] text-zinc-400">Step-by-step deployment</span>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    {displaySteps.map((step, idx) => (
+      <details class="border border-zinc-200 rounded-lg overflow-hidden bg-white shadow-2xs group" open>
+        <summary class="p-3.5 bg-zinc-50 hover:bg-zinc-100/80 border-b border-zinc-200 flex items-center justify-between cursor-pointer select-none transition-colors">
+          <div class="flex items-center gap-2.5">
+            <span class="w-5 h-5 rounded-md bg-zinc-200 text-zinc-700 flex items-center justify-center font-mono text-[11px] font-bold">
+              {idx + 1}
+            </span>
+            <span class="font-mono text-xs font-bold uppercase tracking-tight text-zinc-900">
+              {step.title}
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-[10px] text-zinc-400 uppercase hidden sm:inline">Shell commands</span>
+            <svg class="w-4 h-4 text-zinc-400 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </summary>
+
+        <div class="p-3.5 bg-zinc-50/50 flex flex-col gap-2 w-full min-w-0">
+          {step.commands.map((cmd) => (
+            <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
+              <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
+                <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
+                <code class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">{cmd}</code>
+              </div>
+              <div class="shrink-0">
+                <CopyButton text={cmd} class="bg-zinc-800 text-zinc-200 border-zinc-700 hover:bg-zinc-700 hover:text-white" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </details>
+    ))}
+  </div>
+</section>

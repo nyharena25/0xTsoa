@@ -1,0 +1,65 @@
+---
+import { useTranslations } from '../lib/i18n';
+import { BASE_PATH } from '../../site.config';
+import BdBrickLogo from './BdBrickLogo.astro';
+
+interface Props {
+  locale?: string;
+}
+
+const t = useTranslations('en');
+const cataloguePath = `${BASE_PATH}/catalogue/`;
+---
+
+<section class="w-full max-w-full bg-white border border-zinc-200 rounded-xl shadow-xs px-5 py-7 sm:px-8 sm:py-10 lg:px-10 lg:py-12 relative overflow-hidden">
+  <!-- Subtle Technical Grid Accent -->
+  <div class="absolute inset-0 pointer-events-none opacity-[0.03] bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:20px_20px]"></div>
+
+  <div class="relative z-10 flex flex-col gap-4 sm:gap-6 max-w-3xl w-full">
+    <!-- Badge & Status -->
+    <div class="flex flex-wrap items-center gap-2 self-start">
+      <div class="inline-flex items-center gap-2 bg-zinc-100 border border-zinc-200 px-3 py-1 rounded-full text-xs font-mono font-medium text-zinc-700">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+        <span class="tracking-wide">
+          {t('hero.badge')}
+        </span>
+      </div>
+    </div>
+
+    <!-- 0xTsoa in BD Brick (Sequential Lock-in Animation on Homepage) -->
+    <div class="my-1 sm:my-2 w-full max-w-full overflow-hidden text-zinc-950">
+      <BdBrickLogo size="hero" animated={true} />
+    </div>
+
+    <!-- Main Title -->
+    <h1
+      class="font-display text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-900 leading-[1.15] break-words"
+      data-page-title="true"
+    >
+      {t('hero.title')}
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="font-sans text-sm sm:text-base lg:text-lg text-zinc-600 leading-relaxed max-w-2xl break-words">
+      {t('hero.subtitle')}
+    </p>
+
+    <!-- CTAs -->
+    <div class="flex flex-wrap items-center gap-3 pt-2">
+      <a
+        href={cataloguePath}
+        class="btn-solid btn-mech min-h-[44px] min-w-[44px] px-5 py-2.5 text-sm"
+      >
+        <span>{t('nav.exploreAll')}</span>
+        <span>&rarr;</span>
+      </a>
+
+      <a
+        href="#section-manifesto"
+        class="btn-outline btn-mech min-h-[44px] min-w-[44px] px-5 py-2.5 text-sm"
+      >
+        <span>{t('nav.manifesto')}</span>
+      </a>
+    </div>
+  </div>
+</section>

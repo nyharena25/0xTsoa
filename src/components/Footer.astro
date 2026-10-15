@@ -1,0 +1,46 @@
+---
+import { useTranslations } from '../lib/i18n';
+import { BASE_PATH, REPO_URL } from '../../site.config';
+import BdBrickLogo from './BdBrickLogo.astro';
+
+interface Props {
+  locale?: string;
+}
+
+const t = useTranslations('en');
+
+const homePath = `${BASE_PATH}/`;
+const contributePath = `${BASE_PATH}/contribute/`;
+---
+
+<footer class="w-full bg-white border-t border-zinc-200 mt-16">
+  <div class="max-w-7xl mx-auto px-4 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-zinc-600">
+    <div class="flex items-center gap-2.5 tracking-tight">
+      <BdBrickLogo size="xs" class="text-zinc-900" />
+      <span class="text-zinc-300">/</span>
+      <span class="text-zinc-500">Open Linux Architecture Registry</span>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-4">
+      <a href={`${homePath}#section-manifesto`} class="text-zinc-600 hover:text-zinc-900 transition-colors">
+        {t('nav.manifesto')}
+      </a>
+      <a href={contributePath} class="text-zinc-600 hover:text-zinc-900 transition-colors">
+        {t('nav.contribute')}
+      </a>
+      <a href={REPO_URL} target="_blank" rel="noopener noreferrer" class="text-zinc-600 hover:text-zinc-900 transition-colors">
+        {t('nav.github')}
+      </a>
+
+      <div class="flex items-center gap-2 ml-1">
+        <div class="border border-zinc-200 bg-zinc-50 px-2 py-0.5 rounded text-[11px] text-zinc-600 font-medium">
+          Status: <span class="text-emerald-700 font-semibold">100% Static</span>
+        </div>
+
+        <div class="border border-zinc-200 bg-zinc-50 px-2 py-0.5 rounded text-[11px] text-zinc-600 font-medium">
+          License: <span class="text-zinc-800 font-semibold">CC-BY-4.0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

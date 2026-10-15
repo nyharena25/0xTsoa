@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3002.643 298.125" width="3002.643" height="298.125" style="--bg:#FFFFFF;--fg:#3B3B3B;--line:#3B3B3B;--accent:#005FB8;--muted:#3B3B3BCC;--surface:#F8F8F8;--border:#3B3B3B;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="Contributeur" data-label="Contributeur">
+  <rect x="40" y="40" width="620.9399999999999" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="40" y="40" width="620.9399999999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="52" y="54" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Contributeur</text>
+</g>
+<polyline class="edge" data-from="V" data-to="M" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="review + merge" points="1181.4829999999997,102.45 1358.413,102.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="M" data-to="D" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1427.039,102.45 1451.0389999999998,102.45 1451.0389999999998,134.89999999999998 1475.0389999999998,134.89999999999998" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="C" data-to="D" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1427.0389999999998,167.35000000000002 1451.0389999999998,167.35000000000002 1451.0389999999998,134.89999999999998 1475.0389999999998,134.89999999999998" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="D" data-to="S1" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1579.2329999999997,134.89999999999998 1627.2329999999997,134.89999999999998" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S1" data-to="S2" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1928.533,134.89999999999998 1964.533,134.89999999999998 1964.533,161.2 1976.533,161.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S2" data-to="S3" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="2220.776,167.35000000000002 2268.776,167.35000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S3" data-to="S4" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="2653.0679999999998,167.35000000000002 2701.0679999999998,167.35000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="S4" data-to="P" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="2793.406,167.35000000000002 2817.406,167.35000000000002 2817.406,184.64999999999998 2841.406,184.64999999999998" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="U" data-to="P" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1520.6269999999997,239.675 2817.406,239.675 2817.406,184.64999999999998 2841.406,184.64999999999998" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="U" data-to="GD" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Sign-off" points="1520.627,233.525 1556.627,233.525 1556.627,225.45000000000002 1661.3229999999999,225.45000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="GD" data-to="S2" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="prochain build" points="1827.761,225.45000000000002 1964.533,225.45000000000002 1964.533,173.5 1976.533,173.5" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="A" data-to="V" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="644.9399999999999,102.45 714.9399999999999,102.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="B" data-to="A" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="issue-to-pr.yml" points="260.96999999999997,102.45 435.524,102.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="V" data-to="M" data-label="review + merge">
+  <rect x="1225.4829999999997" y="86.44999999999999" width="88.93" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1269.9479999999996" y="101.6" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">review + merge</text>
+</g>
+<g class="edge-label" data-from="U" data-to="GD" data-label="Sign-off">
+  <rect x="1564.627" y="209.45000000000002" width="52.696000000000005" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1590.975" y="224.60000000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Sign-off</text>
+</g>
+<g class="edge-label" data-from="GD" data-to="S2" data-label="prochain build">
+  <rect x="1871.761" y="209.45000000000002" width="84.77200000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1914.147" y="224.60000000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">prochain build</text>
+</g>
+<g class="edge-label" data-from="B" data-to="A" data-label="issue-to-pr.yml">
+  <rect x="304.96999999999997" y="86.44999999999999" width="86.55400000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="348.24699999999996" y="101.6" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">issue-to-pr.yml</text>
+</g>
+<g class="node" data-id="V" data-label="validate.yml : schéma + hôtes images + script épinglé + sha256 + README" data-shape="rectangle">
+  <rect x="714.9399999999999" y="84" width="466.54299999999995" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="948.2114999999999" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">validate.yml : schéma + hôtes images + script épinglé + sha256 + README</text>
+</g>
+<g class="node" data-id="M" data-label="main" data-shape="rectangle">
+  <rect x="1358.413" y="84" width="68.626" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1392.726" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">main</text>
+</g>
+<g class="node" data-id="D" data-label="deploy.yml" data-shape="rectangle">
+  <rect x="1475.0389999999998" y="116.44999999999999" width="104.194" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1527.1359999999997" y="134.89999999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">deploy.yml</text>
+</g>
+<g class="node" data-id="C" data-label="cron quotidien" data-shape="rectangle">
+  <rect x="1301.3559999999998" y="148.9" width="125.68299999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1364.1974999999998" y="167.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">cron quotidien</text>
+</g>
+<g class="node" data-id="S1" data-label="ensure-discussions : 1 Discussion par config" data-shape="rectangle">
+  <rect x="1627.2329999999997" y="116.44999999999999" width="301.29999999999995" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1777.8829999999998" y="134.89999999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">ensure-discussions : 1 Discussion par config</text>
+</g>
+<g class="node" data-id="S2" data-label="fetch-votes : GraphQL réactions 👍" data-shape="rectangle">
+  <rect x="1976.533" y="148.9" width="244.243" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="2098.6545" y="167.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">fetch-votes : GraphQL réactions 👍</text>
+</g>
+<g class="node" data-id="S3" data-label="astro build : images optimisées + README sanitized + index" data-shape="rectangle">
+  <rect x="2268.776" y="148.9" width="384.29199999999986" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="2460.9219999999996" y="167.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">astro build : images optimisées + README sanitized + index</text>
+</g>
+<g class="node" data-id="S4" data-label="pagefind" data-shape="rectangle">
+  <rect x="2701.0679999999998" y="148.9" width="92.338" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="2747.2369999999996" y="167.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">pagefind</text>
+</g>
+<g class="node" data-id="P" data-label="GitHub Pages" data-shape="rectangle">
+  <rect x="2841.406" y="166.2" width="121.237" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="2902.0245" y="184.64999999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">GitHub Pages</text>
+</g>
+<g class="node" data-id="U" data-label="Visiteur" data-shape="rectangle">
+  <rect x="1432.7349999999997" y="221.225" width="87.892" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1476.6809999999996" y="239.675" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Visiteur</text>
+</g>
+<g class="node" data-id="GD" data-label="GitHub Discussion 👍" data-shape="rectangle">
+  <rect x="1661.3229999999999" y="207" width="166.43800000000005" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1744.542" y="225.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">GitHub Discussion 👍</text>
+</g>
+<g class="node" data-id="A" data-label="PR : configs/author/slug.json" data-shape="rectangle">
+  <rect x="435.524" y="84" width="209.41599999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="540.232" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">PR : configs/author/slug.json</text>
+</g>
+<g class="node" data-id="B" data-label="Issue Form : Nouvelle config" data-shape="rectangle">
+  <rect x="56" y="84" width="204.96999999999997" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="158.48499999999999" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Issue Form : Nouvelle config</text>
+</g>
+</svg>

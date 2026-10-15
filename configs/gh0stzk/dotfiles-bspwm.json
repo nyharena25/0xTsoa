@@ -1,0 +1,108 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "gh0stzk BSPWM Studio",
+  "author": {
+    "name": "gh0stzk",
+    "github": "gh0stzk"
+  },
+  "lang": "en",
+  "summary": "Legendary BSPWM environment with 18 distinct themes, live switcher and custom Polybar.",
+  "description": "One of the most comprehensive and refined BSPWM environments in the Linux customization world. Featuring 18 handcrafted color themes (Gruvbox, Nord, Dracula, Cyberpunk, Monochrome, Tokyo Night), dynamically generated Polybars, custom Rofi applets, Dunst notification themes, and instant keybindings.",
+  "license": "MIT",
+  "version": "v4.0.0",
+  "updatedAt": "2026-10-11",
+  "distros": [
+    "arch",
+    "debian",
+    "void",
+    "fedora"
+  ],
+  "wm": "bspwm",
+  "themeStyle": "gruvbox",
+  "displayServer": "x11",
+  "tags": [
+    "bspwm",
+    "polybar",
+    "rofi",
+    "gruvbox",
+    "x11",
+    "multi-theme"
+  ],
+  "specs": {
+    "bar": "Polybar (18 themes)",
+    "terminal": "Alacritty / Kitty",
+    "launcher": "Rofi Custom Applets",
+    "notifications": "Dunst",
+    "theme": "Gruvbox Retro & Modern",
+    "shell": "zsh",
+    "editor": "Neovim",
+    "ramIdleMiB": 210,
+    "batteryProfile": false
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/gh0stzk/dotfiles/8b3cd661dcc0ac07bc5719df6a978da64fb96d6d/config/bspwm/bars/bar01/preview-bar.webp",
+      "alt": "gh0stzk Polybar layout preview",
+      "caption": "01_POLYBAR_PREVIEW.RAW"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/67278339/221605474-21d65156-0cf7-485c-bd1a-40792c37817e.png",
+      "alt": "gh0stzk BSPWM full desktop showcase",
+      "caption": "02_DESKTOP_OVERVIEW.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/gh0stzk/dotfiles",
+    "ref": "8b3cd661dcc0ac07bc5719df6a978da64fb96d6d",
+    "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone dotfiles repository",
+        "commands": [
+          "git clone --depth=1 https://github.com/gh0stzk/dotfiles.git ~/.dotfiles"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Deploy configuration links",
+        "commands": [
+          "cp -r ~/.dotfiles/config/* ~/.config/",
+          "chmod +x ~/.config/bspwm/bspwmrc"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Reload BSPWM window manager",
+        "commands": [
+          "bspc wm -r"
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + RETURN",
+      "action": "exec, alacritty",
+      "effect": "Open Alacritty terminal"
+    },
+    {
+      "keys": "SUPER + SPACE",
+      "action": "exec, rofi -show drun",
+      "effect": "Toggle app launcher"
+    },
+    {
+      "keys": "SUPER + W",
+      "action": "bspc node -c",
+      "effect": "Close focused window"
+    },
+    {
+      "keys": "SUPER + ALT + T",
+      "action": "exec, bspwm-themes.sh",
+      "effect": "Switch theme on the fly"
+    }
+  ],
+  "example": false
+}

@@ -1,0 +1,47 @@
+{
+  "name": "0xtsoa",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Open registry of Linux desktop configurations (dotfiles, themes, install scripts).",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "prebuild": "tsx scripts/fetch-votes.ts",
+    "build": "astro build && pagefind --site dist",
+    "preview": "astro preview",
+    "check": "astro check && vitest run",
+    "test": "vitest run",
+    "validate": "tsx scripts/validate-configs.ts",
+    "schema": "tsx scripts/generate-schema.ts",
+    "votes": "tsx scripts/fetch-votes.ts",
+    "discussions": "tsx scripts/ensure-discussions.ts",
+    "ingest": "tsx scripts/ingest-configs.ts"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.8",
+    "github-markdown-css": "^5.9.0",
+    "marked": "^18.1.1",
+    "sanitize-html": "^2.18.0",
+    "tailwindcss": "^4.3.3",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.6.5",
+    "@types/sanitize-html": "^2.16.2",
+    "pagefind": "^1.5.2",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.4",
+    "zod-to-json-schema": "^3.25.2"
+  }
+}

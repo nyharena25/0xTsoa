@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Spotlight from '../components/Spotlight.astro';
+import Manifesto from '../components/Manifesto.astro';
+import { getCollection } from 'astro:content';
+import { getTop5Configs } from '../lib/votes';
+import { BASE_PATH } from '../../site.config';
+
+const allConfigs = await getCollection('configs');
+const spotlightConfigs = getTop5Configs(allConfigs);
+---
+
+<Base
+  locale="en"
+  statusPrefix="[STATUS: "
+  statusInitial="EXIT 1"
+  statusFinal="EXIT 0"
+>
+  <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-5 sm:py-8 flex flex-col gap-6 sm:gap-10">
+    <Hero />
+    <Spotlight configs={spotlightConfigs} />
+
+    <!-- Quick Explorer Bar -->
+    <section class="bg-white border border-zinc-200 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+        <span class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900">
+          Quick Explore by Style & WM:
+        </span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <a href={`${BASE_PATH}/catalogue/?wm=hyprland`} class="tag-pill">
+          Hyprland
+        </a>
+        <a href={`${BASE_PATH}/catalogue/?wm=sway`} class="tag-pill">
+          Sway
+        </a>
+        <a href={`${BASE_PATH}/catalogue/?style=cyberpunk`} class="tag-pill">
+          Cyberpunk
+        </a>
+        <a href={`${BASE_PATH}/catalogue/?style=minimalist`} class="tag-pill">
+          Minimalist
+        </a>
+        <a href={`${BASE_PATH}/catalogue/?style=nord`} class="tag-pill">
+          Nord
+        </a>
+        <a href={`${BASE_PATH}/catalogue/`} class="btn-solid text-xs py-1 px-3">
+          <span>View all</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+    </section>
+
+    <Manifesto />
+  </div>
+</Base>

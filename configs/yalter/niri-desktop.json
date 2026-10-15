@@ -1,0 +1,113 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Niri Scrollable Wayland",
+  "author": {
+    "name": "YaLTeR",
+    "github": "YaLTeR"
+  },
+  "lang": "en",
+  "summary": "Next-generation scrollable-tiling Wayland compositor inspired by paper tape and infinite screens.",
+  "description": "Niri reimagines desktop tiling by placing windows in an infinitely expanding horizontal ribbon. Windows never tile down into microscopic slivers. Built entirely in Rust with smooth animations, Waybar support, and touch gesture integration.",
+  "license": "GPL-3.0-or-later",
+  "version": "v0.1.10",
+  "updatedAt": "2026-10-14",
+  "distros": [
+    "arch",
+    "fedora",
+    "nixos",
+    "debian"
+  ],
+  "wm": "niri",
+  "themeStyle": "monochrome",
+  "displayServer": "wayland",
+  "tags": [
+    "niri",
+    "wayland",
+    "scrollable-tiling",
+    "rust",
+    "modern",
+    "gestures"
+  ],
+  "specs": {
+    "bar": "Waybar / Fuzzel",
+    "terminal": "Alacritty / Foot",
+    "launcher": "Fuzzel",
+    "notifications": "Mako / Dunst",
+    "theme": "Clean Monochrome Ribbon",
+    "shell": "fish / bash",
+    "editor": "Neovim / Helix",
+    "ramIdleMiB": 240,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/YaLTeR/niri/fc9e8c425e2267d877a65918f030c86f3c698179/docs/wiki/img/block-out-from-screencast.png",
+      "alt": "Niri scrollable horizontal ribbon window overview",
+      "caption": "01_NIRI_RIBBON.RAW"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/YaLTeR/niri/fc9e8c425e2267d877a65918f030c86f3c698179/docs/wiki/img/blur.png",
+      "alt": "Niri backdrop blur and window border radius effects",
+      "caption": "02_NIRI_BLUR_EFFECTS.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/YaLTeR/niri",
+    "ref": "fc9e8c425e2267d877a65918f030c86f3c698179",
+    "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install Niri via package manager",
+        "commands": [
+          "sudo pacman -S --needed niri xdg-desktop-portal-gnome fuzzel waybar"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Generate baseline configuration",
+        "commands": [
+          "mkdir -p ~/.config/niri",
+          "cp /etc/niri/config.kdl ~/.config/niri/config.kdl"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Validate configuration syntax",
+        "commands": [
+          "niri validate"
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + T",
+      "action": "spawn, alacritty",
+      "effect": "Open terminal"
+    },
+    {
+      "keys": "SUPER + D",
+      "action": "spawn, fuzzel",
+      "effect": "App launcher"
+    },
+    {
+      "keys": "SUPER + LEFT",
+      "action": "focus-column-left",
+      "effect": "Scroll focus left"
+    },
+    {
+      "keys": "SUPER + RIGHT",
+      "action": "focus-column-right",
+      "effect": "Scroll focus right"
+    },
+    {
+      "keys": "SUPER + Q",
+      "action": "close-window",
+      "effect": "Close active window"
+    }
+  ],
+  "example": false
+}

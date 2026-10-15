@@ -1,0 +1,351 @@
+---
+import { useTranslations } from '../lib/i18n';
+import { BASE_PATH, REPO_URL } from '../../site.config';
+import BdBrickLogo from './BdBrickLogo.astro';
+
+interface Props {
+  currentPath?: string;
+  pageLabel?: string;
+  statusPrefix?: string;
+  statusInitial?: string;
+  statusFinal?: string;
+  locale?: string;
+}
+
+const {
+  pageLabel,
+  statusPrefix = '[STATUS: ',
+  statusInitial = 'EXIT 1',
+  statusFinal = 'EXIT 0',
+} = Astro.props;
+
+const t = useTranslations('en');
+
+const homePath = `${BASE_PATH}/`;
+const cataloguePath = `${BASE_PATH}/catalogue/`;
+const contributePath = `${BASE_PATH}/contribute/`;
+---
+
+<header class="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-zinc-200 shadow-xs">
+  <div class="max-w-7xl mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+    <!-- Brand / Logo -->
+    <div class="flex items-center gap-3 shrink-0">
+      <a href={homePath} class="flex items-center gap-2.5 text-zinc-950 hover:text-zinc-700 no-underline group" aria-label="0xTsoa Home">
+        <BdBrickLogo size="sm" class="group-hover:scale-105 transition-transform" />
+        <div class="hidden sm:flex flex-col">
+          <span class="font-mono text-[9px] tracking-widest text-zinc-500 uppercase leading-none">Linux Registry</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Center Status Indicator: Dynamic Typewriter & Glitch -->
+    <div class="hidden md:flex items-center justify-center min-w-0 max-w-[460px] overflow-hidden">
+      <div
+        id="topbar-status-badge"
+        data-status-prefix={statusPrefix}
+        data-status-initial={statusInitial}
+        data-status-final={statusFinal}
+        data-page-label={pageLabel || statusFinal}
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-mono text-zinc-900 min-w-[124px] max-w-full justify-center select-none truncate"
+      >
+        <span id="topbar-status-dot" class="relative flex h-2 w-2 shrink-0">
+          <span id="topbar-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+          <span id="topbar-status-core" class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+        </span>
+        <span id="topbar-status-text" class="font-bold tracking-wider truncate"></span>
+        <span id="topbar-status-cursor" class="terminal-block-cursor shrink-0"></span>
+      </div>
+    </div>
+
+    <!-- Right Controls: Search, Links, GitHub, Mobile Hamburger -->
+    <div class="flex items-center gap-2.5 shrink-0">
+      <!-- Search Input with Grep Activation [ ↵ ] -->
+      <form action={cataloguePath} method="GET" class="relative hidden sm:flex items-center" id="nav-search-form">
+        <div class="relative flex items-center bg-zinc-50 border border-zinc-300 rounded-md focus-within:border-zinc-900 focus-within:ring-1 focus-within:ring-zinc-900 transition-none">
+          <span class="pl-2.5 text-zinc-400 select-none">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </span>
+          <input
+            id="nav-search-input"
+            name="q"
+            type="text"
+            placeholder="grep -i setup..."
+            autocomplete="off"
+            class="bg-transparent pl-2 pr-12 py-1.5 font-mono text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none w-36 md:w-52"
+          />
+          <!-- Keyboard shortcut indicator at rest -->
+          <kbd id="nav-search-kbd" class="hidden md:inline-flex items-center justify-center absolute right-1.5 px-1.5 py-0.5 text-[10px] font-mono text-zinc-400 bg-white border border-zinc-200 rounded pointer-events-none select-none instant-snap">
+            /
+          </kbd>
+          <!-- Submit button icon [ ↵ ] that snaps into place immediately upon first keystroke -->
+          <button
+            type="submit"
+            id="nav-search-submit"
+            aria-label="Submit search"
+            class="hidden items-center justify-center absolute right-1 px-1.5 py-0.5 font-mono text-[11px] font-bold text-zinc-900 hover:text-white bg-zinc-200 hover:bg-zinc-900 rounded border border-zinc-300 transition-none cursor-pointer select-none instant-snap"
+          >
+            [ ↵ ]
+          </button>
+        </div>
+      </form>
+
+      <!-- Nav links -->
+      <a
+        href={cataloguePath}
+        class="hidden lg:inline-flex items-center px-3 py-1.5 rounded-md text-xs font-mono font-medium text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+      >
+        {t('nav.exploreAll')}
+      </a>
+
+      <a
+        href={contributePath}
+        class="hidden lg:inline-flex items-center px-3 py-1.5 rounded-md text-xs font-mono font-medium text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+      >
+        {t('nav.contribute')}
+      </a>
+
+      <!-- GitHub Link -->
+      <a
+        href={REPO_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub Repository"
+        class="min-w-[44px] min-h-[44px] rounded-md bg-zinc-100 text-zinc-700 border border-zinc-200 hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-all flex items-center justify-center cursor-pointer"
+      >
+        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+      </a>
+
+      <!-- Mobile Hamburger Button -->
+      <button
+        type="button"
+        id="btn-mobile-menu"
+        aria-label="Open menu"
+        aria-expanded="false"
+        class="lg:hidden min-w-[44px] min-h-[44px] rounded-md bg-zinc-100 text-zinc-900 border border-zinc-200 hover:bg-zinc-200 transition-colors cursor-pointer flex items-center justify-center"
+      >
+        <svg id="hamburger-icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg id="hamburger-icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Dropdown Navigation Menu -->
+  <div
+    id="mobile-nav-panel"
+    class="hidden lg:hidden border-t border-zinc-200 bg-white px-4 py-4 space-y-3 shadow-lg transition-all"
+  >
+    <!-- Mobile Search with Grep Activation -->
+    <form action={cataloguePath} method="GET" class="relative flex items-center">
+      <div class="w-full relative flex items-center bg-zinc-50 border border-zinc-300 rounded-md focus-within:border-zinc-900">
+        <span class="pl-2.5 text-zinc-400 select-none">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </span>
+        <input
+          id="mobile-search-input"
+          name="q"
+          type="text"
+          placeholder="grep -i setup..."
+          class="w-full bg-transparent pl-2 pr-12 py-2 font-mono text-xs text-zinc-900 focus:outline-none"
+        />
+        <button
+          type="submit"
+          id="mobile-search-submit"
+          aria-label="Submit search"
+          class="hidden items-center justify-center absolute right-1.5 px-2 py-0.5 font-mono text-xs font-bold text-zinc-900 bg-zinc-200 rounded border border-zinc-300 select-none instant-snap"
+        >
+          [ ↵ ]
+        </button>
+      </div>
+    </form>
+
+    <div class="flex flex-col space-y-1.5 pt-1 font-mono text-sm">
+      <a
+        href={homePath}
+        class="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-800 hover:bg-zinc-100 font-medium transition-colors"
+      >
+        <span>🏠</span>
+        <span>Home</span>
+      </a>
+      <a
+        href={cataloguePath}
+        class="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-800 hover:bg-zinc-100 font-medium transition-colors"
+      >
+        <span>🧭</span>
+        <span>{t('nav.exploreAll')}</span>
+      </a>
+      <a
+        href={contributePath}
+        class="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-800 hover:bg-zinc-100 font-medium transition-colors"
+      >
+        <span>✍️</span>
+        <span>{t('nav.contribute')}</span>
+      </a>
+      <a
+        href={`${homePath}#section-manifesto`}
+        class="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-800 hover:bg-zinc-100 font-medium transition-colors"
+      >
+        <span>📜</span>
+        <span>{t('nav.manifesto')}</span>
+      </a>
+    </div>
+
+    <div class="pt-2 border-t border-zinc-100 flex items-center justify-between font-mono text-xs text-zinc-500">
+      <span class="inline-flex items-center gap-1.5"><BdBrickLogo size="xs" class="text-zinc-800" /> <span class="text-zinc-400">•</span> Linux Registry</span>
+      <a
+        href={REPO_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="underline text-zinc-700 hover:text-black font-semibold"
+      >
+        GitHub ↗
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Top Bar Status Typewriter & Glitch Sequence (Dynamic page label)
+  async function runStatusTypewriter() {
+    const badge = document.getElementById('topbar-status-badge');
+    const textEl = document.getElementById('topbar-status-text');
+    const pingEl = document.getElementById('topbar-status-ping');
+    const coreEl = document.getElementById('topbar-status-core');
+    if (!badge || !textEl || !pingEl || !coreEl) return;
+
+    const prefix = badge.getAttribute('data-status-prefix') || '[STATUS: ';
+    const initialLabel = badge.getAttribute('data-status-initial') || 'EXIT 1';
+    const finalLabel = badge.getAttribute('data-status-final') || 'EXIT 0';
+
+    // Reset: starts empty with error indicator (rose)
+    textEl.textContent = '';
+    pingEl.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75';
+    coreEl.className = 'relative inline-flex rounded-full h-2 w-2 bg-rose-500';
+
+    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    await sleep(80);
+
+    // 1. Type out error state
+    const fullInitial = `${prefix}${initialLabel}]`;
+    for (let i = 1; i <= fullInitial.length; i++) {
+      textEl.textContent = fullInitial.slice(0, i);
+      await sleep(28);
+    }
+
+    await sleep(240);
+
+    // 2. Glitch sequence
+    badge.classList.add('status-glitch');
+    await sleep(220);
+    badge.classList.remove('status-glitch');
+
+    // 3. Delete backwards down to prefix
+    const currentLength = textEl.textContent.length;
+    for (let i = currentLength; i >= prefix.length; i--) {
+      textEl.textContent = textEl.textContent.slice(0, i);
+      await sleep(18);
+    }
+
+    await sleep(80);
+
+    // 4. Retype to success label
+    const fullFinal = `${prefix}${finalLabel}]`;
+    const targetSuffix = fullFinal.slice(prefix.length);
+
+    for (let i = 1; i <= targetSuffix.length; i++) {
+      textEl.textContent = `${prefix}${targetSuffix.slice(0, i)}`;
+      await sleep(32);
+    }
+
+    // 5. Transition to Emerald Stable State
+    pingEl.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75';
+    coreEl.className = 'relative inline-flex rounded-full h-2 w-2 bg-emerald-500';
+  }
+
+  // Grep Search Activation: immediate snap of [ ↵ ] button upon first keystroke
+  function setupGrepActivation() {
+    function bindInput(inputId: string, submitId: string, kbdId?: string) {
+      const input = document.getElementById(inputId) as HTMLInputElement | null;
+      const submitBtn = document.getElementById(submitId);
+      const kbd = kbdId ? document.getElementById(kbdId) : null;
+      if (!input || !submitBtn || input.dataset.grepBound === 'true') return;
+      input.dataset.grepBound = 'true';
+
+      const updateState = () => {
+        const hasText = input.value.trim().length > 0;
+        if (hasText) {
+          submitBtn.classList.remove('hidden');
+          submitBtn.classList.add('inline-flex');
+          if (kbd) kbd.classList.add('hidden');
+        } else {
+          submitBtn.classList.add('hidden');
+          submitBtn.classList.remove('inline-flex');
+          if (kbd) kbd.classList.remove('hidden');
+        }
+      };
+
+      input.addEventListener('input', updateState);
+      input.addEventListener('focus', updateState);
+      updateState();
+    }
+
+    bindInput('nav-search-input', 'nav-search-submit', 'nav-search-kbd');
+    bindInput('mobile-search-input', 'mobile-search-submit');
+  }
+
+  // Header Interactions & Shortcut Listeners
+  function setupHeader() {
+    // 1. Mobile Hamburger Menu Toggle
+    const mobileMenuBtn = document.getElementById('btn-mobile-menu');
+    const mobilePanel = document.getElementById('mobile-nav-panel');
+    const iconOpen = document.getElementById('hamburger-icon-open');
+    const iconClose = document.getElementById('hamburger-icon-close');
+
+    if (mobileMenuBtn && mobilePanel && !mobileMenuBtn.dataset.bound) {
+      mobileMenuBtn.dataset.bound = 'true';
+      mobileMenuBtn.addEventListener('click', () => {
+        const isHidden = mobilePanel.classList.contains('hidden');
+        if (isHidden) {
+          mobilePanel.classList.remove('hidden');
+          mobileMenuBtn.setAttribute('aria-expanded', 'true');
+          iconOpen?.classList.add('hidden');
+          iconClose?.classList.remove('hidden');
+        } else {
+          mobilePanel.classList.add('hidden');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+          iconOpen?.classList.remove('hidden');
+          iconClose?.classList.add('hidden');
+        }
+      });
+    }
+
+    // 2. Shortcut key '/' focuses search input
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        const input = document.getElementById('nav-search-input') as HTMLInputElement | null;
+        if (input) {
+          e.preventDefault();
+          input.focus();
+        }
+      }
+    });
+
+    // 3. Initialize Grep Search Activation
+    setupGrepActivation();
+
+    // 4. Initialize Top Bar Status Typewriter & Glitch
+    runStatusTypewriter();
+  }
+
+  setupHeader();
+  document.addEventListener('astro:page-load', setupHeader);
+</script>

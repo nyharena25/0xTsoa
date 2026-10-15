@@ -1,0 +1,109 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Sway Wayland Workstation",
+  "author": {
+    "name": "Sway Developers",
+    "github": "swaywm"
+  },
+  "lang": "en",
+  "summary": "Drop-in replacement for the i3 window manager designed specifically for Wayland.",
+  "description": "Sway provides a rock-solid, standards-compliant tiling Wayland environment. It works seamlessly with existing i3 configurations while offering tearing-free rendering, fractional scaling, and ultra-low CPU footprint.",
+  "license": "MIT",
+  "version": "v1.10.0",
+  "updatedAt": "2026-10-13",
+  "distros": [
+    "arch",
+    "debian",
+    "fedora",
+    "void",
+    "alpine"
+  ],
+  "wm": "sway",
+  "themeStyle": "minimalist",
+  "displayServer": "wayland",
+  "tags": [
+    "sway",
+    "i3",
+    "wayland",
+    "minimalist",
+    "rock-solid",
+    "foot"
+  ],
+  "specs": {
+    "bar": "Swaybar / Waybar",
+    "terminal": "Foot",
+    "launcher": "Dmenu / Wofi",
+    "notifications": "Mako",
+    "theme": "Sway Charcoal Minimal",
+    "shell": "bash",
+    "editor": "Vim",
+    "ramIdleMiB": 180,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/swaywm/sway/1652c54b73f67df17b7b4ab0b0f7048204aa8104/assets/Sway_Logo+Text_Ver1_1500x716.png",
+      "alt": "Sway Wayland compositor official branding and architecture",
+      "caption": "01_SWAY_OVERVIEW.RAW"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/swaywm/sway/1652c54b73f67df17b7b4ab0b0f7048204aa8104/assets/Sway_Tree.png",
+      "alt": "Sway internal container layout tree schema",
+      "caption": "02_SWAY_TREE.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/swaywm/sway",
+    "ref": "1652c54b73f67df17b7b4ab0b0f7048204aa8104",
+    "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install Sway compositor and utils",
+        "commands": [
+          "sudo pacman -S --needed sway swaybg swayidle swaylock foot dmenu"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Copy default sway config",
+        "commands": [
+          "mkdir -p ~/.config/sway",
+          "cp /etc/sway/config ~/.config/sway/config"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Reload Sway configuration",
+        "commands": [
+          "swaymsg reload"
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + RETURN",
+      "action": "exec, foot",
+      "effect": "Spawn Foot terminal"
+    },
+    {
+      "keys": "SUPER + D",
+      "action": "exec, dmenu_path | dmenu | xargs swaymsg exec --",
+      "effect": "Launch program"
+    },
+    {
+      "keys": "SUPER + SHIFT + Q",
+      "action": "kill",
+      "effect": "Close focused window"
+    },
+    {
+      "keys": "SUPER + SHIFT + C",
+      "action": "reload",
+      "effect": "Reload Sway config"
+    }
+  ],
+  "example": false
+}

@@ -1,0 +1,112 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "HyDE Hyprdots",
+  "author": {
+    "name": "Prasanth Rangan",
+    "github": "prasanthrangan"
+  },
+  "lang": "en",
+  "summary": "Aesthetic, dynamic and minimal dotfiles for Arch Linux Hyprland with dynamic theming.",
+  "description": "HyDE (Hyprdots Desktop Environment) provides a modular, fluid and heavily customized Arch Linux environment on Hyprland. Features custom dynamic theme switching across 15+ styles, Waybar integration, Kitty terminal styling, Rofi-wayland app launcher, Dunst notifications, and streamlined pacman/AUR package workflows.",
+  "license": "GPL-3.0-only",
+  "version": "v2.4.0",
+  "updatedAt": "2026-10-12",
+  "distros": [
+    "arch",
+    "endeavouros"
+  ],
+  "wm": "hyprland",
+  "themeStyle": "catppuccin",
+  "displayServer": "wayland",
+  "tags": [
+    "hyprland",
+    "arch",
+    "waybar",
+    "catppuccin",
+    "dynamic-theming",
+    "kitty"
+  ],
+  "specs": {
+    "bar": "Waybar (Multi-theme)",
+    "terminal": "Kitty",
+    "launcher": "Rofi-wayland",
+    "notifications": "Dunst",
+    "theme": "Catppuccin Mocha / Dynamic",
+    "shell": "zsh + Starship",
+    "editor": "Neovim",
+    "ramIdleMiB": 420,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/prasanthrangan/hyprdots/3c8b0dfb5e7f8e41a67b80463513f10d57cab1a4/Source/assets/hyde_banner.png",
+      "alt": "HyDE banner showcasing Hyprland Waybar and desktop theming",
+      "caption": "01_HYDE_BANNER.RAW"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/prasanthrangan/hyprdots/3c8b0dfb5e7f8e41a67b80463513f10d57cab1a4/Source/assets/theme_select_1.png",
+      "alt": "HyDE interactive theme selector with preview cards",
+      "caption": "02_THEME_SELECT.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/prasanthrangan/hyprdots",
+    "ref": "3c8b0dfb5e7f8e41a67b80463513f10d57cab1a4",
+    "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Prerequisites & Base Dependencies",
+        "commands": [
+          "sudo pacman -Syu --needed base-devel git",
+          "git clone --depth 1 https://github.com/prasanthrangan/hyprdots ~/HyDE"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Interactive Install Script Execution",
+        "commands": [
+          "cd ~/HyDE/Scripts",
+          "./install.sh"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Session Initialization",
+        "commands": [
+          "hyprctl reload"
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + Q",
+      "action": "exec, kitty",
+      "effect": "Launch Kitty terminal"
+    },
+    {
+      "keys": "SUPER + C",
+      "action": "killactive",
+      "effect": "Close active window"
+    },
+    {
+      "keys": "SUPER + SPACE",
+      "action": "exec, rofi -show drun",
+      "effect": "Application launcher"
+    },
+    {
+      "keys": "SUPER + T",
+      "action": "exec, themeselect.sh",
+      "effect": "Open theme switcher"
+    },
+    {
+      "keys": "SUPER + L",
+      "action": "exec, swaylock",
+      "effect": "Lock screen"
+    }
+  ],
+  "example": false
+}

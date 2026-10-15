@@ -1,0 +1,122 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Illogical Impulse Dots",
+  "author": {
+    "name": "end-4",
+    "github": "end-4"
+  },
+  "lang": "en",
+  "summary": "Usability-first, fluid and hyper-customized Wayland desktop configuration with Quickshell.",
+  "description": "An advanced, highly interactive Linux desktop environment combining Hyprland and Quickshell. Features bespoke Material Design 3 inspired widgets, integrated quick settings, media controls, animated workspace switchers, and deep keyboard navigation workflows.",
+  "license": "GPL-3.0-only",
+  "version": "v3.2.0",
+  "updatedAt": "2026-10-10",
+  "distros": [
+    "arch",
+    "fedora",
+    "nixos"
+  ],
+  "wm": "hyprland",
+  "themeStyle": "minimalist",
+  "displayServer": "wayland",
+  "tags": [
+    "hyprland",
+    "quickshell",
+    "wayland",
+    "material-you",
+    "blur",
+    "minimalist"
+  ],
+  "specs": {
+    "bar": "Quickshell Bar & Quick Settings",
+    "terminal": "Foot / Kitty",
+    "launcher": "Quickshell App Grid",
+    "notifications": "Quickshell Popups",
+    "theme": "Dynamic Material Colors",
+    "shell": "fish + Starship",
+    "editor": "Neovim",
+    "ramIdleMiB": 380,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://github.com/user-attachments/assets/5d4e7d07-d0b4-4406-a4c9-ed7ba90e3fe4",
+      "alt": "AI & Settings App on Illogical Impulse Hyprland",
+      "caption": "01_AI_SETTINGS.RAW"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/6a32395f-9437-4192-8faf-2951a9e84cbe",
+      "alt": "Quickshell Widgets and Quick Settings",
+      "caption": "02_WIDGETS_PANEL.RAW"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/c51bed8b-3670-4d4c-9074-873be224fb8e",
+      "alt": "Window management and workspace overview",
+      "caption": "03_WINDOW_MGMT.RAW"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/98703a66-0743-439f-a721-cef7afa6ab95",
+      "alt": "Dynamic Material Design color extraction theme",
+      "caption": "04_MATERIAL_COLOR.RAW"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/end-4/dots-hyprland/2f2a376fdb2ad738bf55f693dd0b474b64bb0ab8/dots/.config/quickshell/ii/assets/images/default_wallpaper.png",
+      "alt": "Default aesthetic backdrop and styling for Illogical Impulse",
+      "caption": "05_DEFAULT_WALLPAPER.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/end-4/dots-hyprland",
+    "ref": "2f2a376fdb2ad738bf55f693dd0b474b64bb0ab8",
+    "readme": ".github/README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone repository dotfiles",
+        "commands": [
+          "git clone --depth 1 https://github.com/end-4/dots-hyprland.git ~/.config/hypr/dots"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Deploy Quickshell & Hyprland configs",
+        "commands": [
+          "cd ~/.config/hypr/dots",
+          "./setup.sh"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Reload compositor",
+        "commands": [
+          "hyprctl reload"
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + RETURN",
+      "action": "exec, foot",
+      "effect": "Spawn terminal window"
+    },
+    {
+      "keys": "SUPER + D",
+      "action": "exec, quickshell -p appgrid",
+      "effect": "Toggle app drawer"
+    },
+    {
+      "keys": "SUPER + W",
+      "action": "killactive",
+      "effect": "Close focused client"
+    },
+    {
+      "keys": "SUPER + TAB",
+      "action": "exec, quickshell -p overview",
+      "effect": "Interactive window overview"
+    }
+  ],
+  "example": false
+}

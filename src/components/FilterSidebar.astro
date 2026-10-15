@@ -1,0 +1,206 @@
+---
+import { useTranslations, type Locale } from '../lib/i18n';
+import { WM_LABELS, DISTRO_LABELS, STYLE_LABELS } from '../lib/schema';
+
+interface FacetCounts {
+  wms: Record<string, number>;
+  styles: Record<string, number>;
+  distros: Record<string, number>;
+  ramUnder300: number;
+  battery: number;
+}
+
+interface Props {
+  counts: FacetCounts;
+  locale?: Locale;
+}
+
+const { counts } = Astro.props;
+const t = useTranslations('en');
+
+const topWms = Object.entries(counts.wms)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 8);
+
+const topStyles = Object.entries(counts.styles)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 8);
+
+const topDistros = Object.entries(counts.distros)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 8);
+---
+
+<aside class="w-full flex flex-col gap-4">
+  <div class="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs">
+    <div class="flex items-center justify-between border-b border-zinc-200 pb-3 mb-4">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-zinc-900"></span>
+        <h2 class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900">
+          {t('catalogue.quickFilters')}
+        </h2>
+      </div>
+      <a
+        href="?"
+        id="btn-reset-filters"
+        class="font-mono text-xs text-zinc-500 hover:text-zinc-900 underline cursor-pointer"
+      >
+        {t('catalogue.reset')}
+      </a>
+    </div>
+
+    <!-- Section 1: WM / Compositors -->
+    <div class="mb-5">
+      <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
+        <span>{t('catalogue.wmSection')}</span>
+        <span class="text-[11px] text-zinc-400 font-normal">({topWms.length})</span>
+      </h3>
+      <ul class="space-y-2 font-mono text-xs">
+        {topWms.map(([wmKey, count]) => (
+          <li>
+            <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
+              <div class="flex items-center gap-2.5">
+                <input
+                  type="checkbox"
+                  name="wm"
+                  value={wmKey}
+                  class="filter-checkbox w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
+                />
+                <span class="text-zinc-800 group-hover:text-zinc-950 font-medium">
+                  {WM_LABELS[wmKey as keyof typeof WM_LABELS] || wmKey}
+                </span>
+              </div>
+              <span class="text-zinc-400 font-normal">({count})</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Section 2: Styles / Themes -->
+    <div class="pt-4 border-t border-zinc-100 mb-5">
+      <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
+        <span>{t('catalogue.styleSection')}</span>
+        <span class="text-[11px] text-zinc-400 font-normal">({topStyles.length})</span>
+      </h3>
+      <ul class="space-y-2 font-mono text-xs">
+        {topStyles.map(([styleKey, count]) => (
+          <li>
+            <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
+              <div class="flex items-center gap-2.5">
+                <input
+                  type="checkbox"
+                  name="style"
+                  value={styleKey}
+                  class="filter-checkbox w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
+                />
+                <span class="text-zinc-800 group-hover:text-zinc-950 font-medium">
+                  {STYLE_LABELS[styleKey as keyof typeof STYLE_LABELS] || styleKey}
+                </span>
+              </div>
+              <span class="text-zinc-400 font-normal">({count})</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Section 3: Distros -->
+    <div class="pt-4 border-t border-zinc-100 mb-5">
+      <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
+        <span>{t('catalogue.distroSection')}</span>
+        <span class="text-[11px] text-zinc-400 font-normal">({topDistros.length})</span>
+      </h3>
+      <ul class="space-y-2 font-mono text-xs">
+        {topDistros.map(([distroKey, count]) => (
+          <li>
+            <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
+              <div class="flex items-center gap-2.5">
+                <input
+                  type="checkbox"
+                  name="distro"
+                  value={distroKey}
+                  class="filter-checkbox w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
+                />
+                <span class="text-zinc-800 group-hover:text-zinc-950 font-medium">
+                  {DISTRO_LABELS[distroKey as keyof typeof DISTRO_LABELS] || distroKey}
+                </span>
+              </div>
+              <span class="text-zinc-400 font-normal">({count})</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Section 4: Hardware & Autonomy -->
+    <div class="pt-4 border-t border-zinc-100 mb-4">
+      <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
+        <span>{t('catalogue.hardwareSection')}</span>
+        <span class="text-[11px] text-zinc-400 font-normal">(2)</span>
+      </h3>
+      <ul class="space-y-2 font-mono text-xs">
+        <li>
+          <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
+            <div class="flex items-center gap-2.5">
+              <input
+                type="checkbox"
+                name="ramMax"
+                value="300"
+                class="filter-checkbox w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
+              />
+              <span class="text-zinc-800 group-hover:text-zinc-950 font-medium">{t('catalogue.ramFilter')}</span>
+            </div>
+            <span class="text-zinc-400 font-normal">({counts.ramUnder300})</span>
+          </label>
+        </li>
+        <li>
+          <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
+            <div class="flex items-center gap-2.5">
+              <input
+                type="checkbox"
+                name="battery"
+                value="true"
+                class="filter-checkbox w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
+              />
+              <span class="text-zinc-800 group-hover:text-zinc-950 font-medium">{t('catalogue.batteryFilter')}</span>
+            </div>
+            <span class="text-zinc-400 font-normal">({counts.battery})</span>
+          </label>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Clean Advice Box -->
+    <div class="bg-zinc-900 text-zinc-100 p-3.5 rounded-lg font-mono text-xs shadow-xs">
+      <div class="font-bold flex items-center gap-1.5 mb-1 text-[11px] text-zinc-300">
+        <span class="text-emerald-400">💡</span>
+        <span>BATTERY TIP</span>
+      </div>
+      <p class="text-[11px] text-zinc-400 leading-relaxed">
+        Combine Hyprland + auto-cpufreq for a laptop profile with &gt; 9h verified battery life on a 54Wh battery.
+      </p>
+    </div>
+  </div>
+
+  <!-- Benchmarks card -->
+  <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-4 font-mono text-xs shadow-xs">
+    <div class="font-bold uppercase tracking-wider text-[11px] text-zinc-700 mb-2.5 border-b border-zinc-200 pb-1.5">
+      AVERAGE BENCHMARKS
+    </div>
+    <div class="space-y-1.5 text-zinc-500">
+      <div class="flex justify-between items-center">
+        <span>Minimal footprint:</span>
+        <span class="font-bold text-zinc-900">170 MiB (BSPWM)</span>
+      </div>
+      <div class="flex justify-between items-center">
+        <span>Average boot:</span>
+        <span class="font-bold text-zinc-900">1.82s (systemd)</span>
+      </div>
+      <div class="flex justify-between items-center">
+        <span>Spec License:</span>
+        <span class="font-bold text-zinc-900">MIT / CC-BY-4.0</span>
+      </div>
+    </div>
+  </div>
+</aside>

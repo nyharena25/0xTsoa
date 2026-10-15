@@ -1,0 +1,193 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { useTranslations } from '../lib/i18n';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  locale?: string;
+  pageLabel?: string;
+  statusPrefix?: string;
+  statusInitial?: string;
+  statusFinal?: string;
+}
+
+const {
+  title,
+  description,
+  pageLabel,
+  statusPrefix: propPrefix,
+  statusInitial: propInitial,
+  statusFinal: propFinal,
+} = Astro.props;
+
+const t = useTranslations('en');
+const pageTitle = title ? `${title} — 0xTSOA` : t('site.title');
+const pageDesc = description || t('site.description');
+const currentPath = Astro.url.pathname;
+
+let resolvedPrefix = propPrefix;
+let resolvedInitial = propInitial;
+let resolvedFinal = propFinal;
+
+if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
+  if (currentPath.includes('/contribute') || currentPath.includes('/contribuer')) {
+    resolvedPrefix = resolvedPrefix || '[STATUS: ';
+    resolvedInitial = resolvedInitial || 'CONTRIBUTOR';
+    resolvedFinal = resolvedFinal || 'CONTRIBUTE';
+  } else if (currentPath.includes('/catalogue')) {
+    resolvedPrefix = resolvedPrefix || '[STATUS: ';
+    resolvedInitial = resolvedInitial || 'CATALOGUE';
+    resolvedFinal = resolvedFinal || 'SHOW CASE';
+  } else if (currentPath.includes('/configs/')) {
+    resolvedPrefix = resolvedPrefix || '[SHOW CASE: ';
+    resolvedInitial = resolvedInitial || 'COMMUNITY';
+    resolvedFinal = resolvedFinal || 'SHOW CASE';
+  } else {
+    resolvedPrefix = resolvedPrefix || '[STATUS: ';
+    resolvedInitial = resolvedInitial || 'EXIT 1';
+    resolvedFinal = resolvedFinal || 'EXIT 0';
+  }
+}
+---
+
+<!doctype html>
+<html lang="en" class="bg-[#FBFBFA] text-[#0F172A]">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDesc} />
+
+    <!-- OpenGraph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:url" content={Astro.url.href} />
+
+    <!-- Favicon SVG Data URI -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230F172A'/><text x='50' y='66' font-size='44' font-family='monospace' font-weight='bold' fill='white' text-anchor='middle'>0xT</text></svg>"
+    />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+  </head>
+  <body class="min-h-screen flex flex-col font-sans antialiased text-[#0F172A] bg-[#FBFBFA] selection:bg-[#0F172A] selection:text-white overflow-x-hidden w-full max-w-full">
+    <Header
+      currentPath={currentPath}
+      pageLabel={pageLabel || resolvedFinal}
+      statusPrefix={resolvedPrefix}
+      statusInitial={resolvedInitial}
+      statusFinal={resolvedFinal}
+    />
+
+    <main class="w-full pt-16 flex-1 flex flex-col">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <!-- Page Transitions (Delete & Retype) -->
+    <script>
+      function setupTitleTransitions() {
+        const getTitleEl = (): HTMLElement | null => {
+          return (
+            document.querySelector<HTMLElement>('[data-page-title="true"]') ||
+            document.querySelector<HTMLElement>('main h1') ||
+            document.querySelector<HTMLElement>('h1')
+          );
+        };
+
+        const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        // 1. Landing: Type out page title letter-by-letter
+        const titleEl = getTitleEl();
+        if (titleEl) {
+          const originalText = titleEl.getAttribute('data-original-title') || titleEl.textContent?.trim() || '';
+          titleEl.setAttribute('data-original-title', originalText);
+
+          const isNavTransition = sessionStorage.getItem('0xtsoa_page_transition') === 'true';
+          if (isNavTransition && originalText) {
+            sessionStorage.removeItem('0xtsoa_page_transition');
+            titleEl.textContent = '';
+            (async () => {
+              for (let i = 1; i <= originalText.length; i++) {
+                titleEl.textContent = originalText.slice(0, i);
+                await sleep(18);
+              }
+            })();
+          }
+        }
+
+        // 2. Intercept internal navigation links: Delete title letter-by-letter before navigating
+        document.addEventListener('click', async (e) => {
+          const targetLink = (e.target as HTMLElement)?.closest('a');
+          if (!targetLink) return;
+
+          const href = targetLink.getAttribute('href');
+          if (!href) return;
+
+          // Ignore anchors, external links, downloads, new tabs, modifier keys
+          if (
+            href.startsWith('#') ||
+            href.startsWith('mailto:') ||
+            targetLink.getAttribute('target') === '_blank' ||
+            targetLink.hasAttribute('download') ||
+            e.ctrlKey || e.metaKey || e.shiftKey || e.altKey
+          ) {
+            return;
+          }
+
+          try {
+            const url = new URL(href, window.location.href);
+            if (url.origin !== window.location.origin) return;
+            if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+
+            e.preventDefault();
+            const activeTitleEl = getTitleEl();
+
+            if (activeTitleEl) {
+              const currentText = activeTitleEl.textContent || '';
+              // Delete letter-by-letter in reverse
+              for (let i = currentText.length; i >= 0; i--) {
+                activeTitleEl.textContent = currentText.slice(0, i);
+                await sleep(14);
+              }
+            }
+
+            sessionStorage.setItem('0xtsoa_page_transition', 'true');
+            window.location.href = href;
+          } catch {}
+        });
+
+        // 3. Tab Switching: When returning to browser tab, delete & retype document.title
+        const originalDocTitle = document.title;
+        let isTabRetyping = false;
+        document.addEventListener('visibilitychange', async () => {
+          if (document.visibilityState === 'visible' && !isTabRetyping) {
+            isTabRetyping = true;
+            const currentTitle = document.title;
+            // Delete backwards
+            for (let i = currentTitle.length; i >= 0; i--) {
+              document.title = currentTitle.slice(0, i);
+              await sleep(12);
+            }
+            await sleep(60);
+            // Retype forward
+            for (let i = 1; i <= originalDocTitle.length; i++) {
+              document.title = originalDocTitle.slice(0, i);
+              await sleep(18);
+            }
+            isTabRetyping = false;
+          }
+        });
+      }
+
+      setupTitleTransitions();
+      document.addEventListener('astro:page-load', setupTitleTransitions);
+    </script>
+  </body>
+</html>

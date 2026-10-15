@@ -1,0 +1,108 @@
+---
+interface Props {
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'hero';
+  class?: string;
+  animated?: boolean;
+}
+
+const {
+  size = 'md',
+  class: className = '',
+  animated = false,
+} = Astro.props;
+
+// Size mapping for font-based rendering
+const sizeClasses = {
+  xs: 'text-sm tracking-wide',
+  sm: 'text-xl sm:text-2xl tracking-wide',
+  md: 'text-3xl sm:text-4xl tracking-wider',
+  lg: 'text-5xl sm:text-6xl tracking-wider',
+  hero: 'text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-wider',
+}[size];
+---
+
+<div
+  class={`inline-flex items-center select-none font-brick ${animated ? 'cursor-pointer group' : ''} ${className}`}
+  aria-label="0xTsoa"
+  data-animated-logo={animated ? 'true' : undefined}
+  title={animated ? "0xTsoa (Click to replay animation)" : undefined}
+>
+  <span
+    class={`font-brick font-normal leading-none inline-flex items-baseline ${sizeClasses} text-current shrink-0`}
+    role="img"
+    aria-label="0xTsoa"
+  >
+    <span class="bd-brick-char inline-block" data-char="0">0</span>
+    <span class="bd-brick-char inline-block" data-char="x">x</span>
+    <span class="bd-brick-char inline-block" data-char="T">T</span>
+    <span class="bd-brick-char inline-block" data-char="s">s</span>
+    <span class="bd-brick-char inline-block" data-char="o">o</span>
+    <span class="bd-brick-char inline-block" data-char="a">a</span>
+  </span>
+</div>
+
+{animated && (
+  <script>
+    function setupAnimatedBdBrickLogos() {
+      const animatedContainers = document.querySelectorAll<HTMLElement>('[data-animated-logo="true"]');
+      animatedContainers.forEach((container) => {
+        if (container.dataset.bound === 'true') return;
+        container.dataset.bound = 'true';
+
+        const chars = container.querySelectorAll<HTMLElement>('.bd-brick-char');
+        if (chars.length === 0) return;
+
+        let isRunning = false;
+        const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        async function runSequence() {
+          if (isRunning) return;
+          isRunning = true;
+
+          // 1. Initial state: hide characters
+          chars.forEach((c) => {
+            c.style.opacity = '0';
+          });
+
+          await sleep(100);
+
+          // 2. Sequential mechanical lock-in: 0 -> x -> T -> s -> o -> a
+          for (let i = 0; i < chars.length; i++) {
+            const charEl = chars[i];
+
+            // Terminal strobe / flicker before snapping
+            charEl.style.opacity = '0.2';
+            await sleep(40);
+            charEl.style.opacity = '0.75';
+            await sleep(40);
+            charEl.style.opacity = '0.35';
+            await sleep(40);
+
+            // Solid lock-in
+            charEl.style.opacity = '1';
+            charEl.classList.add('hard-cut');
+            await sleep(75);
+          }
+
+          // 3. Final mechanical glitch burst
+          container.classList.add('glitch-skew');
+          await sleep(200);
+          container.classList.remove('glitch-skew');
+
+          isRunning = false;
+        }
+
+        // Run on load
+        runSequence();
+
+        // Re-run on user click
+        container.addEventListener('click', () => {
+          runSequence();
+        });
+      });
+    }
+
+    setupAnimatedBdBrickLogos();
+    document.addEventListener('astro:page-load', setupAnimatedBdBrickLogos);
+  </script>
+)}

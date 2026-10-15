@@ -1,0 +1,176 @@
+name: Nouvelle configuration Linux (Submission)
+description: Proposez une configuration Linux (dotfiles, thème, script) sans écrire de code.
+title: "[Config]: "
+labels: ["new-config"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Bienvenue sur le registre 0xTsoa !
+        Ce formulaire est automatiquement converti en fichier JSON standardisé et en Pull Request.
+        Votre compte GitHub sera automatiquement crédité en tant qu'auteur de la configuration.
+
+  - type: input
+    id: name
+    attributes:
+      label: Nom de la configuration
+      description: Un nom lisible et percutant (ex. Hyprland Paper Minimal).
+      placeholder: Mon Setup Hyprland
+    validations:
+      required: true
+
+  - type: input
+    id: slug
+    attributes:
+      label: Identifiant court (slug)
+      description: Lettres minuscules, chiffres et tirets uniquement (3 à 48 caractères).
+      placeholder: hyprland-monochrome-minimal
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Résumé court (1 phrase)
+      description: Expliquez la philosophie et l'intention de ce bureau en une phrase (10 à 200 caractères).
+      placeholder: Environnement Wayland ultra-rapide sur Arch Linux avec Waybar et Kitty.
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description détaillée (facultatif)
+      description: Détails d'ergonomie, philosophie de disposition des fenêtres, astuces...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: wm
+    attributes:
+      label: Gestionnaire de fenêtres / Compositeur
+      options:
+        - Hyprland
+        - Sway
+        - River
+        - niri
+        - i3
+        - bspwm
+        - Awesome
+        - GNOME
+        - KDE
+        - Wayfire
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: display_server
+    attributes:
+      label: Serveur d'affichage
+      options:
+        - wayland
+        - x11
+        - both
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: distros
+    attributes:
+      label: Distributions supportées
+      options:
+        - label: Arch
+        - label: Fedora
+        - label: NixOS
+        - label: Debian
+        - label: Ubuntu
+        - label: Void
+        - label: Any
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags / Mots-clés
+      description: Séparés par des virgules ou espaces (ex. battery-tuned, minimal, high-refresh).
+      placeholder: battery-tuned, waybar, monochrome
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: URLs des captures d'écran
+      description: URLs directes https:// vers les images (GitHub raw, Imgur, Reddit), une par ligne.
+      placeholder: https://raw.githubusercontent.com/votre-user/dots/main/preview.png
+    validations:
+      required: true
+
+  - type: input
+    id: source_repo
+    attributes:
+      label: Dépôt source des dotfiles (GitHub/GitLab/Codeberg)
+      placeholder: https://github.com/votre-user/dotfiles
+    validations:
+      required: true
+
+  - type: input
+    id: source_ref
+    attributes:
+      label: Commit SHA ou Tag fixe
+      description: Obligatoire pour garantir un build reproductible (ex. v1.0.0 ou sha à 40 caractères).
+      placeholder: v1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: script_url
+    attributes:
+      label: URL du script d'installation (.sh)
+      description: Facultatif. Doit pointer vers une URL HTTPS fixe (commit SHA ou tag).
+      placeholder: https://raw.githubusercontent.com/votre-user/dots/v1.0.0/install.sh
+
+  - type: input
+    id: script_sha256
+    attributes:
+      label: Condensat SHA-256 du script
+      description: Laissez vide si vous souhaitez que notre bot calcule automatiquement le hash de votre script !
+      placeholder: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+  - type: input
+    id: bar
+    attributes:
+      label: Barre d'état
+      placeholder: Waybar
+
+  - type: input
+    id: terminal
+    attributes:
+      label: Émulateur de terminal
+      placeholder: Kitty
+
+  - type: input
+    id: launcher
+    attributes:
+      label: Lanceur d'applications
+      placeholder: Rofi-wayland
+
+  - type: input
+    id: theme
+    attributes:
+      label: Thème / Palette
+      placeholder: Paper & Ink Monochrome
+
+  - type: input
+    id: ram_idle
+    attributes:
+      label: Consommation RAM au repos (MiB)
+      placeholder: 280
+
+  - type: dropdown
+    id: battery_profile
+    attributes:
+      label: Profil batterie optimisé
+      options:
+        - Non
+        - Oui (tlp / auto-cpufreq)

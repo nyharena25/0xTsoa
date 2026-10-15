@@ -1,0 +1,44 @@
+name: Validate Configurations & Code
+
+on:
+  pull_request:
+    paths:
+      - 'configs/**'
+      - 'schema/**'
+      - 'src/**'
+      - 'scripts/**'
+      - 'package.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'configs/**'
+      - 'schema/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Configs Schema & Naming
+        run: npm run validate
+
+      - name: Run Automated Tests
+        run: npm run test
+
+      - name: Dry Run Build
+        run: npx astro build
+        env:
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}

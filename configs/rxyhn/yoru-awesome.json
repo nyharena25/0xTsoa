@@ -1,0 +1,108 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Yoru AwesomeWM",
+  "author": {
+    "name": "rxyhn",
+    "github": "rxyhn"
+  },
+  "lang": "en",
+  "summary": "Clean, dark and minimalist AwesomeWM desktop with custom Lua widgets and Tokyo Night palette.",
+  "description": "A celebrated masterpiece of AwesomeWM configuration featuring bespoke Lua-driven status bars, music player controls, battery status meters, and silky window tiling. Built around the Tokyo Night color scheme for maximum nighttime comfort and clarity.",
+  "license": "GPL-3.0-only",
+  "version": "v1.0.0",
+  "updatedAt": "2026-10-09",
+  "distros": [
+    "arch",
+    "debian",
+    "ubuntu"
+  ],
+  "wm": "awesome",
+  "themeStyle": "tokyo-night",
+  "displayServer": "x11",
+  "tags": [
+    "awesomewm",
+    "tokyo-night",
+    "lua",
+    "minimalist",
+    "x11",
+    "alacritty"
+  ],
+  "specs": {
+    "bar": "AwesomeWM Native Wibox",
+    "terminal": "Alacritty",
+    "launcher": "Rofi Tokyo Night",
+    "notifications": "Naughty (Lua native)",
+    "theme": "Tokyo Night Dark",
+    "shell": "zsh",
+    "editor": "Neovim",
+    "ramIdleMiB": 230,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://user-images.githubusercontent.com/93292023/179895783-e4e96572-821c-4684-8b22-886f508d5e8e.png",
+      "alt": "Yoru AwesomeWM desktop with dashboard and music widget",
+      "caption": "01_YORU_DASHBOARD.RAW"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/93292023/179895825-5dade677-4fc6-4345-a564-719a649c0f2d.png",
+      "alt": "Yoru tiling window grid layout",
+      "caption": "02_YORU_TILING.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/rxyhn/yoru",
+    "ref": "041a2d7e5b44d5bbedec9664af31baff1ba5033b",
+    "readme": ".github/README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install AwesomeWM and Lua dependencies",
+        "commands": [
+          "sudo pacman -S --needed awesome rofi alacritty picom feh",
+          "git clone --depth=1 https://github.com/rxyhn/yoru.git ~/.config/awesome"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Configure permissions and assets",
+        "commands": [
+          "cd ~/.config/awesome",
+          "chmod +x ~/.config/awesome/scripts/*"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Restart AwesomeWM session",
+        "commands": [
+          "awesome-client \"awesome.restart()\""
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + RETURN",
+      "action": "exec, alacritty",
+      "effect": "Launch terminal"
+    },
+    {
+      "keys": "SUPER + D",
+      "action": "exec, rofi -show drun",
+      "effect": "Open launcher"
+    },
+    {
+      "keys": "SUPER + SHIFT + C",
+      "action": "kill",
+      "effect": "Kill window"
+    },
+    {
+      "keys": "SUPER + SHIFT + R",
+      "action": "restart",
+      "effect": "Restart AwesomeWM"
+    }
+  ],
+  "example": false
+}

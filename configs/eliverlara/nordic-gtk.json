@@ -1,0 +1,99 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Nordic Dark Frost Studio",
+  "author": {
+    "name": "Eliver Lara",
+    "github": "EliverLara"
+  },
+  "lang": "en",
+  "summary": "Dark, cold GTK and GNOME desktop theme created using the arctic Nord palette.",
+  "description": "Nordic is an arctic, north-bluish clean theme created for GTK, GNOME Shell, XFCE, and modern desktop environments. Reduces eye strain with calibrated contrast, soft borders, and minimalist window headers.",
+  "license": "GPL-3.0-only",
+  "version": "v2.2.0",
+  "updatedAt": "2026-10-11",
+  "distros": [
+    "arch",
+    "fedora",
+    "ubuntu",
+    "debian",
+    "opensuse"
+  ],
+  "wm": "gnome",
+  "themeStyle": "nord",
+  "displayServer": "both",
+  "tags": [
+    "nord",
+    "gnome",
+    "gtk",
+    "arctic",
+    "dark-theme",
+    "minimalist"
+  ],
+  "specs": {
+    "bar": "GNOME Shell Top Bar",
+    "terminal": "GNOME Console / Ptyxis",
+    "launcher": "GNOME App Overview",
+    "notifications": "GNOME Notification Center",
+    "theme": "Nordic Dark Polar Frost",
+    "shell": "bash",
+    "editor": "VSCode / Neovim",
+    "ramIdleMiB": 540,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/EliverLara/Nordic/be5bda37ba01139650e34238336e58e065d2f406/Art/_banner-github.jpg",
+      "alt": "Nordic theme arctic dark banner",
+      "caption": "01_NORDIC_BANNER.RAW"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/EliverLara/Nordic/be5bda37ba01139650e34238336e58e065d2f406/Art/firefox-preview.jpg",
+      "alt": "Nordic Firefox and window styling preview",
+      "caption": "02_NORDIC_WINDOW_PREVIEW.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/EliverLara/Nordic",
+    "ref": "be5bda37ba01139650e34238336e58e065d2f406",
+    "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Download and extract Nordic theme",
+        "commands": [
+          "mkdir -p ~/.themes",
+          "git clone https://github.com/EliverLara/Nordic.git ~/.themes/Nordic"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Apply theme via gsettings",
+        "commands": [
+          "gsettings set org.gnome.desktop.interface gtk-theme \"Nordic\""
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Verify theme configuration",
+        "commands": [
+          "gsettings get org.gnome.desktop.interface gtk-theme"
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER",
+      "action": "toggle-overview",
+      "effect": "Toggle GNOME Activities overview"
+    },
+    {
+      "keys": "SUPER + T",
+      "action": "exec, ptyxis",
+      "effect": "Open default terminal"
+    }
+  ],
+  "example": false
+}

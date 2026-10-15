@@ -1,0 +1,1380 @@
+[
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "Catppuccin Hyprland",
+    "author": {
+      "name": "Catppuccin Org",
+      "github": "catppuccin"
+    },
+    "lang": "en",
+    "summary": "Soothing pastel color themes (Mocha, Macchiato, Frappe, Latte) for Hyprland.",
+    "description": "The official Catppuccin color palette ported to Hyprland. Includes pre-configured color border variables, active window gradient rings, drop shadows, and matching styling across four pastel flavor tiers.",
+    "license": "MIT",
+    "version": "v1.3.0",
+    "updatedAt": "2026-10-12",
+    "distros": [
+      "arch",
+      "nixos",
+      "fedora",
+      "void"
+    ],
+    "wm": "hyprland",
+    "themeStyle": "catppuccin",
+    "displayServer": "wayland",
+    "tags": [
+      "catppuccin",
+      "hyprland",
+      "pastel",
+      "mocha",
+      "theming",
+      "wayland"
+    ],
+    "specs": {
+      "bar": "Waybar Catppuccin",
+      "terminal": "Kitty Catppuccin",
+      "launcher": "Rofi Catppuccin",
+      "notifications": "Dunst Mocha",
+      "theme": "Catppuccin Mocha Pastel",
+      "shell": "fish",
+      "editor": "Neovim",
+      "ramIdleMiB": 310,
+      "batteryProfile": true
+    },
+    "screenshots": [
+      {
+        "url": "https://raw.githubusercontent.com/catppuccin/hyprland/9f03f26fc10a00e00ec6b2ac2a41e44d16297548/assets/mocha.webp",
+        "alt": "Catppuccin Mocha theme preview for Hyprland",
+        "caption": "01_CATPPUCCIN_MOCHA.RAW"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/catppuccin/hyprland/9f03f26fc10a00e00ec6b2ac2a41e44d16297548/assets/macchiato.webp",
+        "alt": "Catppuccin Macchiato flavor preview",
+        "caption": "02_CATPPUCCIN_MACCHIATO.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/catppuccin/hyprland",
+      "ref": "9f03f26fc10a00e00ec6b2ac2a41e44d16297548",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Clone Catppuccin Hyprland repository",
+          "commands": [
+            "git clone https://github.com/catppuccin/hyprland.git ~/.config/hypr/catppuccin"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Source theme in hyprland.conf",
+          "commands": [
+            "echo \"source = ~/.config/hypr/catppuccin/themes/mocha.conf\" >> ~/.config/hypr/hyprland.conf"
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "Live reload Hyprland theme",
+          "commands": [
+            "hyprctl reload"
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER + Q",
+        "action": "exec, kitty",
+        "effect": "Open Kitty terminal"
+      },
+      {
+        "keys": "SUPER + C",
+        "action": "killactive",
+        "effect": "Close window"
+      }
+    ],
+    "example": false,
+    "id": "catppuccin/hyprland-theme",
+    "github": {
+      "owner": "catppuccin",
+      "repo": "hyprland",
+      "ref": "9f03f26fc10a00e00ec6b2ac2a41e44d16297548"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:27.707Z"
+  },
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "Elena Aphelion Desktop",
+    "author": {
+      "name": "elenapan",
+      "github": "elenapan"
+    },
+    "lang": "en",
+    "summary": "Iconic pastel r/unixporn aesthetic with handcrafted Lua widgets and exquisite typography.",
+    "description": "One of the most revered desktop rices in UNIX customization history. Features custom pastel aesthetic, modular AwesomeWM status panels, custom battery monitors, floating action centers, and custom icons.",
+    "license": "MIT",
+    "version": "v2.0.0",
+    "updatedAt": "2026-10-08",
+    "distros": [
+      "arch",
+      "void",
+      "gentoo"
+    ],
+    "wm": "awesome",
+    "themeStyle": "minimalist",
+    "displayServer": "x11",
+    "tags": [
+      "awesomewm",
+      "pastel",
+      "minimalist",
+      "unixporn",
+      "lua",
+      "x11"
+    ],
+    "specs": {
+      "bar": "AwesomeWM Custom Panels",
+      "terminal": "Urxvt / Kitty",
+      "launcher": "Rofi Pastel",
+      "notifications": "AwesomeWM Naughty",
+      "theme": "Pastel & Monochrome Clean",
+      "shell": "zsh",
+      "editor": "Neovim",
+      "ramIdleMiB": 190,
+      "batteryProfile": true
+    },
+    "screenshots": [
+      {
+        "url": "https://raw.githubusercontent.com/wiki/elenapan/dotfiles/assets/aphelion.png",
+        "alt": "Elena Aphelion desktop aesthetic preview",
+        "caption": "01_APHELION_PREVIEW.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/elenapan/dotfiles",
+      "ref": "6071ce92b128af8f4e5afbef4cc85dc0902d32a8",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Fetch repository",
+          "commands": [
+            "git clone https://github.com/elenapan/dotfiles.git ~/.dotfiles-elena"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Deploy ~/.config/awesome",
+          "commands": [
+            "cp -r ~/.dotfiles-elena/config/awesome ~/.config/awesome"
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "Reload window manager",
+          "commands": [
+            "awesome-client \"awesome.restart()\""
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER + RETURN",
+        "action": "exec, urxvt",
+        "effect": "Spawn terminal"
+      },
+      {
+        "keys": "SUPER + P",
+        "action": "exec, rofi -show run",
+        "effect": "Command prompt"
+      },
+      {
+        "keys": "SUPER + Q",
+        "action": "client:kill()",
+        "effect": "Close focused window"
+      }
+    ],
+    "example": false,
+    "id": "elenapan/dotfiles-awesome",
+    "github": {
+      "owner": "elenapan",
+      "repo": "dotfiles",
+      "ref": "6071ce92b128af8f4e5afbef4cc85dc0902d32a8"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:27.959Z"
+  },
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "Nordic Dark Frost Studio",
+    "author": {
+      "name": "Eliver Lara",
+      "github": "EliverLara"
+    },
+    "lang": "en",
+    "summary": "Dark, cold GTK and GNOME desktop theme created using the arctic Nord palette.",
+    "description": "Nordic is an arctic, north-bluish clean theme created for GTK, GNOME Shell, XFCE, and modern desktop environments. Reduces eye strain with calibrated contrast, soft borders, and minimalist window headers.",
+    "license": "GPL-3.0-only",
+    "version": "v2.2.0",
+    "updatedAt": "2026-10-11",
+    "distros": [
+      "arch",
+      "fedora",
+      "ubuntu",
+      "debian",
+      "opensuse"
+    ],
+    "wm": "gnome",
+    "themeStyle": "nord",
+    "displayServer": "both",
+    "tags": [
+      "nord",
+      "gnome",
+      "gtk",
+      "arctic",
+      "dark-theme",
+      "minimalist"
+    ],
+    "specs": {
+      "bar": "GNOME Shell Top Bar",
+      "terminal": "GNOME Console / Ptyxis",
+      "launcher": "GNOME App Overview",
+      "notifications": "GNOME Notification Center",
+      "theme": "Nordic Dark Polar Frost",
+      "shell": "bash",
+      "editor": "VSCode / Neovim",
+      "ramIdleMiB": 540,
+      "batteryProfile": true
+    },
+    "screenshots": [
+      {
+        "url": "https://raw.githubusercontent.com/EliverLara/Nordic/be5bda37ba01139650e34238336e58e065d2f406/Art/_banner-github.jpg",
+        "alt": "Nordic theme arctic dark banner",
+        "caption": "01_NORDIC_BANNER.RAW"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/EliverLara/Nordic/be5bda37ba01139650e34238336e58e065d2f406/Art/firefox-preview.jpg",
+        "alt": "Nordic Firefox and window styling preview",
+        "caption": "02_NORDIC_WINDOW_PREVIEW.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/EliverLara/Nordic",
+      "ref": "be5bda37ba01139650e34238336e58e065d2f406",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Download and extract Nordic theme",
+          "commands": [
+            "mkdir -p ~/.themes",
+            "git clone https://github.com/EliverLara/Nordic.git ~/.themes/Nordic"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Apply theme via gsettings",
+          "commands": [
+            "gsettings set org.gnome.desktop.interface gtk-theme \"Nordic\""
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "Verify theme configuration",
+          "commands": [
+            "gsettings get org.gnome.desktop.interface gtk-theme"
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER",
+        "action": "toggle-overview",
+        "effect": "Toggle GNOME Activities overview"
+      },
+      {
+        "keys": "SUPER + T",
+        "action": "exec, ptyxis",
+        "effect": "Open default terminal"
+      }
+    ],
+    "example": false,
+    "id": "eliverlara/nordic-gtk",
+    "github": {
+      "owner": "EliverLara",
+      "repo": "Nordic",
+      "ref": "be5bda37ba01139650e34238336e58e065d2f406"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:28.043Z"
+  },
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "Illogical Impulse Dots",
+    "author": {
+      "name": "end-4",
+      "github": "end-4"
+    },
+    "lang": "en",
+    "summary": "Usability-first, fluid and hyper-customized Wayland desktop configuration with Quickshell.",
+    "description": "An advanced, highly interactive Linux desktop environment combining Hyprland and Quickshell. Features bespoke Material Design 3 inspired widgets, integrated quick settings, media controls, animated workspace switchers, and deep keyboard navigation workflows.",
+    "license": "GPL-3.0-only",
+    "version": "v3.2.0",
+    "updatedAt": "2026-10-10",
+    "distros": [
+      "arch",
+      "fedora",
+      "nixos"
+    ],
+    "wm": "hyprland",
+    "themeStyle": "minimalist",
+    "displayServer": "wayland",
+    "tags": [
+      "hyprland",
+      "quickshell",
+      "wayland",
+      "material-you",
+      "blur",
+      "minimalist"
+    ],
+    "specs": {
+      "bar": "Quickshell Bar & Quick Settings",
+      "terminal": "Foot / Kitty",
+      "launcher": "Quickshell App Grid",
+      "notifications": "Quickshell Popups",
+      "theme": "Dynamic Material Colors",
+      "shell": "fish + Starship",
+      "editor": "Neovim",
+      "ramIdleMiB": 380,
+      "batteryProfile": true
+    },
+    "screenshots": [
+      {
+        "url": "https://raw.githubusercontent.com/end-4/dots-hyprland/2f2a376fdb2ad738bf55f693dd0b474b64bb0ab8/dots/.config/quickshell/ii/assets/images/default_wallpaper.png",
+        "alt": "Default aesthetic backdrop and styling for Illogical Impulse",
+        "caption": "01_DEFAULT_WALLPAPER.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/end-4/dots-hyprland",
+      "ref": "2f2a376fdb2ad738bf55f693dd0b474b64bb0ab8",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Clone repository dotfiles",
+          "commands": [
+            "git clone --depth 1 https://github.com/end-4/dots-hyprland.git ~/.config/hypr/dots"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Deploy Quickshell & Hyprland configs",
+          "commands": [
+            "cd ~/.config/hypr/dots",
+            "./setup.sh"
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "Reload compositor",
+          "commands": [
+            "hyprctl reload"
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER + RETURN",
+        "action": "exec, foot",
+        "effect": "Spawn terminal window"
+      },
+      {
+        "keys": "SUPER + D",
+        "action": "exec, quickshell -p appgrid",
+        "effect": "Toggle app drawer"
+      },
+      {
+        "keys": "SUPER + W",
+        "action": "killactive",
+        "effect": "Close focused client"
+      },
+      {
+        "keys": "SUPER + TAB",
+        "action": "exec, quickshell -p overview",
+        "effect": "Interactive window overview"
+      }
+    ],
+    "example": false,
+    "id": "end-4/dots-hyprland",
+    "github": {
+      "owner": "end-4",
+      "repo": "dots-hyprland",
+      "ref": "2f2a376fdb2ad738bf55f693dd0b474b64bb0ab8"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:28.135Z"
+  },
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "gh0stzk BSPWM Studio",
+    "author": {
+      "name": "gh0stzk",
+      "github": "gh0stzk"
+    },
+    "lang": "en",
+    "summary": "Legendary BSPWM environment with 18 distinct themes, live switcher and custom Polybar.",
+    "description": "One of the most comprehensive and refined BSPWM environments in the Linux customization world. Featuring 18 handcrafted color themes (Gruvbox, Nord, Dracula, Cyberpunk, Monochrome, Tokyo Night), dynamically generated Polybars, custom Rofi applets, Dunst notification themes, and instant keybindings.",
+    "license": "MIT",
+    "version": "v4.0.0",
+    "updatedAt": "2026-10-11",
+    "distros": [
+      "arch",
+      "debian",
+      "void",
+      "fedora"
+    ],
+    "wm": "bspwm",
+    "themeStyle": "gruvbox",
+    "displayServer": "x11",
+    "tags": [
+      "bspwm",
+      "polybar",
+      "rofi",
+      "gruvbox",
+      "x11",
+      "multi-theme"
+    ],
+    "specs": {
+      "bar": "Polybar (18 themes)",
+      "terminal": "Alacritty / Kitty",
+      "launcher": "Rofi Custom Applets",
+      "notifications": "Dunst",
+      "theme": "Gruvbox Retro & Modern",
+      "shell": "zsh",
+      "editor": "Neovim",
+      "ramIdleMiB": 210,
+      "batteryProfile": false
+    },
+    "screenshots": [
+      {
+        "url": "https://raw.githubusercontent.com/gh0stzk/dotfiles/8b3cd661dcc0ac07bc5719df6a978da64fb96d6d/config/bspwm/bars/bar01/preview-bar.webp",
+        "alt": "gh0stzk Polybar layout preview",
+        "caption": "01_POLYBAR_PREVIEW.RAW"
+      },
+      {
+        "url": "https://user-images.githubusercontent.com/67278339/221605474-21d65156-0cf7-485c-bd1a-40792c37817e.png",
+        "alt": "gh0stzk BSPWM full desktop showcase",
+        "caption": "02_DESKTOP_OVERVIEW.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/gh0stzk/dotfiles",
+      "ref": "8b3cd661dcc0ac07bc5719df6a978da64fb96d6d",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Clone dotfiles repository",
+          "commands": [
+            "git clone --depth=1 https://github.com/gh0stzk/dotfiles.git ~/.dotfiles"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Deploy configuration links",
+          "commands": [
+            "cp -r ~/.dotfiles/config/* ~/.config/",
+            "chmod +x ~/.config/bspwm/bspwmrc"
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "Reload BSPWM window manager",
+          "commands": [
+            "bspc wm -r"
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER + RETURN",
+        "action": "exec, alacritty",
+        "effect": "Open Alacritty terminal"
+      },
+      {
+        "keys": "SUPER + SPACE",
+        "action": "exec, rofi -show drun",
+        "effect": "Toggle app launcher"
+      },
+      {
+        "keys": "SUPER + W",
+        "action": "bspc node -c",
+        "effect": "Close focused window"
+      },
+      {
+        "keys": "SUPER + ALT + T",
+        "action": "exec, bspwm-themes.sh",
+        "effect": "Switch theme on the fly"
+      }
+    ],
+    "example": false,
+    "id": "gh0stzk/dotfiles-bspwm",
+    "github": {
+      "owner": "gh0stzk",
+      "repo": "dotfiles",
+      "ref": "8b3cd661dcc0ac07bc5719df6a978da64fb96d6d"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:28.202Z"
+  },
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "Hyprland Reference Compositor",
+    "author": {
+      "name": "Hyprland Team",
+      "github": "hyprwm"
+    },
+    "lang": "en",
+    "summary": "Official dynamic tiling Wayland compositor that doesn't sacrifice on the looks.",
+    "description": "The reference configuration for Hyprland: dynamic tiling, fluid bezier curves, rounded borders, GPU-accelerated blur, and comprehensive IPC controls. Serves as the high-performance foundation for modern Wayland desktops.",
+    "license": "BSD-3-Clause",
+    "version": "v0.45.0",
+    "updatedAt": "2026-10-15",
+    "distros": [
+      "arch",
+      "nixos",
+      "fedora",
+      "opensuse"
+    ],
+    "wm": "hyprland",
+    "themeStyle": "minimalist",
+    "displayServer": "wayland",
+    "tags": [
+      "hyprland",
+      "wayland",
+      "compositor",
+      "tiling",
+      "animations",
+      "gpu"
+    ],
+    "specs": {
+      "bar": "Waybar",
+      "terminal": "Kitty",
+      "launcher": "Wofi / Rofi-wayland",
+      "notifications": "Dunst",
+      "theme": "Hyprland Cyan & Charcoal",
+      "shell": "zsh",
+      "editor": "Neovim",
+      "ramIdleMiB": 290,
+      "batteryProfile": false
+    },
+    "screenshots": [
+      {
+        "url": "https://raw.githubusercontent.com/hyprwm/Hyprland/e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb/assets/install/wall0.png",
+        "alt": "Hyprland official anime minimalist backdrop",
+        "caption": "01_HYPRLAND_WALLPAPER.RAW"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/hyprwm/Hyprland/e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb/assets/install/lockdead.png",
+        "alt": "Hyprland lock screen and session assets",
+        "caption": "02_HYPRLAND_ASSET.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/hyprwm/Hyprland",
+      "ref": "e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Install Hyprland & Waybar",
+          "commands": [
+            "sudo pacman -S --needed hyprland waybar kitty wofi"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Set up basic ~/.config/hypr/hyprland.conf",
+          "commands": [
+            "mkdir -p ~/.config/hypr",
+            "cp /usr/share/hyprland/hyprland.conf ~/.config/hypr/"
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "Live reload compositor",
+          "commands": [
+            "hyprctl reload"
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER + Q",
+        "action": "exec, kitty",
+        "effect": "Open terminal"
+      },
+      {
+        "keys": "SUPER + C",
+        "action": "killactive",
+        "effect": "Close window"
+      },
+      {
+        "keys": "SUPER + M",
+        "action": "exit",
+        "effect": "Exit Hyprland session"
+      },
+      {
+        "keys": "SUPER + V",
+        "action": "togglefloating",
+        "effect": "Toggle window floating"
+      }
+    ],
+    "example": false,
+    "id": "hyprwm/hyprland-core",
+    "github": {
+      "owner": "hyprwm",
+      "repo": "Hyprland",
+      "ref": "e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:28.282Z"
+  },
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "i3 Tiling Classic",
+    "author": {
+      "name": "i3 Team",
+      "github": "i3"
+    },
+    "lang": "en",
+    "summary": "The iconic, rock-solid X11 tiling window manager designed for speed and clarity.",
+    "description": "The golden standard of manual tiling window managers. i3 is lightweight, extremely well-documented, clean, and runs reliably on any Linux distribution without needing composite GPU drivers.",
+    "license": "BSD-3-Clause",
+    "version": "v4.23.0",
+    "updatedAt": "2026-10-10",
+    "distros": [
+      "debian",
+      "ubuntu",
+      "arch",
+      "fedora",
+      "void",
+      "mint"
+    ],
+    "wm": "i3",
+    "themeStyle": "monochrome",
+    "displayServer": "x11",
+    "tags": [
+      "i3",
+      "x11",
+      "tiling",
+      "lightweight",
+      "speed",
+      "classic"
+    ],
+    "specs": {
+      "bar": "i3bar / i3status",
+      "terminal": "Xterm / Alacritty",
+      "launcher": "Dmenu",
+      "notifications": "Dunst",
+      "theme": "Classic Engineering Monochrome",
+      "shell": "bash",
+      "editor": "Vim",
+      "ramIdleMiB": 120,
+      "batteryProfile": true
+    },
+    "screenshots": [
+      {
+        "url": "https://raw.githubusercontent.com/i3/i3/be04c853ee7fa01a82a0c81f8217565395e2627c/docs/gaps1920.png",
+        "alt": "i3 desktop with clean window tiling and gaps",
+        "caption": "01_I3_GAPS_DESKTOP.RAW"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/i3/i3/be04c853ee7fa01a82a0c81f8217565395e2627c/docs/bigpicture.png",
+        "alt": "i3 multi-monitor container layout",
+        "caption": "02_I3_BIGPICTURE.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/i3/i3",
+      "ref": "be04c853ee7fa01a82a0c81f8217565395e2627c",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Install i3 package suite",
+          "commands": [
+            "sudo apt install i3 i3status dmenu alacritty dunst"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Initialize ~/.config/i3/config",
+          "commands": [
+            "mkdir -p ~/.config/i3",
+            "cp /etc/i3/config ~/.config/i3/config"
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "In-place restart of i3",
+          "commands": [
+            "i3-msg restart"
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER + RETURN",
+        "action": "exec, alacritty",
+        "effect": "Open terminal"
+      },
+      {
+        "keys": "SUPER + D",
+        "action": "exec, dmenu_run",
+        "effect": "Launch application menu"
+      },
+      {
+        "keys": "SUPER + SHIFT + Q",
+        "action": "kill",
+        "effect": "Kill window"
+      },
+      {
+        "keys": "SUPER + SHIFT + R",
+        "action": "restart",
+        "effect": "Restart i3 in place"
+      }
+    ],
+    "example": false,
+    "id": "i3/i3-tiling",
+    "github": {
+      "owner": "i3",
+      "repo": "i3",
+      "ref": "be04c853ee7fa01a82a0c81f8217565395e2627c"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:28.362Z"
+  },
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "JaKooLit Arch Hyprland",
+    "author": {
+      "name": "JaKooLit",
+      "github": "JaKooLit"
+    },
+    "lang": "en",
+    "summary": "Complete automated Arch Linux Hyprland installation and configuration setup.",
+    "description": "Battle-tested, turnkey Hyprland desktop environment tailored for Arch Linux and its derivatives. Bundles pre-configured Waybar layouts, Rofi styling, SDDM theme integration, automatic monitor hotplugging, and gaming/GPU driver optimizations.",
+    "license": "GPL-3.0-only",
+    "version": "v2.2.8",
+    "updatedAt": "2026-10-14",
+    "distros": [
+      "arch",
+      "endeavouros",
+      "manjaro"
+    ],
+    "wm": "hyprland",
+    "themeStyle": "nord",
+    "displayServer": "wayland",
+    "tags": [
+      "hyprland",
+      "arch",
+      "nord",
+      "waybar",
+      "rofi",
+      "automated-install"
+    ],
+    "specs": {
+      "bar": "Waybar (Configurable layouts)",
+      "terminal": "Kitty",
+      "launcher": "Rofi-wayland",
+      "notifications": "Dunst / Swaync",
+      "theme": "Nordic Dark Frost",
+      "shell": "zsh",
+      "editor": "Neovim / VSCode",
+      "ramIdleMiB": 350,
+      "batteryProfile": true
+    },
+    "screenshots": [
+      {
+        "url": "https://raw.githubusercontent.com/JaKooLit/Arch-Hyprland/7a3d6609b6419527c9ae79399a183b2ec6c1075d/assets/sddm.png",
+        "alt": "JaKooLit SDDM login manager theme",
+        "caption": "01_SDDM_THEME.RAW"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/JaKooLit/Arch-Hyprland/7a3d6609b6419527c9ae79399a183b2ec6c1075d/assets/fastfetch/arch.png",
+        "alt": "Arch Linux Fastfetch asset in JaKooLit setup",
+        "caption": "02_FASTFETCH_ARCH.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/JaKooLit/Arch-Hyprland",
+      "ref": "7a3d6609b6419527c9ae79399a183b2ec6c1075d",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Clone installer repository",
+          "commands": [
+            "git clone --depth=1 https://github.com/JaKooLit/Arch-Hyprland.git ~/Arch-Hyprland"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Run automated installation",
+          "commands": [
+            "cd ~/Arch-Hyprland",
+            "chmod +x install.sh",
+            "./install.sh"
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "Reboot into new desktop",
+          "commands": [
+            "systemctl reboot"
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER + RETURN",
+        "action": "exec, kitty",
+        "effect": "Open Kitty terminal"
+      },
+      {
+        "keys": "SUPER + Q",
+        "action": "killactive",
+        "effect": "Close focused window"
+      },
+      {
+        "keys": "SUPER + R",
+        "action": "exec, rofi -show drun",
+        "effect": "Launch application menu"
+      },
+      {
+        "keys": "SUPER + SHIFT + W",
+        "action": "exec, wallpaper-switcher.sh",
+        "effect": "Randomize desktop wallpaper"
+      }
+    ],
+    "example": false,
+    "id": "jakoolit/arch-hyprland",
+    "github": {
+      "owner": "JaKooLit",
+      "repo": "Arch-Hyprland",
+      "ref": "7a3d6609b6419527c9ae79399a183b2ec6c1075d"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:28.435Z"
+  },
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "HyDE Hyprdots",
+    "author": {
+      "name": "Prasanth Rangan",
+      "github": "prasanthrangan"
+    },
+    "lang": "en",
+    "summary": "Aesthetic, dynamic and minimal dotfiles for Arch Linux Hyprland with dynamic theming.",
+    "description": "HyDE (Hyprdots Desktop Environment) provides a modular, fluid and heavily customized Arch Linux environment on Hyprland. Features custom dynamic theme switching across 15+ styles, Waybar integration, Kitty terminal styling, Rofi-wayland app launcher, Dunst notifications, and streamlined pacman/AUR package workflows.",
+    "license": "GPL-3.0-only",
+    "version": "v2.4.0",
+    "updatedAt": "2026-10-12",
+    "distros": [
+      "arch",
+      "endeavouros"
+    ],
+    "wm": "hyprland",
+    "themeStyle": "catppuccin",
+    "displayServer": "wayland",
+    "tags": [
+      "hyprland",
+      "arch",
+      "waybar",
+      "catppuccin",
+      "dynamic-theming",
+      "kitty"
+    ],
+    "specs": {
+      "bar": "Waybar (Multi-theme)",
+      "terminal": "Kitty",
+      "launcher": "Rofi-wayland",
+      "notifications": "Dunst",
+      "theme": "Catppuccin Mocha / Dynamic",
+      "shell": "zsh + Starship",
+      "editor": "Neovim",
+      "ramIdleMiB": 420,
+      "batteryProfile": true
+    },
+    "screenshots": [
+      {
+        "url": "https://raw.githubusercontent.com/prasanthrangan/hyprdots/3c8b0dfb5e7f8e41a67b80463513f10d57cab1a4/Source/assets/hyde_banner.png",
+        "alt": "HyDE banner showcasing Hyprland Waybar and desktop theming",
+        "caption": "01_HYDE_BANNER.RAW"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/prasanthrangan/hyprdots/3c8b0dfb5e7f8e41a67b80463513f10d57cab1a4/Source/assets/theme_select_1.png",
+        "alt": "HyDE interactive theme selector with preview cards",
+        "caption": "02_THEME_SELECT.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/prasanthrangan/hyprdots",
+      "ref": "3c8b0dfb5e7f8e41a67b80463513f10d57cab1a4",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Prerequisites & Base Dependencies",
+          "commands": [
+            "sudo pacman -Syu --needed base-devel git",
+            "git clone --depth 1 https://github.com/prasanthrangan/hyprdots ~/HyDE"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Interactive Install Script Execution",
+          "commands": [
+            "cd ~/HyDE/Scripts",
+            "./install.sh"
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "Session Initialization",
+          "commands": [
+            "hyprctl reload"
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER + Q",
+        "action": "exec, kitty",
+        "effect": "Launch Kitty terminal"
+      },
+      {
+        "keys": "SUPER + C",
+        "action": "killactive",
+        "effect": "Close active window"
+      },
+      {
+        "keys": "SUPER + SPACE",
+        "action": "exec, rofi -show drun",
+        "effect": "Application launcher"
+      },
+      {
+        "keys": "SUPER + T",
+        "action": "exec, themeselect.sh",
+        "effect": "Open theme switcher"
+      },
+      {
+        "keys": "SUPER + L",
+        "action": "exec, swaylock",
+        "effect": "Lock screen"
+      }
+    ],
+    "example": false,
+    "id": "prasanthrangan/hyprdots",
+    "github": {
+      "owner": "prasanthrangan",
+      "repo": "hyprdots",
+      "ref": "3c8b0dfb5e7f8e41a67b80463513f10d57cab1a4"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:28.504Z"
+  },
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "Yoru AwesomeWM",
+    "author": {
+      "name": "rxyhn",
+      "github": "rxyhn"
+    },
+    "lang": "en",
+    "summary": "Clean, dark and minimalist AwesomeWM desktop with custom Lua widgets and Tokyo Night palette.",
+    "description": "A celebrated masterpiece of AwesomeWM configuration featuring bespoke Lua-driven status bars, music player controls, battery status meters, and silky window tiling. Built around the Tokyo Night color scheme for maximum nighttime comfort and clarity.",
+    "license": "GPL-3.0-only",
+    "version": "v1.0.0",
+    "updatedAt": "2026-10-09",
+    "distros": [
+      "arch",
+      "debian",
+      "ubuntu"
+    ],
+    "wm": "awesome",
+    "themeStyle": "tokyo-night",
+    "displayServer": "x11",
+    "tags": [
+      "awesomewm",
+      "tokyo-night",
+      "lua",
+      "minimalist",
+      "x11",
+      "alacritty"
+    ],
+    "specs": {
+      "bar": "AwesomeWM Native Wibox",
+      "terminal": "Alacritty",
+      "launcher": "Rofi Tokyo Night",
+      "notifications": "Naughty (Lua native)",
+      "theme": "Tokyo Night Dark",
+      "shell": "zsh",
+      "editor": "Neovim",
+      "ramIdleMiB": 230,
+      "batteryProfile": true
+    },
+    "screenshots": [
+      {
+        "url": "https://user-images.githubusercontent.com/93292023/179895783-e4e96572-821c-4684-8b22-886f508d5e8e.png",
+        "alt": "Yoru AwesomeWM desktop with dashboard and music widget",
+        "caption": "01_YORU_DASHBOARD.RAW"
+      },
+      {
+        "url": "https://user-images.githubusercontent.com/93292023/179895825-5dade677-4fc6-4345-a564-719a649c0f2d.png",
+        "alt": "Yoru tiling window grid layout",
+        "caption": "02_YORU_TILING.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/rxyhn/yoru",
+      "ref": "041a2d7e5b44d5bbedec9664af31baff1ba5033b",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Install AwesomeWM and Lua dependencies",
+          "commands": [
+            "sudo pacman -S --needed awesome rofi alacritty picom feh",
+            "git clone --depth=1 https://github.com/rxyhn/yoru.git ~/.config/awesome"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Configure permissions and assets",
+          "commands": [
+            "cd ~/.config/awesome",
+            "chmod +x ~/.config/awesome/scripts/*"
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "Restart AwesomeWM session",
+          "commands": [
+            "awesome-client \"awesome.restart()\""
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER + RETURN",
+        "action": "exec, alacritty",
+        "effect": "Launch terminal"
+      },
+      {
+        "keys": "SUPER + D",
+        "action": "exec, rofi -show drun",
+        "effect": "Open launcher"
+      },
+      {
+        "keys": "SUPER + SHIFT + C",
+        "action": "kill",
+        "effect": "Kill window"
+      },
+      {
+        "keys": "SUPER + SHIFT + R",
+        "action": "restart",
+        "effect": "Restart AwesomeWM"
+      }
+    ],
+    "example": false,
+    "id": "rxyhn/yoru-awesome",
+    "github": {
+      "owner": "rxyhn",
+      "repo": "yoru",
+      "ref": "041a2d7e5b44d5bbedec9664af31baff1ba5033b"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:28.574Z"
+  },
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "Sway Wayland Workstation",
+    "author": {
+      "name": "Sway Developers",
+      "github": "swaywm"
+    },
+    "lang": "en",
+    "summary": "Drop-in replacement for the i3 window manager designed specifically for Wayland.",
+    "description": "Sway provides a rock-solid, standards-compliant tiling Wayland environment. It works seamlessly with existing i3 configurations while offering tearing-free rendering, fractional scaling, and ultra-low CPU footprint.",
+    "license": "MIT",
+    "version": "v1.10.0",
+    "updatedAt": "2026-10-13",
+    "distros": [
+      "arch",
+      "debian",
+      "fedora",
+      "void",
+      "alpine"
+    ],
+    "wm": "sway",
+    "themeStyle": "minimalist",
+    "displayServer": "wayland",
+    "tags": [
+      "sway",
+      "i3",
+      "wayland",
+      "minimalist",
+      "rock-solid",
+      "foot"
+    ],
+    "specs": {
+      "bar": "Swaybar / Waybar",
+      "terminal": "Foot",
+      "launcher": "Dmenu / Wofi",
+      "notifications": "Mako",
+      "theme": "Sway Charcoal Minimal",
+      "shell": "bash",
+      "editor": "Vim",
+      "ramIdleMiB": 180,
+      "batteryProfile": true
+    },
+    "screenshots": [
+      {
+        "url": "https://raw.githubusercontent.com/swaywm/sway/1652c54b73f67df17b7b4ab0b0f7048204aa8104/assets/Sway_Logo+Text_Ver1_1500x716.png",
+        "alt": "Sway Wayland compositor official branding and architecture",
+        "caption": "01_SWAY_OVERVIEW.RAW"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/swaywm/sway/1652c54b73f67df17b7b4ab0b0f7048204aa8104/assets/Sway_Tree.png",
+        "alt": "Sway internal container layout tree schema",
+        "caption": "02_SWAY_TREE.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/swaywm/sway",
+      "ref": "1652c54b73f67df17b7b4ab0b0f7048204aa8104",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Install Sway compositor and utils",
+          "commands": [
+            "sudo pacman -S --needed sway swaybg swayidle swaylock foot dmenu"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Copy default sway config",
+          "commands": [
+            "mkdir -p ~/.config/sway",
+            "cp /etc/sway/config ~/.config/sway/config"
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "Reload Sway configuration",
+          "commands": [
+            "swaymsg reload"
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER + RETURN",
+        "action": "exec, foot",
+        "effect": "Spawn Foot terminal"
+      },
+      {
+        "keys": "SUPER + D",
+        "action": "exec, dmenu_path | dmenu | xargs swaymsg exec --",
+        "effect": "Launch program"
+      },
+      {
+        "keys": "SUPER + SHIFT + Q",
+        "action": "kill",
+        "effect": "Close focused window"
+      },
+      {
+        "keys": "SUPER + SHIFT + C",
+        "action": "reload",
+        "effect": "Reload Sway config"
+      }
+    ],
+    "example": false,
+    "id": "swaywm/sway-core",
+    "github": {
+      "owner": "swaywm",
+      "repo": "sway",
+      "ref": "1652c54b73f67df17b7b4ab0b0f7048204aa8104"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:28.654Z"
+  },
+  {
+    "$schema": "../../schema/config.schema.json",
+    "name": "Niri Scrollable Wayland",
+    "author": {
+      "name": "YaLTeR",
+      "github": "YaLTeR"
+    },
+    "lang": "en",
+    "summary": "Next-generation scrollable-tiling Wayland compositor inspired by paper tape and infinite screens.",
+    "description": "Niri reimagines desktop tiling by placing windows in an infinitely expanding horizontal ribbon. Windows never tile down into microscopic slivers. Built entirely in Rust with smooth animations, Waybar support, and touch gesture integration.",
+    "license": "GPL-3.0-or-later",
+    "version": "v0.1.10",
+    "updatedAt": "2026-10-14",
+    "distros": [
+      "arch",
+      "fedora",
+      "nixos",
+      "debian"
+    ],
+    "wm": "niri",
+    "themeStyle": "monochrome",
+    "displayServer": "wayland",
+    "tags": [
+      "niri",
+      "wayland",
+      "scrollable-tiling",
+      "rust",
+      "modern",
+      "gestures"
+    ],
+    "specs": {
+      "bar": "Waybar / Fuzzel",
+      "terminal": "Alacritty / Foot",
+      "launcher": "Fuzzel",
+      "notifications": "Mako / Dunst",
+      "theme": "Clean Monochrome Ribbon",
+      "shell": "fish / bash",
+      "editor": "Neovim / Helix",
+      "ramIdleMiB": 240,
+      "batteryProfile": true
+    },
+    "screenshots": [
+      {
+        "url": "https://raw.githubusercontent.com/YaLTeR/niri/fc9e8c425e2267d877a65918f030c86f3c698179/docs/wiki/img/block-out-from-screencast.png",
+        "alt": "Niri scrollable horizontal ribbon window overview",
+        "caption": "01_NIRI_RIBBON.RAW"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/YaLTeR/niri/fc9e8c425e2267d877a65918f030c86f3c698179/docs/wiki/img/blur.png",
+        "alt": "Niri backdrop blur and window border radius effects",
+        "caption": "02_NIRI_BLUR_EFFECTS.RAW"
+      }
+    ],
+    "source": {
+      "repo": "https://github.com/YaLTeR/niri",
+      "ref": "fc9e8c425e2267d877a65918f030c86f3c698179",
+      "readme": "README.md"
+    },
+    "install": {
+      "steps": [
+        {
+          "id": "deps",
+          "title": "Install Niri via package manager",
+          "commands": [
+            "sudo pacman -S --needed niri xdg-desktop-portal-gnome fuzzel waybar"
+          ]
+        },
+        {
+          "id": "dotfiles",
+          "title": "Generate baseline configuration",
+          "commands": [
+            "mkdir -p ~/.config/niri",
+            "cp /etc/niri/config.kdl ~/.config/niri/config.kdl"
+          ]
+        },
+        {
+          "id": "reload",
+          "title": "Validate configuration syntax",
+          "commands": [
+            "niri validate"
+          ]
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "keys": "SUPER + T",
+        "action": "spawn, alacritty",
+        "effect": "Open terminal"
+      },
+      {
+        "keys": "SUPER + D",
+        "action": "spawn, fuzzel",
+        "effect": "App launcher"
+      },
+      {
+        "keys": "SUPER + LEFT",
+        "action": "focus-column-left",
+        "effect": "Scroll focus left"
+      },
+      {
+        "keys": "SUPER + RIGHT",
+        "action": "focus-column-right",
+        "effect": "Scroll focus right"
+      },
+      {
+        "keys": "SUPER + Q",
+        "action": "close-window",
+        "effect": "Close active window"
+      }
+    ],
+    "example": false,
+    "id": "yalter/niri-desktop",
+    "github": {
+      "owner": "YaLTeR",
+      "repo": "niri",
+      "ref": "fc9e8c425e2267d877a65918f030c86f3c698179"
+    },
+    "readmeHtml": "<div class=\"terminal-callout text-red-600 p-4 border border-black\">[WARN] README could not be fetched: GitHub API README error HTTP 403: rate limit exceeded</div>",
+    "discoveredScreenshots": [],
+    "ingestedAt": "2026-10-14T21:52:28.722Z"
+  }
+]

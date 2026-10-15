@@ -1,0 +1,523 @@
+---
+import Base from '../layouts/Base.astro';
+import ConfigCard from '../components/ConfigCard.astro';
+import FilterSidebar from '../components/FilterSidebar.astro';
+import { getCollection } from 'astro:content';
+import { getVotesForConfig } from '../lib/votes';
+import { useTranslations } from '../lib/i18n';
+
+const locale = 'en';
+const t = useTranslations(locale);
+
+const allConfigs = await getCollection('configs');
+
+const counts = {
+  wms: {} as Record<string, number>,
+  styles: {} as Record<string, number>,
+  distros: {} as Record<string, number>,
+  ramUnder300: 0,
+  battery: 0,
+};
+
+for (const c of allConfigs) {
+  const data = c.data;
+  counts.wms[data.wm] = (counts.wms[data.wm] || 0) + 1;
+  const style = data.themeStyle || 'minimalist';
+  counts.styles[style] = (counts.styles[style] || 0) + 1;
+  for (const d of data.distros) {
+    counts.distros[d] = (counts.distros[d] || 0) + 1;
+  }
+  if (data.specs.ramIdleMiB && data.specs.ramIdleMiB < 300) {
+    counts.ramUnder300++;
+  }
+  if (data.specs.batteryProfile) {
+    counts.battery++;
+  }
+}
+
+const sortedConfigs = allConfigs.slice().sort((a, b) => {
+  return getVotesForConfig(b.id) - getVotesForConfig(a.id);
+});
+---
+
+<Base
+  title={t('nav.exploreAll')}
+  locale={locale}
+  statusPrefix="[STATUS: "
+  statusInitial="CATALOGUE"
+  statusFinal="SHOW CASE"
+>
+  <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+    <!-- Header Breadcrumb & Status line -->
+    <div class="bg-white border border-zinc-200 rounded-xl p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs">
+      <div class="flex items-center gap-2 text-zinc-600 flex-wrap">
+        <h1 class="text-xs sm:text-sm font-mono font-bold text-zinc-900 inline" data-page-title="true">{t('catalogue.breadcrumb')}</h1>
+        <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold">
+          {t('catalogue.liveSync')}
+        </span>
+      </div>
+      <div class="flex flex-wrap items-center gap-3 text-zinc-500 my-1 sm:my-0 text-xs">
+        <span>{t('catalogue.totalRecords')} <strong class="text-zinc-900">{allConfigs.length}</strong></span>
+        <span>•</span>
+        <span>STATUS: <strong class="text-emerald-600 font-semibold text-xs">VERIFIED_REPRODUCIBLE</strong></span>
+      </div>
+    </div>
+
+    <!-- Mobile Filter Toggle Button -->
+    <div class="lg:hidden flex items-center justify-between gap-3">
+      <button
+        id="btn-toggle-filters-mobile"
+        type="button"
+        class="flex-1 min-h-[44px] flex items-center justify-between px-4 py-2.5 bg-white border border-zinc-200 rounded-lg text-xs font-mono font-semibold text-zinc-900 shadow-xs cursor-pointer hover:bg-zinc-50 transition-colors"
+      >
+        <div class="flex items-center gap-2">
+          <span>⚙️</span>
+          <span>Search Filters</span>
+          <span id="mobile-filter-badge" class="px-2 py-0.5 rounded-full bg-zinc-900 text-white text-[10px] font-mono">0</span>
+        </div>
+        <span id="mobile-filter-chevron" class="text-zinc-500 font-bold transition-transform">▼</span>
+      </button>
+    </div>
+
+    <!-- Main Layout: Sidebar + List -->
+    <div class="flex flex-col lg:flex-row gap-6 items-start">
+      <!-- Facets Sidebar Wrapper (collapsible on mobile, fixed on desktop) -->
+      <div id="filters-sidebar-wrapper" class="hidden lg:block w-full lg:w-72 shrink-0">
+        <FilterSidebar counts={counts} locale={locale} />
+      </div>
+
+      <!-- Results Main Content -->
+      <main class="flex-1 w-full flex flex-col gap-5">
+        <!-- Live Instant Search Bar & Favorites Toggle -->
+        <div class="bg-white border border-zinc-200 rounded-xl p-3 sm:p-4 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div class="relative flex-1 flex items-center bg-zinc-50 border border-zinc-300 rounded-lg focus-within:border-zinc-900 focus-within:ring-1 focus-within:ring-zinc-900 transition-all">
+            <span class="pl-3 text-zinc-400 select-none">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </span>
+            <input
+              id="live-catalogue-search"
+              type="text"
+              placeholder={t('catalogue.searchPlaceholder')}
+              class="w-full bg-transparent pl-2.5 pr-20 py-2 font-mono text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none"
+            />
+            <div class="absolute right-2 flex items-center gap-1.5">
+              <button
+                id="btn-clear-search"
+                type="button"
+                class="hidden px-1.5 py-0.5 font-mono text-xs text-zinc-400 hover:text-zinc-900 font-bold cursor-pointer"
+                title="Clear search (ESC)"
+              >
+                ✕
+              </button>
+              <button
+                type="button"
+                id="catalogue-grep-submit"
+                aria-label="Filter"
+                class="hidden items-center justify-center px-1.5 py-0.5 font-mono text-[11px] font-bold text-zinc-900 hover:text-white bg-zinc-200 hover:bg-zinc-900 rounded border border-zinc-300 transition-none cursor-pointer select-none instant-snap"
+              >
+                [ ↵ ]
+              </button>
+            </div>
+          </div>
+
+          <button
+            id="btn-filter-favs"
+            type="button"
+            class="px-3.5 py-2 min-h-[44px] rounded-lg font-mono text-xs font-semibold uppercase border border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-100 cursor-pointer shrink-0 transition-all shadow-xs flex items-center justify-center"
+          >
+            ★ {t('catalogue.favoritesOnly')}
+          </button>
+        </div>
+
+        <!-- Results Top Bar -->
+        <div class="bg-white border border-zinc-200 rounded-xl p-3.5 shadow-xs flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+            <span class="font-bold text-zinc-900" id="results-count-label">
+              {allConfigs.length} {t('catalogue.interfacesIndexed')}
+            </span>
+          </div>
+
+          <div id="active-filters-chips" class="flex flex-wrap items-center gap-1.5"></div>
+
+          <div class="flex items-center gap-2 ml-auto">
+            <span class="text-zinc-500">{t('catalogue.sortBy')}</span>
+            <select
+              id="sort-select"
+              class="border border-zinc-300 rounded-md bg-white px-2.5 py-1 font-mono text-xs font-semibold text-zinc-800 shadow-xs cursor-pointer outline-none focus:border-zinc-900"
+            >
+              <option value="votes">{t('catalogue.sortVotes')}</option>
+              <option value="recent">{t('catalogue.sortRecent')}</option>
+              <option value="ram">{t('catalogue.sortRam')}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Cards List Container -->
+        <div id="cards-container" class="flex flex-col gap-4" data-pagefind-ignore>
+          {sortedConfigs.map((c) => (
+            <div
+              class="config-card-item"
+              data-id={c.id}
+              data-name={c.data.name.toLowerCase()}
+              data-author={c.data.author.name.toLowerCase()}
+              data-summary={c.data.summary.toLowerCase()}
+              data-wm={c.data.wm}
+              data-style={c.data.themeStyle || 'minimalist'}
+              data-distros={c.data.distros.join(',')}
+              data-ram={c.data.specs.ramIdleMiB || 99999}
+              data-battery={c.data.specs.batteryProfile ? 'true' : 'false'}
+              data-tags={c.data.tags.join(',')}
+              data-votes={getVotesForConfig(c.id)}
+              data-date={c.data.updatedAt}
+            >
+              <ConfigCard id={c.id} data={c.data} locale={locale} />
+            </div>
+          ))}
+        </div>
+
+        <!-- Empty state message -->
+        <div
+          id="no-results-msg"
+          class="hidden bg-white border border-zinc-200 rounded-xl p-8 text-center font-mono text-sm text-zinc-900 shadow-xs"
+        >
+          <p class="font-bold text-base mb-1 text-zinc-900">🔍 {t('catalogue.noResults')}</p>
+          <p class="text-xs text-zinc-500 mb-4">Try clearing your filters or broadening your search keywords.</p>
+          <button
+            id="btn-empty-reset"
+            type="button"
+            class="btn-solid"
+          >
+            {t('catalogue.reset')}
+          </button>
+        </div>
+      </main>
+    </div>
+  </div>
+</Base>
+
+<script>
+  function setupFilters() {
+    const cardItems = Array.from(document.querySelectorAll<HTMLElement>('.config-card-item'));
+    const countLabel = document.getElementById('results-count-label');
+    const noResultsMsg = document.getElementById('no-results-msg');
+    const sortSelect = document.getElementById('sort-select') as HTMLSelectElement | null;
+    const chipsContainer = document.getElementById('active-filters-chips');
+    const searchInput = document.getElementById('live-catalogue-search') as HTMLInputElement | null;
+    const clearSearchBtn = document.getElementById('btn-clear-search');
+    const grepSubmitBtn = document.getElementById('catalogue-grep-submit');
+    const favsBtn = document.getElementById('btn-filter-favs');
+    const resetEmptyBtn = document.getElementById('btn-empty-reset');
+    const resetSidebarBtn = document.getElementById('btn-reset-filters');
+
+    function updateGrepState() {
+      const val = searchInput?.value || '';
+      if (val.length > 0) {
+        grepSubmitBtn?.classList.remove('hidden');
+        grepSubmitBtn?.classList.add('inline-flex');
+        clearSearchBtn?.classList.remove('hidden');
+      } else {
+        grepSubmitBtn?.classList.add('hidden');
+        grepSubmitBtn?.classList.remove('inline-flex');
+        clearSearchBtn?.classList.add('hidden');
+      }
+    }
+
+    const checkboxes = Array.from(document.querySelectorAll<HTMLInputElement>('.filter-checkbox'));
+
+    function getSavedFavorites(): string[] {
+      try {
+        const stored = localStorage.getItem('0xtsoa_favorites');
+        return stored ? JSON.parse(stored) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function readStateFromUrl() {
+      const p = new URLSearchParams(window.location.search);
+      const selectedWms = p.getAll('wm');
+      const selectedStyles = p.getAll('style');
+      const selectedDistros = p.getAll('distro');
+      const ramMax = p.get('ramMax');
+      const battery = p.get('battery') === 'true';
+      const tag = p.get('tag');
+      const q = p.get('q') || '';
+      const favOnly = p.get('fav') === 'true';
+      const sort = p.get('sort') || 'votes';
+
+      checkboxes.forEach((cb) => {
+        if (cb.name === 'wm') cb.checked = selectedWms.includes(cb.value);
+        if (cb.name === 'style') cb.checked = selectedStyles.includes(cb.value);
+        if (cb.name === 'distro') cb.checked = selectedDistros.includes(cb.value);
+        if (cb.name === 'ramMax') cb.checked = ramMax === cb.value;
+        if (cb.name === 'battery') cb.checked = battery;
+      });
+
+      if (searchInput && searchInput.value !== q) {
+        searchInput.value = q;
+      }
+      updateGrepState();
+
+      if (favsBtn) {
+        if (favOnly) {
+          favsBtn.classList.add('bg-black', 'text-white');
+          favsBtn.classList.remove('bg-white', 'text-black');
+        } else {
+          favsBtn.classList.remove('bg-black', 'text-white');
+          favsBtn.classList.add('bg-white', 'text-black');
+        }
+      }
+
+      if (sortSelect && sort) sortSelect.value = sort;
+
+      applyFilter(selectedWms, selectedStyles, selectedDistros, ramMax ? parseInt(ramMax, 10) : null, battery, tag, q, favOnly, sort);
+    }
+
+    function writeStateToUrl() {
+      const p = new URLSearchParams();
+      checkboxes.forEach((cb) => {
+        if (cb.checked) {
+          p.append(cb.name, cb.value);
+        }
+      });
+
+      if (searchInput && searchInput.value.trim()) {
+        p.set('q', searchInput.value.trim());
+      }
+
+      const currentP = new URLSearchParams(window.location.search);
+      if (currentP.get('tag')) p.set('tag', currentP.get('tag')!);
+      if (currentP.get('fav') === 'true') p.set('fav', 'true');
+
+      if (sortSelect && sortSelect.value !== 'votes') {
+        p.set('sort', sortSelect.value);
+      }
+
+      const newQuery = p.toString() ? `?${p.toString()}` : window.location.pathname;
+      window.history.replaceState({}, '', newQuery);
+      readStateFromUrl();
+    }
+
+    function applyFilter(
+      wms: string[],
+      styles: string[],
+      distros: string[],
+      ramMax: number | null,
+      battery: boolean,
+      tag: string | null,
+      query: string,
+      favOnly: boolean,
+      sort: string,
+    ) {
+      let visibleCount = 0;
+      const savedFavorites = getSavedFavorites();
+
+      if (chipsContainer) {
+        chipsContainer.innerHTML = '';
+        const allActive: { label: string; onRemove: () => void }[] = [];
+
+        wms.forEach((w) => allActive.push({ label: `wm:${w}`, onRemove: () => uncheck('wm', w) }));
+        styles.forEach((s) => allActive.push({ label: `style:${s}`, onRemove: () => uncheck('style', s) }));
+        distros.forEach((d) => allActive.push({ label: `distro:${d}`, onRemove: () => uncheck('distro', d) }));
+        if (ramMax) allActive.push({ label: `RAM < ${ramMax} MiB`, onRemove: () => uncheck('ramMax', String(ramMax)) });
+        if (battery) allActive.push({ label: 'battery-mode', onRemove: () => uncheck('battery', 'true') });
+        if (tag) allActive.push({ label: `#${tag}`, onRemove: () => removeQueryParam('tag') });
+        if (query) allActive.push({ label: `"${query}"`, onRemove: () => clearSearch() });
+        if (favOnly) allActive.push({ label: '★ favorites', onRemove: () => toggleFavFilter() });
+
+        allActive.forEach((item) => {
+          const chip = document.createElement('span');
+          chip.className = 'px-2.5 py-1 bg-zinc-900 text-white font-mono text-[11px] font-semibold rounded-md flex items-center gap-1.5 cursor-pointer hover:bg-zinc-800 transition-colors shadow-xs';
+          chip.innerHTML = `<span>${item.label}</span> <span class="text-zinc-400 hover:text-white">✕</span>`;
+          chip.onclick = item.onRemove;
+          chipsContainer.appendChild(chip);
+        });
+
+        const mobileBadge = document.getElementById('mobile-filter-badge');
+        if (mobileBadge) {
+          mobileBadge.textContent = String(allActive.length);
+        }
+      }
+
+      cardItems.forEach((card) => {
+        const cardId = card.getAttribute('data-id') || '';
+        const cardWm = card.getAttribute('data-wm') || '';
+        const cardStyle = card.getAttribute('data-style') || 'minimalist';
+        const cardDistros = (card.getAttribute('data-distros') || '').split(',');
+        const cardRam = parseInt(card.getAttribute('data-ram') || '99999', 10);
+        const cardBattery = card.getAttribute('data-battery') === 'true';
+        const cardTags = (card.getAttribute('data-tags') || '').split(',');
+        const cardName = card.getAttribute('data-name') || '';
+        const cardAuthor = card.getAttribute('data-author') || '';
+        const cardSummary = card.getAttribute('data-summary') || '';
+
+        let match = true;
+
+        if (wms.length > 0 && !wms.includes(cardWm)) match = false;
+        if (styles.length > 0 && !styles.includes(cardStyle)) match = false;
+        if (distros.length > 0 && !cardDistros.includes('any') && !distros.some((d) => cardDistros.includes(d))) match = false;
+        if (ramMax !== null && cardRam > ramMax) match = false;
+        if (battery && !cardBattery) match = false;
+        if (tag && !cardTags.includes(tag.toLowerCase())) match = false;
+        if (favOnly && !savedFavorites.includes(cardId)) match = false;
+
+        if (query && query.trim()) {
+          const qLower = query.toLowerCase().trim();
+          const textMatch =
+            cardName.includes(qLower) ||
+            cardAuthor.includes(qLower) ||
+            cardSummary.includes(qLower) ||
+            cardWm.includes(qLower) ||
+            cardStyle.includes(qLower) ||
+            cardTags.some((t) => t.includes(qLower));
+          if (!textMatch) match = false;
+        }
+
+        if (match) {
+          card.style.display = '';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      const container = document.getElementById('cards-container');
+      if (container) {
+        const sorted = cardItems.slice().sort((a, b) => {
+          if (sort === 'recent') {
+            const dateA = new Date(a.getAttribute('data-date') || '1970').getTime();
+            const dateB = new Date(b.getAttribute('data-date') || '1970').getTime();
+            return dateB - dateA;
+          } else if (sort === 'ram') {
+            const ramA = parseInt(a.getAttribute('data-ram') || '99999', 10);
+            const ramB = parseInt(b.getAttribute('data-ram') || '99999', 10);
+            return ramA - ramB;
+          } else {
+            const votesA = parseInt(a.getAttribute('data-votes') || '0', 10);
+            const votesB = parseInt(b.getAttribute('data-votes') || '0', 10);
+            return votesB - votesA;
+          }
+        });
+        sorted.forEach((el) => container.appendChild(el));
+      }
+
+      if (countLabel) {
+        countLabel.textContent = `${visibleCount} interfaces indexed`;
+      }
+
+      if (noResultsMsg) {
+        if (visibleCount === 0) {
+          noResultsMsg.classList.remove('hidden');
+        } else {
+          noResultsMsg.classList.add('hidden');
+        }
+      }
+    }
+
+    function uncheck(name: string, value: string) {
+      checkboxes.forEach((cb) => {
+        if (cb.name === name && cb.value === value) cb.checked = false;
+      });
+      writeStateToUrl();
+    }
+
+    function clearSearch() {
+      if (searchInput) searchInput.value = '';
+      updateGrepState();
+      removeQueryParam('q');
+    }
+
+    function toggleFavFilter() {
+      const p = new URLSearchParams(window.location.search);
+      if (p.get('fav') === 'true') {
+        p.delete('fav');
+      } else {
+        p.set('fav', 'true');
+      }
+      const newQuery = p.toString() ? `?${p.toString()}` : window.location.pathname;
+      window.history.replaceState({}, '', newQuery);
+      readStateFromUrl();
+    }
+
+    function removeQueryParam(key: string) {
+      const p = new URLSearchParams(window.location.search);
+      p.delete(key);
+      const newQuery = p.toString() ? `?${p.toString()}` : window.location.pathname;
+      window.history.replaceState({}, '', newQuery);
+      readStateFromUrl();
+    }
+
+    function resetAllFilters() {
+      checkboxes.forEach((cb) => (cb.checked = false));
+      if (searchInput) searchInput.value = '';
+      updateGrepState();
+      window.history.replaceState({}, '', window.location.pathname);
+      readStateFromUrl();
+    }
+
+    checkboxes.forEach((cb) => cb.addEventListener('change', writeStateToUrl));
+    sortSelect?.addEventListener('change', writeStateToUrl);
+
+    let searchDebounceTimer: ReturnType<typeof setTimeout>;
+    searchInput?.addEventListener('input', () => {
+      updateGrepState();
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(writeStateToUrl, 180);
+    });
+
+    searchInput?.addEventListener('keydown', (e) => {
+      // Snap [ ↵ ] into place immediately on very first character keystroke
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        grepSubmitBtn?.classList.remove('hidden');
+        grepSubmitBtn?.classList.add('inline-flex');
+      }
+      if (e.key === 'Enter') {
+        clearTimeout(searchDebounceTimer);
+        writeStateToUrl();
+      }
+      if (e.key === 'Escape') {
+        clearSearch();
+      }
+    });
+
+    grepSubmitBtn?.addEventListener('click', () => {
+      clearTimeout(searchDebounceTimer);
+      writeStateToUrl();
+    });
+
+    clearSearchBtn?.addEventListener('click', clearSearch);
+    favsBtn?.addEventListener('click', toggleFavFilter);
+    resetEmptyBtn?.addEventListener('click', resetAllFilters);
+    resetSidebarBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      resetAllFilters();
+    });
+
+    // Mobile filter drawer toggle
+    const toggleMobileBtn = document.getElementById('btn-toggle-filters-mobile');
+    const sidebarWrapper = document.getElementById('filters-sidebar-wrapper');
+    const chevron = document.getElementById('mobile-filter-chevron');
+
+    if (toggleMobileBtn && sidebarWrapper && !toggleMobileBtn.dataset.bound) {
+      toggleMobileBtn.dataset.bound = 'true';
+      toggleMobileBtn.addEventListener('click', () => {
+        const isHidden = sidebarWrapper.classList.contains('hidden');
+        if (isHidden) {
+          sidebarWrapper.classList.remove('hidden');
+          if (chevron) chevron.textContent = '▲';
+        } else {
+          sidebarWrapper.classList.add('hidden');
+          if (chevron) chevron.textContent = '▼';
+        }
+      });
+    }
+
+    readStateFromUrl();
+  }
+
+  setupFilters();
+  document.addEventListener('astro:page-load', setupFilters);
+</script>

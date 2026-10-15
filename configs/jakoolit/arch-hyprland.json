@@ -1,0 +1,108 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "JaKooLit Arch Hyprland",
+  "author": {
+    "name": "JaKooLit",
+    "github": "JaKooLit"
+  },
+  "lang": "en",
+  "summary": "Complete automated Arch Linux Hyprland installation and configuration setup.",
+  "description": "Battle-tested, turnkey Hyprland desktop environment tailored for Arch Linux and its derivatives. Bundles pre-configured Waybar layouts, Rofi styling, SDDM theme integration, automatic monitor hotplugging, and gaming/GPU driver optimizations.",
+  "license": "GPL-3.0-only",
+  "version": "v2.2.8",
+  "updatedAt": "2026-10-14",
+  "distros": [
+    "arch",
+    "endeavouros",
+    "manjaro"
+  ],
+  "wm": "hyprland",
+  "themeStyle": "nord",
+  "displayServer": "wayland",
+  "tags": [
+    "hyprland",
+    "arch",
+    "nord",
+    "waybar",
+    "rofi",
+    "automated-install"
+  ],
+  "specs": {
+    "bar": "Waybar (Configurable layouts)",
+    "terminal": "Kitty",
+    "launcher": "Rofi-wayland",
+    "notifications": "Dunst / Swaync",
+    "theme": "Nordic Dark Frost",
+    "shell": "zsh",
+    "editor": "Neovim / VSCode",
+    "ramIdleMiB": 350,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/JaKooLit/Arch-Hyprland/7a3d6609b6419527c9ae79399a183b2ec6c1075d/assets/sddm.png",
+      "alt": "JaKooLit SDDM login manager theme",
+      "caption": "01_SDDM_THEME.RAW"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/JaKooLit/Arch-Hyprland/7a3d6609b6419527c9ae79399a183b2ec6c1075d/assets/fastfetch/arch.png",
+      "alt": "Arch Linux Fastfetch asset in JaKooLit setup",
+      "caption": "02_FASTFETCH_ARCH.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/JaKooLit/Arch-Hyprland",
+    "ref": "7a3d6609b6419527c9ae79399a183b2ec6c1075d",
+    "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone installer repository",
+        "commands": [
+          "git clone --depth=1 https://github.com/JaKooLit/Arch-Hyprland.git ~/Arch-Hyprland"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Run automated installation",
+        "commands": [
+          "cd ~/Arch-Hyprland",
+          "chmod +x install.sh",
+          "./install.sh"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Reboot into new desktop",
+        "commands": [
+          "systemctl reboot"
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + RETURN",
+      "action": "exec, kitty",
+      "effect": "Open Kitty terminal"
+    },
+    {
+      "keys": "SUPER + Q",
+      "action": "killactive",
+      "effect": "Close focused window"
+    },
+    {
+      "keys": "SUPER + R",
+      "action": "exec, rofi -show drun",
+      "effect": "Launch application menu"
+    },
+    {
+      "keys": "SUPER + SHIFT + W",
+      "action": "exec, wallpaper-switcher.sh",
+      "effect": "Randomize desktop wallpaper"
+    }
+  ],
+  "example": false
+}

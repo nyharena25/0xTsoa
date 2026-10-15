@@ -1,0 +1,251 @@
+/**
+ * Single source of truth for the configuration JSON format.
+ * Used by: Astro content collection, CI validation, Issue→PR bot, JSON Schema generation.
+ * Keep this module dependency-free (only zod + site.config) so it runs in Node scripts too.
+ */
+import { z } from 'zod';
+import { ALLOWED_IMAGE_HOSTS } from '../../site.config';
+
+export const WMS = [
+  'hyprland', 'sway', 'river', 'niri', 'wayfire', 'labwc',
+  'i3', 'bspwm', 'awesome', 'qtile', 'xmonad', 'dwm', 'herbstluftwm', 'openbox',
+  'gnome', 'kde', 'xfce', 'cinnamon', 'cosmic', 'other',
+] as const;
+
+export const DISTROS = [
+  'arch', 'endeavouros', 'manjaro', 'fedora', 'nixos', 'debian', 'ubuntu', 'mint',
+  'void', 'opensuse', 'gentoo', 'alpine', 'any',
+] as const;
+
+export const WM_LABELS: Record<(typeof WMS)[number], string> = {
+  hyprland: 'Hyprland', sway: 'Sway', river: 'River', niri: 'niri', wayfire: 'Wayfire', labwc: 'labwc',
+  i3: 'i3', bspwm: 'bspwm', awesome: 'AwesomeWM', qtile: 'Qtile', xmonad: 'XMonad', dwm: 'dwm',
+  herbstluftwm: 'herbstluftwm', openbox: 'Openbox', gnome: 'GNOME', kde: 'KDE Plasma', xfce: 'Xfce',
+  cinnamon: 'Cinnamon', cosmic: 'COSMIC', other: 'Other',
+};
+
+export const DISTRO_LABELS: Record<(typeof DISTROS)[number], string> = {
+  arch: 'Arch Linux', endeavouros: 'EndeavourOS', manjaro: 'Manjaro', fedora: 'Fedora', nixos: 'NixOS',
+  debian: 'Debian', ubuntu: 'Ubuntu', mint: 'Linux Mint', void: 'Void Linux', opensuse: 'openSUSE',
+  gentoo: 'Gentoo', alpine: 'Alpine', any: 'Any distro',
+};
+
+export const THEME_STYLES = [
+  'minimalist',
+  'cyberpunk',
+  'nord',
+  'gruvbox',
+  'dracula',
+  'tokyo-night',
+  'catppuccin',
+  'solarized',
+  'monochrome',
+  'other',
+] as const;
+
+export const STYLE_LABELS: Record<(typeof THEME_STYLES)[number], string> = {
+  minimalist: 'Minimalist',
+  cyberpunk: 'Cyberpunk',
+  nord: 'Nord',
+  gruvbox: 'Gruvbox',
+  dracula: 'Dracula',
+  'tokyo-night': 'Tokyo Night',
+  catppuccin: 'Catppuccin',
+  solarized: 'Solarized',
+  monochrome: 'Monochrome',
+  other: 'Other',
+};
+
+const SHA1 = /^[0-9a-f]{40}$/;
+/** Tags such as v1.2.0, 1.2, 2025.01.03, release-3 — but never a moving branch name. */
+const TAG = /^(v?\d+(\.\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+)$/;
+const MOVING_REFS = new Set(['main', 'master', 'dev', 'develop', 'HEAD', 'latest', 'trunk']);
+
+/** A ref is "pinned" when it is a full commit SHA or a version-like tag. */
+export function isPinnedRef(ref: string): boolean {
+  if (MOVING_REFS.has(ref)) return false;
+  return SHA1.test(ref) || TAG.test(ref);
+}
+
+/**
+ * Extract the git ref from a raw file URL on a supported forge.
+ * Returns null when the URL is not a recognised raw-file URL.
+ */
+export function extractRawRef(url: string): string | null {
+  let u: URL;
+  try { u = new URL(url); } catch { return null; }
+  const p = u.pathname.split('/').filter(Boolean);
+  switch (u.hostname) {
+    case 'raw.githubusercontent.com':
+      // /owner/repo/<ref>/path  or /owner/repo/refs/tags/<tag>/path
+      if (p[2] === 'refs' && (p[3] === 'tags' || p[3] === 'heads')) return p[3] === 'tags' ? p[4] ?? null : null;
+      return p.length >= 4 ? p[2] : null;
+    case 'github.com':
+      // /owner/repo/raw/<ref>/path
+      return p[2] === 'raw' && p.length >= 5 ? p[3] : null;
+    case 'gitlab.com': {
+      // /owner/repo/-/raw/<ref>/path (groups allowed)
+      const i = p.indexOf('-');
+      return i > 0 && p[i + 1] === 'raw' && p.length > i + 3 ? p[i + 2] : null;
+    }
+    case 'codeberg.org':
+      // /owner/repo/raw/commit/<sha>/path | /owner/repo/raw/tag/<tag>/path
+      return p[2] === 'raw' && (p[3] === 'commit' || p[3] === 'tag') && p.length >= 6 ? p[4] : null;
+    default:
+      return null;
+  }
+}
+
+export const SOURCE_HOSTS = ['github.com', 'gitlab.com', 'codeberg.org'] as const;
+
+/** Parse a URL without throwing (Zod 4 keeps running refinements after a failed check). */
+export function safeUrl(v: string): URL | null {
+  try { return new URL(v); } catch { return null; }
+}
+
+const https = z
+  .string()
+  .url()
+  .refine((v) => v.startsWith('https://'), { message: 'Must be an https:// URL' });
+
+export function isAllowedImageUrl(v: string): boolean {
+  if (v.startsWith('/') || v.startsWith('./')) return true;
+  const u = safeUrl(v);
+  return !!u && u.protocol === 'https:' && (ALLOWED_IMAGE_HOSTS as readonly string[]).includes(u.hostname);
+}
+
+const imageUrl = z
+  .string()
+  .min(1)
+  .refine(isAllowedImageUrl, {
+    message: `Image must be a local path (/...) or from allowed hosts: ${ALLOWED_IMAGE_HOSTS.join(', ')}`,
+  });
+
+const pinnedRawUrl = https.refine(
+  (v) => {
+    const ref = extractRawRef(v);
+    return ref !== null && isPinnedRef(ref);
+  },
+  { message: 'Script URL must be a raw file URL pinned to a full commit SHA or a version tag (no branch names)' },
+);
+
+const command = z.string().min(1).max(500);
+
+export const configSchema = z
+  .object({
+    $schema: z.string().optional(),
+    name: z.string().min(3).max(80),
+    author: z.object({
+      name: z.string().min(1).max(60),
+      github: z.string().regex(/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/, 'Invalid GitHub username'),
+    }),
+    lang: z.enum(['fr', 'en']).default('en'),
+    summary: z.string().min(10).max(200),
+    description: z.string().max(2000).optional(),
+    license: z.string().regex(/^[A-Za-z0-9.+-]+( (AND|OR|WITH) [A-Za-z0-9.+-]+)*$/, 'Use an SPDX identifier, e.g. MIT, GPL-3.0-only'),
+    version: z.string().max(40).optional(),
+    updatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD'),
+    distros: z.array(z.enum(DISTROS)).min(1).max(8),
+    wm: z.enum(WMS),
+    themeStyle: z.enum(THEME_STYLES).default('minimalist'),
+    displayServer: z.enum(['wayland', 'x11', 'both']),
+    tags: z.array(z.string().regex(/^[a-z0-9][a-z0-9-]{0,29}$/, 'Tags: lowercase, digits, dashes')).max(10).default([]),
+    specs: z
+      .object({
+        bar: z.string().max(60).optional(),
+        terminal: z.string().max(60).optional(),
+        launcher: z.string().max(60).optional(),
+        notifications: z.string().max(60).optional(),
+        theme: z.string().max(80).optional(),
+        shell: z.string().max(60).optional(),
+        editor: z.string().max(60).optional(),
+        ramIdleMiB: z.number().int().positive().max(16384).optional(),
+        batteryProfile: z.boolean().optional(),
+      })
+      .default({}),
+    screenshots: z
+      .array(
+        z.object({
+          url: imageUrl,
+          alt: z.string().min(5).max(200),
+          caption: z.string().max(60).optional(),
+        }),
+      )
+      .min(1)
+      .max(8),
+    source: z.object({
+      repo: https.refine((v) => {
+        const u = safeUrl(v);
+        return !!u && (SOURCE_HOSTS as readonly string[]).includes(u.hostname) && u.pathname.split('/').filter(Boolean).length >= 2;
+      }, { message: `Source repo must be on ${SOURCE_HOSTS.join(', ')}` }),
+      ref: z.string().refine(isPinnedRef, { message: 'source.ref must be a full commit SHA or a version tag' }),
+      readme: z.string().regex(/^[\w./-]+\.(md|markdown)$/i).default('README.md'),
+    }),
+    install: z
+      .object({
+        script: z
+          .object({
+            url: pinnedRawUrl,
+            sha256: z.string().regex(/^[0-9a-f]{64}$/, 'sha256 must be 64 lowercase hex chars'),
+            shell: z.enum(['sh', 'bash']).default('bash'),
+          })
+          .optional(),
+        steps: z
+          .array(
+            z.object({
+              id: z.enum(['deps', 'dotfiles', 'reload']),
+              title: z.string().min(3).max(80),
+              commands: z.array(command).min(1).max(30),
+            }),
+          )
+          .max(3)
+          .default([]),
+        packages: z
+          .array(z.object({ type: z.enum(['tar.gz', 'zip', 'deb', 'rpm', 'aur', 'nix', 'flatpak']), url: https }))
+          .max(6)
+          .default([]),
+      })
+      .default({ steps: [], packages: [] }),
+    keybindings: z
+      .array(z.object({ keys: z.string().max(40), action: z.string().max(80), effect: z.string().max(120).optional() }))
+      .max(30)
+      .default([]),
+    example: z.boolean().default(false),
+  })
+  .strict();
+
+export type ConfigData = z.output<typeof configSchema>;
+export type ConfigInput = z.input<typeof configSchema>;
+
+/** `configs/<author>/<slug>.json` → `<author>/<slug>` */
+export const SLUG_RE = /^[a-z0-9][a-z0-9-]{2,47}$/;
+export function idFromPath(path: string): { id: string; author: string; slug: string } | null {
+  const m = path.replace(/\\/g, '/').match(/(?:^|\/)configs\/([^/]+)\/([^/]+)\.json$/);
+  if (!m) return null;
+  return { id: `${m[1]}/${m[2]}`, author: m[1], slug: m[2] };
+}
+
+/** Raw README URL for a pinned source repo. */
+export function readmeRawUrl(source: ConfigData['source']): string {
+  const u = new URL(source.repo);
+  const [owner, repo] = u.pathname.split('/').filter(Boolean);
+  const r = repo.replace(/\.git$/, '');
+  switch (u.hostname) {
+    case 'gitlab.com':
+      return `https://gitlab.com/${owner}/${r}/-/raw/${source.ref}/${source.readme}`;
+    case 'codeberg.org':
+      return `https://codeberg.org/${owner}/${r}/raw/${SHA1.test(source.ref) ? 'commit' : 'tag'}/${source.ref}/${source.readme}`;
+    default:
+      return `https://raw.githubusercontent.com/${owner}/${r}/${source.ref}/${source.readme}`;
+  }
+}
+
+/** Browsable (HTML) URL for a pinned raw file, used for the "View source" link. */
+export function rawToBlobUrl(raw: string): string {
+  const u = new URL(raw);
+  if (u.hostname === 'raw.githubusercontent.com') {
+    const [o, r, ...rest] = u.pathname.split('/').filter(Boolean);
+    return `https://github.com/${o}/${r}/blob/${rest.join('/')}`;
+  }
+  return raw.replace('/-/raw/', '/-/blob/').replace('/raw/', '/src/');
+}

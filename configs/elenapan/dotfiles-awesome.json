@@ -1,0 +1,96 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Elena Aphelion Desktop",
+  "author": {
+    "name": "elenapan",
+    "github": "elenapan"
+  },
+  "lang": "en",
+  "summary": "Iconic pastel r/unixporn aesthetic with handcrafted Lua widgets and exquisite typography.",
+  "description": "One of the most revered desktop rices in UNIX customization history. Features custom pastel aesthetic, modular AwesomeWM status panels, custom battery monitors, floating action centers, and custom icons.",
+  "license": "MIT",
+  "version": "v2.0.0",
+  "updatedAt": "2026-10-08",
+  "distros": [
+    "arch",
+    "void",
+    "gentoo"
+  ],
+  "wm": "awesome",
+  "themeStyle": "minimalist",
+  "displayServer": "x11",
+  "tags": [
+    "awesomewm",
+    "pastel",
+    "minimalist",
+    "unixporn",
+    "lua",
+    "x11"
+  ],
+  "specs": {
+    "bar": "AwesomeWM Custom Panels",
+    "terminal": "Urxvt / Kitty",
+    "launcher": "Rofi Pastel",
+    "notifications": "AwesomeWM Naughty",
+    "theme": "Pastel & Monochrome Clean",
+    "shell": "zsh",
+    "editor": "Neovim",
+    "ramIdleMiB": 190,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/wiki/elenapan/dotfiles/assets/aphelion.png",
+      "alt": "Elena Aphelion desktop aesthetic preview",
+      "caption": "01_APHELION_PREVIEW.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/elenapan/dotfiles",
+    "ref": "6071ce92b128af8f4e5afbef4cc85dc0902d32a8",
+    "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Fetch repository",
+        "commands": [
+          "git clone https://github.com/elenapan/dotfiles.git ~/.dotfiles-elena"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Deploy ~/.config/awesome",
+        "commands": [
+          "cp -r ~/.dotfiles-elena/config/awesome ~/.config/awesome"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Reload window manager",
+        "commands": [
+          "awesome-client \"awesome.restart()\""
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + RETURN",
+      "action": "exec, urxvt",
+      "effect": "Spawn terminal"
+    },
+    {
+      "keys": "SUPER + P",
+      "action": "exec, rofi -show run",
+      "effect": "Command prompt"
+    },
+    {
+      "keys": "SUPER + Q",
+      "action": "client:kill()",
+      "effect": "Close focused window"
+    }
+  ],
+  "example": false
+}

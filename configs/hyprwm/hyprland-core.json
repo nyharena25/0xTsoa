@@ -1,0 +1,108 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Hyprland Reference Compositor",
+  "author": {
+    "name": "Hyprland Team",
+    "github": "hyprwm"
+  },
+  "lang": "en",
+  "summary": "Official dynamic tiling Wayland compositor that doesn't sacrifice on the looks.",
+  "description": "The reference configuration for Hyprland: dynamic tiling, fluid bezier curves, rounded borders, GPU-accelerated blur, and comprehensive IPC controls. Serves as the high-performance foundation for modern Wayland desktops.",
+  "license": "BSD-3-Clause",
+  "version": "v0.45.0",
+  "updatedAt": "2026-10-15",
+  "distros": [
+    "arch",
+    "nixos",
+    "fedora",
+    "opensuse"
+  ],
+  "wm": "hyprland",
+  "themeStyle": "minimalist",
+  "displayServer": "wayland",
+  "tags": [
+    "hyprland",
+    "wayland",
+    "compositor",
+    "tiling",
+    "animations",
+    "gpu"
+  ],
+  "specs": {
+    "bar": "Waybar",
+    "terminal": "Kitty",
+    "launcher": "Wofi / Rofi-wayland",
+    "notifications": "Dunst",
+    "theme": "Hyprland Cyan & Charcoal",
+    "shell": "zsh",
+    "editor": "Neovim",
+    "ramIdleMiB": 290,
+    "batteryProfile": false
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/hyprwm/Hyprland/e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb/assets/install/wall0.png",
+      "alt": "Hyprland official anime minimalist backdrop",
+      "caption": "01_HYPRLAND_WALLPAPER.RAW"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/hyprwm/Hyprland/e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb/assets/install/lockdead.png",
+      "alt": "Hyprland lock screen and session assets",
+      "caption": "02_HYPRLAND_ASSET.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/hyprwm/Hyprland",
+    "ref": "e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb",
+    "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install Hyprland & Waybar",
+        "commands": [
+          "sudo pacman -S --needed hyprland waybar kitty wofi"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Set up basic ~/.config/hypr/hyprland.conf",
+        "commands": [
+          "mkdir -p ~/.config/hypr",
+          "cp /usr/share/hyprland/hyprland.conf ~/.config/hypr/"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Live reload compositor",
+        "commands": [
+          "hyprctl reload"
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + Q",
+      "action": "exec, kitty",
+      "effect": "Open terminal"
+    },
+    {
+      "keys": "SUPER + C",
+      "action": "killactive",
+      "effect": "Close window"
+    },
+    {
+      "keys": "SUPER + M",
+      "action": "exit",
+      "effect": "Exit Hyprland session"
+    },
+    {
+      "keys": "SUPER + V",
+      "action": "togglefloating",
+      "effect": "Toggle window floating"
+    }
+  ],
+  "example": false
+}

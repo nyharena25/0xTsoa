@@ -1,0 +1,97 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Catppuccin Hyprland",
+  "author": {
+    "name": "Catppuccin Org",
+    "github": "catppuccin"
+  },
+  "lang": "en",
+  "summary": "Soothing pastel color themes (Mocha, Macchiato, Frappe, Latte) for Hyprland.",
+  "description": "The official Catppuccin color palette ported to Hyprland. Includes pre-configured color border variables, active window gradient rings, drop shadows, and matching styling across four pastel flavor tiers.",
+  "license": "MIT",
+  "version": "v1.3.0",
+  "updatedAt": "2026-10-12",
+  "distros": [
+    "arch",
+    "nixos",
+    "fedora",
+    "void"
+  ],
+  "wm": "hyprland",
+  "themeStyle": "catppuccin",
+  "displayServer": "wayland",
+  "tags": [
+    "catppuccin",
+    "hyprland",
+    "pastel",
+    "mocha",
+    "theming",
+    "wayland"
+  ],
+  "specs": {
+    "bar": "Waybar Catppuccin",
+    "terminal": "Kitty Catppuccin",
+    "launcher": "Rofi Catppuccin",
+    "notifications": "Dunst Mocha",
+    "theme": "Catppuccin Mocha Pastel",
+    "shell": "fish",
+    "editor": "Neovim",
+    "ramIdleMiB": 310,
+    "batteryProfile": true
+  },
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/hyprland/9f03f26fc10a00e00ec6b2ac2a41e44d16297548/assets/mocha.webp",
+      "alt": "Catppuccin Mocha theme preview for Hyprland",
+      "caption": "01_CATPPUCCIN_MOCHA.RAW"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/hyprland/9f03f26fc10a00e00ec6b2ac2a41e44d16297548/assets/macchiato.webp",
+      "alt": "Catppuccin Macchiato flavor preview",
+      "caption": "02_CATPPUCCIN_MACCHIATO.RAW"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/catppuccin/hyprland",
+    "ref": "9f03f26fc10a00e00ec6b2ac2a41e44d16297548",
+    "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone Catppuccin Hyprland repository",
+        "commands": [
+          "git clone https://github.com/catppuccin/hyprland.git ~/.config/hypr/catppuccin"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Source theme in hyprland.conf",
+        "commands": [
+          "echo \"source = ~/.config/hypr/catppuccin/themes/mocha.conf\" >> ~/.config/hypr/hyprland.conf"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Live reload Hyprland theme",
+        "commands": [
+          "hyprctl reload"
+        ]
+      }
+    ]
+  },
+  "keybindings": [
+    {
+      "keys": "SUPER + Q",
+      "action": "exec, kitty",
+      "effect": "Open Kitty terminal"
+    },
+    {
+      "keys": "SUPER + C",
+      "action": "killactive",
+      "effect": "Close window"
+    }
+  ],
+  "example": false
+}

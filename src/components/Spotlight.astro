@@ -1,0 +1,476 @@
+---
+import CopyButton from './CopyButton.astro';
+import { useTranslations, type Locale } from '../lib/i18n';
+import { getVotesForConfig, getDiscussionUrlForConfig } from '../lib/votes';
+import { WM_LABELS, DISTRO_LABELS, type ConfigData } from '../lib/schema';
+import { BASE_PATH } from '../../site.config';
+
+interface SpotlightItem {
+  id: string;
+  data: ConfigData;
+}
+
+interface Props {
+  configs: SpotlightItem[];
+  locale?: Locale;
+}
+
+const { configs, locale = 'en' } = Astro.props;
+const t = useTranslations(locale);
+
+// Pre-format serialized JSON data for client script
+const serializedSetups = configs.map((c, idx) => {
+  const votes = getVotesForConfig(c.id);
+  const discussionUrl = getDiscussionUrlForConfig(c.id);
+  const distroLabel = c.data.distros.map((d) => DISTRO_LABELS[d] || d).join(', ');
+  const wmLabel = WM_LABELS[c.data.wm] || c.data.wm;
+  const specPath = `${BASE_PATH}/configs/${c.id}/`;
+
+  let installCmd = `git clone ${c.data.source.repo} ~/.dotfiles`;
+  if (c.data.install.script) {
+    installCmd = `curl -fsSL ${c.data.install.script.url} | ${c.data.install.script.shell || 'bash'}`;
+  } else if (c.data.install.steps?.[0]?.commands?.[0]) {
+    installCmd = c.data.install.steps[0].commands[0];
+  }
+
+  const screenshots = c.data.screenshots && c.data.screenshots.length > 0
+    ? c.data.screenshots.map((s, sIdx) => ({
+        url: s.url,
+        alt: s.alt || `${c.data.name} screenshot ${sIdx + 1}`,
+        caption: s.caption || `Capture #${String(sIdx + 1).padStart(2, '0')}`,
+      }))
+    : [{
+        url: '/0xtsoa/screenshots/fallback-terminal.svg',
+        alt: `${c.data.name} fallback preview`,
+        caption: '01_FALLBACK.RAW',
+      }];
+
+  return {
+    index: idx + 1,
+    id: c.id,
+    kicker: `Spotlight #${String(idx + 1).padStart(2, '0')} • ${c.data.displayServer.toUpperCase()}`,
+    name: c.data.name,
+    author: c.data.author.name,
+    desc: c.data.summary,
+    distro: distroLabel,
+    wm: `${wmLabel} (${c.data.displayServer})`,
+    bar: c.data.specs.bar || 'Waybar',
+    theme: c.data.specs.theme || 'Paper Monochrome',
+    ram: c.data.specs.ramIdleMiB ? `~${c.data.specs.ramIdleMiB} MiB idle` : 'Not measured',
+    cmd: installCmd,
+    votesCount: votes,
+    votesFormatted: `${votes.toLocaleString()} sign-offs`,
+    discussionUrl,
+    repoUrl: c.data.source.repo,
+    specUrl: specPath,
+    screenshots,
+    imgUrl: screenshots[0].url,
+    imgAlt: screenshots[0].alt,
+    hash: `0x${c.id.slice(-6).toUpperCase().replace(/[^0-9A-F]/g, 'A')}`,
+  };
+});
+
+const defaultSetup = serializedSetups[0];
+---
+
+<section class="w-full bg-white border border-zinc-200 rounded-xl shadow-xs overflow-hidden flex flex-col" id="vitrine-spotlight">
+  <!-- Top Navigation Bar: Setup Selector Pills & Controls -->
+  <div class="border-b border-zinc-200 bg-zinc-50/80 px-4 py-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+    <!-- Tab list with clean pill styling -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none" id="spotlight-tabs-container">
+      {serializedSetups.map((s, idx) => (
+        <button
+          type="button"
+          data-index={idx}
+          class={`spotlight-tab-btn px-3 py-1.5 rounded-md font-mono text-xs font-semibold whitespace-nowrap cursor-pointer transition-none ${
+            idx === 0
+              ? 'bg-zinc-900 text-white shadow-xs'
+              : 'bg-white text-zinc-600 border border-zinc-200 hover:text-zinc-900 hover:border-zinc-300'
+          }`}
+        >
+          <span class="opacity-75 font-normal">#{s.index}</span> {s.name}
+        </button>
+      ))}
+    </div>
+
+    <!-- Navigation Arrows & Timing Rhythm Indicator -->
+    <div class="flex items-center justify-end gap-1.5 shrink-0">
+      <span class="font-mono text-xs text-zinc-500 mr-2" id="spotlight-counter">
+        1 / {serializedSetups.length}
+      </span>
+      <button
+        type="button"
+        id="spotlight-prev"
+        aria-label="Previous setup"
+        class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 transition-colors cursor-pointer"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        id="spotlight-next"
+        aria-label="Next setup"
+        class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 transition-colors cursor-pointer"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Showcase Area: Generous Widescreen Preview + Spacious Specs Dashboard -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 divide-y lg:divide-y-0 lg:divide-x divide-zinc-200">
+    <!-- Left Volet: Expansive Widescreen Screenshot Preview (Hard Cut, No Fading/Blurring) -->
+    <div class="lg:col-span-7 xl:col-span-8 flex flex-col bg-zinc-950 p-4 sm:p-6 lg:p-8 justify-between relative group">
+      <!-- Screenshot Frame Header -->
+      <div class="flex items-center justify-between pb-3 text-xs font-mono text-zinc-400 border-b border-zinc-800">
+        <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span>
+          </div>
+          <span class="text-zinc-300 font-semibold ml-2" id="spotlight-frame-title">
+            {defaultSetup?.name}
+          </span>
+        </div>
+        <a
+          id="spotlight-image-link"
+          href={defaultSetup?.specUrl}
+          class="text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
+        >
+          <span>Expand preview</span>
+          <span>&nearr;</span>
+        </a>
+      </div>
+
+      <!-- Large, Prominent 16:9 Screenshot (Hard-Cut, Instant Swap, No Fading/Blurring) -->
+      <div class="relative w-full aspect-video min-h-[220px] rounded-lg overflow-hidden bg-zinc-900 my-4 shadow-md flex items-center justify-center instant-snap">
+        <img
+          id="spotlight-image"
+          src={defaultSetup?.imgUrl}
+          alt={defaultSetup?.imgAlt}
+          class="w-full h-full object-cover instant-snap select-none"
+          loading="eager"
+        />
+        <!-- Live screenshot rhythm indicator -->
+        <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-xs text-[10px] sm:text-[11px] font-mono text-zinc-200 font-bold border border-zinc-700/60 select-none instant-snap" id="spotlight-shot-pill">
+          SHOT: 01 / {String(defaultSetup?.screenshots?.length || 1).padStart(2, '0')}
+        </div>
+        <div class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-xs text-[9px] sm:text-[10px] font-mono text-emerald-400 font-semibold border border-zinc-700/60 select-none">
+          10s SETUP / 2s IMAGE
+        </div>
+      </div>
+
+      <!-- Screenshot Footer Meta -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 text-xs font-mono text-zinc-400">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+          <span class="text-zinc-300 font-medium">{t('spotlight.verifiedSpec')}</span>
+        </div>
+        <span class="text-zinc-500" id="spotlight-hash">ID: {defaultSetup?.hash}</span>
+      </div>
+    </div>
+
+    <!-- Right Volet: Balanced Specs, FastFetch Dashboard & 1-Line Deployment -->
+    <div class="lg:col-span-5 xl:col-span-4 p-5 sm:p-6 lg:p-7 flex flex-col justify-between gap-6 bg-white">
+      <div class="flex flex-col gap-4">
+        <!-- Spotlight Kicker & Header -->
+        <div class="flex flex-col gap-1.5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="font-mono text-xs uppercase font-bold text-zinc-500 tracking-wider" id="spotlight-kicker">
+              {defaultSetup?.kicker}
+            </span>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+              READY TO USE
+            </span>
+          </div>
+
+          <!-- Title with Typewriter Transition -->
+          <h2 class="font-display text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 leading-tight" id="spotlight-name">
+            {defaultSetup?.name}
+          </h2>
+
+          <p class="font-sans text-sm text-zinc-600 leading-relaxed mt-1" id="spotlight-desc">
+            {defaultSetup?.desc}
+          </p>
+        </div>
+
+        <!-- FastFetch System Specifications Card -->
+        <div class="bg-zinc-50 border border-zinc-200 rounded-lg p-4 font-mono text-xs flex flex-col gap-2.5 shadow-2xs">
+          <div class="border-b border-zinc-200 pb-2 flex items-center justify-between text-zinc-500 text-[11px] font-bold uppercase">
+            <span>{t('spotlight.specsHeading')}</span>
+            <span>FASTFETCH</span>
+          </div>
+
+          <div class="grid grid-cols-12 gap-1 py-0.5">
+            <span class="col-span-5 text-zinc-500 font-medium">{t('spotlight.distro')}</span>
+            <span class="col-span-7 font-bold text-zinc-900 text-right truncate" id="spec-distro">
+              {defaultSetup?.distro}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-12 gap-1 py-0.5">
+            <span class="col-span-5 text-zinc-500 font-medium">{t('spotlight.wm')}</span>
+            <span class="col-span-7 font-bold text-zinc-900 text-right truncate" id="spec-wm">
+              {defaultSetup?.wm}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-12 gap-1 py-0.5">
+            <span class="col-span-5 text-zinc-500 font-medium">{t('spotlight.bar')}</span>
+            <span class="col-span-7 font-bold text-zinc-900 text-right truncate" id="spec-bar">
+              {defaultSetup?.bar}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-12 gap-1 py-0.5">
+            <span class="col-span-5 text-zinc-500 font-medium">{t('spotlight.theme')}</span>
+            <span class="col-span-7 font-bold text-zinc-900 text-right truncate" id="spec-theme">
+              {defaultSetup?.theme}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-12 gap-1 py-0.5 border-t border-zinc-200/80 pt-2">
+            <span class="col-span-5 text-zinc-500 font-medium">{t('spotlight.ram')}</span>
+            <span class="col-span-7 font-bold text-zinc-900 text-right" id="spec-ram">
+              {defaultSetup?.ram}
+            </span>
+          </div>
+        </div>
+
+        <!-- 1-Line Deployment Command Card -->
+        <div class="flex flex-col gap-2">
+          <label class="font-mono text-xs text-zinc-600 font-medium">
+            {t('spotlight.deployCmd')}
+          </label>
+          <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-3 font-mono text-xs shadow-inner">
+            <code class="text-zinc-200 truncate select-all flex-1" id="spotlight-cmd">
+              {defaultSetup?.cmd}
+            </code>
+            <CopyButton text={defaultSetup?.cmd || ''} id="spotlight-copy-btn" class="bg-zinc-800 text-zinc-200 border-zinc-700 hover:bg-zinc-700 hover:text-white" />
+          </div>
+        </div>
+
+        <!-- Action CTAs -->
+        <div class="grid grid-cols-2 gap-3 pt-1">
+          <a
+            id="spotlight-spec-btn"
+            href={defaultSetup?.specUrl}
+            class="btn-solid min-h-[44px] text-center w-full justify-center"
+          >
+            <span>{t('spotlight.fullSpec')}</span>
+            <span>&rarr;</span>
+          </a>
+
+          <a
+            id="spotlight-repo-btn"
+            href={defaultSetup?.repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-outline min-h-[44px] text-center w-full justify-center"
+          >
+            <svg class="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 24 24">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            <span>{t('spotlight.sourceCode')}</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Community Sign-Off Section -->
+      <div class="pt-4 border-t border-zinc-200 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-xs font-bold text-zinc-700">
+            {t('spotlight.communitySignOff')}
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-zinc-100 text-zinc-900 border border-zinc-200" id="spotlight-vote-pill">
+            ▲ {defaultSetup?.votesFormatted}
+          </span>
+        </div>
+
+        <a
+          id="spotlight-vote-link"
+          href={defaultSetup?.discussionUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="w-full min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-zinc-900 text-white font-mono text-xs font-semibold hover:bg-zinc-800 transition-colors shadow-xs"
+        >
+          <span>✓</span>
+          <span>{t('spotlight.approved')}</span>
+        </a>
+
+        <span class="font-mono text-[10px] text-zinc-400 text-center tracking-tight">
+          {t('spotlight.signOffNotice')}
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Data payload and client interactive switcher script -->
+<script define:vars={{ serializedSetups }}>
+  let currentSetupIndex = 0;
+  let currentImageIndex = 0;
+  let setupCycleTimer = null;
+  let imageCycleTimer = null;
+
+  async function typeTitleTransition(el, newText) {
+    if (!el) return;
+    const current = el.textContent?.trim() || '';
+    if (current === newText) return;
+
+    // 1. Delete in reverse letter-by-letter
+    for (let i = current.length; i >= 0; i--) {
+      el.textContent = current.slice(0, i);
+      await new Promise((r) => setTimeout(r, 14));
+    }
+    // 2. Type forward letter-by-letter
+    for (let i = 1; i <= newText.length; i++) {
+      el.textContent = newText.slice(0, i);
+      await new Promise((r) => setTimeout(r, 18));
+    }
+  }
+
+  function swapScreenshot(shotIdx) {
+    const s = serializedSetups[currentSetupIndex];
+    if (!s || !s.screenshots || s.screenshots.length === 0) return;
+    const shots = s.screenshots;
+    currentImageIndex = (shotIdx + shots.length) % shots.length;
+    const shot = shots[currentImageIndex];
+
+    const img = document.getElementById('spotlight-image');
+    if (img) {
+      // Hard cut: instant swap like a raw terminal refresh (no fading, no blurring)
+      img.setAttribute('src', shot.url);
+      img.setAttribute('alt', shot.alt);
+    }
+
+    const shotPill = document.getElementById('spotlight-shot-pill');
+    if (shotPill) {
+      shotPill.textContent = `SHOT: ${String(currentImageIndex + 1).padStart(2, '0')} / ${String(shots.length).padStart(2, '0')}`;
+    }
+  }
+
+  function showSetup(idx, animateTitle = true) {
+    if (!serializedSetups || serializedSetups.length === 0) return;
+
+    // Reset both timers
+    if (setupCycleTimer) clearTimeout(setupCycleTimer);
+    if (imageCycleTimer) clearInterval(imageCycleTimer);
+
+    currentSetupIndex = (idx + serializedSetups.length) % serializedSetups.length;
+    currentImageIndex = 0;
+    const s = serializedSetups[currentSetupIndex];
+
+    // 1. Instant image hard cut
+    swapScreenshot(0);
+
+    // 2. Title delete & retype transition (Feature 2)
+    const nameEl = document.getElementById('spotlight-name');
+    if (animateTitle) {
+      typeTitleTransition(nameEl, s.name);
+    } else if (nameEl) {
+      nameEl.textContent = s.name;
+    }
+
+    const frameTitle = document.getElementById('spotlight-frame-title');
+    if (frameTitle) frameTitle.textContent = s.name;
+
+    // 3. Instant specs update
+    const counter = document.getElementById('spotlight-counter');
+    if (counter) counter.textContent = `${s.index} / ${serializedSetups.length}`;
+
+    const kicker = document.getElementById('spotlight-kicker');
+    if (kicker) kicker.textContent = s.kicker;
+
+    const desc = document.getElementById('spotlight-desc');
+    if (desc) desc.textContent = s.desc;
+
+    const distro = document.getElementById('spec-distro');
+    if (distro) distro.textContent = s.distro;
+
+    const wm = document.getElementById('spec-wm');
+    if (wm) wm.textContent = s.wm;
+
+    const bar = document.getElementById('spec-bar');
+    if (bar) bar.textContent = s.bar;
+
+    const theme = document.getElementById('spec-theme');
+    if (theme) theme.textContent = s.theme;
+
+    const ram = document.getElementById('spec-ram');
+    if (ram) ram.textContent = s.ram;
+
+    const cmd = document.getElementById('spotlight-cmd');
+    if (cmd) cmd.textContent = s.cmd;
+
+    const copyBtn = document.getElementById('spotlight-copy-btn');
+    if (copyBtn) copyBtn.setAttribute('data-copy-text', s.cmd);
+
+    const votePill = document.getElementById('spotlight-vote-pill');
+    if (votePill) votePill.textContent = `▲ ${s.votesFormatted}`;
+
+    const voteLink = document.getElementById('spotlight-vote-link');
+    if (voteLink) voteLink.setAttribute('href', s.discussionUrl);
+
+    const repoBtn = document.getElementById('spotlight-repo-btn');
+    if (repoBtn) repoBtn.setAttribute('href', s.repoUrl);
+
+    const specBtn = document.getElementById('spotlight-spec-btn');
+    if (specBtn) specBtn.setAttribute('href', s.specUrl);
+
+    const imgLink = document.getElementById('spotlight-image-link');
+    if (imgLink) imgLink.setAttribute('href', s.specUrl);
+
+    const hash = document.getElementById('spotlight-hash');
+    if (hash) hash.textContent = `ID: ${s.hash}`;
+
+    // Update active tab buttons (instant snap)
+    const tabButtons = document.querySelectorAll('.spotlight-tab-btn');
+    tabButtons.forEach((btn, i) => {
+      if (i === currentSetupIndex) {
+        btn.classList.add('bg-zinc-900', 'text-white', 'shadow-xs');
+        btn.classList.remove('bg-white', 'text-zinc-600', 'border-zinc-200');
+      } else {
+        btn.classList.remove('bg-zinc-900', 'text-white', 'shadow-xs');
+        btn.classList.add('bg-white', 'text-zinc-600', 'border-zinc-200');
+      }
+    });
+
+    // 4. Feature 4: 2s Image Rhythm (cycle screenshots every 2 seconds)
+    if (s.screenshots && s.screenshots.length > 1) {
+      imageCycleTimer = setInterval(() => {
+        swapScreenshot(currentImageIndex + 1);
+      }, 2000);
+    }
+
+    // 5. Feature 4: 10s Setup Rhythm (hard cut to next setup after exactly 10s)
+    setupCycleTimer = setTimeout(() => {
+      showSetup((currentSetupIndex + 1) % serializedSetups.length, true);
+    }, 10000);
+  }
+
+  // Setup tab click handlers
+  document.querySelectorAll('.spotlight-tab-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-index') || '0', 10);
+      showSetup(idx, true);
+    });
+  });
+
+  // Next / Prev buttons
+  document.getElementById('spotlight-prev')?.addEventListener('click', () => {
+    showSetup((currentSetupIndex - 1 + serializedSetups.length) % serializedSetups.length, true);
+  });
+
+  document.getElementById('spotlight-next')?.addEventListener('click', () => {
+    showSetup((currentSetupIndex + 1) % serializedSetups.length, true);
+  });
+
+  // Initialize rhythm on page load
+  showSetup(0, false);
+</script>

@@ -1,0 +1,73 @@
+---
+interface Props {
+  text: string;
+  label?: string;
+  copiedLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  text,
+  label = 'Copy',
+  copiedLabel = 'Copied!',
+  class: className = '',
+  id,
+} = Astro.props;
+---
+
+<button
+  type="button"
+  id={id}
+  data-copy-text={text}
+  data-label={label}
+  data-copied-label={copiedLabel}
+  class={`copy-button shrink-0 inline-flex items-center justify-center gap-1.5 bg-white hover:bg-zinc-100 text-zinc-900 border border-zinc-300 px-3 py-1.5 rounded-md font-mono text-xs font-semibold btn-mech cursor-pointer select-none active:scale-95 ${className}`}
+>
+  <svg class="w-3.5 h-3.5 text-zinc-500 shrink-0 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+  </svg>
+  <span class="copy-text">{label}</span>
+</button>
+
+<script>
+  function setupCopyButtons() {
+    document.querySelectorAll<HTMLButtonElement>('.copy-button').forEach((btn) => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = 'true';
+
+      btn.addEventListener('click', async () => {
+        const text = btn.getAttribute('data-copy-text') || '';
+        const defaultLabel = btn.getAttribute('data-label') || 'Copy';
+        const copiedLabel = btn.getAttribute('data-copied-label') || 'Copied!';
+        const textSpan = btn.querySelector('.copy-text');
+
+        try {
+          await navigator.clipboard.writeText(text);
+          if (textSpan) textSpan.textContent = copiedLabel;
+          else btn.textContent = copiedLabel;
+          btn.classList.add('bg-zinc-900', 'text-white', 'border-zinc-900');
+          btn.classList.remove('bg-white', 'text-zinc-800', 'border-zinc-200');
+
+          setTimeout(() => {
+            if (textSpan) textSpan.textContent = defaultLabel;
+            else btn.textContent = defaultLabel;
+            btn.classList.remove('bg-zinc-900', 'text-white', 'border-zinc-900');
+            btn.classList.add('bg-white', 'text-zinc-800', 'border-zinc-200');
+          }, 1400);
+        } catch {
+          if (textSpan) textSpan.textContent = 'Error';
+          else btn.textContent = 'Error';
+          setTimeout(() => {
+            if (textSpan) textSpan.textContent = defaultLabel;
+            else btn.textContent = defaultLabel;
+          }, 1500);
+        }
+      });
+    });
+  }
+
+  setupCopyButtons();
+  document.addEventListener('DOMContentLoaded', setupCopyButtons);
+  document.addEventListener('astro:page-load', setupCopyButtons);
+</script>

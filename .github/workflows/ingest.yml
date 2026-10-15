@@ -1,0 +1,57 @@
+name: Ingest Visual Assets & Documentation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'configs/**'
+      - 'scripts/ingest-configs.ts'
+      - '.github/workflows/ingest.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'configs/**'
+      - 'scripts/ingest-configs.ts'
+      - '.github/workflows/ingest.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ingest-assets:
+    name: Ingest Repository Assets & Pre-render Readmes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create output directory
+        run: mkdir -p dist/data src/generated
+
+      - name: Run automated data ingestion
+        run: npm run ingest -- --out dist/data/unified-showcase.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Copy unified payload to static build source
+        run: cp dist/data/unified-showcase.json src/generated/unified-showcase.json
+
+      - name: Upload enriched showcase artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: unified-showcase-data
+          path: dist/data/unified-showcase.json
+          retention-days: 7

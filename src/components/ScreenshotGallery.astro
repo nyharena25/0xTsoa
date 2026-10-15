@@ -1,0 +1,197 @@
+---
+interface Screenshot {
+  url: string;
+  alt: string;
+  caption?: string;
+}
+
+interface Props {
+  screenshots: Screenshot[];
+  configName: string;
+}
+
+const { screenshots, configName } = Astro.props;
+---
+
+<section class="w-full bg-white border border-zinc-200 rounded-xl shadow-xs p-5 sm:p-7 flex flex-col gap-4" id="screenshots">
+  <div class="border-b border-zinc-200 pb-3 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+      <h2 class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider">
+        Screenshot Gallery // {configName}
+      </h2>
+    </div>
+
+    <button
+      type="button"
+      id="open-gallery-fullscreen-btn"
+      class="inline-flex items-center gap-1.5 border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-800 px-3 py-1.5 rounded-lg font-mono text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+    >
+      <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+      </svg>
+      <span>Fullscreen ({screenshots.length})</span>
+    </button>
+  </div>
+
+  <!-- Thumbnails Grid -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+    {screenshots.map((shot, idx) => (
+      <div
+        data-shot-index={idx}
+        class="gallery-thumb cursor-pointer border border-zinc-200 rounded-xl bg-white p-1.5 flex flex-col shadow-xs hover:border-zinc-400 hover:shadow-card hover:-translate-y-0.5 transition-all group"
+      >
+        <div class="relative w-full aspect-video border border-zinc-200/80 rounded-lg overflow-hidden bg-zinc-100 tech-skeleton">
+          <img
+            src={shot.url}
+            alt={shot.alt}
+            loading="lazy"
+            onerror="this.onerror=null; this.src='/0xtsoa/screenshots/fallback-terminal.svg'"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          <span class="absolute bottom-1 right-1 bg-zinc-900/80 backdrop-blur-xs text-white font-mono text-[10px] px-1.5 py-0.5 rounded font-medium">
+            {String(idx + 1).padStart(2, '0')}
+          </span>
+        </div>
+        <span class="font-mono text-[11px] font-medium text-zinc-600 mt-2 px-1 truncate group-hover:text-zinc-900 transition-colors">
+          {shot.caption || `Capture ${String(idx + 1).padStart(2, '0')}`}
+        </span>
+      </div>
+    ))}
+  </div>
+
+  <!-- Fullscreen Modal Dialog -->
+  <dialog
+    id="gallery-modal"
+    class="backdrop:bg-zinc-950/70 backdrop-blur-xs bg-transparent p-4 max-w-5xl w-full m-auto open:flex open:flex-col"
+  >
+    <div class="w-full border border-zinc-200 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]">
+      <!-- Modal Header -->
+      <div class="px-5 py-3.5 bg-zinc-50 border-b border-zinc-200 flex items-center justify-between font-mono text-xs">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+          <span class="font-bold uppercase text-zinc-900" id="modal-image-title">
+            Capture 01 // Fullscreen
+          </span>
+        </div>
+        <button
+          type="button"
+          id="close-gallery-modal"
+          class="px-2.5 py-1 rounded-md border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-700 font-mono text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+        >
+          ESC / Close
+        </button>
+      </div>
+
+      <!-- Modal Image View -->
+      <div class="relative bg-zinc-900 w-full flex-1 flex items-center justify-center p-4 min-h-[360px] overflow-hidden">
+        <img
+          id="modal-active-img"
+          src={screenshots[0]?.url}
+          alt={screenshots[0]?.alt}
+          onerror="this.onerror=null; this.src='/0xtsoa/screenshots/fallback-terminal.svg'"
+          class="max-h-[65vh] w-auto rounded-lg shadow-lg object-contain"
+        />
+      </div>
+
+      <!-- Modal Footer Controls -->
+      <div class="px-5 py-3 bg-zinc-50 border-t border-zinc-200 flex items-center justify-between font-mono text-xs">
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            id="gallery-prev"
+            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-800 font-semibold shadow-2xs transition-colors cursor-pointer"
+          >
+            <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            <span>Prev</span>
+          </button>
+          <button
+            type="button"
+            id="gallery-next"
+            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-800 font-semibold shadow-2xs transition-colors cursor-pointer"
+          >
+            <span>Next</span>
+            <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        <span class="font-semibold text-zinc-600" id="gallery-counter">
+          01 / {String(screenshots.length).padStart(2, '0')}
+        </span>
+
+        <button
+          type="button"
+          id="gallery-close-footer"
+          class="px-3.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white font-mono text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </dialog>
+</section>
+
+<script define:vars={{ screenshots }}>
+  let activeIndex = 0;
+  const modal = document.getElementById('gallery-modal');
+  const modalImg = document.getElementById('modal-active-img');
+  const modalTitle = document.getElementById('modal-image-title');
+  const counter = document.getElementById('gallery-counter');
+
+  function showImage(idx) {
+    if (!screenshots || screenshots.length === 0) return;
+    activeIndex = (idx + screenshots.length) % screenshots.length;
+    const shot = screenshots[activeIndex];
+
+    if (modalImg) {
+      modalImg.setAttribute('src', shot.url);
+      modalImg.setAttribute('alt', shot.alt);
+    }
+    if (modalTitle) {
+      modalTitle.textContent = `${shot.caption || 'Capture'} // [${String(activeIndex + 1).padStart(2, '0')}/${String(screenshots.length).padStart(2, '0')}]`;
+    }
+    if (counter) {
+      counter.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(screenshots.length).padStart(2, '0')}`;
+    }
+  }
+
+  document.querySelectorAll('.gallery-thumb').forEach((thumb) => {
+    thumb.addEventListener('click', () => {
+      const idx = parseInt(thumb.getAttribute('data-shot-index') || '0', 10);
+      showImage(idx);
+      modal?.showModal();
+    });
+  });
+
+  document.getElementById('open-gallery-fullscreen-btn')?.addEventListener('click', () => {
+    showImage(0);
+    modal?.showModal();
+  });
+
+  document.getElementById('close-gallery-modal')?.addEventListener('click', () => {
+    modal?.close();
+  });
+
+  document.getElementById('gallery-close-footer')?.addEventListener('click', () => {
+    modal?.close();
+  });
+
+  document.getElementById('gallery-prev')?.addEventListener('click', () => {
+    showImage(activeIndex - 1);
+  });
+
+  document.getElementById('gallery-next')?.addEventListener('click', () => {
+    showImage(activeIndex + 1);
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (modal?.open) {
+      if (e.key === 'ArrowLeft') showImage(activeIndex - 1);
+      if (e.key === 'ArrowRight') showImage(activeIndex + 1);
+    }
+  });
+</script>
