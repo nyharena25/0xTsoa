@@ -8,6 +8,7 @@ import { getCollection } from 'astro:content';
 import { getRenderedReadme, extractScreenshotsFromReadme } from '../../../lib/readme';
 import { rawToBlobUrl, WM_LABELS, DISTRO_LABELS } from '../../../lib/schema';
 import { useTranslations } from '../../../lib/i18n';
+import { withBase } from '../../../../site.config';
 
 export async function getStaticPaths() {
   const configs = await getCollection('configs');
@@ -25,10 +26,15 @@ const data = entry.data;
 const locale = 'en';
 const t = useTranslations(locale);
 
-const { html: readmeHtml, rawUrl: rawReadmeUrl } = await getRenderedReadme(
+const { html: rawReadmeHtml, rawUrl: rawReadmeUrl } = await getRenderedReadme(
   entry.id,
   data.source,
   data,
+);
+const readmeHtml = rawReadmeHtml.replace(
+  /<(\/?)h([1-5])(\b[^>]*)>/gi,
+  (_, slash: string, level: string, attrs: string) =>
+    `<${slash}h${Math.min(6, Math.max(3, Number(level) + 1))}${attrs}>`,
 );
 
 const readmeScreenshots = extractScreenshotsFromReadme(readmeHtml);
@@ -46,7 +52,132 @@ for (const shot of readmeScreenshots) {
 }
 
 const distroLabels = data.distros.map((d) => DISTRO_LABELS[d] || d).join(', ');
+const primaryDistro = DISTRO_LABELS[data.distros[0]] || data.distros[0];
 const wmLabel = WM_LABELS[data.wm] || data.wm;
+
+// SEO Title: "{name} by @{github} · {WM} on {Distro}", kept under ~60 chars (drop distro if it doesn't fit)
+const fullTitle = `${data.name} by @${data.author.github} · ${wmLabel} on ${primaryDistro}`;
+const noDistroTitle = `${data.name} by @${data.author.github} · ${wmLabel}`;
+const shortTitle = `${data.name} · ${wmLabel}`;
+const seoTitle =
+  fullTitle.length <= 60
+    ? fullTitle
+    : noDistroTitle.length <= 60
+      ? noDistroTitle
+      : shortTitle.slice(0, 60);
+
+// SEO Description: built from real fields (summary + WM + displayServer + key specs), 140–160 chars
+const serverLabel =
+  data.displayServer === 'both'
+    ? 'Wayland/X11'
+    : data.displayServer === 'wayland'
+      ? 'Wayland'
+      : 'X11';
+
+function buildSetupDescription(): string {
+  const baseSummary = data.summary.trim().replace(/\.+$/, '');
+  const cleanSpec = (val?: string) => val?.replace(/\s*\([^)]*\)/g, '').trim();
+  const specFragments: string[] = [
+    `${wmLabel} (${serverLabel}) on ${distroLabels}`,
+    ...(data.specs.bar ? [`Bar: ${data.specs.bar}`, `Bar: ${cleanSpec(data.specs.bar)}`] : []),
+    ...(data.specs.terminal ? [`Terminal: ${data.specs.terminal}`, `Terminal: ${cleanSpec(data.specs.terminal)}`] : []),
+    ...(data.specs.launcher ? [`Launcher: ${data.specs.launcher}`, `Launcher: ${cleanSpec(data.specs.launcher)}`] : []),
+    ...(data.specs.theme ? [`Theme: ${data.specs.theme}`, `Theme: ${cleanSpec(data.specs.theme)}`] : []),
+    ...(data.specs.shell ? [`Shell: ${data.specs.shell}`] : []),
+    ...(data.specs.editor ? [`Editor: ${data.specs.editor}`] : []),
+    ...(data.specs.ramIdleMiB ? [`~${data.specs.ramIdleMiB} MiB idle RAM`] : []),
+    `License: ${data.license}`,
+    `Source: ${data.source.repo.replace(/^https?:\/\//, '')}`,
+  ];
+
+  const usedPrefixes = new Set<string>();
+  let desc = `${baseSummary}.`;
+  for (const frag of specFragments) {
+    const prefix = frag.split(':')[0];
+    if (usedPrefixes.has(prefix)) continue;
+    const cleanFrag = frag.replace(/\.+$/, '');
+    const candidate = `${desc} ${cleanFrag}.`;
+    if (candidate.length <= 160) {
+      desc = candidate;
+      usedPrefixes.add(prefix);
+    } else if (desc.length < 140) {
+      const budget = 159 - desc.length - 1;
+      if (budget >= 12) {
+        const trimmed = cleanFrag
+          .slice(0, budget)
+          .replace(/\s*\([^)]*$/, '')
+          .replace(/[,;:\s/]+\S*$/, '')
+          .trim();
+        if (trimmed && !trimmed.includes('(') && desc.length + 1 + trimmed.length + 1 >= 140) {
+          desc = `${desc} ${trimmed}.`;
+          usedPrefixes.add(prefix);
+        }
+      }
+    }
+  }
+  if (desc.length > 160) {
+    desc = `${desc.slice(0, 157).replace(/\s+\S*$/, '')}...`;
+  }
+  return desc;
+}
+
+const seoDescription = buildSetupDescription();
+
+const primaryShot = data.screenshots[0];
+const ogImageUrl = primaryShot?.url;
+const ogImageAlt = primaryShot?.alt || `${data.name} (${wmLabel}) desktop screenshot`;
+const resolvedShotUrl = !ogImageUrl
+  ? new URL(withBase('/og.png'), Astro.site).href
+  : ogImageUrl.startsWith('http://') || ogImageUrl.startsWith('https://')
+    ? ogImageUrl
+    : new URL(withBase(ogImageUrl), Astro.site).href;
+const canonicalPageUrl = new URL(Astro.url.pathname, Astro.site).href;
+
+const setupJsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareSourceCode',
+    name: data.name,
+    description: seoDescription,
+    url: canonicalPageUrl,
+    codeRepository: data.source.repo,
+    ...(data.version ? { version: data.version } : {}),
+    author: {
+      '@type': 'Person',
+      name: data.author.name,
+      url: `https://github.com/${data.author.github}`,
+    },
+    license: `https://spdx.org/licenses/${data.license}.html`,
+    dateModified: data.updatedAt,
+    image: resolvedShotUrl,
+    operatingSystem: 'Linux',
+    ...(data.tags.length > 0 ? { keywords: data.tags.join(', ') } : {}),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: new URL(withBase('/'), Astro.site).href,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Catalogue',
+        item: new URL(withBase('/catalogue/'), Astro.site).href,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: data.name,
+        item: canonicalPageUrl,
+      },
+    ],
+  },
+];
 
 let defaultInstallCmd = `git clone ${data.source.repo} ~/.dotfiles`;
 let scriptBlobUrl = '';
@@ -88,12 +219,17 @@ echo "======================================================================"
 ---
 
 <Base
-  title={`${data.name} // Spec`}
-  description={data.summary}
+  title={seoTitle}
+  description={seoDescription}
   locale={locale}
   statusPrefix="[SHOW CASE: "
   statusInitial={data.author.name.toUpperCase()}
   statusFinal={data.name.toUpperCase()}
+  ogImage={ogImageUrl}
+  ogImageAlt={ogImageAlt}
+  ogType="article"
+  updatedAt={data.updatedAt}
+  jsonLd={setupJsonLd}
 >
   <SpecSubNav configId={entry.id} name={data.name} locale={locale} />
 

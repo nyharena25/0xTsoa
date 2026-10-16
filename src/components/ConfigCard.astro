@@ -37,12 +37,12 @@ const wmLabel = WM_LABELS[data.wm] || data.wm;
         </div>
 
         <!-- Title -->
-        <h3 class="font-display text-xl font-bold tracking-tight text-zinc-900 group-hover:text-zinc-700 transition-colors">
+        <h2 class="font-display text-xl font-bold tracking-tight text-zinc-900 group-hover:text-zinc-700 transition-colors">
           <a href={specUrl} class="hover:underline flex items-center gap-2">
             <span>{data.author.name} / {data.name}</span>
             <span class="font-mono text-sm group-hover:translate-x-1 transition-transform">&rarr;</span>
           </a>
-        </h3>
+        </h2>
 
         <!-- Summary Description -->
         <p class="font-sans text-sm text-zinc-600 mt-2 leading-relaxed">
@@ -109,6 +109,8 @@ const wmLabel = WM_LABELS[data.wm] || data.wm;
         <img
           src={primaryShot?.url || withBase('/screenshots/fallback-terminal.svg')}
           alt={primaryShot?.alt || `${data.name} preview`}
+          width="1280"
+          height="720"
           loading="lazy"
           class="w-full h-auto min-h-[160px] sm:min-h-0 sm:h-full object-cover group-hover/thumb:scale-[1.03] transition-transform duration-300"
         />

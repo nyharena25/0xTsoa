@@ -153,6 +153,8 @@ const defaultSetup = serializedSetups[0];
           id="spotlight-image"
           src={defaultSetup?.imgUrl}
           alt={defaultSetup?.imgAlt}
+          width="1280"
+          height="720"
           class="w-full h-full object-cover instant-snap select-none"
           loading="eager"
         />
@@ -190,11 +192,11 @@ const defaultSetup = serializedSetups[0];
           </div>
 
           <!-- Title with Typewriter Transition -->
-          <h2 class="font-display text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 leading-tight" id="spotlight-name">
+          <h2 class="font-display text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 leading-tight min-h-[1.25em]" id="spotlight-name">
             {defaultSetup?.name}
           </h2>
 
-          <p class="font-sans text-sm text-zinc-600 leading-relaxed mt-1" id="spotlight-desc">
+          <p class="font-sans text-sm text-zinc-600 leading-relaxed mt-1 min-h-[2.75rem] line-clamp-2" id="spotlight-desc">
             {defaultSetup?.desc}
           </p>
         </div>
@@ -320,8 +322,17 @@ const defaultSetup = serializedSetups[0];
 
   async function typeTitleTransition(el, newText) {
     if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.textContent = newText;
+      return;
+    }
     const current = el.textContent?.trim() || '';
     if (current === newText) return;
+
+    const lockedHeight = el.offsetHeight;
+    if (lockedHeight > 0) {
+      el.style.minHeight = `${lockedHeight}px`;
+    }
 
     // 1. Delete in reverse letter-by-letter
     for (let i = current.length; i >= 0; i--) {
@@ -333,6 +344,8 @@ const defaultSetup = serializedSetups[0];
       el.textContent = newText.slice(0, i);
       await new Promise((r) => setTimeout(r, 18));
     }
+
+    el.style.minHeight = '';
   }
 
   function swapScreenshot(shotIdx) {
@@ -440,6 +453,10 @@ const defaultSetup = serializedSetups[0];
         btn.classList.add('bg-white', 'text-zinc-600', 'border-zinc-200');
       }
     });
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
 
     // 4. Feature 4: 2s Image Rhythm (cycle screenshots every 2 seconds)
     if (s.screenshots && s.screenshots.length > 1) {

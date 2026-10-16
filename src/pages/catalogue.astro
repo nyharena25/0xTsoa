@@ -41,7 +41,8 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
 ---
 
 <Base
-  title={t('nav.exploreAll')}
+  title={t('catalogue.metaTitle')}
+  description={t('catalogue.metaDescription')}
   locale={locale}
   statusPrefix="[STATUS: "
   statusInitial="CATALOGUE"
@@ -71,8 +72,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
         class="flex-1 min-h-[44px] flex items-center justify-between px-4 py-2.5 bg-white border border-zinc-200 rounded-lg text-xs font-mono font-semibold text-zinc-900 shadow-xs cursor-pointer hover:bg-zinc-50 transition-colors"
       >
         <div class="flex items-center gap-2">
-          <span>⚙️</span>
-          <span>Search Filters</span>
+          <span>{t('catalogue.quickFilters')}</span>
           <span id="mobile-filter-badge" class="px-2 py-0.5 rounded-full bg-zinc-900 text-white text-[10px] font-mono">0</span>
         </div>
         <span id="mobile-filter-chevron" class="text-zinc-500 font-bold transition-transform">▼</span>
@@ -183,8 +183,8 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
           id="no-results-msg"
           class="hidden bg-white border border-zinc-200 rounded-xl p-8 text-center font-mono text-sm text-zinc-900 shadow-xs"
         >
-          <p class="font-bold text-base mb-1 text-zinc-900">🔍 {t('catalogue.noResults')}</p>
-          <p class="text-xs text-zinc-500 mb-4">Try clearing your filters or broadening your search keywords.</p>
+          <p class="font-bold text-base mb-1 text-zinc-900">{t('catalogue.noResults')}</p>
+          <p class="text-xs text-zinc-500 mb-4">Clear active filters or broaden your search keywords.</p>
           <button
             id="btn-empty-reset"
             type="button"
@@ -405,7 +405,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
       }
 
       if (countLabel) {
-        countLabel.textContent = `${visibleCount} interfaces indexed`;
+        countLabel.textContent = `${visibleCount} configurations indexed`;
       }
 
       if (noResultsMsg) {

@@ -13,6 +13,12 @@ interface Props {
   statusPrefix?: string;
   statusInitial?: string;
   statusFinal?: string;
+  ogImage?: string;
+  ogImageAlt?: string;
+  ogType?: 'website' | 'article';
+  updatedAt?: string;
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
+  noindex?: boolean;
 }
 
 const {
@@ -22,14 +28,36 @@ const {
   statusPrefix: propPrefix,
   statusInitial: propInitial,
   statusFinal: propFinal,
+  ogImage: propOgImage,
+  ogImageAlt,
+  ogType = 'website',
+  updatedAt,
+  jsonLd,
+  noindex = false,
 } = Astro.props;
 
 const t = useTranslations('en');
-const pageTitle = title ? `${title} — 0xTSOA` : t('site.title');
+const pageTitle = title ? `${title} — 0xTsoa` : t('site.title');
 const pageDesc = description || t('site.description');
 const currentPath = Astro.url.pathname;
 const canonicalUrl = new URL(currentPath, Astro.site).href;
-const ogImage = new URL(withBase('/og.png'), Astro.site).href;
+
+const defaultOgImage = new URL(withBase('/og.png'), Astro.site).href;
+const isDefaultOgImage =
+  !propOgImage || propOgImage === '/og.png' || propOgImage === withBase('/og.png');
+const resolvedOgImage = !propOgImage
+  ? defaultOgImage
+  : propOgImage.startsWith('http://') || propOgImage.startsWith('https://')
+    ? propOgImage
+    : new URL(withBase(propOgImage), Astro.site).href;
+const resolvedOgImageAlt = ogImageAlt || '0xTsoa — Linux desktop configuration registry';
+const modifiedTimeIso =
+  ogType === 'article' && updatedAt
+    ? updatedAt.includes('T')
+      ? updatedAt
+      : `${updatedAt}T00:00:00Z`
+    : undefined;
+const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
 let resolvedPrefix = propPrefix;
 let resolvedInitial = propInitial;
@@ -63,26 +91,31 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDesc} />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta
+      name="robots"
+      content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'}
+    />
     <link rel="canonical" href={canonicalUrl} />
 
     <!-- OpenGraph / Social -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="0xTsoa" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDesc} />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:image" content={ogImage} />
-    <meta property="og:image:width" content="1024" />
-    <meta property="og:image:height" content="526" />
-    <meta property="og:image:alt" content="0xTsoa — Linux desktop configuration registry" />
+    <meta property="og:image" content={resolvedOgImage} />
+    {isDefaultOgImage && <meta property="og:image:width" content="1024" />}
+    {isDefaultOgImage && <meta property="og:image:height" content="526" />}
+    <meta property="og:image:alt" content={resolvedOgImageAlt} />
+    {modifiedTimeIso && <meta property="article:modified_time" content={modifiedTimeIso} />}
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDesc} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image" content={resolvedOgImage} />
+    <meta name="twitter:image:alt" content={resolvedOgImageAlt} />
 
     <link rel="alternate" type="text/plain" title="LLM summary" href={withBase('/llms.txt')} />
 
@@ -93,6 +126,10 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
     />
 
     <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
+
+    {jsonLdItems.map((schema) => (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
   </head>
   <body class="min-h-screen flex flex-col font-sans antialiased text-[#0F172A] bg-[#FBFBFA] selection:bg-[#0F172A] selection:text-white overflow-x-hidden w-full max-w-full">
     <Header
@@ -112,6 +149,12 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
     <!-- Page Transitions (Delete & Retype) -->
     <script>
       function setupTitleTransitions() {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+          sessionStorage.removeItem('0xtsoa_page_transition');
+          return;
+        }
+
         const getTitleEl = (): HTMLElement | null => {
           return document.querySelector<HTMLElement>('[data-page-title="true"]');
         };
@@ -127,18 +170,24 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
           const isNavTransition = sessionStorage.getItem('0xtsoa_page_transition') === 'true';
           if (isNavTransition && originalText) {
             sessionStorage.removeItem('0xtsoa_page_transition');
+            const lockedHeight = titleEl.offsetHeight;
+            if (lockedHeight > 0) {
+              titleEl.style.minHeight = `${lockedHeight}px`;
+            }
             titleEl.textContent = '';
             (async () => {
               for (let i = 1; i <= originalText.length; i++) {
                 titleEl.textContent = originalText.slice(0, i);
                 await sleep(18);
               }
+              titleEl.style.minHeight = '';
             })();
           }
         }
 
         // 2. Intercept internal navigation links: Delete title letter-by-letter before navigating
         document.addEventListener('click', async (e) => {
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
           const targetLink = (e.target as HTMLElement)?.closest('a');
           if (!targetLink) return;
 
@@ -165,6 +214,10 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
             const activeTitleEl = getTitleEl();
 
             if (activeTitleEl) {
+              const lockedHeight = activeTitleEl.offsetHeight;
+              if (lockedHeight > 0) {
+                activeTitleEl.style.minHeight = `${lockedHeight}px`;
+              }
               const currentText = activeTitleEl.textContent || '';
               // Delete letter-by-letter in reverse
               for (let i = currentText.length; i >= 0; i--) {
@@ -182,6 +235,7 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
         const originalDocTitle = document.title;
         let isTabRetyping = false;
         document.addEventListener('visibilitychange', async () => {
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
           if (document.visibilityState === 'visible' && !isTabRetyping) {
             isTabRetyping = true;
             const currentTitle = document.title;

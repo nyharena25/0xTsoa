@@ -13,7 +13,8 @@ const t = useTranslations(locale);
 ---
 
 <Base
-  title={t('nav.contribute')}
+  title={t('contribute.metaTitle')}
+  description={t('contribute.metaDescription')}
   locale={locale}
   statusPrefix="[STATUS: "
   statusInitial="CONTRIBUTOR"
@@ -26,8 +27,10 @@ const t = useTranslations(locale);
         <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
         <span>Contribution Guide</span>
       </div>
-      <h1 class="flex flex-wrap items-center gap-x-3 gap-y-2 font-display text-2xl sm:text-4xl uppercase font-bold text-zinc-900 tracking-tight">
-        <span>CONTRIBUTE TO </span>
+      <h1
+        class="flex flex-wrap items-center gap-x-3 gap-y-2 font-display text-2xl sm:text-4xl uppercase font-bold text-zinc-900 tracking-tight"
+      >
+        <span data-page-title="true">{t('contribute.title').replace(/\s*0xTsoa$/i, '')}</span>{' '}
         <BdBrickLogo size="md" class="inline-flex text-zinc-900 align-middle shrink-0" />
       </h1>
       <p class="font-sans text-base text-zinc-600 mt-2 leading-relaxed">
@@ -103,7 +106,7 @@ const t = useTranslations(locale);
     <section class="bg-white border border-zinc-200 rounded-xl p-6 shadow-xs flex flex-col gap-3 font-mono text-xs">
       <div class="border-b border-zinc-100 pb-3 flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
-        <h3 class="font-bold uppercase text-zinc-900 tracking-wide">CI VALIDATION & SECURITY RULES</h3>
+        <h2 class="font-bold uppercase text-zinc-900 tracking-wide">CI VALIDATION & SECURITY RULES</h2>
       </div>
 
       <ul class="space-y-2.5 text-zinc-700 font-sans text-sm leading-relaxed">
@@ -132,9 +135,9 @@ const t = useTranslations(locale);
     <!-- Example JSON Block -->
     <section class="bg-white border border-zinc-200 rounded-xl p-6 shadow-xs flex flex-col gap-3">
       <div class="flex items-center justify-between border-b border-zinc-100 pb-3">
-        <h3 class="font-mono text-xs uppercase font-bold text-zinc-900 tracking-wide">
+        <h2 class="font-mono text-xs uppercase font-bold text-zinc-900 tracking-wide">
           Standardized JSON Format Example
-        </h3>
+        </h2>
         <CopyButton text={exampleJsonSnippet} label="Copy Example" />
       </div>
 

@@ -24,6 +24,8 @@ const t = useTranslations('en');
 const homePath = withBase('/');
 const cataloguePath = withBase('/catalogue/');
 const contributePath = withBase('/contribute/');
+const statusBadgeMinCh = Math.max(statusInitial.length, statusFinal.length) + statusPrefix.length + 6;
+const finalStatusText = `${statusPrefix}${statusFinal}]`;
 ---
 
 <header class="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-zinc-200 shadow-xs">
@@ -46,13 +48,14 @@ const contributePath = withBase('/contribute/');
         data-status-initial={statusInitial}
         data-status-final={statusFinal}
         data-page-label={pageLabel || statusFinal}
+        style={`min-width: ${statusBadgeMinCh}ch`}
         class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-mono text-zinc-900 min-w-[124px] max-w-full justify-center select-none truncate"
       >
         <span id="topbar-status-dot" class="relative flex h-2 w-2 shrink-0">
-          <span id="topbar-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-          <span id="topbar-status-core" class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+          <span id="topbar-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span id="topbar-status-core" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
         </span>
-        <span id="topbar-status-text" class="font-bold tracking-wider truncate"></span>
+        <span id="topbar-status-text" class="font-bold tracking-wider truncate">{finalStatusText}</span>
         <span id="topbar-status-cursor" class="terminal-block-cursor shrink-0"></span>
       </div>
     </div>
@@ -173,28 +176,24 @@ const contributePath = withBase('/contribute/');
         href={homePath}
         class="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-800 hover:bg-zinc-100 font-medium transition-colors"
       >
-        <span>🏠</span>
         <span>Home</span>
       </a>
       <a
         href={cataloguePath}
         class="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-800 hover:bg-zinc-100 font-medium transition-colors"
       >
-        <span>🧭</span>
         <span>{t('nav.exploreAll')}</span>
       </a>
       <a
         href={contributePath}
         class="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-800 hover:bg-zinc-100 font-medium transition-colors"
       >
-        <span>✍️</span>
         <span>{t('nav.contribute')}</span>
       </a>
       <a
         href={`${homePath}#section-manifesto`}
         class="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-800 hover:bg-zinc-100 font-medium transition-colors"
       >
-        <span>📜</span>
         <span>{t('nav.manifesto')}</span>
       </a>
     </div>
@@ -225,6 +224,13 @@ const contributePath = withBase('/contribute/');
     const prefix = badge.getAttribute('data-status-prefix') || '[STATUS: ';
     const initialLabel = badge.getAttribute('data-status-initial') || 'EXIT 1';
     const finalLabel = badge.getAttribute('data-status-final') || 'EXIT 0';
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      textEl.textContent = `${prefix}${finalLabel}]`;
+      pingEl.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75';
+      coreEl.className = 'relative inline-flex rounded-full h-2 w-2 bg-emerald-500';
+      return;
+    }
 
     // Reset: starts empty with error indicator (rose)
     textEl.textContent = '';

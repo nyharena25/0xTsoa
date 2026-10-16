@@ -1,5 +1,6 @@
 ---
 import { withBase } from '../../site.config';
+import { useTranslations } from '../lib/i18n';
 
 interface Screenshot {
   url: string;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const { screenshots, configName } = Astro.props;
+const t = useTranslations('en');
 const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
 ---
 
@@ -21,7 +23,7 @@ const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
     <div class="flex items-center gap-2">
       <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
       <h2 class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider">
-        Screenshot Gallery // {configName}
+        {t('spec.sectionScreenshots')} // {configName}
       </h2>
     </div>
 
@@ -48,6 +50,8 @@ const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
           <img
             src={shot.url}
             alt={shot.alt}
+            width="1280"
+            height="720"
             loading="lazy"
             onerror={`this.onerror=null; this.src='${fallbackTerminalUrl}'`}
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

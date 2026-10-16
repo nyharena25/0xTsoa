@@ -12,9 +12,9 @@ const t = useTranslations('en');
   <div class="bg-zinc-50 border-b border-zinc-200 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
     <div class="flex items-center gap-2.5">
       <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
-      <h3 class="font-display text-base uppercase tracking-tight text-zinc-900 font-bold">
+      <h2 class="font-display text-base uppercase tracking-tight text-zinc-900 font-bold">
         {t('manifesto.heading')}
-      </h3>
+      </h2>
     </div>
 
     <div class="flex items-center gap-2">
@@ -50,9 +50,9 @@ const t = useTranslations('en');
             <span class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900">01 // Architecture</span>
             <span class="bg-zinc-900 text-white text-[10px] font-mono px-2 py-0.5 rounded font-medium uppercase tracking-wider">REGISTRY</span>
           </div>
-          <h4 class="font-display text-base font-bold text-zinc-900 uppercase tracking-tight mt-1">
+          <h3 class="font-display text-base font-bold text-zinc-900 uppercase tracking-tight mt-1">
             {t('manifesto.card1Title')}
-          </h4>
+          </h3>
           <p class="font-sans text-sm text-zinc-600 leading-relaxed">
             <span class="font-brick font-normal text-zinc-950 text-base tracking-wide inline-block mr-1">0xTsoa</span>{t('manifesto.card1Text').replace(/^0xTsoa\s*/, ' ')}
           </p>
@@ -70,9 +70,9 @@ const t = useTranslations('en');
             <span class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900">02 // Curation</span>
             <span class="bg-zinc-100 border border-zinc-200 text-zinc-700 text-[10px] font-mono px-2 py-0.5 rounded font-medium uppercase tracking-wider">CURATION</span>
           </div>
-          <h4 class="font-display text-base font-bold text-zinc-900 uppercase tracking-tight mt-1">
+          <h3 class="font-display text-base font-bold text-zinc-900 uppercase tracking-tight mt-1">
             {t('manifesto.card2Title')}
-          </h4>
+          </h3>
           <p class="font-sans text-sm text-zinc-600 leading-relaxed">
             {t('manifesto.card2Text')}
           </p>
@@ -88,11 +88,11 @@ const t = useTranslations('en');
         <div class="flex flex-col gap-2.5">
           <div class="flex items-center justify-between border-b border-zinc-100 pb-2.5">
             <span class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900">03 // Workflow</span>
-            <span class="bg-zinc-900 text-white text-[10px] font-mono px-2 py-0.5 rounded font-medium uppercase tracking-wider">1-LINE</span>
+            <span class="bg-zinc-900 text-white text-[10px] font-mono px-2 py-0.5 rounded font-medium uppercase tracking-wider">PINNED</span>
           </div>
-          <h4 class="font-display text-base font-bold text-zinc-900 uppercase tracking-tight mt-1">
+          <h3 class="font-display text-base font-bold text-zinc-900 uppercase tracking-tight mt-1">
             {t('manifesto.card3Title')}
-          </h4>
+          </h3>
           <p class="font-sans text-sm text-zinc-600 leading-relaxed whitespace-pre-line">
             {t('manifesto.card3Text')}
           </p>
@@ -110,15 +110,15 @@ const t = useTranslations('en');
             <span class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900">04 // Jamstack</span>
             <span class="bg-zinc-100 border border-zinc-200 text-zinc-700 text-[10px] font-mono px-2 py-0.5 rounded font-medium uppercase tracking-wider">ZERO_DB</span>
           </div>
-          <h4 class="font-display text-base font-bold text-zinc-900 uppercase tracking-tight mt-1">
-            DECENTRALIZED & ZERO SIGN-UP
-          </h4>
+          <h3 class="font-display text-base font-bold text-zinc-900 uppercase tracking-tight mt-1">
+            {t('manifesto.card4Title')}
+          </h3>
           <p class="font-sans text-sm text-zinc-600 leading-relaxed">
-            No account required. Zero tracking, zero opaque databases: configurations and community votes live directly and transparently on GitHub.
+            {t('manifesto.card4Text')}
           </p>
         </div>
         <div class="pt-3 border-t border-zinc-100 flex items-center justify-between font-mono text-[11px] text-zinc-400 uppercase">
-          <span>GITHUB PR & DISCUSSIONS</span>
+          <span>{t('manifesto.card4Stat')}</span>
           <span>ART_04</span>
         </div>
       </article>

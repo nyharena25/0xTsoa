@@ -5,10 +5,29 @@ import Spotlight from '../components/Spotlight.astro';
 import Manifesto from '../components/Manifesto.astro';
 import { getCollection } from 'astro:content';
 import { getTop5Configs } from '../lib/votes';
+import { useTranslations } from '../lib/i18n';
 import { withBase } from '../../site.config';
 
+const t = useTranslations('en');
 const allConfigs = await getCollection('configs');
 const spotlightConfigs = getTop5Configs(allConfigs);
+
+const siteRootUrl = new URL(withBase('/'), Astro.site).href;
+const searchTargetUrl = `${new URL(withBase('/catalogue/'), Astro.site).href}?q={search_term_string}`;
+
+const homeJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: '0xTsoa',
+  alternateName: 'ZeroTsoa',
+  url: siteRootUrl,
+  description: t('site.description'),
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: searchTargetUrl,
+    'query-input': 'required name=search_term_string',
+  },
+};
 ---
 
 <Base
@@ -16,6 +35,7 @@ const spotlightConfigs = getTop5Configs(allConfigs);
   statusPrefix="[STATUS: "
   statusInitial="EXIT 1"
   statusFinal="EXIT 0"
+  jsonLd={homeJsonLd}
 >
   <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-5 sm:py-8 flex flex-col gap-6 sm:gap-10">
     <Hero />

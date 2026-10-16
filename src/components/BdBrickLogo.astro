@@ -92,12 +92,16 @@ const sizeClasses = {
           isRunning = false;
         }
 
-        // Run on load
-        runSequence();
+        // Run on load unless reduced motion is preferred
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          runSequence();
+        }
 
         // Re-run on user click
         container.addEventListener('click', () => {
-          runSequence();
+          if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            runSequence();
+          }
         });
       });
     }

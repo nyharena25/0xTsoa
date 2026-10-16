@@ -1,7 +1,7 @@
 {
   "site": {
-    "title": "0xTsoa — Linux Desktop Architecture Registry",
-    "description": "Open source community platform cataloguing minimal Linux dotfiles, themes, and install scripts.",
+    "title": "0xTsoa — Reproducible Linux Dotfiles & Desktop Registry",
+    "description": "Open, zero-database Linux dotfiles registry of reproducible Wayland and X11 desktop configs (Hyprland, Niri, Sway, i3, BSPWM) with pinned install scripts.",
     "status": "STATUS: RC-STABLE",
     "searchPlaceholder": "grep -i tag... [/]"
   },
@@ -14,9 +14,9 @@
     "github": "GitHub"
   },
   "hero": {
-    "badge": "OFFICIAL REGISTRY • LINUX ARCHITECTURE",
-    "title": "LINUX DESKTOP ARCHITECTURE MADE SIMPLE.",
-    "subtitle": "Explore curated minimal setups, understand their workflow, and deploy them in one click."
+    "badge": "OPEN DOTFILES REGISTRY • WAYLAND & X11",
+    "title": "REPRODUCIBLE LINUX DESKTOP CONFIGS & DOTFILES.",
+    "subtitle": "Browse peer-reviewed Hyprland, Niri, Sway, i3, and BSPWM setups for Arch Linux, NixOS, and Fedora. Inspect component specs, verify SHA-256 install scripts, and deploy from pinned Git commits."
   },
   "spotlight": {
     "title": "TOP 5 SPOTLIGHT",
@@ -29,15 +29,15 @@
     "theme": "Theme",
     "ramIdle": "RAM Footprint",
     "ram": "RAM Footprint",
-    "deployOneLine": "Fast 1-Line Deployment:",
-    "deployCmd": "Fast 1-Line Deployment:",
+    "deployOneLine": "Pinned Install Command:",
+    "deployCmd": "Pinned Install Command:",
     "githubRepo": "Source Code",
     "sourceCode": "Source Code",
     "verifiedSpec": "Verified Spec",
-    "fullSpec": "Full Spec →",
+    "fullSpec": "Full Spec",
     "communitySignOff": "Community Sign-Off:",
     "approved": "Approve this setup",
-    "signOffNotice": "Transparent cryptographic signature linked to commit SHA.",
+    "signOffNotice": "Votes counted from +1, heart, and hooray reactions on each setup's GitHub vote issue.",
     "tabPreview": "Preview",
     "tabConsole": "Specs",
     "copy": "Copy",
@@ -50,22 +50,27 @@
     "step3": "03. Automation & Reload Scripts"
   },
   "manifesto": {
-    "heading": "Manifesto • Architecture & Vision",
-    "card1Title": "What is this site?",
-    "card1Text": "0xTsoa is the open reference registry dedicated to discovering, documenting, and deploying minimal, lightweight, and reproducible Linux desktop environments.",
-    "card1Stat": "Open & Free",
-    "card2Title": "What you will find",
-    "card2Text": "Ready-to-use full environments (Hyprland, Sway, stripped GNOME, i3/bspwm), battle-tested dotfiles, and advanced battery autonomy profiles.",
-    "card2Stat": "Wayland & X11",
-    "card3Title": "How does it work?",
-    "card3Text": "1. Explore real developer workstations.\n2. Inspect specs and hardware benchmarks.\n3. Deploy the desktop via shell script or clone the dotfiles directly.",
-    "card3Stat": "1-Click Deploy"
+    "heading": "Registry Architecture & Verification Model",
+    "card1Title": "Open Linux Dotfiles Registry",
+    "card1Text": "0xTsoa (spoken \"ZeroTsoa\") is an open, static registry for discovering, auditing, and reproducing Linux desktop configurations across Wayland compositors and X11 window managers.",
+    "card1Stat": "CC-BY-4.0 & MIT",
+    "card2Title": "Wayland & X11 Desktop Setups",
+    "card2Text": "Complete Hyprland rice setups, Niri, Sway, i3, and BSPWM configs for Arch Linux, NixOS, Fedora, and Void—indexed by bar, terminal, launcher, theme palette, and idle RAM.",
+    "card2Stat": "Typed JSON Specs",
+    "card3Title": "Pinned Commits & SHA-256 Scripts",
+    "card3Text": "1. Filter setups by compositor, distro, theme, or idle RAM.\n2. Inspect the pinned upstream README, keybindings, and component specs.\n3. Clone the pinned commit or run the SHA-256 verified install script.",
+    "card3Stat": "SHA-256 Pinned",
+    "card4Title": "Zero-Database GitHub Workflow",
+    "card4Text": "No accounts, tracking, or backend database. Every configuration is a schema-validated JSON file in Git, and community votes come directly from GitHub issue reactions.",
+    "card4Stat": "GitHub Issues & PRs"
   },
   "catalogue": {
-    "breadcrumb": "Catalogue / Global Registry",
+    "metaTitle": "Linux Dotfiles Catalogue — Hyprland, Sway, Niri, i3 & BSPWM",
+    "metaDescription": "Filter reproducible Linux desktop configs and dotfiles by compositor (Hyprland, Sway, Niri, i3, BSPWM), distro (Arch Linux, NixOS, Fedora), theme, and idle RAM.",
+    "breadcrumb": "Linux Desktop Configurations & Dotfiles Catalogue",
     "liveSync": "Verified",
     "totalRecords": "Total:",
-    "interfacesIndexed": "indexed interfaces",
+    "interfacesIndexed": "configurations indexed",
     "quickFilters": "Search Filters",
     "reset": "Reset",
     "wmSection": "Compositors & WM",
@@ -83,7 +88,10 @@
     "sortRam": "Lowest RAM",
     "noResults": "No configurations match these filters.",
     "prevPage": "Previous",
-    "nextPage": "Next"
+    "nextPage": "Next",
+    "batteryTipTitle": "LAPTOP POWER PROFILE",
+    "batteryTipText": "Filter by \"Battery / cpufreq mode\" to list configurations that document laptop power-management tools such as TLP, auto-cpufreq, or power-profiles-daemon.",
+    "registryFactsTitle": "REGISTRY CONSTRAINTS"
   },
   "spec": {
     "backCatalogue": "← Back to catalogue",
@@ -107,12 +115,14 @@
     "fullscreen": "Fullscreen view"
   },
   "contribute": {
-    "title": "CONTRIBUTE TO 0xTsoa",
-    "subtitle": "A decentralized registry without logins: everything runs through GitHub.",
+    "metaTitle": "Submit a Linux Desktop Config or Dotfiles Setup",
+    "metaDescription": "Submit your Hyprland, Sway, Niri, i3, or BSPWM dotfiles to 0xTsoa via GitHub Issue Form or Pull Request with automated Zod schema and SHA-256 validation.",
+    "title": "SUBMIT A CONFIGURATION TO 0xTsoa",
+    "subtitle": "Zero-database submission pipeline: submit a GitHub Issue Form or open a Pull Request against configs/<author>/<slug>.json.",
     "method1Title": "Method 1 • Direct Pull Request",
-    "method1Desc": "Create your config file configs/<your-user>/<your-slug>.json and open a PR. Our CI automatically validates schemas and URLs.",
+    "method1Desc": "Add configs/<github-handle>/<slug>.json with a pinned Git commit or tag and open a Pull Request. CI validates the Zod schema, image hosts, and script checksums.",
     "method2Title": "Method 2 • GitHub Issue Form",
-    "method2Desc": "Prefer not dealing with JSON directly? Fill our issue template. A GitHub Action will convert it into a PR for you.",
+    "method2Desc": "Fill out the structured GitHub Issue Form. The issue-to-config Action computes the script SHA-256 digest, validates the JSON entry, and opens a Pull Request.",
     "btnOpenIssue": "Open GitHub Issue Form ↗",
     "btnViewSchema": "View JSON Schema"
   }

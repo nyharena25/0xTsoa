@@ -51,10 +51,10 @@ const topDistros = Object.entries(counts.distros)
 
     <!-- Section 1: WM / Compositors -->
     <div class="mb-5">
-      <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
+      <div class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
         <span>{t('catalogue.wmSection')}</span>
         <span class="text-[11px] text-zinc-400 font-normal">({topWms.length})</span>
-      </h3>
+      </div>
       <ul class="space-y-2 font-mono text-xs">
         {topWms.map(([wmKey, count]) => (
           <li>
@@ -79,10 +79,10 @@ const topDistros = Object.entries(counts.distros)
 
     <!-- Section 2: Styles / Themes -->
     <div class="pt-4 border-t border-zinc-100 mb-5">
-      <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
+      <div class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
         <span>{t('catalogue.styleSection')}</span>
         <span class="text-[11px] text-zinc-400 font-normal">({topStyles.length})</span>
-      </h3>
+      </div>
       <ul class="space-y-2 font-mono text-xs">
         {topStyles.map(([styleKey, count]) => (
           <li>
@@ -107,10 +107,10 @@ const topDistros = Object.entries(counts.distros)
 
     <!-- Section 3: Distros -->
     <div class="pt-4 border-t border-zinc-100 mb-5">
-      <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
+      <div class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
         <span>{t('catalogue.distroSection')}</span>
         <span class="text-[11px] text-zinc-400 font-normal">({topDistros.length})</span>
-      </h3>
+      </div>
       <ul class="space-y-2 font-mono text-xs">
         {topDistros.map(([distroKey, count]) => (
           <li>
@@ -135,10 +135,10 @@ const topDistros = Object.entries(counts.distros)
 
     <!-- Section 4: Hardware & Autonomy -->
     <div class="pt-4 border-t border-zinc-100 mb-4">
-      <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
+      <div class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
         <span>{t('catalogue.hardwareSection')}</span>
         <span class="text-[11px] text-zinc-400 font-normal">(2)</span>
-      </h3>
+      </div>
       <ul class="space-y-2 font-mono text-xs">
         <li>
           <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
@@ -174,28 +174,28 @@ const topDistros = Object.entries(counts.distros)
     <!-- Clean Advice Box -->
     <div class="bg-zinc-900 text-zinc-100 p-3.5 rounded-lg font-mono text-xs shadow-xs">
       <div class="font-bold flex items-center gap-1.5 mb-1 text-[11px] text-zinc-300">
-        <span class="text-emerald-400">💡</span>
-        <span>BATTERY TIP</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+        <span>{t('catalogue.batteryTipTitle')}</span>
       </div>
       <p class="text-[11px] text-zinc-400 leading-relaxed">
-        Combine Hyprland + auto-cpufreq for a laptop profile with &gt; 9h verified battery life on a 54Wh battery.
+        {t('catalogue.batteryTipText')}
       </p>
     </div>
   </div>
 
-  <!-- Benchmarks card -->
+  <!-- Registry Facts card -->
   <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-4 font-mono text-xs shadow-xs">
     <div class="font-bold uppercase tracking-wider text-[11px] text-zinc-700 mb-2.5 border-b border-zinc-200 pb-1.5">
-      AVERAGE BENCHMARKS
+      {t('catalogue.registryFactsTitle')}
     </div>
     <div class="space-y-1.5 text-zinc-500">
       <div class="flex justify-between items-center">
-        <span>Minimal footprint:</span>
-        <span class="font-bold text-zinc-900">170 MiB (BSPWM)</span>
+        <span>Script pinning:</span>
+        <span class="font-bold text-zinc-900">SHA-256 + commit/tag</span>
       </div>
       <div class="flex justify-between items-center">
-        <span>Average boot:</span>
-        <span class="font-bold text-zinc-900">1.82s (systemd)</span>
+        <span>Image hosts:</span>
+        <span class="font-bold text-zinc-900">6 allowlisted hosts</span>
       </div>
       <div class="flex justify-between items-center">
         <span>Spec License:</span>

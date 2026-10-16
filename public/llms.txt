@@ -1,32 +1,58 @@
 # 0xTsoa
 
-> Open-source, zero-database community registry of reproducible Linux desktop configurations (dotfiles, themes, window manager setups for Wayland and X11), each with verified install scripts, screenshots and community sign-off.
+> Open-source, zero-database community registry of reproducible Linux desktop configurations (dotfiles, Wayland compositors, X11 window managers, bars, launchers, and themes) with pinned install scripts, screenshots, and community votes.
 
-0xTsoa is a static website (Astro, deployed on Vercel at https://0xtsoa.vercel.app). There is no backend and no database: every configuration is a typed JSON file in the GitHub repository (`configs/<author>/<slug>.json`), validated against a JSON Schema in CI and compiled into static pages at build time.
-
-Key facts:
-
-- Each configuration describes a desktop setup: compositor/window manager (Hyprland, Niri, Sway, BSPWM, i3, AwesomeWM...), supported distributions, components, idle RAM footprint, style tags, screenshots and a one-click install command.
-- External install scripts are pinned with SHA-256 checksums and pinned Git commits; screenshots are restricted to a whitelist of image hosts.
-- Community approval = 👍 ❤️ 🎉 reactions on one GitHub "vote" issue per configuration, snapshotted at build time.
-- Submissions arrive through a GitHub Issue Form; a GitHub Actions bot converts the issue into a config JSON and opens a pull request.
-- Stack: Astro (static output), Tailwind CSS v4, Zod + JSON Schema, Pagefind (client-side search), Marked + sanitize-html, GitHub Actions.
-- Licenses: platform code MIT; registry data (`configs/`) CC BY 4.0; each dotfiles project keeps its upstream license.
+0xTsoa (spoken alias: **ZeroTsoa**) is a static registry built with Astro 7 (`output: 'static'`), Tailwind CSS v4, Zod 4, and Pagefind, deployed on Vercel at https://0xtsoa.vercel.app (and compatible with GitHub Pages sub-path builds). Every configuration is a standalone JSON file in Git (`configs/<author>/<slug>.json`), validated against a strict Zod/JSON Schema in CI and compiled into static HTML and JSON at build time.
 
 ## Pages
 
-- [Home](https://0xtsoa.vercel.app/): spotlight showcase and search
-- [Catalogue](https://0xtsoa.vercel.app/catalogue/): every configuration, filterable by compositor, distribution and style
-- [Contribute](https://0xtsoa.vercel.app/contribute/): how to submit a configuration
-- Configuration detail pages: `https://0xtsoa.vercel.app/configs/<author>/<slug>/` (architecture spec, install protocol, rendered upstream README)
+- [Home](https://0xtsoa.vercel.app/): top-voted spotlight carousel, quick compositor/style links, and registry overview
+- [Catalogue](https://0xtsoa.vercel.app/catalogue/): full configuration index filterable by compositor/WM, distribution, theme style, idle RAM (`<= 300 MiB`), and battery profile (`?wm=`, `?style=`, `?distro=`, `?q=`)
+- [Contribute](https://0xtsoa.vercel.app/contribute/): submission instructions for GitHub Issue Form and direct Pull Requests
+- Configuration detail pages: `https://0xtsoa.vercel.app/configs/<author>/<slug>/` (specifications table, pinned install script and SHA-256 digest, screenshot gallery, rendered upstream README, and keybindings)
 
-## Machine-readable data
+## Machine-Readable Data
 
-- [index.json](https://0xtsoa.vercel.app/index.json): full registry as a JSON array (one object per configuration)
-- [Sitemap](https://0xtsoa.vercel.app/sitemap-index.xml): every indexable URL
+- [index.json](https://0xtsoa.vercel.app/index.json): full registry exported as a JSON array of `CatalogueItem` objects
+- [Sitemap](https://0xtsoa.vercel.app/sitemap-index.xml): XML sitemap index covering all public pages and `/configs/<author>/<slug>/` routes
 
-## Source
+### `index.json` Entry Field Reference
 
-- [GitHub repository](https://github.com/nyharena25/0xTsoa)
+Each item in `https://0xtsoa.vercel.app/index.json` contains:
+
+- `id` (`string`): `<author>/<slug>` identifier matching `/configs/<author>/<slug>/`
+- `name` (`string`): setup title (`3–80` chars)
+- `author` (`{ name: string, github: string }`): maintainer display name and GitHub handle
+- `summary` (`string`): one-sentence technical summary (`10–200` chars)
+- `distros` (`string[]`): target distributions (`arch`, `endeavouros`, `manjaro`, `fedora`, `nixos`, `debian`, `ubuntu`, `mint`, `void`, `opensuse`, `gentoo`, `alpine`, `any`)
+- `wm` (`string`): window manager or compositor (`hyprland`, `sway`, `river`, `niri`, `wayfire`, `labwc`, `i3`, `bspwm`, `awesome`, `qtile`, `xmonad`, `dwm`, `herbstluftwm`, `openbox`, `gnome`, `kde`, `xfce`, `cinnamon`, `cosmic`, `other`)
+- `displayServer` (`"wayland" | "x11" | "both"`): display server protocol
+- `tags` (`string[]`): lowercase kebab-case tags (up to 10)
+- `specs` (`object`): optional component details (`bar`, `terminal`, `launcher`, `theme`, `shell`, `ramIdleMiB`, `batteryProfile`)
+- `thumbUrl` (`string`): primary screenshot URL (from `screenshots[0].url`)
+- `thumbAlt` (`string`): accessible description for the primary screenshot
+- `version` (`string`, optional): configuration version string
+- `updatedAt` (`string`): last modification date (`YYYY-MM-DD`)
+- `votes` (`number`): community sign-off count snapshotted at build time
+
+## Submission & Community Vote Flow
+
+1. **Issue Form or Direct PR**: Contributors submit via the GitHub Issue Form (`new-config.yml`) or open a Pull Request adding `configs/<author>/<slug>.json`.
+2. **Automated Bot PR (`issue-to-config`)**: When submitted via Issue Form, a GitHub Actions workflow parses the markdown fields, downloads any referenced install script to compute its SHA-256 hash if omitted, validates the payload with `configSchema`, and opens a Pull Request.
+3. **CI Schema Validation**: Every PR runs `npm run validate` and `npm run check` (`astro check` + Vitest) to enforce schema rules, pinned Git refs, SHA-256 digests, and allowed image hosts.
+4. **Community Vote Issue (`ensure-vote-issues` & `fetch-votes`)**: On merge, CI ensures a dedicated GitHub issue titled `[0xTsoa] <author>/<slug>` with label `vote` exists. Community members vote by reacting with `+1`, `heart`, or `hooray` on that issue; `prebuild` (`scripts/fetch-votes.ts`) snapshots those reaction counts into `src/generated/votes.json`.
+
+## Install-Safety & Reproducibility Model
+
+- **Pinned Upstream Refs**: `source.ref` and raw script URLs (`install.script.url`) must use an immutable 40-character hexadecimal Git commit SHA or version tag. Moving branch names (`main`, `master`, `dev`, `HEAD`, `latest`, `trunk`) are rejected by `isPinnedRef()` in `src/lib/schema.ts`.
+- **SHA-256 Script Integrity**: Any external `install.script` requires a lowercase 64-character hex `sha256` digest displayed alongside a direct link to inspect the raw script source before execution.
+- **Image Host Allowlist**: Screenshot URLs are restricted to `raw.githubusercontent.com`, `user-images.githubusercontent.com`, `private-user-images.githubusercontent.com`, `github.com`, `i.imgur.com`, and `i.redd.it` (plus local `/` paths).
+- **Sanitized README Rendering**: Upstream READMEs are fetched from the pinned `source.ref` at build time, parsed with `marked`, and stripped of unsafe tags/attributes via `sanitize-html`.
+
+## Source & Governance
+
+- [GitHub Repository](https://github.com/nyharena25/0xTsoa)
 - [Config JSON Schema](https://github.com/nyharena25/0xTsoa/blob/main/schema/config.schema.json)
-- [Contribution guidelines](https://github.com/nyharena25/0xTsoa/blob/main/CONTRIBUTING.md)
+- [Zod Schema Definition](https://github.com/nyharena25/0xTsoa/blob/main/src/lib/schema.ts)
+- [Contribution Guidelines](https://github.com/nyharena25/0xTsoa/blob/main/CONTRIBUTING.md)
+- Licenses: platform code is MIT; registry entries (`configs/`) are CC BY 4.0; linked dotfiles retain their respective upstream licenses.

@@ -46,8 +46,8 @@ export const BASE_PATH = resolveBasePath();
 function resolveSiteUrl(): string {
   if (env.SITE_URL) return env.SITE_URL.replace(/\/$/, '');
   // Not VERCEL_URL: it's the per-deployment hash URL, which would leak into canonical/sitemap.
-  if (isVercel) return 'https://0xtsoa.vercel.app';
-  return `https://${REPO_OWNER.toLowerCase()}.github.io`;
+  if (isGitHubActions) return `https://${REPO_OWNER.toLowerCase()}.github.io`;
+  return 'https://0xtsoa.vercel.app';
 }
 
 export const SITE_URL = resolveSiteUrl();
