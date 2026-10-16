@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Google Cursor",
+  "author": {
+    "name": "ful1e5",
+    "github": "ful1e5"
+  },
+  "lang": "en",
+  "summary": "Material Design cursor theme with color variants.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2023-12-22",
+  "distros": [
+    "any"
+  ],
+  "category": "cursors",
+  "wm": "any",
+  "themeStyle": "material",
+  "displayServer": "both",
+  "tags": [
+    "xcursor"
+  ],
+  "screenshots": [
+    {
+      "url": "https://i.imgur.com/9ZlC1gD.png",
+      "alt": "GoogleDot Black"
+    },
+    {
+      "url": "https://i.imgur.com/67KgJ3s.png",
+      "alt": "GoogleDot White"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/ful1e5/Google_Cursor",
+    "ref": "7e416f8ae074a9346bf860961a0c4d47a58f4f00",
+    "readme": "README.md"
+  }
+}

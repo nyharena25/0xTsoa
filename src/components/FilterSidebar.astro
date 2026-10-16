@@ -1,8 +1,10 @@
 ---
 import { useTranslations, type Locale } from '../lib/i18n';
-import { WM_LABELS, DISTRO_LABELS, STYLE_LABELS } from '../lib/schema';
+import { ALLOWED_IMAGE_HOSTS } from '../../site.config';
+import { WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORIES, CATEGORY_LABELS } from '../lib/schema';
 
 interface FacetCounts {
+  categories: Record<string, number>;
   wms: Record<string, number>;
   styles: Record<string, number>;
   distros: Record<string, number>;
@@ -17,6 +19,9 @@ interface Props {
 
 const { counts } = Astro.props;
 const t = useTranslations('en');
+
+// Fixed schema order (not by count) so each part of the desktop stays in a predictable place.
+const categories = CATEGORIES.filter((c) => counts.categories[c]).map((c) => [c, counts.categories[c]] as const);
 
 const topWms = Object.entries(counts.wms)
   .sort((a, b) => b[1] - a[1])
@@ -49,8 +54,34 @@ const topDistros = Object.entries(counts.distros)
       </a>
     </div>
 
-    <!-- Section 1: WM / Compositors -->
+    <!-- Section 0: Desktop part (category) -->
     <div class="mb-5">
+      <div class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
+        <span>{t('catalogue.categorySection')}</span>
+        <span class="text-[11px] text-zinc-400 font-normal">({categories.length})</span>
+      </div>
+      <ul class="space-y-2 font-mono text-xs">
+        {categories.map(([key, count]) => (
+          <li>
+            <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
+              <div class="flex items-center gap-2.5">
+                <input
+                  type="checkbox"
+                  name="category"
+                  value={key}
+                  class="filter-checkbox w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
+                />
+                <span class="text-zinc-800 group-hover:text-zinc-950 font-medium">{CATEGORY_LABELS[key]}</span>
+              </div>
+              <span class="text-zinc-400 font-normal">({count})</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Section 1: WM / Compositors -->
+    <div class="pt-4 border-t border-zinc-100 mb-5">
       <div class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
         <span>{t('catalogue.wmSection')}</span>
         <span class="text-[11px] text-zinc-400 font-normal">({topWms.length})</span>
@@ -195,7 +226,7 @@ const topDistros = Object.entries(counts.distros)
       </div>
       <div class="flex justify-between items-center">
         <span>Image hosts:</span>
-        <span class="font-bold text-zinc-900">6 allowlisted hosts</span>
+        <span class="font-bold text-zinc-900">{ALLOWED_IMAGE_HOSTS.length} allowlisted hosts</span>
       </div>
       <div class="flex justify-between items-center">
         <span>Spec License:</span>

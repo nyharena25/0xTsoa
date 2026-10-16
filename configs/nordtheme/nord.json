@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Nord",
+  "author": {
+    "name": "nordtheme",
+    "github": "nordtheme"
+  },
+  "lang": "en",
+  "summary": "Original specification of the arctic Nord palette.",
+  "license": "MIT",
+  "updatedAt": "2023-05-03",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "nord",
+  "displayServer": "both",
+  "tags": [
+    "palette"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "Nord: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/nordtheme/nord",
+    "ref": "1cef71605416a222e57225b544540ce0fcec18d4",
+    "readme": "readme.md"
+  }
+}

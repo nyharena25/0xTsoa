@@ -17,15 +17,13 @@
     "nixos",
     "debian"
   ],
+  "category": "wm",
   "wm": "niri",
   "themeStyle": "monochrome",
   "displayServer": "wayland",
   "tags": [
-    "niri",
-    "wayland",
     "scrollable-tiling",
     "rust",
-    "modern",
     "gestures"
   ],
   "specs": {
@@ -52,7 +50,7 @@
     }
   ],
   "source": {
-    "repo": "https://github.com/YaLTeR/niri",
+    "repo": "https://github.com/niri-wm/niri",
     "ref": "fc9e8c425e2267d877a65918f030c86f3c698179",
     "readme": "README.md"
   },

@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Awesome Linux Software",
+  "author": {
+    "name": "luong-komorebi",
+    "github": "luong-komorebi"
+  },
+  "lang": "en",
+  "summary": "Large curated list of desktop applications and tools for Linux.",
+  "license": "NOASSERTION",
+  "updatedAt": "2026-05-03",
+  "distros": [
+    "any"
+  ],
+  "category": "resource",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "awesome-list",
+    "apps",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/luong-komorebi/Awesome-Linux-Software/d82162ab61df94cf7f2d7c8e75eb75e9463235c6/img/tux.png",
+      "alt": "Awesome Linux Software screenshot 1"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/luong-komorebi/Awesome-Linux-Software",
+    "ref": "d82162ab61df94cf7f2d7c8e75eb75e9463235c6",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "eww",
+  "author": {
+    "name": "elkowar",
+    "github": "elkowar"
+  },
+  "lang": "en",
+  "summary": "ElKowars Wacky Widgets: build bars and widgets with Yuck and SCSS, written in Rust.",
+  "license": "MIT",
+  "updatedAt": "2026-07-17",
+  "distros": [
+    "any"
+  ],
+  "category": "widgets",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "rust",
+    "yuck",
+    "scss"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/elkowar/eww/48f5aa8b379adf29da0b0bb9ca04164f65d8bdaa/examples/eww-bar/eww-bar.png",
+      "alt": "Example 1"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/93292023/152228869-d618335a-7a1e-40f7-95f9-b1cf401be89e.gif",
+      "alt": "Rxyhn-rice"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/57213270/140309158-e65cbc1d-f3a8-4aec-848c-eef800de3364.png",
+      "alt": "iSparsh-gross"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/elkowar/eww",
+    "ref": "48f5aa8b379adf29da0b0bb9ca04164f65d8bdaa",
+    "readme": "README.md"
+  }
+}

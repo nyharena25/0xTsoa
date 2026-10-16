@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Awesome Hyprland",
+  "author": {
+    "name": "hyprland-community",
+    "github": "hyprland-community"
+  },
+  "lang": "en",
+  "summary": "Community list of Hyprland plugins, tools, bars and dotfiles.",
+  "license": "CC0-1.0",
+  "updatedAt": "2026-06-13",
+  "distros": [
+    "any"
+  ],
+  "category": "resource",
+  "wm": "hyprland",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "awesome-list"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "Awesome Hyprland: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/hyprland-community/awesome-hyprland",
+    "ref": "53afd330a1cdf27657e4f8c109899b11aa9086db",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Burn My Windows",
+  "author": {
+    "name": "Schneegans",
+    "github": "Schneegans"
+  },
+  "lang": "en",
+  "summary": "Retro window open/close effects for GNOME Shell and KWin.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-15",
+  "distros": [
+    "any"
+  ],
+  "category": "extension",
+  "wm": "gnome",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "gnome-shell",
+    "kwin",
+    "effects"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Schneegans/Burn-My-Windows/041c587e8294464a8e6fe8c55d6f5db95a8cda3a/docs/pics/custom.jpg",
+      "alt": "Create your own effects"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Schneegans/Burn-My-Windows",
+    "ref": "041c587e8294464a8e6fe8c55d6f5db95a8cda3a",
+    "readme": "README.md"
+  }
+}

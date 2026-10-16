@@ -1,0 +1,39 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "janleigh Dotfiles",
+  "author": {
+    "name": "janleigh",
+    "github": "janleigh"
+  },
+  "lang": "en",
+  "summary": "Small, tidy AwesomeWM rice with a soft palette and minimal widgets.",
+  "license": "LGPL-3.0-only",
+  "updatedAt": "2023-02-04",
+  "distros": [
+    "any"
+  ],
+  "category": "dotfiles",
+  "wm": "awesome",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "lua",
+    "widgets",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/janleigh/dotfiles/07b458027e0cac476034b6b07d386e476b0c87fe/.github/assets/showcase.png",
+      "alt": "Rice Showcase"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/janleigh/dotfiles/07b458027e0cac476034b6b07d386e476b0c87fe/.github/assets/colorscheme.png",
+      "alt": "Colorscheme Showcase"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/janleigh/dotfiles",
+    "ref": "07b458027e0cac476034b6b07d386e476b0c87fe",
+    "readme": ".github/README.md"
+  }
+}

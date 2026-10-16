@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "dwm-titus",
+  "author": {
+    "name": "ChrisTitusTech",
+    "github": "ChrisTitusTech"
+  },
+  "lang": "en",
+  "summary": "Ready-to-use dwm fork with sensible patches, slstatus and rofi integration.",
+  "license": "MIT",
+  "updatedAt": "2026-10-14",
+  "distros": [
+    "any"
+  ],
+  "category": "dotfiles",
+  "wm": "dwm",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "suckless",
+    "c",
+    "rofi"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/ChrisTitusTech/dwm-titus/4e881bfdee4c24dd010c9b8f4420072b4876de76/dwm-titus-qs-4x.webp",
+      "alt": "The dwm-titus desktop with its Quickshell panel"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/ChrisTitusTech/dwm-titus",
+    "ref": "4e881bfdee4c24dd010c9b8f4420072b4876de76",
+    "readme": "README.md"
+  }
+}

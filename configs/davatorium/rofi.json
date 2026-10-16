@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "rofi",
+  "author": {
+    "name": "davatorium",
+    "github": "davatorium"
+  },
+  "lang": "en",
+  "summary": "Window switcher, application launcher and dmenu replacement, themeable with rasi.",
+  "license": "MIT",
+  "updatedAt": "2026-10-01",
+  "distros": [
+    "any"
+  ],
+  "category": "launcher",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "dmenu-replacement",
+    "rasi"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/davatorium/rofi/1ad1df6b72d4c8b0e40e8ced1249ef8a8a6bc0ad/releasenotes/1.6.0/icons.png",
+      "alt": "rofi screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/davatorium/rofi/1ad1df6b72d4c8b0e40e8ced1249ef8a8a6bc0ad/releasenotes/1.6.0/icons2.png",
+      "alt": "screenshot2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/davatorium/rofi/1ad1df6b72d4c8b0e40e8ced1249ef8a8a6bc0ad/releasenotes/1.4.0/rofi-no-fzf.png",
+      "alt": "default"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/davatorium/rofi",
+    "ref": "1ad1df6b72d4c8b0e40e8ced1249ef8a8a6bc0ad",
+    "readme": "README.md"
+  }
+}

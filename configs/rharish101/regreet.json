@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "ReGreet",
+  "author": {
+    "name": "rharish101",
+    "github": "rharish101"
+  },
+  "lang": "en",
+  "summary": "Clean, customizable GTK4 greeter for greetd.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-07-17",
+  "distros": [
+    "any"
+  ],
+  "category": "login",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "greetd",
+    "gtk4"
+  ],
+  "screenshots": [
+    {
+      "url": "https://user-images.githubusercontent.com/25344287/221668247-f5193c01-2202-4739-803b-6f163da3d03b.png",
+      "alt": "Welcome"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/25344287/221668339-524a731f-509c-46a7-9ceb-e6c8e92a61a0.png",
+      "alt": "Dropdown session menu"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/25344287/221668422-ab82d10b-3167-4a31-9705-c1d066ced252.png",
+      "alt": "Manual session entry"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/rharish101/ReGreet",
+    "ref": "290e6f8d65b7034c5b63bc950a20bcf8277ebe5f",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Plasma HUD",
+  "author": {
+    "name": "Zren",
+    "github": "Zren"
+  },
+  "lang": "en",
+  "summary": "Unity-style HUD to search application menus in KDE Plasma.",
+  "license": "LGPL-2.1-only",
+  "updatedAt": "2022-05-01",
+  "distros": [
+    "any"
+  ],
+  "category": "extension",
+  "wm": "kde",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "plasma",
+    "hud"
+  ],
+  "screenshots": [
+    {
+      "url": "https://i.imgur.com/M3YUONc.png",
+      "alt": "Plasma HUD screenshot 1"
+    },
+    {
+      "url": "https://i.imgur.com/sE0i8IE.png",
+      "alt": "Plasma HUD screenshot 2"
+    },
+    {
+      "url": "https://i.imgur.com/OrDieG2.png",
+      "alt": "Plasma HUD screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Zren/plasma-hud",
+    "ref": "2c5456af63a15926a7b20ae03ff868d3c2b4de3d",
+    "readme": "README.md"
+  }
+}

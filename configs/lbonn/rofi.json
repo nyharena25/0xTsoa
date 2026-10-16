@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "rofi (Wayland fork)",
+  "author": {
+    "name": "lbonn",
+    "github": "lbonn"
+  },
+  "lang": "en",
+  "summary": "Wayland-native fork of rofi with layer-shell support.",
+  "license": "MIT",
+  "updatedAt": "2025-09-12",
+  "distros": [
+    "any"
+  ],
+  "category": "launcher",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "fork",
+    "layer-shell"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/davatorium/rofi/1ad1df6b72d4c8b0e40e8ced1249ef8a8a6bc0ad/releasenotes/1.6.0/icons.png",
+      "alt": "rofi (Wayland fork) screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/davatorium/rofi/1ad1df6b72d4c8b0e40e8ced1249ef8a8a6bc0ad/releasenotes/1.6.0/icons2.png",
+      "alt": "rofi (Wayland fork) screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/davatorium/rofi/1ad1df6b72d4c8b0e40e8ced1249ef8a8a6bc0ad/releasenotes/1.4.0/rofi-no-fzf.png",
+      "alt": "rofi (Wayland fork) screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/lbonn/rofi",
+    "ref": "9b0363ca542ff0d63e46093eb33bfd0053933b96",
+    "readme": "README.md"
+  }
+}

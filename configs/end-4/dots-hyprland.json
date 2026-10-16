@@ -16,16 +16,15 @@
     "fedora",
     "nixos"
   ],
+  "category": "dotfiles",
   "wm": "hyprland",
   "themeStyle": "minimalist",
   "displayServer": "wayland",
   "tags": [
-    "hyprland",
     "quickshell",
-    "wayland",
     "material-you",
-    "blur",
-    "minimalist"
+    "ai-sidebar",
+    "auto-install"
   ],
   "specs": {
     "bar": "Quickshell Bar & Quick Settings",

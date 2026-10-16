@@ -1,0 +1,45 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Ax-Shell",
+  "author": {
+    "name": "Axenide",
+    "github": "Axenide"
+  },
+  "lang": "en",
+  "summary": "Hyprland shell written with Fabric: notch bar, dashboard, launcher and wallpaper colors.",
+  "license": "AGPL-3.0-only",
+  "updatedAt": "2026-01-29",
+  "distros": [
+    "arch"
+  ],
+  "category": "dotfiles",
+  "wm": "hyprland",
+  "themeStyle": "material",
+  "displayServer": "wayland",
+  "tags": [
+    "fabric",
+    "python",
+    "notch",
+    "matugen",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Axenide/Ax-Shell/1a3551fb6d1d5354c99f31880a39f7c7149da78e/assets/cover.png",
+      "alt": "Ax-Shell screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Axenide/Ax-Shell/1a3551fb6d1d5354c99f31880a39f7c7149da78e/assets/screenshots/1.png",
+      "alt": "Ax-Shell screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Axenide/Ax-Shell/1a3551fb6d1d5354c99f31880a39f7c7149da78e/assets/screenshots/2.png",
+      "alt": "Ax-Shell screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Axenide/Ax-Shell",
+    "ref": "1a3551fb6d1d5354c99f31880a39f7c7149da78e",
+    "readme": "README.md"
+  }
+}

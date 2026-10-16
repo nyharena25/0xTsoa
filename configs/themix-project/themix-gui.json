@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Themix (Oomox)",
+  "author": {
+    "name": "themix-project",
+    "github": "themix-project"
+  },
+  "lang": "en",
+  "summary": "GUI to generate your own GTK2/3, icon and terminal themes.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-15",
+  "distros": [
+    "any"
+  ],
+  "category": "gtk-theme",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "generator",
+    "gtk2",
+    "gtk3"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/themix-project/oomox/fc15a4fd2db46c40937fa7d93f37ada123f722b8/packaging/download_aur.png",
+      "alt": "Themix (Oomox) screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/themix-project/oomox/fc15a4fd2db46c40937fa7d93f37ada123f722b8/packaging/download_slackware.png",
+      "alt": "Themix (Oomox) screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/themix-project/oomox/fc15a4fd2db46c40937fa7d93f37ada123f722b8/screenshots/pokedex_dawn.png",
+      "alt": "Themix (Oomox) screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/themix-project/themix-gui",
+    "ref": "fc15a4fd2db46c40937fa7d93f37ada123f722b8",
+    "readme": "README.md"
+  }
+}

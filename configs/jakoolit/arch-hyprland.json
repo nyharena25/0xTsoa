@@ -16,16 +16,15 @@
     "endeavouros",
     "manjaro"
   ],
+  "category": "dotfiles",
   "wm": "hyprland",
   "themeStyle": "nord",
   "displayServer": "wayland",
   "tags": [
-    "hyprland",
-    "arch",
-    "nord",
     "waybar",
     "rofi",
-    "automated-install"
+    "swaync",
+    "auto-install"
   ],
   "specs": {
     "bar": "Waybar (Configurable layouts)",

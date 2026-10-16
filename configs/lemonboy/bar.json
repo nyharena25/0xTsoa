@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "lemonbar",
+  "author": {
+    "name": "LemonBoy",
+    "github": "LemonBoy"
+  },
+  "lang": "en",
+  "summary": "Featherweight bar that renders text piped through stdin.",
+  "license": "MIT",
+  "updatedAt": "2024-09-02",
+  "distros": [
+    "any"
+  ],
+  "category": "bar",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "stdin",
+    "lightweight",
+    "scriptable"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "lemonbar: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/LemonBoy/bar",
+    "ref": "59b0d2826a74b62c1ec0ed8bc71dea873dfc8135",
+    "readme": "README.md"
+  }
+}

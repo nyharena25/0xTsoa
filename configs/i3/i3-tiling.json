@@ -19,16 +19,14 @@
     "void",
     "mint"
   ],
+  "category": "wm",
   "wm": "i3",
   "themeStyle": "monochrome",
   "displayServer": "x11",
   "tags": [
-    "i3",
-    "x11",
     "tiling",
     "lightweight",
-    "speed",
-    "classic"
+    "manual-tiling"
   ],
   "specs": {
     "bar": "i3bar / i3status",

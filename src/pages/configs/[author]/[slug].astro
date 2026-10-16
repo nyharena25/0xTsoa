@@ -6,7 +6,7 @@ import Accordion from '../../../components/Accordion.astro';
 import ScreenshotGallery from '../../../components/ScreenshotGallery.astro';
 import { getCollection } from 'astro:content';
 import { getRenderedReadme, extractScreenshotsFromReadme } from '../../../lib/readme';
-import { rawToBlobUrl, WM_LABELS, DISTRO_LABELS } from '../../../lib/schema';
+import { rawToBlobUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
 import { useTranslations } from '../../../lib/i18n';
 import { withBase } from '../../../../site.config';
 
@@ -179,7 +179,7 @@ const setupJsonLd = [
   },
 ];
 
-let defaultInstallCmd = `git clone ${data.source.repo} ~/.dotfiles`;
+let defaultInstallCmd = data.category === 'dotfiles' ? `git clone ${data.source.repo} ~/.dotfiles` : `git clone ${data.source.repo}`;
 let scriptBlobUrl = '';
 if (data.install.script) {
   defaultInstallCmd = `curl -fsSL ${data.install.script.url} | ${data.install.script.shell || 'bash'}`;
@@ -263,11 +263,17 @@ echo "======================================================================"
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-zinc-50/70 min-w-0 break-words gap-1 md:gap-0">
-            <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Window Manager & Theme</dt>
-            <dd class="md:col-span-9 text-zinc-900 font-medium min-w-0 break-words">{wmLabel} <span class="text-zinc-400">/</span> {data.specs.theme || 'Paper Monochrome'}</dd>
+            <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Desktop Part</dt>
+            <dd class="md:col-span-9 text-zinc-900 font-medium min-w-0 break-words"><a class="underline" href={withBase(`/catalogue/?category=${data.category}`)}>{CATEGORY_LABELS[data.category]}</a></dd>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-white min-w-0 break-words gap-1.5 md:gap-0">
+          <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-white min-w-0 break-words gap-1 md:gap-0">
+            <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Window Manager & Theme</dt>
+            <dd class="md:col-span-9 text-zinc-900 font-medium min-w-0 break-words">{wmLabel} <span class="text-zinc-400">/</span> {data.specs.theme || STYLE_LABELS[data.themeStyle]}</dd>
+          </div>
+
+          {(data.specs.bar || data.specs.terminal || data.specs.launcher) && (
+          <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-zinc-50/70 min-w-0 break-words gap-1.5 md:gap-0">
             <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Key Components</dt>
             <dd class="md:col-span-9 text-zinc-900 leading-relaxed font-sans text-sm min-w-0 break-words">
               <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs">
@@ -292,13 +298,17 @@ echo "======================================================================"
             </dd>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-zinc-50/70 min-w-0 break-words">
+          )}
+
+          {(data.specs.ramIdleMiB || data.specs.batteryProfile) && (
+          <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-white min-w-0 break-words">
             <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Hardware Metrics</dt>
             <dd class="md:col-span-9 text-zinc-900 font-semibold min-w-0 break-words">
               Idle RAM: {data.specs.ramIdleMiB ? `~${data.specs.ramIdleMiB} MiB` : 'Not benchmarked'}
               {data.specs.batteryProfile && <span class="text-emerald-700 ml-2 font-normal">• Battery profile : Active</span>}
             </dd>
           </div>
+          )}
 
           <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-white min-w-0 break-words">
             <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Full Description</dt>

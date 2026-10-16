@@ -19,6 +19,7 @@ export const GET: APIRoute = async () => {
         github: data.author.github,
       },
       summary: data.summary,
+      category: data.category,
       distros: data.distros,
       wm: data.wm,
       displayServer: data.displayServer,

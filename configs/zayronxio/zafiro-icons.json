@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Zafiro",
+  "author": {
+    "name": "zayronxio",
+    "github": "zayronxio"
+  },
+  "lang": "en",
+  "summary": "Minimalist flat icons with soft pastel colors.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2024-11-05",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "flat",
+    "pastel"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/zayronxio/Zafiro-icons/5c7f38ca3b01194104481ffb803111e31851cf5d/Light/previews/preview.png",
+      "alt": "Light Preview"
+    },
+    {
+      "url": "https://i.imgur.com/SWAXdFr.png",
+      "alt": "Zafiro screenshot 2"
+    },
+    {
+      "url": "https://i.imgur.com/gxX8nJ0.png",
+      "alt": "Zafiro screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/zayronxio/Zafiro-icons",
+    "ref": "5c7f38ca3b01194104481ffb803111e31851cf5d",
+    "readme": "README.md"
+  }
+}

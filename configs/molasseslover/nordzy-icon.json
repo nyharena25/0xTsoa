@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Nordzy",
+  "author": {
+    "name": "MolassesLover",
+    "github": "MolassesLover"
+  },
+  "lang": "en",
+  "summary": "Icon theme tailored to the Nord palette.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-04-27",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "nord",
+  "displayServer": "both",
+  "tags": [
+    "color-variants"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/MolassesLover/Nordzy-icon/829c47bda534d3c9f3c7d46c73a6fe9d946eca41/art/preview/preview1.png",
+      "alt": "applications preview"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/MolassesLover/Nordzy-icon/829c47bda534d3c9f3c7d46c73a6fe9d946eca41/art/preview/preview2.png",
+      "alt": "folders preview"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/MolassesLover/Nordzy-icon/829c47bda534d3c9f3c7d46c73a6fe9d946eca41/art/preview/preview3.png",
+      "alt": "mimetype preview"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/MolassesLover/Nordzy-icon",
+    "ref": "829c47bda534d3c9f3c7d46c73a6fe9d946eca41",
+    "readme": "README.md"
+  }
+}

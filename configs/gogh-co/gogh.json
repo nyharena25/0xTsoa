@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Gogh",
+  "author": {
+    "name": "Gogh-Co",
+    "github": "Gogh-Co"
+  },
+  "lang": "en",
+  "summary": "Hundreds of terminal color schemes installable with one script.",
+  "license": "MIT",
+  "updatedAt": "2026-10-10",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "terminal",
+    "palette"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Gogh-Co/Gogh/2fbe9bbf3715173fc6f477d4992b66f11afca2b1/.images/demos/gogh-themes-showcase.gif",
+      "alt": "gogh-themes-showcase"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Gogh-Co/Gogh/2fbe9bbf3715173fc6f477d4992b66f11afca2b1/.images/demos/gogh-demo-profile.gif",
+      "alt": "gogh-demo-profile"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Gogh-Co/Gogh/2fbe9bbf3715173fc6f477d4992b66f11afca2b1/.images/gogh/gogh--tiles.png",
+      "alt": "Gogh screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Gogh-Co/Gogh",
+    "ref": "2fbe9bbf3715173fc6f477d4992b66f11afca2b1",
+    "readme": "README.md"
+  }
+}

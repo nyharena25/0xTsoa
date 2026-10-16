@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Catppuccin Papirus Folders",
+  "author": {
+    "name": "catppuccin",
+    "github": "catppuccin"
+  },
+  "lang": "en",
+  "summary": "Catppuccin-colored folders for the Papirus icon theme.",
+  "license": "MIT",
+  "updatedAt": "2024-06-08",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "catppuccin",
+  "displayServer": "both",
+  "tags": [
+    "papirus",
+    "folder-colors"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/papirus-folders/f83671d17ea67e335b34f8028a7e6d78bca735d7/assets/folders.png",
+      "alt": "Catppuccin Papirus Folders screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/papirus-folders/f83671d17ea67e335b34f8028a7e6d78bca735d7/assets/folders-latte.png",
+      "alt": "Catppuccin Papirus Folders screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/papirus-folders/f83671d17ea67e335b34f8028a7e6d78bca735d7/assets/folders-frappe.png",
+      "alt": "Catppuccin Papirus Folders screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/catppuccin/papirus-folders",
+    "ref": "f83671d17ea67e335b34f8028a7e6d78bca735d7",
+    "readme": "README.md"
+  }
+}

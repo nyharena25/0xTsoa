@@ -7,6 +7,7 @@ export interface CatalogueItem {
     github: string;
   };
   summary: string;
+  category: string;
   distros: string[];
   wm: string;
   themeStyle?: string;
@@ -29,6 +30,7 @@ export interface CatalogueItem {
 }
 
 export interface FilterState {
+  category?: string;
   wm?: string;
   style?: string;
   distro?: string;
@@ -43,6 +45,10 @@ export interface FilterState {
 
 export function filterConfigs(items: CatalogueItem[], filters: FilterState): CatalogueItem[] {
   let result = items.slice();
+
+  if (filters.category && filters.category !== 'all') {
+    result = result.filter((item) => item.category === filters.category);
+  }
 
   if (filters.wm && filters.wm !== 'all') {
     result = result.filter((item) => item.wm.toLowerCase() === filters.wm?.toLowerCase());
@@ -105,6 +111,7 @@ export function filterConfigs(items: CatalogueItem[], filters: FilterState): Cat
 }
 
 export function parseQueryToFilters(searchParams: URLSearchParams): FilterState {
+  const category = searchParams.get('category') || undefined;
   const wm = searchParams.get('wm') || undefined;
   const style = searchParams.get('style') || undefined;
   const distro = searchParams.get('distro') || undefined;
@@ -119,11 +126,12 @@ export function parseQueryToFilters(searchParams: URLSearchParams): FilterState 
   const pageParam = searchParams.get('p');
   const page = pageParam ? Math.max(1, parseInt(pageParam, 10)) : 1;
 
-  return { wm, style, distro, ramMax, battery, tag, query, favoritesOnly, sort, page };
+  return { category, wm, style, distro, ramMax, battery, tag, query, favoritesOnly, sort, page };
 }
 
 export function filtersToQueryString(filters: FilterState): string {
   const p = new URLSearchParams();
+  if (filters.category && filters.category !== 'all') p.set('category', filters.category);
   if (filters.wm && filters.wm !== 'all') p.set('wm', filters.wm);
   if (filters.style && filters.style !== 'all') p.set('style', filters.style);
   if (filters.distro && filters.distro !== 'all') p.set('distro', filters.distro);

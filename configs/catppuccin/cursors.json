@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Catppuccin Cursors",
+  "author": {
+    "name": "catppuccin",
+    "github": "catppuccin"
+  },
+  "lang": "en",
+  "summary": "Soothing pastel cursors in all Catppuccin flavors and accents.",
+  "license": "LGPL-2.1-only",
+  "updatedAt": "2025-02-22",
+  "distros": [
+    "any"
+  ],
+  "category": "cursors",
+  "wm": "any",
+  "themeStyle": "catppuccin",
+  "displayServer": "both",
+  "tags": [
+    "xcursor",
+    "hyprcursor"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/cursors/a7eb08527dcce01010fa0ec46fa2bc4c3154f0d4/assets/preview.webp",
+      "alt": "Catppuccin Cursors screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/cursors/a7eb08527dcce01010fa0ec46fa2bc4c3154f0d4/assets/latte.webp",
+      "alt": "Catppuccin Cursors screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/cursors/a7eb08527dcce01010fa0ec46fa2bc4c3154f0d4/assets/frappe.webp",
+      "alt": "Catppuccin Cursors screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/catppuccin/cursors",
+    "ref": "a7eb08527dcce01010fa0ec46fa2bc4c3154f0d4",
+    "readme": "README.md"
+  }
+}

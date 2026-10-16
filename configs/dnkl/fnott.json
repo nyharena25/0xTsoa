@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "fnott",
+  "author": {
+    "name": "dnkl",
+    "github": "dnkl"
+  },
+  "lang": "en",
+  "summary": "Keyboard-driven, lightweight notification daemon for wlroots compositors.",
+  "license": "MIT",
+  "updatedAt": "2026-09-10",
+  "distros": [
+    "any"
+  ],
+  "category": "notifications",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "lightweight",
+    "daemon"
+  ],
+  "screenshots": [
+    {
+      "url": "https://codeberg.org/dnkl/fnott/raw/commit/404d116118235ee9bca58fc2bce50c7a01351d0e/screenshot.png",
+      "alt": "fnott screenshot 1"
+    },
+    {
+      "url": "https://codeberg.org/dnkl/fnott/raw/commit/404d116118235ee9bca58fc2bce50c7a01351d0e/screenshot-2.png",
+      "alt": "screenshot-2"
+    }
+  ],
+  "source": {
+    "repo": "https://codeberg.org/dnkl/fnott",
+    "ref": "404d116118235ee9bca58fc2bce50c7a01351d0e",
+    "readme": "README.md"
+  }
+}

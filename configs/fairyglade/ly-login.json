@@ -1,0 +1,34 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Ly display manager",
+  "author": {
+    "name": "fairyglade",
+    "github": "fairyglade"
+  },
+  "lang": "en",
+  "summary": "Lightweight TUI display manager with matrix and doom animations.",
+  "license": "WTFPL",
+  "updatedAt": "2026-10-04",
+  "distros": [
+    "any"
+  ],
+  "category": "login",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "tui",
+    "display-manager"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/fairyglade/ly/4e0f23f08406f20b95146de6ce2e876918d7903d/.github/screenshot.png",
+      "alt": "Ly screenshot"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/fairyglade/ly",
+    "ref": "4e0f23f08406f20b95146de6ce2e876918d7903d",
+    "readme": "readme.md"
+  }
+}

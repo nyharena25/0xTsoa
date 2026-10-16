@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Qogir Icons",
+  "author": {
+    "name": "vinceliuice",
+    "github": "vinceliuice"
+  },
+  "lang": "en",
+  "summary": "Clean, flat icon theme with geometric shapes.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2025-11-04",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "flat"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Qogir-icon-theme/c633057ba0d27a504b3255144071c9691ed0264a/cursors-preview.png",
+      "alt": "cursors"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Qogir-icon-theme/c633057ba0d27a504b3255144071c9691ed0264a/preview_01.png",
+      "alt": "Qogir Icons screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Qogir-icon-theme/c633057ba0d27a504b3255144071c9691ed0264a/preview_02.png",
+      "alt": "Qogir Icons screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/vinceliuice/Qogir-icon-theme",
+    "ref": "c633057ba0d27a504b3255144071c9691ed0264a",
+    "readme": "README.md"
+  }
+}

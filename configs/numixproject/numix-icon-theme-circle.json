@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Numix Circle",
+  "author": {
+    "name": "numixproject",
+    "github": "numixproject"
+  },
+  "lang": "en",
+  "summary": "Classic circular application icon theme.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-02-21",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "circle"
+  ],
+  "screenshots": [
+    {
+      "url": "https://user-images.githubusercontent.com/27789806/35548150-3019d536-0543-11e8-818e-a2fa73a4d6d0.png",
+      "alt": "Circle Screenshot"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/numixproject/numix-icon-theme-circle",
+    "ref": "6d4a4aad60994e688ab9dc8f021cb4ec86e9e532",
+    "readme": "README.md"
+  }
+}

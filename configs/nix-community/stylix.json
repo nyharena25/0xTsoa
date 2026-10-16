@@ -1,0 +1,39 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Stylix",
+  "author": {
+    "name": "nix-community",
+    "github": "nix-community"
+  },
+  "lang": "en",
+  "summary": "NixOS module that themes the whole system from one palette or wallpaper.",
+  "license": "MIT",
+  "updatedAt": "2026-10-09",
+  "distros": [
+    "nixos"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "dynamic",
+  "displayServer": "both",
+  "tags": [
+    "nix",
+    "base16",
+    "home-manager"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/nix-community/stylix/2856c4c6a845b9bec98828ef197abe176e4806bb/gnome.png",
+      "alt": "GNOME 46"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/nix-community/stylix/2856c4c6a845b9bec98828ef197abe176e4806bb/kde.png",
+      "alt": "KDE Plasma 5"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/nix-community/stylix",
+    "ref": "2856c4c6a845b9bec98828ef197abe176e4806bb",
+    "readme": "README.md"
+  }
+}

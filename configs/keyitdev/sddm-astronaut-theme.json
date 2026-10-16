@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "SDDM Astronaut",
+  "author": {
+    "name": "Keyitdev",
+    "github": "Keyitdev"
+  },
+  "lang": "en",
+  "summary": "Modern animated SDDM theme with many presets.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-09-18",
+  "distros": [
+    "any"
+  ],
+  "category": "login",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "sddm",
+    "qt6",
+    "animated"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Keyitdev/screenshots/ebe29f1f9efbb055687cb918a284d7aee62921e3/sddm-astronaut-theme/master/all_themes.gif",
+      "alt": "SDDM Astronaut screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Keyitdev/screenshots/ebe29f1f9efbb055687cb918a284d7aee62921e3/sddm-astronaut-theme/master/astronaut.png",
+      "alt": "SDDM Astronaut screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Keyitdev/screenshots/ebe29f1f9efbb055687cb918a284d7aee62921e3/sddm-astronaut-theme/master/black_hole.png",
+      "alt": "SDDM Astronaut screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Keyitdev/sddm-astronaut-theme",
+    "ref": "abb3163c724935af888ba5ea9ac0c4f22afd8048",
+    "readme": "README.md"
+  }
+}

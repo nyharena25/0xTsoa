@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "jgmenu",
+  "author": {
+    "name": "jgmenu",
+    "github": "jgmenu"
+  },
+  "lang": "en",
+  "summary": "Simple, themeable X11 menu, often used as an Openbox root menu.",
+  "license": "LGPL-2.1-only",
+  "updatedAt": "2026-10-11",
+  "distros": [
+    "any"
+  ],
+  "category": "launcher",
+  "wm": "openbox",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "root-menu",
+    "lightweight"
+  ],
+  "screenshots": [
+    {
+      "url": "https://i.imgur.com/l8uaBVi.png",
+      "alt": "jgmenu"
+    },
+    {
+      "url": "https://i.imgur.com/O3E84L3.png",
+      "alt": "jgmenu"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/jgmenu/jgmenu",
+    "ref": "57a76517993d1558286b7c5ac0532e5bf5dff30d",
+    "readme": "README.md"
+  }
+}

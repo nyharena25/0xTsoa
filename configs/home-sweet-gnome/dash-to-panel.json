@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Dash to Panel",
+  "author": {
+    "name": "home-sweet-gnome",
+    "github": "home-sweet-gnome"
+  },
+  "lang": "en",
+  "summary": "Merges the GNOME dash and top bar into a single taskbar.",
+  "license": "GPL-2.0-only",
+  "updatedAt": "2026-10-11",
+  "distros": [
+    "any"
+  ],
+  "category": "extension",
+  "wm": "gnome",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "gnome-shell",
+    "taskbar"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/home-sweet-gnome/dash-to-panel/c3aed934f927852a9ec28103e788d1954034bf4c/media/design/png/dtp-main-p2.png",
+      "alt": "Dash to Panel screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/home-sweet-gnome/dash-to-panel/c3aed934f927852a9ec28103e788d1954034bf4c/media/design/gif/customizable.gif",
+      "alt": "Dash to Panel screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/home-sweet-gnome/dash-to-panel/c3aed934f927852a9ec28103e788d1954034bf4c/media/design/gif/previews.gif",
+      "alt": "Dash to Panel screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/home-sweet-gnome/dash-to-panel",
+    "ref": "c3aed934f927852a9ec28103e788d1954034bf4c",
+    "readme": "README.md"
+  }
+}

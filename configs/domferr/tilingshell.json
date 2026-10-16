@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Tiling Shell",
+  "author": {
+    "name": "domferr",
+    "github": "domferr"
+  },
+  "lang": "en",
+  "summary": "Windows 11 style snap layouts and tiling for GNOME.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-06-20",
+  "distros": [
+    "any"
+  ],
+  "category": "extension",
+  "wm": "gnome",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "gnome-shell",
+    "tiling"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/domferr/tilingshell/de30eb72d5436424929e78b0be612114ba073a68/doc/horiz_summary.jpg",
+      "alt": "Tiling Shell screenshot 1"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/d660779a-7549-4858-b149-59edad076483",
+      "alt": "Tiling Shell screenshot 2"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/cfaca5f9-d9b2-4739-9426-1aebb5f33c29",
+      "alt": "Tiling Shell screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/domferr/tilingshell",
+    "ref": "de30eb72d5436424929e78b0be612114ba073a68",
+    "readme": "README.md"
+  }
+}

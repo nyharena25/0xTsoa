@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Blur my Shell",
+  "author": {
+    "name": "aunetx",
+    "github": "aunetx"
+  },
+  "lang": "en",
+  "summary": "Adds blur to the GNOME Shell panel, overview and apps.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-09",
+  "distros": [
+    "any"
+  ],
+  "category": "extension",
+  "wm": "gnome",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "gnome-shell",
+    "blur"
+  ],
+  "screenshots": [
+    {
+      "url": "https://github.com/user-attachments/assets/c3c78ade-a898-4881-8d3a-efa3c55f11f8",
+      "alt": "Blur my Shell screenshot 1"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/c8c2c2d9-8dc2-41bd-8d94-d0f6ca01ceb9",
+      "alt": "Blur my Shell screenshot 2"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/8596bff3-5e4f-46b4-978f-0297a083df8a",
+      "alt": "Blur my Shell screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/aunetx/blur-my-shell",
+    "ref": "48cdbf01e5b75dc90feca6d9cdcf669b46692105",
+    "readme": "README.md"
+  }
+}

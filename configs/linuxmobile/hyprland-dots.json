@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "linuxmobile Hyprland Dots",
+  "author": {
+    "name": "linuxmobile",
+    "github": "linuxmobile"
+  },
+  "lang": "en",
+  "summary": "Compact Hyprland rice with eww widgets and a warm, low-contrast palette.",
+  "license": "NOASSERTION",
+  "updatedAt": "2023-10-18",
+  "distros": [
+    "any"
+  ],
+  "category": "dotfiles",
+  "wm": "hyprland",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "eww",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/linuxmobile/hyprland-dots/ccf0161276fac2e87301d399609dcad377038c4e/assets/r-unixporn.webp",
+      "alt": "linuxmobile Hyprland Dots screenshot 1"
+    },
+    {
+      "url": "https://i.imgur.com/QopB79H.png",
+      "alt": "linuxmobile Hyprland Dots screenshot 2"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/linuxmobile/hyprland-dots",
+    "ref": "ccf0161276fac2e87301d399609dcad377038c4e",
+    "readme": "README.md"
+  }
+}

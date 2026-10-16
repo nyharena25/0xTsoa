@@ -80,6 +80,29 @@
         ]
       }
     },
+    "category": {
+      "default": "dotfiles",
+      "type": "string",
+      "enum": [
+        "dotfiles",
+        "wm",
+        "bar",
+        "widgets",
+        "launcher",
+        "notifications",
+        "dock",
+        "icons",
+        "cursors",
+        "gtk-theme",
+        "colorscheme",
+        "login",
+        "lockscreen",
+        "boot",
+        "extension",
+        "tool",
+        "resource"
+      ]
+    },
     "wm": {
       "type": "string",
       "enum": [
@@ -102,6 +125,7 @@
         "xfce",
         "cinnamon",
         "cosmic",
+        "any",
         "other"
       ]
     },
@@ -118,6 +142,10 @@
         "catppuccin",
         "solarized",
         "monochrome",
+        "rose-pine",
+        "material",
+        "macos",
+        "dynamic",
         "other"
       ]
     },
@@ -190,8 +218,8 @@
           "url": {
             "type": "string",
             "minLength": 1,
-            "pattern": "^(?:\\.?/|https://(?:raw\\.githubusercontent\\.com|user-images\\.githubusercontent\\.com|private-user-images\\.githubusercontent\\.com|github\\.com|i\\.imgur\\.com|i\\.redd\\.it)/)",
-            "description": "Local path (/...) or https URL on: raw.githubusercontent.com, user-images.githubusercontent.com, private-user-images.githubusercontent.com, github.com, i.imgur.com, i.redd.it"
+            "pattern": "^(?:\\.?/|https://(?:raw\\.githubusercontent\\.com|user-images\\.githubusercontent\\.com|private-user-images\\.githubusercontent\\.com|github\\.com|i\\.imgur\\.com|i\\.redd\\.it|codeberg\\.org|gitlab\\.com)/)",
+            "description": "Local path (/...) or https URL on: raw.githubusercontent.com, user-images.githubusercontent.com, private-user-images.githubusercontent.com, github.com, i.imgur.com, i.redd.it, codeberg.org, gitlab.com"
           },
           "alt": {
             "type": "string",

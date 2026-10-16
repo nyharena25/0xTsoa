@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "wallust",
+  "author": {
+    "name": "explosion-mental",
+    "github": "explosion-mental"
+  },
+  "lang": "en",
+  "summary": "Fast pywal-like palette generator written in Rust, with templates.",
+  "license": "MIT",
+  "updatedAt": "2026-09-14",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "dynamic",
+  "displayServer": "both",
+  "tags": [
+    "wallpaper-colors",
+    "rust",
+    "templates"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "wallust: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://codeberg.org/explosion-mental/wallust",
+    "ref": "a09480bc85d27556381eabfb73f18baa2235c25f",
+    "readme": "README.md"
+  }
+}

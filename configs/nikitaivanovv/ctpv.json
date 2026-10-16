@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "ctpv",
+  "author": {
+    "name": "NikitaIvanovV",
+    "github": "NikitaIvanovV"
+  },
+  "lang": "en",
+  "summary": "File previewer for lf and other terminal file managers, with image support.",
+  "license": "MIT",
+  "updatedAt": "2023-12-08",
+  "distros": [
+    "any"
+  ],
+  "category": "tool",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "terminal",
+    "file-preview",
+    "lf"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/NikitaIvanovV/ctpv/4efa0f976eaf8cb814e0aba4f4f1a1d12ee9262e/doc/showcase.gif",
+      "alt": "showcase"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/NikitaIvanovV/ctpv",
+    "ref": "4efa0f976eaf8cb814e0aba4f4f1a1d12ee9262e",
+    "readme": "README.md"
+  }
+}

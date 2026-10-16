@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "nwg-dock-hyprland",
+  "author": {
+    "name": "nwg-piotr",
+    "github": "nwg-piotr"
+  },
+  "lang": "en",
+  "summary": "GTK3 dock for Hyprland, styled with CSS.",
+  "license": "MIT",
+  "updatedAt": "2026-08-20",
+  "distros": [
+    "any"
+  ],
+  "category": "dock",
+  "wm": "hyprland",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "gtk",
+    "css"
+  ],
+  "screenshots": [
+    {
+      "url": "https://user-images.githubusercontent.com/20579136/233751336-b5c6abdd-72f7-43c7-b34d-e2f64248eb86.png",
+      "alt": "2023-04-22-021230_hypr_screenshot"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/20579136/233751391-97f8f685-55ae-4078-badf-b8c3d7c41ab4.png",
+      "alt": "nwg-dock-hyprland screenshot 2"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/nwg-piotr/nwg-dock-hyprland",
+    "ref": "028ad56aa1dafbeed1772166749cedf00bef4108",
+    "readme": "README.md"
+  }
+}

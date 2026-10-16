@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "AGS",
+  "author": {
+    "name": "Aylur",
+    "github": "Aylur"
+  },
+  "lang": "en",
+  "summary": "Scaffolding CLI for Astal: build GTK shells and bars in TypeScript/JSX.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-04-09",
+  "distros": [
+    "any"
+  ],
+  "category": "widgets",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "typescript",
+    "gtk",
+    "astal"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "AGS: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Aylur/ags",
+    "ref": "bbee2f18939f1ec7ff720e717cf305e73635628f",
+    "readme": "README.md"
+  }
+}

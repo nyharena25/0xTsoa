@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Awesome Rices",
+  "author": {
+    "name": "zemmsoares",
+    "github": "zemmsoares"
+  },
+  "lang": "en",
+  "summary": "Showcase of popular rices sorted by window manager, with links to dotfiles.",
+  "license": "CC0-1.0",
+  "updatedAt": "2026-09-22",
+  "distros": [
+    "any"
+  ],
+  "category": "resource",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "awesome-list",
+    "showcase"
+  ],
+  "screenshots": [
+    {
+      "url": "https://user-images.githubusercontent.com/43517199/213188711-a370e0d1-a2c4-4119-95bc-d51e46d81214.png",
+      "alt": "d-solis"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/118438453/218368968-958e54f0-b70f-4a33-83f0-bda9c2641cb8.png",
+      "alt": "frapdotbm"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/31524852/232510330-a812c5d7-f5e5-4aa3-a7d5-deb58a684390.png",
+      "alt": "pablonoya"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/zemmsoares/awesome-rices",
+    "ref": "04825ade79944a6022b6f84a309f4c506d56f4c9",
+    "readme": "README.md"
+  }
+}

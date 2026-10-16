@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Rosé Pine GTK",
+  "author": {
+    "name": "Fausto-Korpsvart",
+    "github": "Fausto-Korpsvart"
+  },
+  "lang": "en",
+  "summary": "GTK theme based on the Rosé Pine palette.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2025-10-23",
+  "distros": [
+    "any"
+  ],
+  "category": "gtk-theme",
+  "wm": "any",
+  "themeStyle": "rose-pine",
+  "displayServer": "both",
+  "tags": [
+    "gtk3",
+    "gtk4",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme/c4fdfa62a9eb6941a36b2cd5026fc64123aaa0dd/extra/screenshots/RosePine.png",
+      "alt": "Rosé Pine"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme",
+    "ref": "c4fdfa62a9eb6941a36b2cd5026fc64123aaa0dd",
+    "readme": "README.md"
+  }
+}

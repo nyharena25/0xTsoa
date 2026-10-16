@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "WhiteSur Icons",
+  "author": {
+    "name": "vinceliuice",
+    "github": "vinceliuice"
+  },
+  "lang": "en",
+  "summary": "macOS Big Sur style icon theme for Linux desktops.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-09-10",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "macos",
+  "displayServer": "both",
+  "tags": [
+    "macos-like"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/WhiteSur-icon-theme/73d8040da51a9ed74e47c7366e7e9ff437601a5c/alt-version.png",
+      "alt": "WhiteSur Icons screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/WhiteSur-icon-theme/73d8040da51a9ed74e47c7366e7e9ff437601a5c/bold-size.png",
+      "alt": "WhiteSur Icons screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/WhiteSur-icon-theme/73d8040da51a9ed74e47c7366e7e9ff437601a5c/preview.png",
+      "alt": "WhiteSur Icons screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/vinceliuice/WhiteSur-icon-theme",
+    "ref": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "readme": "README.md"
+  }
+}

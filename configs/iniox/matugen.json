@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "matugen",
+  "author": {
+    "name": "InioX",
+    "github": "InioX"
+  },
+  "lang": "en",
+  "summary": "Material You color generator with templates for your whole desktop.",
+  "license": "LGPL-2.1-only",
+  "updatedAt": "2026-10-08",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "dynamic",
+  "displayServer": "both",
+  "tags": [
+    "material-you",
+    "wallpaper-colors",
+    "templates"
+  ],
+  "screenshots": [
+    {
+      "url": "https://github.com/user-attachments/assets/66cfec75-702c-4b55-83fc-c474de171057",
+      "alt": "matugen screenshot 1"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/ec3a165d-442d-4494-9aec-24254d11ae61",
+      "alt": "matugen screenshot 2"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/9008d8d9-0157-4b38-9500-597986a2cb9f",
+      "alt": "matugen screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/InioX/matugen",
+    "ref": "9f8c7fd583e44310a642772ff8f13b693949baf2",
+    "readme": "README.md"
+  }
+}

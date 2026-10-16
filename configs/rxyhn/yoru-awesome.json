@@ -16,16 +16,15 @@
     "debian",
     "ubuntu"
   ],
+  "category": "dotfiles",
   "wm": "awesome",
   "themeStyle": "tokyo-night",
   "displayServer": "x11",
   "tags": [
-    "awesomewm",
-    "tokyo-night",
     "lua",
-    "minimalist",
-    "x11",
-    "alacritty"
+    "widgets",
+    "dashboard",
+    "archived"
   ],
   "specs": {
     "bar": "AwesomeWM Native Wibox",
@@ -51,7 +50,7 @@
     }
   ],
   "source": {
-    "repo": "https://github.com/rxyhn/yoru",
+    "repo": "https://github.com/raexera/yoru",
     "ref": "041a2d7e5b44d5bbedec9664af31baff1ba5033b",
     "readme": ".github/README.md"
   },
@@ -62,7 +61,7 @@
         "title": "Install AwesomeWM and Lua dependencies",
         "commands": [
           "sudo pacman -S --needed awesome rofi alacritty picom feh",
-          "git clone --depth=1 https://github.com/rxyhn/yoru.git ~/.config/awesome"
+          "git clone --depth=1 https://github.com/raexera/yoru.git ~/.config/awesome"
         ]
       },
       {

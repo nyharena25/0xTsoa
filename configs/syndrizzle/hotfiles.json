@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Hotfiles",
+  "author": {
+    "name": "Syndrizzle",
+    "github": "Syndrizzle"
+  },
+  "lang": "en",
+  "summary": "AwesomeWM rice with Material-style widgets, dashboard and lockscreen in Lua.",
+  "license": "NOASSERTION",
+  "updatedAt": "2022-10-27",
+  "distros": [
+    "any"
+  ],
+  "category": "dotfiles",
+  "wm": "awesome",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "lua",
+    "widgets",
+    "dashboard"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Syndrizzle/hotfiles/37c38f46ef1518caf7c04b8a3821bf0ef0bda4cf/assets/hotfiles.gif",
+      "alt": "Hotfiles screenshot 1"
+    },
+    {
+      "url": "https://i.imgur.com/5d9uZS9.png",
+      "alt": "Hotfiles screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Syndrizzle/hotfiles/37c38f46ef1518caf7c04b8a3821bf0ef0bda4cf/assets/fvwm.png",
+      "alt": "Hotfiles screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Syndrizzle/hotfiles",
+    "ref": "37c38f46ef1518caf7c04b8a3821bf0ef0bda4cf",
+    "readme": "README.md"
+  }
+}

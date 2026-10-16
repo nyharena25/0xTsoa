@@ -1,0 +1,39 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Misterio77 nix-config",
+  "author": {
+    "name": "Misterio77",
+    "github": "Misterio77"
+  },
+  "lang": "en",
+  "summary": "Flake-based NixOS and home-manager setup with Hyprland and generated colors.",
+  "license": "MIT",
+  "updatedAt": "2026-10-16",
+  "distros": [
+    "nixos"
+  ],
+  "category": "dotfiles",
+  "wm": "hyprland",
+  "themeStyle": "dynamic",
+  "displayServer": "wayland",
+  "tags": [
+    "nix",
+    "flakes",
+    "home-manager"
+  ],
+  "screenshots": [
+    {
+      "url": "https://i.imgur.com/PZ4L7TR.png",
+      "alt": "fakebusy"
+    },
+    {
+      "url": "https://i.imgur.com/T5FjqbZ.jpg",
+      "alt": "clean"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Misterio77/Foundry",
+    "ref": "5840c2ccec173be0814db98d2228f2a3b185cf52",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "pywal",
+  "author": {
+    "name": "dylanaraps",
+    "github": "dylanaraps"
+  },
+  "lang": "en",
+  "summary": "Generates and applies a colorscheme from your wallpaper.",
+  "license": "MIT",
+  "updatedAt": "2021-09-09",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "dynamic",
+  "displayServer": "both",
+  "tags": [
+    "wallpaper-colors",
+    "python",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "https://i.imgur.com/5WgMACe.gif",
+      "alt": "pywal screenshot 1"
+    },
+    {
+      "url": "https://i.imgur.com/HhK3LDv.jpg",
+      "alt": "pywal screenshot 2"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/dylanaraps/pywal",
+    "ref": "236aa48e741ff8d65c4c3826db2813bf2ee6f352",
+    "readme": "README.md"
+  }
+}

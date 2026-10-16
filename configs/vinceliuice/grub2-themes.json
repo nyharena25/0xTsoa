@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "GRUB2 Themes",
+  "author": {
+    "name": "vinceliuice",
+    "github": "vinceliuice"
+  },
+  "lang": "en",
+  "summary": "Modern high-resolution themes for the GRUB boot menu.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-09-01",
+  "distros": [
+    "any"
+  ],
+  "category": "boot",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "grub"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/grub2-themes/4c5a77125b93f833edc9bf7b14a899faa8ac79c6/banner.png",
+      "alt": "banner"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/grub2-themes/4c5a77125b93f833edc9bf7b14a899faa8ac79c6/preview.png",
+      "alt": "GRUB2 Themes screenshot 2"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/vinceliuice/grub2-themes",
+    "ref": "4c5a77125b93f833edc9bf7b14a899faa8ac79c6",
+    "readme": "README.md"
+  }
+}

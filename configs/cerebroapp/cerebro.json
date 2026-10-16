@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Cerebro",
+  "author": {
+    "name": "cerebroapp",
+    "github": "cerebroapp"
+  },
+  "lang": "en",
+  "summary": "Cross-platform launcher extensible with JavaScript plugins.",
+  "license": "MIT",
+  "updatedAt": "2026-10-15",
+  "distros": [
+    "any"
+  ],
+  "category": "launcher",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "electron",
+    "plugins"
+  ],
+  "screenshots": [
+    {
+      "url": "https://user-images.githubusercontent.com/24854406/56137765-5880ca00-5fb7-11e9-86d0-e740de1127c2.gif",
+      "alt": "change-cerebro-theme"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/cerebroapp/cerebro/62830502cd287d69c08c6da7a07d875710425615/build/icons/128x128.png",
+      "alt": "Cerebro screenshot 2"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/cerebroapp/cerebro",
+    "ref": "62830502cd287d69c08c6da7a07d875710425615",
+    "readme": "README.md"
+  }
+}

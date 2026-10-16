@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Polybar",
+  "author": {
+    "name": "polybar",
+    "github": "polybar"
+  },
+  "lang": "en",
+  "summary": "Fast, modular status bar for X11 window managers.",
+  "license": "MIT",
+  "updatedAt": "2025-09-24",
+  "distros": [
+    "any"
+  ],
+  "category": "bar",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "ini-config",
+    "modules"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/polybar/polybar/f99e0b1c7a5b094f5a04b14101899d0cb4ece69d/doc/_static/default.png",
+      "alt": "default configuration screenshot"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/polybar/polybar/f99e0b1c7a5b094f5a04b14101899d0cb4ece69d/doc/_static/banner.png",
+      "alt": "Polybar"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/polybar/polybar/f99e0b1c7a5b094f5a04b14101899d0cb4ece69d/doc/_static/banner-dark-mode.png",
+      "alt": "Polybar"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/polybar/polybar",
+    "ref": "f99e0b1c7a5b094f5a04b14101899d0cb4ece69d",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Caelestia Shell",
+  "author": {
+    "name": "caelestia-dots",
+    "github": "caelestia-dots"
+  },
+  "lang": "en",
+  "summary": "Quickshell-based desktop shell for Hyprland with dashboard, launcher and dynamic colors.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-12",
+  "distros": [
+    "arch"
+  ],
+  "category": "dotfiles",
+  "wm": "hyprland",
+  "themeStyle": "material",
+  "displayServer": "wayland",
+  "tags": [
+    "quickshell",
+    "material-you",
+    "dashboard"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "Caelestia Shell: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/caelestia-dots/shell",
+    "ref": "a3a8fe59aba2c0048ab02dc817748678f96076ff",
+    "readme": "README.md"
+  }
+}

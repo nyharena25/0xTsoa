@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Gruvbox",
+  "author": {
+    "name": "morhetz",
+    "github": "morhetz"
+  },
+  "lang": "en",
+  "summary": "The original warm retro palette for Vim.",
+  "license": "NOASSERTION",
+  "updatedAt": "2026-09-18",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "gruvbox",
+  "displayServer": "both",
+  "tags": [
+    "palette",
+    "vim"
+  ],
+  "screenshots": [
+    {
+      "url": "https://i.imgur.com/GkIl8Fn.png",
+      "alt": "Screenshot Dark"
+    },
+    {
+      "url": "https://i.imgur.com/X75niEa.png",
+      "alt": "Screenshot Light"
+    },
+    {
+      "url": "https://i.imgur.com/wRQceUR.png",
+      "alt": "Screenshot Airline"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/morhetz/gruvbox",
+    "ref": "ef8864bb42bf244f0295d1c5a403b27e3d139695",
+    "readme": "README.md"
+  }
+}

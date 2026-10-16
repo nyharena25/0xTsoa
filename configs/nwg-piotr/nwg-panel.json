@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "nwg-panel",
+  "author": {
+    "name": "nwg-piotr",
+    "github": "nwg-piotr"
+  },
+  "lang": "en",
+  "summary": "GTK3 panel for sway and Hyprland with a graphical config editor.",
+  "license": "MIT",
+  "updatedAt": "2026-10-15",
+  "distros": [
+    "any"
+  ],
+  "category": "bar",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "gtk",
+    "python",
+    "gui-config"
+  ],
+  "screenshots": [
+    {
+      "url": "https://github.com/user-attachments/assets/36327f89-05b8-420d-998a-8f5f7d385545",
+      "alt": "nwg-panel screenshot 1"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/09866188-6819-4dfb-99df-40af53be859b",
+      "alt": "nwg-panel screenshot 2"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/1aeb8990-f355-4ba9-80e3-9aa2a46730ca",
+      "alt": "nwg-panel screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/nwg-piotr/nwg-panel",
+    "ref": "27ede8e0a4e4a8ddb19120a0b4cf18edecd7e81e",
+    "readme": "README.md"
+  }
+}

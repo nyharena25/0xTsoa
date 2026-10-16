@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Catppuccin SDDM",
+  "author": {
+    "name": "catppuccin",
+    "github": "catppuccin"
+  },
+  "lang": "en",
+  "summary": "Catppuccin theme for the SDDM display manager.",
+  "license": "MIT",
+  "updatedAt": "2025-09-08",
+  "distros": [
+    "any"
+  ],
+  "category": "login",
+  "wm": "any",
+  "themeStyle": "catppuccin",
+  "displayServer": "both",
+  "tags": [
+    "sddm",
+    "qt6"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/sddm/28699090372cce33c12a923cf8fc297a9cae2cd4/assets/preview.webp",
+      "alt": "Catppuccin SDDM screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/sddm/28699090372cce33c12a923cf8fc297a9cae2cd4/assets/latte.webp",
+      "alt": "Catppuccin SDDM screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/sddm/28699090372cce33c12a923cf8fc297a9cae2cd4/assets/frappe.webp",
+      "alt": "Catppuccin SDDM screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/catppuccin/sddm",
+    "ref": "28699090372cce33c12a923cf8fc297a9cae2cd4",
+    "readme": "README.md"
+  }
+}

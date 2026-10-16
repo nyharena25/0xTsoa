@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Awesome Ricing",
+  "author": {
+    "name": "fosslife",
+    "github": "fosslife"
+  },
+  "lang": "en",
+  "summary": "Curated list of projects and utilities dedicated to desktop ricing.",
+  "license": "NOASSERTION",
+  "updatedAt": "2026-09-28",
+  "distros": [
+    "any"
+  ],
+  "category": "resource",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "awesome-list"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "Awesome Ricing: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/fosslife/awesome-ricing",
+    "ref": "efc5f9ea276aa129e4f64f1b9b3bddaec4b82a1c",
+    "readme": "readme.md"
+  }
+}

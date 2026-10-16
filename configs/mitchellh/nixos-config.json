@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "mitchellh NixOS Config",
+  "author": {
+    "name": "mitchellh",
+    "github": "mitchellh"
+  },
+  "lang": "en",
+  "summary": "Declarative NixOS configuration for VM-based development with i3.",
+  "license": "MIT",
+  "updatedAt": "2026-09-28",
+  "distros": [
+    "nixos"
+  ],
+  "category": "dotfiles",
+  "wm": "i3",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "nix",
+    "flakes",
+    "vm"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/mitchellh/nixos-config/40d483d74cf48d64379fc9a857237ee18c519ff4/.github/images/screenshot.png",
+      "alt": "mitchellh NixOS Config screenshot 1"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/mitchellh/nixos-config",
+    "ref": "40d483d74cf48d64379fc9a857237ee18c519ff4",
+    "readme": "README.md"
+  }
+}

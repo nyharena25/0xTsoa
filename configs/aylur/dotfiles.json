@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Aylur Dotfiles",
+  "author": {
+    "name": "Aylur",
+    "github": "Aylur"
+  },
+  "lang": "en",
+  "summary": "Personal Hyprland setup by the author of AGS, built around a custom GTK shell.",
+  "license": "NOASSERTION",
+  "updatedAt": "2026-08-04",
+  "distros": [
+    "any"
+  ],
+  "category": "dotfiles",
+  "wm": "hyprland",
+  "themeStyle": "material",
+  "displayServer": "wayland",
+  "tags": [
+    "ags",
+    "gtk",
+    "typescript"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "Aylur Dotfiles: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Aylur/dotfiles",
+    "ref": "35e29f2b29d23a15f377baa0df7c84ad0f962b0f",
+    "readme": "README.md"
+  }
+}

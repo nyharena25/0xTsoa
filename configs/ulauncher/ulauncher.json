@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Ulauncher",
+  "author": {
+    "name": "Ulauncher",
+    "github": "Ulauncher"
+  },
+  "lang": "en",
+  "summary": "Python application launcher with extensions and themes.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-13",
+  "distros": [
+    "any"
+  ],
+  "category": "launcher",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "python",
+    "extensions"
+  ],
+  "screenshots": [
+    {
+      "url": "https://i.imgur.com/8FpJLGG.png?1",
+      "alt": "Ulauncher screenshot 1"
+    },
+    {
+      "url": "https://i.imgur.com/wJvXSmP.png?1",
+      "alt": "Ulauncher screenshot 2"
+    },
+    {
+      "url": "https://i.imgur.com/2a4GCW7.png?1",
+      "alt": "Ulauncher screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Ulauncher/Ulauncher",
+    "ref": "dc418b50f0961addd4af9aa3cdb827006413ffd2",
+    "readme": "README.md"
+  }
+}

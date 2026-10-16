@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "adi1090x rofi themes",
+  "author": {
+    "name": "adi1090x",
+    "github": "adi1090x"
+  },
+  "lang": "en",
+  "summary": "Huge collection of rofi launchers, powermenus and applets.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-05-31",
+  "distros": [
+    "any"
+  ],
+  "category": "launcher",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "rofi",
+    "presets",
+    "powermenu"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/adi1090x/rofi/512a585fff6da5b2a90e5948059b062516ddb2e7/previews/launchers/type-1.gif",
+      "alt": "adi1090x rofi themes screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/adi1090x/rofi/512a585fff6da5b2a90e5948059b062516ddb2e7/previews/launchers/type-2.gif",
+      "alt": "adi1090x rofi themes screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/adi1090x/rofi/512a585fff6da5b2a90e5948059b062516ddb2e7/previews/launchers/type-3.gif",
+      "alt": "adi1090x rofi themes screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/adi1090x/rofi",
+    "ref": "512a585fff6da5b2a90e5948059b062516ddb2e7",
+    "readme": "README.md"
+  }
+}

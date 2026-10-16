@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Wayfire",
+  "author": {
+    "name": "WayfireWM",
+    "github": "WayfireWM"
+  },
+  "lang": "en",
+  "summary": "3D Wayland compositor with Compiz-style plugins such as wobbly windows and cube.",
+  "license": "MIT",
+  "updatedAt": "2026-10-08",
+  "distros": [
+    "any"
+  ],
+  "category": "wm",
+  "wm": "wayfire",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "wlroots",
+    "effects",
+    "plugins"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "Wayfire: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/WayfireWM/wayfire",
+    "ref": "fdf8832e4263db54e2fef2abf30326e16877b8a2",
+    "readme": "README.md"
+  }
+}

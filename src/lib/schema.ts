@@ -9,7 +9,7 @@ import { ALLOWED_IMAGE_HOSTS } from '../../site.config';
 export const WMS = [
   'hyprland', 'sway', 'river', 'niri', 'wayfire', 'labwc',
   'i3', 'bspwm', 'awesome', 'qtile', 'xmonad', 'dwm', 'herbstluftwm', 'openbox',
-  'gnome', 'kde', 'xfce', 'cinnamon', 'cosmic', 'other',
+  'gnome', 'kde', 'xfce', 'cinnamon', 'cosmic', 'any', 'other',
 ] as const;
 
 export const DISTROS = [
@@ -21,7 +21,7 @@ export const WM_LABELS: Record<(typeof WMS)[number], string> = {
   hyprland: 'Hyprland', sway: 'Sway', river: 'River', niri: 'niri', wayfire: 'Wayfire', labwc: 'labwc',
   i3: 'i3', bspwm: 'bspwm', awesome: 'AwesomeWM', qtile: 'Qtile', xmonad: 'XMonad', dwm: 'dwm',
   herbstluftwm: 'herbstluftwm', openbox: 'Openbox', gnome: 'GNOME', kde: 'KDE Plasma', xfce: 'Xfce',
-  cinnamon: 'Cinnamon', cosmic: 'COSMIC', other: 'Other',
+  cinnamon: 'Cinnamon', cosmic: 'COSMIC', any: 'Any WM / DE', other: 'Other',
 };
 
 export const DISTRO_LABELS: Record<(typeof DISTROS)[number], string> = {
@@ -40,6 +40,10 @@ export const THEME_STYLES = [
   'catppuccin',
   'solarized',
   'monochrome',
+  'rose-pine',
+  'material',
+  'macos',
+  'dynamic',
   'other',
 ] as const;
 
@@ -53,7 +57,38 @@ export const STYLE_LABELS: Record<(typeof THEME_STYLES)[number], string> = {
   catppuccin: 'Catppuccin',
   solarized: 'Solarized',
   monochrome: 'Monochrome',
+  'rose-pine': 'Rosé Pine',
+  material: 'Material',
+  macos: 'macOS-like',
+  dynamic: 'Wallpaper-based',
   other: 'Other',
+};
+
+/** Which part of the desktop an entry covers — the main catalogue facet. */
+export const CATEGORIES = [
+  'dotfiles', 'wm', 'bar', 'widgets', 'launcher', 'notifications', 'dock',
+  'icons', 'cursors', 'gtk-theme', 'colorscheme', 'login', 'lockscreen', 'boot',
+  'extension', 'tool', 'resource',
+] as const;
+
+export const CATEGORY_LABELS: Record<(typeof CATEGORIES)[number], string> = {
+  dotfiles: 'Dotfiles & full rices',
+  wm: 'WM & compositors',
+  bar: 'Bars & panels',
+  widgets: 'Widgets & shells',
+  launcher: 'Launchers & menus',
+  notifications: 'Notifications',
+  dock: 'Docks',
+  icons: 'Icon themes',
+  cursors: 'Cursor themes',
+  'gtk-theme': 'GTK & shell themes',
+  colorscheme: 'Color schemes & generators',
+  login: 'Login & greeters',
+  lockscreen: 'Lock screens',
+  boot: 'Boot (GRUB / Plymouth)',
+  extension: 'DE extensions',
+  tool: 'Tools & utilities',
+  resource: 'Lists & guides',
 };
 
 const SHA1 = /^[0-9a-f]{40}$/;
@@ -164,6 +199,7 @@ export const configSchema = z
     version: z.string().max(40).optional(),
     updatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD'),
     distros: z.array(z.enum(DISTROS)).min(1).max(8),
+    category: z.enum(CATEGORIES).default('dotfiles'),
     wm: z.enum(WMS),
     themeStyle: z.enum(THEME_STYLES).default('minimalist'),
     displayServer: z.enum(['wayland', 'x11', 'both']),

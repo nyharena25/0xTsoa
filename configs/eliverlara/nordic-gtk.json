@@ -18,16 +18,15 @@
     "debian",
     "opensuse"
   ],
+  "category": "gtk-theme",
   "wm": "gnome",
   "themeStyle": "nord",
   "displayServer": "both",
   "tags": [
-    "nord",
-    "gnome",
-    "gtk",
-    "arctic",
-    "dark-theme",
-    "minimalist"
+    "gtk3",
+    "gtk4",
+    "gnome-shell",
+    "dark"
   ],
   "specs": {
     "bar": "GNOME Shell Top Bar",

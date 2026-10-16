@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "i3lock-fancy",
+  "author": {
+    "name": "meskarune",
+    "github": "meskarune"
+  },
+  "lang": "en",
+  "summary": "i3lock wrapper that blurs or pixelates the screen.",
+  "license": "MIT",
+  "updatedAt": "2023-04-28",
+  "distros": [
+    "any"
+  ],
+  "category": "lockscreen",
+  "wm": "i3",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "blur",
+    "bash"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/meskarune/i3lock-fancy/55f5c30071403faf5ae4363a54b6d1f63876d5ce/screenshot.png",
+      "alt": "screen shot of lockscreen"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/meskarune/i3lock-fancy/55f5c30071403faf5ae4363a54b6d1f63876d5ce/action.gif",
+      "alt": "lockscreen animation"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/meskarune/i3lock-fancy",
+    "ref": "55f5c30071403faf5ae4363a54b6d1f63876d5ce",
+    "readme": "README.md"
+  }
+}

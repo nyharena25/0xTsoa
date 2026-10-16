@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Wired",
+  "author": {
+    "name": "Toqozz",
+    "github": "Toqozz"
+  },
+  "lang": "en",
+  "summary": "Notification daemon in Rust with fully custom, layout-based notification blocks.",
+  "license": "MIT",
+  "updatedAt": "2026-10-13",
+  "distros": [
+    "any"
+  ],
+  "category": "notifications",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "rust",
+    "daemon"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Toqozz/wired-notify/9a6b3674587dc0a01d14b83fb6513b802eee5ed1/readme_stuff/musicc.gif",
+      "alt": "Wired screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Toqozz/wired-notify/9a6b3674587dc0a01d14b83fb6513b802eee5ed1/readme_stuff/simple.gif",
+      "alt": "Wired screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Toqozz/wired-notify/9a6b3674587dc0a01d14b83fb6513b802eee5ed1/readme_stuff/horizontal.gif",
+      "alt": "Wired screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Toqozz/wired-notify",
+    "ref": "9a6b3674587dc0a01d14b83fb6513b802eee5ed1",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Catppuccin GRUB",
+  "author": {
+    "name": "catppuccin",
+    "github": "catppuccin"
+  },
+  "lang": "en",
+  "summary": "Catppuccin theme for the GRUB bootloader.",
+  "license": "MIT",
+  "updatedAt": "2025-07-11",
+  "distros": [
+    "any"
+  ],
+  "category": "boot",
+  "wm": "any",
+  "themeStyle": "catppuccin",
+  "displayServer": "both",
+  "tags": [
+    "grub"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/grub/0a37ab19f654e77129b409fed371891c01ffd0b9/assets/grub.png",
+      "alt": "Catppuccin GRUB screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/grub/0a37ab19f654e77129b409fed371891c01ffd0b9/assets/grub-latte.png",
+      "alt": "Catppuccin GRUB screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/grub/0a37ab19f654e77129b409fed371891c01ffd0b9/assets/grub-frappe.png",
+      "alt": "Catppuccin GRUB screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/catppuccin/grub",
+    "ref": "0a37ab19f654e77129b409fed371891c01ffd0b9",
+    "readme": "README.md"
+  }
+}

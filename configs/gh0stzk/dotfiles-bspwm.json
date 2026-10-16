@@ -17,16 +17,16 @@
     "void",
     "fedora"
   ],
+  "category": "dotfiles",
   "wm": "bspwm",
   "themeStyle": "gruvbox",
   "displayServer": "x11",
   "tags": [
-    "bspwm",
     "polybar",
     "rofi",
-    "gruvbox",
-    "x11",
-    "multi-theme"
+    "eww",
+    "multi-theme",
+    "auto-install"
   ],
   "specs": {
     "bar": "Polybar (18 themes)",

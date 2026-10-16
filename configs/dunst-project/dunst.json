@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "dunst",
+  "author": {
+    "name": "dunst-project",
+    "github": "dunst-project"
+  },
+  "lang": "en",
+  "summary": "Lightweight, highly configurable notification daemon.",
+  "license": "BSD-3-Clause",
+  "updatedAt": "2026-10-12",
+  "distros": [
+    "any"
+  ],
+  "category": "notifications",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "lightweight",
+    "daemon"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/dunst-project/dunst/1249932aab9b7f687f1befe05ebf46b8d1ce0e42/contrib/screenshots/music.png",
+      "alt": "music"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/dunst-project/dunst/1249932aab9b7f687f1befe05ebf46b8d1ce0e42/contrib/screenshots/screenshot1_cut.png",
+      "alt": "dunst screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/dunst-project/dunst/1249932aab9b7f687f1befe05ebf46b8d1ce0e42/contrib/screenshots/screenshot2_cut.png",
+      "alt": "dunst screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/dunst-project/dunst",
+    "ref": "1249932aab9b7f687f1befe05ebf46b8d1ce0e42",
+    "readme": "README.md"
+  }
+}

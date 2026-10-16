@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Bibata",
+  "author": {
+    "name": "ful1e5",
+    "github": "ful1e5"
+  },
+  "lang": "en",
+  "summary": "Polished, customizable cursor theme with rounded and sharp variants.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-09-25",
+  "distros": [
+    "any"
+  ],
+  "category": "cursors",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "xcursor",
+    "hyprcursor"
+  ],
+  "screenshots": [
+    {
+      "url": "https://github.com/user-attachments/assets/d64d75e5-3ac9-45f3-8afe-e92719fd48d1",
+      "alt": "Bibata screenshot 1"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/04df0fbe-36fc-47bd-ad0a-c70eaea871f3",
+      "alt": "Bibata screenshot 2"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/56e7e67a-cf77-407c-871c-f663a93508f7",
+      "alt": "Bibata screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/ful1e5/Bibata_Cursor",
+    "ref": "ddb09273cde49faeb6a32282660ff4293f52d6e0",
+    "readme": "README.md"
+  }
+}

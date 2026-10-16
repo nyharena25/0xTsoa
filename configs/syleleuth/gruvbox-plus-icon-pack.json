@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Gruvbox Plus",
+  "author": {
+    "name": "SylEleuth",
+    "github": "SylEleuth"
+  },
+  "lang": "en",
+  "summary": "Icon pack built around the Gruvbox palette.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-16",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "gruvbox",
+  "displayServer": "both",
+  "tags": [
+    "folder-colors"
+  ],
+  "screenshots": [
+    {
+      "url": "https://github.com/user-attachments/assets/3632a44b-241f-4672-b412-11d0addecae9",
+      "alt": "preview-apps"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/9176a373-7e9d-4314-8453-4c9c97352b9c",
+      "alt": "preview-miemetypes"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/2a80368d-56e8-48b4-aeb4-67230fda428b",
+      "alt": "folders"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/SylEleuth/gruvbox-plus-icon-pack",
+    "ref": "2a44a742237f7b8b329b2a36d0c54a67aebb3ab6",
+    "readme": "README.md"
+  }
+}

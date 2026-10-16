@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "SwayNotificationCenter",
+  "author": {
+    "name": "ErikReider",
+    "github": "ErikReider"
+  },
+  "lang": "en",
+  "summary": "Notification daemon with a GTK control center and widgets for Sway and Hyprland.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-06-25",
+  "distros": [
+    "any"
+  ],
+  "category": "notifications",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "control-center",
+    "gtk",
+    "css"
+  ],
+  "screenshots": [
+    {
+      "url": "https://github.com/user-attachments/assets/5993cbb2-a54d-4d1c-9289-b7e2b9d0a09f",
+      "alt": "SwayNotificationCenter screenshot 1"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/ErikReider/SwayNotificationCenter",
+    "ref": "b8017a4d1a53debdf0e8766628fb80357eae31e7",
+    "readme": "README.md"
+  }
+}

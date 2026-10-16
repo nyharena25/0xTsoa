@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "ML4W Dotfiles",
+  "author": {
+    "name": "mylinuxforwork",
+    "github": "mylinuxforwork"
+  },
+  "lang": "en",
+  "summary": "Full Hyprland desktop with a settings app, wallpaper-driven colors and guided installer.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-12",
+  "distros": [
+    "arch",
+    "fedora",
+    "opensuse"
+  ],
+  "category": "dotfiles",
+  "wm": "hyprland",
+  "themeStyle": "dynamic",
+  "displayServer": "wayland",
+  "tags": [
+    "waybar",
+    "rofi",
+    "matugen",
+    "auto-install"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "ML4W Dotfiles: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/mylinuxforwork/dotfiles",
+    "ref": "aeadb93395fa2e64a575161696fed978f0588f12",
+    "readme": "README.md"
+  }
+}

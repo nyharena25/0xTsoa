@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "nwg-look",
+  "author": {
+    "name": "nwg-piotr",
+    "github": "nwg-piotr"
+  },
+  "lang": "en",
+  "summary": "GTK settings editor (lxappearance alternative) for wlroots.",
+  "license": "MIT",
+  "updatedAt": "2026-10-14",
+  "distros": [
+    "any"
+  ],
+  "category": "tool",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "gtk",
+    "settings"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/nwg-piotr/nwg-shell-resources/8ff2f66d1d94245e7b44850d57057e00ab936f85/images/nwg-look/nwg-look-0.1.3.png",
+      "alt": "nwg-look screenshot 1"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/c2a6244b-4eae-489e-b9bc-272347238be8",
+      "alt": "nwg-look screenshot 2"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/nwg-piotr/nwg-look",
+    "ref": "b9cc3e6b85fcb0aa04c1e66f092ebbca7e245b7f",
+    "readme": "README.md"
+  }
+}

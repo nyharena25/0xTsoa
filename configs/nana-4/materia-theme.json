@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Materia",
+  "author": {
+    "name": "nana-4",
+    "github": "nana-4"
+  },
+  "lang": "en",
+  "summary": "Flat Material Design theme for GTK desktops.",
+  "license": "LGPL-2.1-only",
+  "updatedAt": "2024-06-16",
+  "distros": [
+    "any"
+  ],
+  "category": "gtk-theme",
+  "wm": "any",
+  "themeStyle": "material",
+  "displayServer": "both",
+  "tags": [
+    "gtk2",
+    "gtk3",
+    "gnome-shell"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/nana-4/materia-theme/d7f59a37ef51f893c28b55dc344146e04b2cd52c/images/widget-factory.png",
+      "alt": "widget-factory"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/nana-4/materia-theme/d7f59a37ef51f893c28b55dc344146e04b2cd52c/images/widget-factory-dark.png",
+      "alt": "widget-factory-dark"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/nana-4/materia-theme/d7f59a37ef51f893c28b55dc344146e04b2cd52c/images/ripple.gif",
+      "alt": "ripple"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/nana-4/materia-theme",
+    "ref": "d7f59a37ef51f893c28b55dc344146e04b2cd52c",
+    "readme": "README.md"
+  }
+}

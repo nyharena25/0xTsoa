@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Cairo-Dock",
+  "author": {
+    "name": "Cairo-Dock",
+    "github": "Cairo-Dock"
+  },
+  "lang": "en",
+  "summary": "Highly customizable dock with applets and OpenGL animations.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-14",
+  "distros": [
+    "any"
+  ],
+  "category": "dock",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "applets",
+    "opengl"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Cairo-Dock/glxdock-repository/72c06bfa5b92b5bc6553d1e4b5f8590c690d713e/communication/images/3.4/cd-3.4.0-4-600.jpg",
+      "alt": "Cairo-Dock screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Cairo-Dock/cairo-dock-core/6304cf5db4fa24c9b918266de67158706a3c5a5b/data/images/help-preview.jpg",
+      "alt": "Cairo-Dock screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Cairo-Dock/cairo-dock-core/6304cf5db4fa24c9b918266de67158706a3c5a5b/data/images/preview-default.png",
+      "alt": "Cairo-Dock screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Cairo-Dock/cairo-dock-core",
+    "ref": "6304cf5db4fa24c9b918266de67158706a3c5a5b",
+    "readme": "README.md"
+  }
+}

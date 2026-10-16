@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Win11 Icons",
+  "author": {
+    "name": "yeyushengfan258",
+    "github": "yeyushengfan258"
+  },
+  "lang": "en",
+  "summary": "Icon theme reproducing the Windows 11 look.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2025-11-14",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "windows-like"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/yeyushengfan258/Win11-icon-theme/a5b460a407da143b32f19a503d7fcebb3edf2371/View-1.png",
+      "alt": "Win11 Icons screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/yeyushengfan258/Win11-icon-theme/a5b460a407da143b32f19a503d7fcebb3edf2371/View-2.png",
+      "alt": "Win11 Icons screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/yeyushengfan258/Win11-icon-theme/a5b460a407da143b32f19a503d7fcebb3edf2371/View-3.png",
+      "alt": "Win11 Icons screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/yeyushengfan258/Win11-icon-theme",
+    "ref": "a5b460a407da143b32f19a503d7fcebb3edf2371",
+    "readme": "README.md"
+  }
+}

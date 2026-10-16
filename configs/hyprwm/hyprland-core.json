@@ -17,16 +17,15 @@
     "fedora",
     "opensuse"
   ],
+  "category": "wm",
   "wm": "hyprland",
   "themeStyle": "minimalist",
   "displayServer": "wayland",
   "tags": [
-    "hyprland",
-    "wayland",
-    "compositor",
     "tiling",
     "animations",
-    "gpu"
+    "plugins",
+    "dynamic-tiling"
   ],
   "specs": {
     "bar": "Waybar",

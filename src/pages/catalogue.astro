@@ -12,6 +12,7 @@ const t = useTranslations(locale);
 const allConfigs = await getCollection('configs');
 
 const counts = {
+  categories: {} as Record<string, number>,
   wms: {} as Record<string, number>,
   styles: {} as Record<string, number>,
   distros: {} as Record<string, number>,
@@ -21,6 +22,7 @@ const counts = {
 
 for (const c of allConfigs) {
   const data = c.data;
+  counts.categories[data.category] = (counts.categories[data.category] || 0) + 1;
   counts.wms[data.wm] = (counts.wms[data.wm] || 0) + 1;
   const style = data.themeStyle || 'minimalist';
   counts.styles[style] = (counts.styles[style] || 0) + 1;
@@ -164,6 +166,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
               data-name={c.data.name.toLowerCase()}
               data-author={c.data.author.name.toLowerCase()}
               data-summary={c.data.summary.toLowerCase()}
+              data-category={c.data.category}
               data-wm={c.data.wm}
               data-style={c.data.themeStyle || 'minimalist'}
               data-distros={c.data.distros.join(',')}
@@ -238,6 +241,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
 
     function readStateFromUrl() {
       const p = new URLSearchParams(window.location.search);
+      const selectedCategories = p.getAll('category');
       const selectedWms = p.getAll('wm');
       const selectedStyles = p.getAll('style');
       const selectedDistros = p.getAll('distro');
@@ -249,6 +253,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
       const sort = p.get('sort') || 'votes';
 
       checkboxes.forEach((cb) => {
+        if (cb.name === 'category') cb.checked = selectedCategories.includes(cb.value);
         if (cb.name === 'wm') cb.checked = selectedWms.includes(cb.value);
         if (cb.name === 'style') cb.checked = selectedStyles.includes(cb.value);
         if (cb.name === 'distro') cb.checked = selectedDistros.includes(cb.value);
@@ -273,7 +278,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
 
       if (sortSelect && sort) sortSelect.value = sort;
 
-      applyFilter(selectedWms, selectedStyles, selectedDistros, ramMax ? parseInt(ramMax, 10) : null, battery, tag, q, favOnly, sort);
+      applyFilter(selectedCategories, selectedWms, selectedStyles, selectedDistros, ramMax ? parseInt(ramMax, 10) : null, battery, tag, q, favOnly, sort);
     }
 
     function writeStateToUrl() {
@@ -302,6 +307,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
     }
 
     function applyFilter(
+      categories: string[],
       wms: string[],
       styles: string[],
       distros: string[],
@@ -319,6 +325,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
         chipsContainer.innerHTML = '';
         const allActive: { label: string; onRemove: () => void }[] = [];
 
+        categories.forEach((c) => allActive.push({ label: `part:${c}`, onRemove: () => uncheck('category', c) }));
         wms.forEach((w) => allActive.push({ label: `wm:${w}`, onRemove: () => uncheck('wm', w) }));
         styles.forEach((s) => allActive.push({ label: `style:${s}`, onRemove: () => uncheck('style', s) }));
         distros.forEach((d) => allActive.push({ label: `distro:${d}`, onRemove: () => uncheck('distro', d) }));
@@ -344,6 +351,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
 
       cardItems.forEach((card) => {
         const cardId = card.getAttribute('data-id') || '';
+        const cardCategory = card.getAttribute('data-category') || '';
         const cardWm = card.getAttribute('data-wm') || '';
         const cardStyle = card.getAttribute('data-style') || 'minimalist';
         const cardDistros = (card.getAttribute('data-distros') || '').split(',');
@@ -356,6 +364,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
 
         let match = true;
 
+        if (categories.length > 0 && !categories.includes(cardCategory)) match = false;
         if (wms.length > 0 && !wms.includes(cardWm)) match = false;
         if (styles.length > 0 && !styles.includes(cardStyle)) match = false;
         if (distros.length > 0 && !cardDistros.includes('any') && !distros.some((d) => cardDistros.includes(d))) match = false;
@@ -371,6 +380,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
             cardAuthor.includes(qLower) ||
             cardSummary.includes(qLower) ||
             cardWm.includes(qLower) ||
+            cardCategory.includes(qLower) ||
             cardStyle.includes(qLower) ||
             cardTags.some((t) => t.includes(qLower));
           if (!textMatch) match = false;
@@ -405,7 +415,7 @@ const sortedConfigs = allConfigs.slice().sort((a, b) => {
       }
 
       if (countLabel) {
-        countLabel.textContent = `${visibleCount} configurations indexed`;
+        countLabel.textContent = `${visibleCount} entries indexed`;
       }
 
       if (noResultsMsg) {

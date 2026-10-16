@@ -1,0 +1,39 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "zenith",
+  "author": {
+    "name": "bvaisvil",
+    "github": "bvaisvil"
+  },
+  "lang": "en",
+  "summary": "Terminal system monitor with zoomable charts, written in Rust.",
+  "license": "MIT",
+  "updatedAt": "2026-10-01",
+  "distros": [
+    "any"
+  ],
+  "category": "tool",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "terminal",
+    "system-monitor",
+    "rust"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/bvaisvil/zenith/b65891608978bb6f9654931d393a3797d33a8306/assets/zenith_screenshot.png",
+      "alt": "Running zenith on alacritty on MacOS"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/bvaisvil/zenith/b65891608978bb6f9654931d393a3797d33a8306/assets/help.png",
+      "alt": "Running zenith on iTerm2 on MacOS"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/bvaisvil/zenith",
+    "ref": "b65891608978bb6f9654931d393a3797d33a8306",
+    "readme": "README.md"
+  }
+}

@@ -16,16 +16,15 @@
     "void",
     "gentoo"
   ],
+  "category": "dotfiles",
   "wm": "awesome",
   "themeStyle": "minimalist",
   "displayServer": "x11",
   "tags": [
-    "awesomewm",
-    "pastel",
-    "minimalist",
-    "unixporn",
     "lua",
-    "x11"
+    "widgets",
+    "dashboard",
+    "pastel"
   ],
   "specs": {
     "bar": "AwesomeWM Custom Panels",

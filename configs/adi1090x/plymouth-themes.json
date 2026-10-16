@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Plymouth Themes",
+  "author": {
+    "name": "adi1090x",
+    "github": "adi1090x"
+  },
+  "lang": "en",
+  "summary": "Collection of 80+ animated Plymouth boot splash themes.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2023-08-22",
+  "distros": [
+    "any"
+  ],
+  "category": "boot",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "plymouth",
+    "animated"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/adi1090x/files/1f8b8d834eb0978d8b0260ffd161e9997b3ee0a2/plymouth-themes/previews/53.gif",
+      "alt": "Plymouth Themes screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/adi1090x/files/1f8b8d834eb0978d8b0260ffd161e9997b3ee0a2/plymouth-themes/previews/14.gif",
+      "alt": "Plymouth Themes screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/adi1090x/files/1f8b8d834eb0978d8b0260ffd161e9997b3ee0a2/plymouth-themes/previews/16.gif",
+      "alt": "Plymouth Themes screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/adi1090x/plymouth-themes",
+    "ref": "5d8817458d764bff4ff9daae94cf1bbaabf16ede",
+    "readme": "README.md"
+  }
+}

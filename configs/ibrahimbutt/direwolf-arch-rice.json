@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Direwolf Arch Rice",
+  "author": {
+    "name": "ibrahimbutt",
+    "github": "ibrahimbutt"
+  },
+  "lang": "en",
+  "summary": "Step-by-step beginner guide to ricing an i3 desktop on Arch Linux.",
+  "license": "MIT",
+  "updatedAt": "2021-09-30",
+  "distros": [
+    "any"
+  ],
+  "category": "resource",
+  "wm": "i3",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "guide",
+    "beginner-friendly"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/ibrahimbutt/direwolf-arch-rice/e9d75ff223faf12939b933be1b9b012790683493/images/finishedsetup.png",
+      "alt": "The Setup"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/ibrahimbutt/direwolf-arch-rice/e9d75ff223faf12939b933be1b9b012790683493/images/i3wm-example.png",
+      "alt": "Example of i3WM tiling"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/ibrahimbutt/direwolf-arch-rice/e9d75ff223faf12939b933be1b9b012790683493/images/ranger-dmenu.png",
+      "alt": "Dmenu and ranger in action"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/ibrahimbutt/direwolf-arch-rice",
+    "ref": "e9d75ff223faf12939b933be1b9b012790683493",
+    "readme": "README.md"
+  }
+}

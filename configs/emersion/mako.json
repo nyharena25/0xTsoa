@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "mako",
+  "author": {
+    "name": "emersion",
+    "github": "emersion"
+  },
+  "lang": "en",
+  "summary": "Lightweight Wayland notification daemon.",
+  "license": "MIT",
+  "updatedAt": "2026-06-30",
+  "distros": [
+    "any"
+  ],
+  "category": "notifications",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "lightweight",
+    "daemon"
+  ],
+  "screenshots": [
+    {
+      "url": "https://github.com/user-attachments/assets/25582bd6-bd3b-4bb3-b248-87fa7f88e967",
+      "alt": "mako screenshot"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/4b32fef6-61d9-4ad1-8820-d4e5a245a76c",
+      "alt": "mako screenshot 2"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/emersion/mako",
+    "ref": "cce37cd3405f64eee1b07d4656b5ecbbc912b46d",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Crystal",
+  "author": {
+    "name": "namishh",
+    "github": "namishh"
+  },
+  "lang": "en",
+  "summary": "AwesomeWM configuration with multiple colorschemes and handcrafted widgets.",
+  "license": "MIT",
+  "updatedAt": "2026-01-13",
+  "distros": [
+    "any"
+  ],
+  "category": "dotfiles",
+  "wm": "awesome",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "lua",
+    "widgets",
+    "multi-theme"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/namishh/crystal/b43ab1d0fd4e9f686739a20cdc130c5cfc9d0159/.github/screenshots/crystal.png",
+      "alt": "showcase3"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/namishh/crystal/b43ab1d0fd4e9f686739a20cdc130c5cfc9d0159/.github/screenshots/aura.png",
+      "alt": "Crystal screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/namishh/crystal/b43ab1d0fd4e9f686739a20cdc130c5cfc9d0159/.github/screenshots/freosan.png",
+      "alt": "freosan"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/namishh/crystal",
+    "ref": "b43ab1d0fd4e9f686739a20cdc130c5cfc9d0159",
+    "readme": ".github/README.md"
+  }
+}

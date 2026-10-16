@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "pywal16",
+  "author": {
+    "name": "eylles",
+    "github": "eylles"
+  },
+  "lang": "en",
+  "summary": "Maintained pywal fork with 16-color output and more backends.",
+  "license": "MIT",
+  "updatedAt": "2026-05-11",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "dynamic",
+  "displayServer": "both",
+  "tags": [
+    "wallpaper-colors",
+    "python"
+  ],
+  "screenshots": [
+    {
+      "url": "https://i.imgur.com/5WgMACe.gif",
+      "alt": "pywal16 screenshot 1"
+    },
+    {
+      "url": "https://i.imgur.com/V1FuvJP.png",
+      "alt": "pywal16 screenshot 2"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/eylles/pywal16",
+    "ref": "af711710cdc3c88248b667342e5d4289f00f8c6e",
+    "readme": "README.md"
+  }
+}

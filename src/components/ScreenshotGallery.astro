@@ -13,7 +13,8 @@ interface Props {
   configName: string;
 }
 
-const { screenshots, configName } = Astro.props;
+const { configName } = Astro.props;
+const screenshots = Astro.props.screenshots.map((s) => ({ ...s, url: s.url.startsWith('/') ? withBase(s.url) : s.url }));
 const t = useTranslations('en');
 const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
 ---

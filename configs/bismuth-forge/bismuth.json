@@ -1,0 +1,39 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Bismuth",
+  "author": {
+    "name": "Bismuth-Forge",
+    "github": "Bismuth-Forge"
+  },
+  "lang": "en",
+  "summary": "Automatic tiling extension for KDE Plasma 5.",
+  "license": "NOASSERTION",
+  "updatedAt": "2022-12-22",
+  "distros": [
+    "any"
+  ],
+  "category": "extension",
+  "wm": "kde",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "kwin",
+    "tiling",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Bismuth-Forge/bismuth/ef69afe69f615149ab347e4402862ee900452a65/img/rice.png",
+      "alt": "Bismuth screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Bismuth-Forge/bismuth/ef69afe69f615149ab347e4402862ee900452a65/img/config.png",
+      "alt": "Bismuth Configuration Module"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Bismuth-Forge/bismuth",
+    "ref": "ef69afe69f615149ab347e4402862ee900452a65",
+    "readme": "README.md"
+  }
+}

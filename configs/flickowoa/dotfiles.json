@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "flick0 Dotfiles",
+  "author": {
+    "name": "flickowoa",
+    "github": "flickowoa"
+  },
+  "lang": "en",
+  "summary": "Aesthetic Hyprland rice with a retro palette, eww bar and custom sounds.",
+  "license": "NOASSERTION",
+  "updatedAt": "2026-06-15",
+  "distros": [
+    "any"
+  ],
+  "category": "dotfiles",
+  "wm": "hyprland",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "eww",
+    "retro"
+  ],
+  "screenshots": [
+    {
+      "url": "https://github.com/user-attachments/assets/ef43a88c-dc5a-4c57-ba54-90e7f3a5168f",
+      "alt": "flick0 Dotfiles screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/flick0/dotfiles/702facf3bc3bce37991efdba6efb68c7477ea770/assets/pipes.png",
+      "alt": "flick0 Dotfiles screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/flick0/dotfiles/e392b6c57049f3fbece71e8bbaa52c9be5af35a5/assets/cava.png",
+      "alt": "flick0 Dotfiles screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/flickowoa/dotfiles",
+    "ref": "4e23f15a78fecdc3b3c71fcca2b650eab0599f88",
+    "readme": "README.md"
+  }
+}

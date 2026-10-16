@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Waybar",
+  "author": {
+    "name": "Alexays",
+    "github": "Alexays"
+  },
+  "lang": "en",
+  "summary": "Highly customizable status bar for Sway, Hyprland and other wlroots compositors.",
+  "license": "MIT",
+  "updatedAt": "2026-10-11",
+  "distros": [
+    "any"
+  ],
+  "category": "bar",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "css",
+    "json-config",
+    "modules"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Alexays/Waybar/4e207a0cb51a9eb89b4245d90245721f5e39bf06/preview-2.png",
+      "alt": "Waybar"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Alexays/Waybar",
+    "ref": "4e207a0cb51a9eb89b4245d90245721f5e39bf06",
+    "readme": "README.md"
+  }
+}

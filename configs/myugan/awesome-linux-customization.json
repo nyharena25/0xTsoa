@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Awesome Linux Customization",
+  "author": {
+    "name": "myugan",
+    "github": "myugan"
+  },
+  "lang": "en",
+  "summary": "Inventory of building blocks to customize X11 and Wayland environments.",
+  "license": "NOASSERTION",
+  "updatedAt": "2023-01-03",
+  "distros": [
+    "any"
+  ],
+  "category": "resource",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "awesome-list"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "Awesome Linux Customization: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/myugan/awesome-linux-customization",
+    "ref": "1aa66b4ddaf6bf60d462b2c70cd809745087e354",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Everforest",
+  "author": {
+    "name": "sainnhe",
+    "github": "sainnhe"
+  },
+  "lang": "en",
+  "summary": "Comfortable green-based palette, originally for Vim.",
+  "license": "MIT",
+  "updatedAt": "2026-06-08",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "palette",
+    "vim"
+  ],
+  "screenshots": [
+    {
+      "url": "https://user-images.githubusercontent.com/37491630/206063892-e1b2197e-2404-4ab4-8570-3dee96242ba1.png",
+      "alt": "hard-dark"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/37491630/206063912-666f7ddd-3f95-41b3-a906-12d946d5f688.png",
+      "alt": "hard-light"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/37491630/206063921-58418bb0-7752-43f3-9f3b-f3752f8ee753.png",
+      "alt": "medium-dark"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/sainnhe/everforest",
+    "ref": "85a86eb62409e3ec88713bff3d1b9d7374e112e4",
+    "readme": "README.md"
+  }
+}

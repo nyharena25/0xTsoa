@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Extension Manager",
+  "author": {
+    "name": "mjakeman",
+    "github": "mjakeman"
+  },
+  "lang": "en",
+  "summary": "Native app to browse, install and manage GNOME Shell extensions.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-14",
+  "distros": [
+    "any"
+  ],
+  "category": "extension",
+  "wm": "gnome",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "gnome-shell",
+    "gtk4"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/mjakeman/extension-manager/43a5460222dc8b98deeb4ab444b6720adc8834fa/data/screenshot-installed-light.png",
+      "alt": "Screenshot of the main GUI (light mode)"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/mjakeman/extension-manager/43a5460222dc8b98deeb4ab444b6720adc8834fa/data/screenshot-browse-dark.png",
+      "alt": "Screenshot of the main GUI (dark mode)"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/mjakeman/extension-manager",
+    "ref": "43a5460222dc8b98deeb4ab444b6720adc8834fa",
+    "readme": "README.md"
+  }
+}

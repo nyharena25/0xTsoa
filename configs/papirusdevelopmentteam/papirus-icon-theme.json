@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Papirus",
+  "author": {
+    "name": "PapirusDevelopmentTeam",
+    "github": "PapirusDevelopmentTeam"
+  },
+  "lang": "en",
+  "summary": "Popular, very complete SVG icon theme with dark and light variants.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-09-21",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "svg",
+    "folder-colors"
+  ],
+  "screenshots": [
+    {
+      "url": "https://i.imgur.com/6hFm6aj.png",
+      "alt": "hardcode-tray"
+    },
+    {
+      "url": "https://i.imgur.com/oM1qhQH.png",
+      "alt": "kde-color-scheme"
+    },
+    {
+      "url": "https://i.imgur.com/8mUAbIA.png",
+      "alt": "Folder Color Preview"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme",
+    "ref": "bf539287ef5dc18529424a02cccee76175920a6f",
+    "readme": "README.md"
+  }
+}

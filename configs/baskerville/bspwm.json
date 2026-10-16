@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "bspwm",
+  "author": {
+    "name": "baskerville",
+    "github": "baskerville"
+  },
+  "lang": "en",
+  "summary": "Tiling window manager that arranges windows as leaves of a binary tree, driven by bspc.",
+  "license": "BSD-2-Clause",
+  "updatedAt": "2026-01-08",
+  "distros": [
+    "any"
+  ],
+  "category": "wm",
+  "wm": "bspwm",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "tiling",
+    "binary-tree",
+    "sxhkd"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "bspwm: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/baskerville/bspwm",
+    "ref": "e11eff4cb3333216ad03c815609a4ed79e08929c",
+    "readme": "README.md"
+  }
+}

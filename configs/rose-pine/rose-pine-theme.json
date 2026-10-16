@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Rosé Pine",
+  "author": {
+    "name": "rose-pine",
+    "github": "rose-pine"
+  },
+  "lang": "en",
+  "summary": "Soho-vibes palette with ports for many apps.",
+  "license": "MIT",
+  "updatedAt": "2026-07-05",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "rose-pine",
+  "displayServer": "both",
+  "tags": [
+    "palette",
+    "ports"
+  ],
+  "screenshots": [
+    {
+      "url": "https://user-images.githubusercontent.com/1474821/173256840-2cf59d8c-a9d7-4a2c-a8c3-02302227d97a.png",
+      "alt": "Stand with Ukraine"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rose-pine/rose-pine-theme/781bb844aae0bcec2763b23a4c7d3cc6aede780c/assets/icon.png",
+      "alt": "Rosé Pine screenshot 2"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/38381e5e-567d-47f6-879c-82011ad17505",
+      "alt": "Rosé Pine screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/rose-pine/rose-pine-theme",
+    "ref": "781bb844aae0bcec2763b23a4c7d3cc6aede780c",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "gBar",
+  "author": {
+    "name": "scorpion-26",
+    "github": "scorpion-26"
+  },
+  "lang": "en",
+  "summary": "Lightweight status bar for Wayland written in C++ with GTK.",
+  "license": "MIT",
+  "updatedAt": "2024-12-17",
+  "distros": [
+    "any"
+  ],
+  "category": "bar",
+  "wm": "hyprland",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "gtk",
+    "cpp",
+    "lightweight"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/scorpion-26/gBar/03bedc7471add061fb15e0ca1c9d2f729b8c5d7b/assets/bar.png",
+      "alt": "The bar with default css"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/scorpion-26/gBar/03bedc7471add061fb15e0ca1c9d2f729b8c5d7b/assets/audioflyin.png",
+      "alt": "The audio flyin with default css"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/scorpion-26/gBar/03bedc7471add061fb15e0ca1c9d2f729b8c5d7b/assets/bt.png",
+      "alt": "The bluetooth widget with default css"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/scorpion-26/gBar",
+    "ref": "03bedc7471add061fb15e0ca1c9d2f729b8c5d7b",
+    "readme": "README.md"
+  }
+}

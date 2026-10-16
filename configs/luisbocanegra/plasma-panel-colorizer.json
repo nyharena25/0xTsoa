@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Panel Colorizer",
+  "author": {
+    "name": "luisbocanegra",
+    "github": "luisbocanegra"
+  },
+  "lang": "en",
+  "summary": "Plasma widget to fully restyle panels: floating, blur, per-widget colors.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-09-19",
+  "distros": [
+    "any"
+  ],
+  "category": "extension",
+  "wm": "kde",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "plasma",
+    "panel"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/luisbocanegra/plasma-panel-colorizer/d0b1d4cab773f05cdcda2c1b2970093a5c367b54/screenshots/panel.png",
+      "alt": "panel"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/luisbocanegra/plasma-panel-colorizer/d0b1d4cab773f05cdcda2c1b2970093a5c367b54/screenshots/settings.png",
+      "alt": "settings"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/luisbocanegra/plasma-panel-colorizer/d0b1d4cab773f05cdcda2c1b2970093a5c367b54/screenshots/presets.png",
+      "alt": "presets"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/luisbocanegra/plasma-panel-colorizer",
+    "ref": "d0b1d4cab773f05cdcda2c1b2970093a5c367b54",
+    "readme": "README.md"
+  }
+}

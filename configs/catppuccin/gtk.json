@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Catppuccin GTK",
+  "author": {
+    "name": "catppuccin",
+    "github": "catppuccin"
+  },
+  "lang": "en",
+  "summary": "Official Catppuccin port for GTK in all four flavors.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2024-06-02",
+  "distros": [
+    "any"
+  ],
+  "category": "gtk-theme",
+  "wm": "any",
+  "themeStyle": "catppuccin",
+  "displayServer": "both",
+  "tags": [
+    "gtk3",
+    "gtk4",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "Catppuccin GTK: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/catppuccin/gtk",
+    "ref": "23b52b5b9cde1e11c07315e79a55804d2ac77e3a",
+    "readme": "README.md"
+  }
+}

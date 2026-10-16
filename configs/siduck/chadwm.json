@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "chadwm",
+  "author": {
+    "name": "siduck",
+    "github": "siduck"
+  },
+  "lang": "en",
+  "summary": "Patched dwm build with a styled status bar, gaps and multiple colorschemes.",
+  "license": "MIT",
+  "updatedAt": "2025-12-30",
+  "distros": [
+    "any"
+  ],
+  "category": "dotfiles",
+  "wm": "dwm",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "suckless",
+    "c",
+    "patched"
+  ],
+  "screenshots": [
+    {
+      "url": "https://i.redd.it/t1pvmqlq3oc81.png",
+      "alt": "chadwm screenshot 1"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/siduck/chadwm",
+    "ref": "7991ac8d33878b716e7e7cabf58b47503864f622",
+    "readme": "README.md"
+  }
+}

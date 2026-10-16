@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Vimix Cursors",
+  "author": {
+    "name": "vinceliuice",
+    "github": "vinceliuice"
+  },
+  "lang": "en",
+  "summary": "X cursor theme inspired by Material design.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2021-09-18",
+  "distros": [
+    "any"
+  ],
+  "category": "cursors",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "xcursor"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Vimix-cursors/9bc292f40904e0a33780eda5c5d92eb9a1154e9c/preview.png",
+      "alt": "Vimix"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Vimix-cursors/9bc292f40904e0a33780eda5c5d92eb9a1154e9c/preview-white.png",
+      "alt": "Vimix-white"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/vinceliuice/Vimix-cursors",
+    "ref": "9bc292f40904e0a33780eda5c5d92eb9a1154e9c",
+    "readme": "README.md"
+  }
+}

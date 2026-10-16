@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "bemenu",
+  "author": {
+    "name": "Cloudef",
+    "github": "Cloudef"
+  },
+  "lang": "en",
+  "summary": "dmenu clone that works on Wayland, X11 and the terminal.",
+  "license": "NOASSERTION",
+  "updatedAt": "2025-08-29",
+  "distros": [
+    "any"
+  ],
+  "category": "launcher",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "dmenu-replacement"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "bemenu: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Cloudef/bemenu",
+    "ref": "44b82f9f3fb9f04acfaa89471dddc05a20e16883",
+    "readme": "README.md"
+  }
+}

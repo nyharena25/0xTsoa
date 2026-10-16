@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "tofi",
+  "author": {
+    "name": "philj56",
+    "github": "philj56"
+  },
+  "lang": "en",
+  "summary": "Tiny, very fast dmenu/rofi replacement for wlroots compositors, written in C.",
+  "license": "MIT",
+  "updatedAt": "2024-12-30",
+  "distros": [
+    "any"
+  ],
+  "category": "launcher",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "dmenu-replacement",
+    "fast"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/philj56/tofi/1eb6137572ab6c257ab6ab851d5d742167c18120/screenshot_fullscreen.png",
+      "alt": "tofi screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/philj56/tofi/1eb6137572ab6c257ab6ab851d5d742167c18120/screenshot_default.png",
+      "alt": "Default theme screenshot"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/philj56/tofi/1eb6137572ab6c257ab6ab851d5d742167c18120/screenshot_dmenu.png",
+      "alt": "dmenu theme screenshot"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/philj56/tofi",
+    "ref": "1eb6137572ab6c257ab6ab851d5d742167c18120",
+    "readme": "README.md"
+  }
+}

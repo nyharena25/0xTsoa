@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Polybar Themes",
+  "author": {
+    "name": "adi1090x",
+    "github": "adi1090x"
+  },
+  "lang": "en",
+  "summary": "Large collection of ready-made Polybar styles and launchers.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-08-18",
+  "distros": [
+    "any"
+  ],
+  "category": "bar",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "polybar",
+    "presets"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/adi1090x/files/1f8b8d834eb0978d8b0260ffd161e9997b3ee0a2/polybar-themes/previews/material/md.gif",
+      "alt": "Polybar Themes screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/adi1090x/files/1f8b8d834eb0978d8b0260ffd161e9997b3ee0a2/polybar-themes/previews/material/ml.gif",
+      "alt": "Polybar Themes screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/adi1090x/files/1f8b8d834eb0978d8b0260ffd161e9997b3ee0a2/polybar-themes/previews/bitmap/material/md.gif",
+      "alt": "Polybar Themes screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/adi1090x/polybar-themes",
+    "ref": "7735b96afd72f835c7c909599265fb431886d7c0",
+    "readme": "README.md"
+  }
+}

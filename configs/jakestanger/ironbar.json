@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Ironbar",
+  "author": {
+    "name": "JakeStanger",
+    "github": "JakeStanger"
+  },
+  "lang": "en",
+  "summary": "GTK4 bar for wlroots compositors written in Rust, styled with CSS.",
+  "license": "MIT",
+  "updatedAt": "2026-10-14",
+  "distros": [
+    "any"
+  ],
+  "category": "bar",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "rust",
+    "gtk4",
+    "css"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "Ironbar: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/JakeStanger/ironbar",
+    "ref": "149c0d0d7e26366d066b14878a8e85cf1ee32f42",
+    "readme": "README.md"
+  }
+}

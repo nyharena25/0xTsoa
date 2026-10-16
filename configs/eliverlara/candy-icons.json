@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Candy Icons",
+  "author": {
+    "name": "EliverLara",
+    "github": "EliverLara"
+  },
+  "lang": "en",
+  "summary": "Vivid gradient icon theme, a match for neon setups.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-03-06",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "cyberpunk",
+  "displayServer": "both",
+  "tags": [
+    "gradient",
+    "neon"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/EliverLara/candy-icons/83512fbcadcb7e1015ebbe1729a1894946b021be/preview/candy.png",
+      "alt": "Candy Icons screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/EliverLara/candy-icons/83512fbcadcb7e1015ebbe1729a1894946b021be/preview/cli.png",
+      "alt": "Candy Icons screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/EliverLara/candy-icons/83512fbcadcb7e1015ebbe1729a1894946b021be/preview/icons.png",
+      "alt": "Candy Icons screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/EliverLara/candy-icons",
+    "ref": "83512fbcadcb7e1015ebbe1729a1894946b021be",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Orchis",
+  "author": {
+    "name": "vinceliuice",
+    "github": "vinceliuice"
+  },
+  "lang": "en",
+  "summary": "Material-inspired GTK theme with rounded corners.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-09-14",
+  "distros": [
+    "any"
+  ],
+  "category": "gtk-theme",
+  "wm": "any",
+  "themeStyle": "material",
+  "displayServer": "both",
+  "tags": [
+    "gtk3",
+    "gtk4",
+    "gnome-shell"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Orchis-theme/a4c48a425e63808345e824495964bd9c2f462e04/images/screenshot.png",
+      "alt": "Orchis screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Orchis-theme/a4c48a425e63808345e824495964bd9c2f462e04/images/tweaks-view.png",
+      "alt": "tweaks-view"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Orchis-theme/a4c48a425e63808345e824495964bd9c2f462e04/images/libadwaita.png",
+      "alt": "libadwaita"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/vinceliuice/Orchis-theme",
+    "ref": "a4c48a425e63808345e824495964bd9c2f462e04",
+    "readme": "README.md"
+  }
+}

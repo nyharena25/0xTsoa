@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Plank Reloaded",
+  "author": {
+    "name": "zquestz",
+    "github": "zquestz"
+  },
+  "lang": "en",
+  "summary": "Maintained fork of Plank with fixes and new docklets.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-15",
+  "distros": [
+    "any"
+  ],
+  "category": "dock",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "fork",
+    "docklets"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/zquestz/plank-reloaded/5d26e5a0a28e2f52b06cfb8d550c33bc762aa08e/screenshots/plank-reloaded-mint.webp",
+      "alt": "Plank Reloaded on Linux Mint"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/zquestz/plank-reloaded/5d26e5a0a28e2f52b06cfb8d550c33bc762aa08e/screenshots/default.webp",
+      "alt": "Default Theme"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/zquestz/plank-reloaded/5d26e5a0a28e2f52b06cfb8d550c33bc762aa08e/screenshots/matte.webp",
+      "alt": "Matte Theme"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/zquestz/plank-reloaded",
+    "ref": "5d26e5a0a28e2f52b06cfb8d550c33bc762aa08e",
+    "readme": "README.md"
+  }
+}

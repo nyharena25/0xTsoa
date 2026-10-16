@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Distro GRUB Themes",
+  "author": {
+    "name": "AdisonCavani",
+    "github": "AdisonCavani"
+  },
+  "lang": "en",
+  "summary": "GRUB themes branded for many Linux distributions.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-03-28",
+  "distros": [
+    "any"
+  ],
+  "category": "boot",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "grub"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "Distro GRUB Themes: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/AdisonCavani/distro-grub-themes",
+    "ref": "6e9e018abf38c0b3ed2bff1912ecf30a94e0c917",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "PaperWM",
+  "author": {
+    "name": "paperwm",
+    "github": "paperwm"
+  },
+  "lang": "en",
+  "summary": "Scrollable tiling of windows inside GNOME Shell.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-13",
+  "distros": [
+    "any"
+  ],
+  "category": "extension",
+  "wm": "gnome",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "gnome-shell",
+    "scrollable-tiling"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/paperwm/PaperWM/2d460db8365b2dee235dde15103161e67df83247/media/gnome-pill-option.png",
+      "alt": "PaperWM screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/paperwm/PaperWM/2d460db8365b2dee235dde15103161e67df83247/media/gesture-settings.png",
+      "alt": "PaperWM screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/paperwm/PaperWM/2d460db8365b2dee235dde15103161e67df83247/media/window-indicator-bar.png",
+      "alt": "PaperWM screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/paperwm/PaperWM",
+    "ref": "2d460db8365b2dee235dde15103161e67df83247",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "hyfetch",
+  "author": {
+    "name": "hykilpikonna",
+    "github": "hykilpikonna"
+  },
+  "lang": "en",
+  "summary": "neofetch with pride flag color presets.",
+  "license": "MIT",
+  "updatedAt": "2026-10-15",
+  "distros": [
+    "any"
+  ],
+  "category": "tool",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "fetch",
+    "terminal"
+  ],
+  "screenshots": [
+    {
+      "url": "https://user-images.githubusercontent.com/22280294/162614553-eb758e4e-1936-472c-8ca7-b601c696c6eb.png",
+      "alt": "hyfetch screenshot 1"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/22280294/162614578-3b878abb-2a32-4427-997e-f90b3f5cfd7c.png",
+      "alt": "hyfetch screenshot 2"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/22280294/162661621-f1c61338-7857-4d3f-9fe3-c6b635d68c38.png",
+      "alt": "hyfetch screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/hykilpikonna/hyfetch",
+    "ref": "520f3799f1bba88ffe8e9e0da43eac08c7a2c3c7",
+    "readme": "README.md"
+  }
+}

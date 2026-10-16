@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "HyDE",
+  "author": {
+    "name": "HyDE-Project",
+    "github": "HyDE-Project"
+  },
+  "lang": "en",
+  "summary": "Successor of Hyprdots: themeable Hyprland desktop with a theme switcher and gallery.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-10-03",
+  "distros": [
+    "arch"
+  ],
+  "category": "dotfiles",
+  "wm": "hyprland",
+  "themeStyle": "catppuccin",
+  "displayServer": "wayland",
+  "tags": [
+    "waybar",
+    "rofi",
+    "multi-theme",
+    "auto-install"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/HyDE-Project/HyDE/fa2fd57afc7203b1b5653d3271f3a57ea3873f97/Source/assets/hyde_banner.png",
+      "alt": "hyde_banner"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/HyDE-Project/HyDE/fa2fd57afc7203b1b5653d3271f3a57ea3873f97/Source/assets/archlinux.png",
+      "alt": "Arch Linux"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/HyDE-Project/HyDE/fa2fd57afc7203b1b5653d3271f3a57ea3873f97/Source/assets/cachyos.png",
+      "alt": "CachyOS"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/HyDE-Project/HyDE",
+    "ref": "fa2fd57afc7203b1b5653d3271f3a57ea3873f97",
+    "readme": "README.md"
+  }
+}

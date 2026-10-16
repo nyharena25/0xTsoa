@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "swww",
+  "author": {
+    "name": "LGFae",
+    "github": "LGFae"
+  },
+  "lang": "en",
+  "summary": "Animated wallpaper daemon for Wayland, controlled at runtime.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2025-10-31",
+  "distros": [
+    "any"
+  ],
+  "category": "tool",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "wallpaper",
+    "animated",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "https://i.imgur.com/Leuh6wm.gif",
+      "alt": "animated gif demonstration"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/LGFae/swww",
+    "ref": "8a3b1bf9f3363683097aa5467d3058cc2278da1a",
+    "readme": "README.md"
+  }
+}

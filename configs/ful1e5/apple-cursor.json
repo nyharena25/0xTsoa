@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "macOS Cursors",
+  "author": {
+    "name": "ful1e5",
+    "github": "ful1e5"
+  },
+  "lang": "en",
+  "summary": "Faithful macOS cursor set for Linux.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2024-09-28",
+  "distros": [
+    "any"
+  ],
+  "category": "cursors",
+  "wm": "any",
+  "themeStyle": "macos",
+  "displayServer": "both",
+  "tags": [
+    "xcursor",
+    "macos-like"
+  ],
+  "screenshots": [
+    {
+      "url": "https://github.com/user-attachments/assets/ad260d52-6534-441b-902d-440cb368b5c9",
+      "alt": "macOS Cursors screenshot 1"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/07018988-36ee-4913-adc7-365854629a20",
+      "alt": "macOS Cursors screenshot 2"
+    },
+    {
+      "url": "https://github.com/user-attachments/assets/1d2bcdf5-d3d7-420a-8dae-68c31b191216",
+      "alt": "macOS Cursors screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/ful1e5/apple_cursor",
+    "ref": "fe044a42b4e9cea16ea762d2ed9004f6d7b35543",
+    "readme": "README.md"
+  }
+}

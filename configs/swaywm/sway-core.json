@@ -18,16 +18,14 @@
     "void",
     "alpine"
   ],
+  "category": "wm",
   "wm": "sway",
   "themeStyle": "minimalist",
   "displayServer": "wayland",
   "tags": [
-    "sway",
-    "i3",
-    "wayland",
-    "minimalist",
-    "rock-solid",
-    "foot"
+    "tiling",
+    "i3-compatible",
+    "wlroots"
   ],
   "specs": {
     "bar": "Swaybar / Waybar",

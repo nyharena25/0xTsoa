@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "betterlockscreen",
+  "author": {
+    "name": "betterlockscreen",
+    "github": "betterlockscreen"
+  },
+  "lang": "en",
+  "summary": "Fast lock screen built on i3lock-color with cached effects.",
+  "license": "MIT",
+  "updatedAt": "2024-06-28",
+  "distros": [
+    "any"
+  ],
+  "category": "lockscreen",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "i3lock",
+    "blur",
+    "bash"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/pavanjadhaw/betterlockscreen.demo/67f6d3f2c25d945d188c2b13b5e7b37535fb9c20/scrots/scrot2.png",
+      "alt": "betterlockscreen screenshot 1"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/betterlockscreen/betterlockscreen",
+    "ref": "bdfc4faf7142aa1d555528ab1a9a103be95a3f80",
+    "readme": "README.md"
+  }
+}

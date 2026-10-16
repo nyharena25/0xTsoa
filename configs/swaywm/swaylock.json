@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "swaylock",
+  "author": {
+    "name": "swaywm",
+    "github": "swaywm"
+  },
+  "lang": "en",
+  "summary": "Screen locker for Wayland compositors.",
+  "license": "MIT",
+  "updatedAt": "2026-07-09",
+  "distros": [
+    "any"
+  ],
+  "category": "lockscreen",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "ext-session-lock"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "swaylock: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/swaywm/swaylock",
+    "ref": "44b82de635c3bc66b0093abd1cf8cc1c8b1b9c0f",
+    "readme": "README.md"
+  }
+}

@@ -1,6 +1,6 @@
 ---
 import { getVotesForConfig } from '../lib/votes';
-import { type ConfigData, WM_LABELS } from '../lib/schema';
+import { type ConfigData, WM_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../lib/schema';
 import { withBase } from '../../site.config';
 
 interface Props {
@@ -25,9 +25,14 @@ const wmLabel = WM_LABELS[data.wm] || data.wm;
       <div>
         <!-- Badges Row -->
         <div class="flex flex-wrap items-center gap-2 mb-2">
-          <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase tracking-wider bg-zinc-900 text-white">
-            {data.themeStyle || 'MINIMALIST'}
-          </span>
+          <a href={`?category=${data.category}`} class="px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase tracking-wider bg-zinc-900 text-white hover:bg-zinc-700">
+            {CATEGORY_LABELS[data.category]}
+          </a>
+          {data.themeStyle !== 'other' && (
+            <span class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-100 text-zinc-700 border border-zinc-200">
+              {STYLE_LABELS[data.themeStyle]}
+            </span>
+          )}
           <span class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-100 text-zinc-700 border border-zinc-200">
             {wmLabel} ({data.displayServer})
           </span>
@@ -107,7 +112,7 @@ const wmLabel = WM_LABELS[data.wm] || data.wm;
         class="block w-full max-w-full aspect-video rounded-lg overflow-hidden border border-zinc-200 bg-zinc-950 relative group/thumb shadow-xs cursor-pointer"
       >
         <img
-          src={primaryShot?.url || withBase('/screenshots/fallback-terminal.svg')}
+          src={primaryShot?.url ? (primaryShot.url.startsWith('/') ? withBase(primaryShot.url) : primaryShot.url) : withBase('/screenshots/fallback-terminal.svg')}
           alt={primaryShot?.alt || `${data.name} preview`}
           width="1280"
           height="720"

@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Colloid GTK",
+  "author": {
+    "name": "vinceliuice",
+    "github": "vinceliuice"
+  },
+  "lang": "en",
+  "summary": "Clean GTK theme with libadwaita support and multiple color schemes.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-08-23",
+  "distros": [
+    "any"
+  ],
+  "category": "gtk-theme",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "gtk3",
+    "gtk4",
+    "libadwaita"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Colloid-gtk-theme/fe11342f37f124f1b29d44cf33e9a06053f4bba2/colloid.png",
+      "alt": "Colloid"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Colloid-gtk-theme/fe11342f37f124f1b29d44cf33e9a06053f4bba2/colorschemes.png",
+      "alt": "colorschemes"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Colloid-gtk-theme/fe11342f37f124f1b29d44cf33e9a06053f4bba2/tweaks.png",
+      "alt": "tweaks"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/vinceliuice/Colloid-gtk-theme",
+    "ref": "fe11342f37f124f1b29d44cf33e9a06053f4bba2",
+    "readme": "README.md"
+  }
+}

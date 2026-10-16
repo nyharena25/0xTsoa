@@ -17,16 +17,14 @@
     "fedora",
     "void"
   ],
+  "category": "colorscheme",
   "wm": "hyprland",
   "themeStyle": "catppuccin",
   "displayServer": "wayland",
   "tags": [
-    "catppuccin",
-    "hyprland",
     "pastel",
-    "mocha",
-    "theming",
-    "wayland"
+    "hyprland-theme",
+    "4-flavors"
   ],
   "specs": {
     "bar": "Waybar Catppuccin",

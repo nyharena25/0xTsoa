@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "adw-gtk3",
+  "author": {
+    "name": "lassekongo83",
+    "github": "lassekongo83"
+  },
+  "lang": "en",
+  "summary": "Brings the libadwaita look to legacy GTK3 applications.",
+  "license": "LGPL-2.1-only",
+  "updatedAt": "2026-05-07",
+  "distros": [
+    "any"
+  ],
+  "category": "gtk-theme",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "gtk3",
+    "libadwaita"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/lassekongo83/adw-gtk3/47922ed96562c002696ad2d2d80383f2ad30dc93/images/preview-light.png",
+      "alt": "adw-gtk3-light"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/lassekongo83/adw-gtk3/47922ed96562c002696ad2d2d80383f2ad30dc93/images/preview-dark.png",
+      "alt": "adw-gtk3-dark"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/lassekongo83/adw-gtk3/47922ed96562c002696ad2d2d80383f2ad30dc93/images/preview-customized.png",
+      "alt": "adw-gtk3-customized"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/lassekongo83/adw-gtk3",
+    "ref": "47922ed96562c002696ad2d2d80383f2ad30dc93",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Catppuccin",
+  "author": {
+    "name": "catppuccin",
+    "github": "catppuccin"
+  },
+  "lang": "en",
+  "summary": "Central repo of the pastel palette, with links to ports for hundreds of apps.",
+  "license": "MIT",
+  "updatedAt": "2026-07-25",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "catppuccin",
+  "displayServer": "both",
+  "tags": [
+    "palette",
+    "ports"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/catppuccin/d09787dd98ca6fba08af5ef2ae94a7e09f17daca/assets/misc/transparent.png",
+      "alt": "Catppuccin screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/catppuccin/d09787dd98ca6fba08af5ef2ae94a7e09f17daca/assets/palette/macchiato.png",
+      "alt": "Catppuccin screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/catppuccin/catppuccin/d09787dd98ca6fba08af5ef2ae94a7e09f17daca/assets/palette/circles/latte_rosewater.png",
+      "alt": "Catppuccin screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/catppuccin/catppuccin",
+    "ref": "d09787dd98ca6fba08af5ef2ae94a7e09f17daca",
+    "readme": "README.md"
+  }
+}

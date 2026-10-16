@@ -82,6 +82,8 @@ export const ALLOWED_IMAGE_HOSTS = [
   'github.com',
   'i.imgur.com',
   'i.redd.it',
+  'codeberg.org',
+  'gitlab.com',
 ] as const;
 
 export const NEW_CONFIG_ISSUE_URL = `${REPO_URL}/issues/new?template=new-config.yml`;

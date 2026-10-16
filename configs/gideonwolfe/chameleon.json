@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Chameleon",
+  "author": {
+    "name": "GideonWolfe",
+    "github": "GideonWolfe"
+  },
+  "lang": "en",
+  "summary": "Script that changes your theme automatically based on the wallpaper.",
+  "license": "NOASSERTION",
+  "updatedAt": "2021-04-05",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "dynamic",
+  "displayServer": "x11",
+  "tags": [
+    "wallpaper-colors",
+    "python"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/GideonWolfe/Chameleon/125687cc842758329d95940f1cd7557a006d1d79/demo.gif",
+      "alt": "alt-text"
+    },
+    {
+      "url": "https://i.imgur.com/araXbD4.jpg",
+      "alt": "alt-text"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/GideonWolfe/Chameleon",
+    "ref": "125687cc842758329d95940f1cd7557a006d1d79",
+    "readme": "README.md"
+  }
+}

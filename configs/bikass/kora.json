@@ -1,0 +1,42 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Kora",
+  "author": {
+    "name": "bikass",
+    "github": "bikass"
+  },
+  "lang": "en",
+  "summary": "Modern SVG icon theme with depth and gradients.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-09-04",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "svg",
+    "gradient"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/bikass/kora/ba1e9e279aa5b3f6674ec6b17534ea05032de580/kora_aps.jpg",
+      "alt": "Kora screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/bikass/kora/ba1e9e279aa5b3f6674ec6b17534ea05032de580/im1.jpg",
+      "alt": "Kora screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/bikass/kora/ba1e9e279aa5b3f6674ec6b17534ea05032de580/im2.jpg",
+      "alt": "Kora screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/bikass/kora",
+    "ref": "ba1e9e279aa5b3f6674ec6b17534ea05032de580",
+    "readme": "README.md"
+  }
+}

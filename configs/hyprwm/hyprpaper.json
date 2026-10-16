@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "hyprpaper",
+  "author": {
+    "name": "hyprwm",
+    "github": "hyprwm"
+  },
+  "lang": "en",
+  "summary": "Fast wallpaper utility for Hyprland with IPC.",
+  "license": "BSD-3-Clause",
+  "updatedAt": "2026-08-13",
+  "distros": [
+    "any"
+  ],
+  "category": "tool",
+  "wm": "hyprland",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "wallpaper"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "hyprpaper: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/hyprwm/hyprpaper",
+    "ref": "39029bdfda857a5ea60340a427681893d12d4892",
+    "readme": "README.md"
+  }
+}

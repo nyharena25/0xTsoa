@@ -1,0 +1,41 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Colloid Icons",
+  "author": {
+    "name": "vinceliuice",
+    "github": "vinceliuice"
+  },
+  "lang": "en",
+  "summary": "Colorful icon theme with Nord, Dracula and Gruvbox schemes.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-08-29",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "color-variants"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Colloid-icon-theme/ceac6608ecd0e40025cbc2ebbd32bf0e0f4ebc6a/preview.png",
+      "alt": "Colloid Icons screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Colloid-icon-theme/ceac6608ecd0e40025cbc2ebbd32bf0e0f4ebc6a/folders.png",
+      "alt": "folders"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Colloid-icon-theme/ceac6608ecd0e40025cbc2ebbd32bf0e0f4ebc6a/schemes.png",
+      "alt": "schemes"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/vinceliuice/Colloid-icon-theme",
+    "ref": "ceac6608ecd0e40025cbc2ebbd32bf0e0f4ebc6a",
+    "readme": "README.md"
+  }
+}

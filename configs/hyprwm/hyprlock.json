@@ -1,0 +1,34 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "hyprlock",
+  "author": {
+    "name": "hyprwm",
+    "github": "hyprwm"
+  },
+  "lang": "en",
+  "summary": "Fast, GPU-accelerated lock screen for Hyprland.",
+  "license": "BSD-3-Clause",
+  "updatedAt": "2026-08-11",
+  "distros": [
+    "any"
+  ],
+  "category": "lockscreen",
+  "wm": "hyprland",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "gpu",
+    "widgets"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "hyprlock: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/hyprwm/hyprlock",
+    "ref": "0332e40b8e56404f11cd79f859f208a4b9de8714",
+    "readme": "README.md"
+  }
+}

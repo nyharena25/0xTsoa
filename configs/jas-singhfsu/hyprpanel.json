@@ -1,0 +1,40 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "HyprPanel",
+  "author": {
+    "name": "Jas-SinghFSU",
+    "github": "Jas-SinghFSU"
+  },
+  "lang": "en",
+  "summary": "All-in-one panel for Hyprland with dashboards, notifications and a settings dialog.",
+  "license": "MIT",
+  "updatedAt": "2026-04-22",
+  "distros": [
+    "any"
+  ],
+  "category": "bar",
+  "wm": "hyprland",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "ags",
+    "notifications",
+    "dashboard",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Jas-SinghFSU/HyprPanel/1961ba86ad5ab880beb639e5454054b2b5037e0d/assets/hp1.png",
+      "alt": "HyprPanel1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Jas-SinghFSU/HyprPanel/1961ba86ad5ab880beb639e5454054b2b5037e0d/assets/hp2.png",
+      "alt": "HyprPanel2"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Jas-SinghFSU/HyprPanel",
+    "ref": "1961ba86ad5ab880beb639e5454054b2b5037e0d",
+    "readme": "README.md"
+  }
+}

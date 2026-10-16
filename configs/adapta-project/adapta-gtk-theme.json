@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Adapta",
+  "author": {
+    "name": "adapta-project",
+    "github": "adapta-project"
+  },
+  "lang": "en",
+  "summary": "Adaptive GTK theme based on Material Design guidelines.",
+  "license": "LGPL-2.1-only",
+  "updatedAt": "2020-03-27",
+  "distros": [
+    "any"
+  ],
+  "category": "gtk-theme",
+  "wm": "any",
+  "themeStyle": "material",
+  "displayServer": "both",
+  "tags": [
+    "gtk2",
+    "gtk3",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/adapta-project/adapta-github-resources/4043b07db0a99d593c8a18e48461fa6c6ddd4c77/images/Materials.png",
+      "alt": "Adapta screenshot 1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/adapta-project/adapta-github-resources/4043b07db0a99d593c8a18e48461fa6c6ddd4c77/images/sunlight.png",
+      "alt": "Adapta screenshot 2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/adapta-project/adapta-github-resources/4043b07db0a99d593c8a18e48461fa6c6ddd4c77/images/moon.png",
+      "alt": "Adapta screenshot 3"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/adapta-project/adapta-gtk-theme",
+    "ref": "51c02f689ccaa5a08bbe317d03c55b49dc4084c8",
+    "readme": "README.md"
+  }
+}

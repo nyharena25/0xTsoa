@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Kanagawa",
+  "author": {
+    "name": "rebelot",
+    "github": "rebelot"
+  },
+  "lang": "en",
+  "summary": "Dark palette inspired by Katsushika Hokusai, for Neovim and terminals.",
+  "license": "MIT",
+  "updatedAt": "2026-05-10",
+  "distros": [
+    "any"
+  ],
+  "category": "colorscheme",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "palette",
+    "neovim"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/rebelot/kanagawa.nvim/bb85e4bfc8d89b0e62c8fa53ccdd13d12e2f77b3/kanagawa%402x.png",
+      "alt": "Kanagawa screenshot 1"
+    },
+    {
+      "url": "https://user-images.githubusercontent.com/36300441/222913073-22b95f11-8c08-4b2b-867c-19072c921de1.png",
+      "alt": "Kanagawa screenshot 2"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/rebelot/kanagawa.nvim",
+    "ref": "bb85e4bfc8d89b0e62c8fa53ccdd13d12e2f77b3",
+    "readme": "README.md"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Plank",
+  "author": {
+    "name": "ricotz",
+    "github": "ricotz"
+  },
+  "lang": "en",
+  "summary": "Simple, minimalist dock for X11 desktops.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2023-12-21",
+  "distros": [
+    "any"
+  ],
+  "category": "dock",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "x11",
+  "tags": [
+    "lightweight"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "Plank: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/ricotz/plank",
+    "ref": "396b87108a798912baa06db3e7bfe9862189c39b",
+    "readme": "README.md"
+  }
+}

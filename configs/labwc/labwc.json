@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "labwc",
+  "author": {
+    "name": "labwc",
+    "github": "labwc"
+  },
+  "lang": "en",
+  "summary": "Openbox-inspired stacking Wayland compositor built on wlroots.",
+  "license": "LGPL-2.1-only",
+  "updatedAt": "2026-10-15",
+  "distros": [
+    "any"
+  ],
+  "category": "wm",
+  "wm": "labwc",
+  "themeStyle": "other",
+  "displayServer": "wayland",
+  "tags": [
+    "stacking",
+    "wlroots",
+    "openbox-like"
+  ],
+  "screenshots": [
+    {
+      "url": "/screenshots/fallback-terminal.svg",
+      "alt": "labwc: no screenshot published upstream"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/labwc/labwc",
+    "ref": "6ab9d3fe464b31eed25fe2126d6b0dfb6cd0bff4",
+    "readme": "README.md"
+  }
+}

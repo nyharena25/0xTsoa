@@ -15,16 +15,16 @@
     "arch",
     "endeavouros"
   ],
+  "category": "dotfiles",
   "wm": "hyprland",
   "themeStyle": "catppuccin",
   "displayServer": "wayland",
   "tags": [
-    "hyprland",
-    "arch",
     "waybar",
-    "catppuccin",
+    "rofi",
+    "kitty",
     "dynamic-theming",
-    "kitty"
+    "auto-install"
   ],
   "specs": {
     "bar": "Waybar (Multi-theme)",

@@ -1,0 +1,35 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Gruvbox GTK",
+  "author": {
+    "name": "Fausto-Korpsvart",
+    "github": "Fausto-Korpsvart"
+  },
+  "lang": "en",
+  "summary": "Full GTK port of the retro Gruvbox palette.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2025-10-23",
+  "distros": [
+    "any"
+  ],
+  "category": "gtk-theme",
+  "wm": "any",
+  "themeStyle": "gruvbox",
+  "displayServer": "both",
+  "tags": [
+    "gtk3",
+    "gtk4",
+    "archived"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/Fausto-Korpsvart/Gruvbox-GTK-Theme/578cd220b5ff6e86b078a6111d26bb20ec8c733f/extra/screenshoots/Gruvbox.png",
+      "alt": "Gruvbox"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/Fausto-Korpsvart/Gruvbox-GTK-Theme",
+    "ref": "578cd220b5ff6e86b078a6111d26bb20ec8c733f",
+    "readme": "README.md"
+  }
+}

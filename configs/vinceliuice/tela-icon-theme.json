@@ -1,0 +1,38 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "Tela",
+  "author": {
+    "name": "vinceliuice",
+    "github": "vinceliuice"
+  },
+  "lang": "en",
+  "summary": "Flat icon theme available in many color variants.",
+  "license": "GPL-3.0-only",
+  "updatedAt": "2026-08-10",
+  "distros": [
+    "any"
+  ],
+  "category": "icons",
+  "wm": "any",
+  "themeStyle": "other",
+  "displayServer": "both",
+  "tags": [
+    "flat",
+    "color-variants"
+  ],
+  "screenshots": [
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Tela-icon-theme/a1fffc5bfab716bd022dd228ee96fe3965cdb33d/tela-dark.png",
+      "alt": "Tela-dark"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/vinceliuice/Tela-icon-theme/a1fffc5bfab716bd022dd228ee96fe3965cdb33d/tela-light.png",
+      "alt": "Tela-light"
+    }
+  ],
+  "source": {
+    "repo": "https://github.com/vinceliuice/Tela-icon-theme",
+    "ref": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
+    "readme": "README.md"
+  }
+}
