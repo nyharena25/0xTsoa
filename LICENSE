@@ -19,12 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-### Data & Configuration Specifications Licensing Note
-
-All configuration data, structured JSON metadata, and documentation located inside the `configs/` directory are made available under the terms of the **Creative Commons Attribution 4.0 International License (CC BY 4.0)**, unless an individual configuration file explicitly declares an alternate upstream software license.
-
-To view a copy of the CC BY 4.0 license, visit:  
-https://creativecommons.org/licenses/by/4.0/

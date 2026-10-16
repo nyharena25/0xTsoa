@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 12" width="100%" height="12" role="img" aria-label="Section divider">
+  <line x1="0" y1="6" x2="1200" y2="6" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="-160" y="5" width="160" height="2" rx="1" fill="#1E202B">
+    <animate attributeName="x" from="-160" to="1200" dur="6s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="-80" y="5" width="60" height="2" rx="1" fill="#86dbce">
+    <animate attributeName="x" from="-80" to="1280" dur="6s" repeatCount="indefinite"/>
+  </rect>
+</svg>

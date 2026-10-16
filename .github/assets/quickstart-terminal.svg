@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 320" width="100%" height="auto" role="img" aria-label="Animated terminal showing 0xTsoa Quick Start commands">
+  <defs>
+    <linearGradient id="term-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#161821"/>
+      <stop offset="100%" stop-color="#1E202B"/>
+    </linearGradient>
+    <pattern id="term-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#2A2D3D" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <rect width="840" height="320" rx="10" fill="url(#term-bg)" stroke="#2A2D3D" stroke-width="1.5"/>
+  <rect width="840" height="320" rx="10" fill="url(#term-grid)" opacity="0.5"/>
+
+  <!-- Window Header -->
+  <rect x="1" y="1" width="838" height="36" rx="9" fill="#12131A"/>
+  <line x1="0" y1="37" x2="840" y2="37" stroke="#2A2D3D" stroke-width="1"/>
+  <circle cx="22" cy="19" r="5" fill="#ef4444"/>
+  <circle cx="38" cy="19" r="5" fill="#eab308"/>
+  <circle cx="54" cy="19" r="5" fill="#22c55e"/>
+  <text x="420" y="23" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11" fill="#94A3B8" text-anchor="middle">zsh // ~/dev/0xTsoa</text>
+
+  <!-- Step 1 -->
+  <g>
+    <text x="28" y="72" font-family="JetBrains Mono, ui-monospace, monospace" font-size="13" fill="#86dbce" font-weight="bold">$</text>
+    <text x="44" y="72" font-family="JetBrains Mono, ui-monospace, monospace" font-size="13" fill="#FBFBFA">git clone https://github.com/nyharena25/0xTsoa.git &amp;&amp; cd 0xTsoa</text>
+  </g>
+
+  <!-- Step 2 -->
+  <g>
+    <animate attributeName="opacity" values="0;1;1;1" keyTimes="0;0.15;0.85;1" dur="10s" repeatCount="indefinite"/>
+    <text x="28" y="104" font-family="JetBrains Mono, ui-monospace, monospace" font-size="13" fill="#86dbce" font-weight="bold">$</text>
+    <text x="44" y="104" font-family="JetBrains Mono, ui-monospace, monospace" font-size="13" fill="#FBFBFA">npm install</text>
+    <text x="28" y="128" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12" fill="#94A3B8">added 312 packages, audited 313 packages in 3s</text>
+  </g>
+
+  <!-- Step 3 -->
+  <g>
+    <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.35;0.5;1" dur="10s" repeatCount="indefinite"/>
+    <text x="28" y="162" font-family="JetBrains Mono, ui-monospace, monospace" font-size="13" fill="#86dbce" font-weight="bold">$</text>
+    <text x="44" y="162" font-family="JetBrains Mono, ui-monospace, monospace" font-size="13" fill="#FBFBFA">npm run validate &amp;&amp; npm test</text>
+    <text x="28" y="186" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12" fill="#86dbce">[OK] All 173 configs passed schema validation</text>
+    <text x="28" y="208" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12" fill="#86dbce">[OK] Vitest suite passed (7 test files)</text>
+  </g>
+
+  <!-- Step 4 -->
+  <g>
+    <animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.6;0.75;1" dur="10s" repeatCount="indefinite"/>
+    <text x="28" y="242" font-family="JetBrains Mono, ui-monospace, monospace" font-size="13" fill="#86dbce" font-weight="bold">$</text>
+    <text x="44" y="242" font-family="JetBrains Mono, ui-monospace, monospace" font-size="13" fill="#FBFBFA">npm run dev</text>
+    <text x="28" y="266" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12" fill="#8ad7eb">astro v7.3.8 ready in 240 ms | Local: http://localhost:4321/</text>
+  </g>
+
+  <!-- Blinking Block Cursor -->
+  <rect x="28" y="282" width="9" height="16" fill="#86dbce">
+    <animate attributeName="opacity" values="1;0;1" dur="0.9s" repeatCount="indefinite"/>
+  </rect>
+</svg>

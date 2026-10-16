@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 220" width="100%" height="auto" role="img" aria-label="0xTsoa animated header banner: Linux Desktop Architecture Made Simple">
+  <defs>
+    <linearGradient id="banner-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#161821"/>
+      <stop offset="50%" stop-color="#1E202B"/>
+      <stop offset="100%" stop-color="#161821"/>
+    </linearGradient>
+    <linearGradient id="scan-line" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#86dbce" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#86dbce" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#86dbce" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="scan-glow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#86dbce" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#86dbce" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#86dbce" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="arch-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#2A2D3D" stroke-width="0.75"/>
+    </pattern>
+  </defs>
+
+  <!-- Base Paper & Ink Dark Canvas -->
+  <rect width="1200" height="220" rx="10" fill="url(#banner-bg)" stroke="#2A2D3D" stroke-width="2"/>
+  <rect width="1200" height="220" rx="10" fill="url(#arch-grid)" opacity="0.65"/>
+
+  <!-- Top Status Bar -->
+  <line x1="0" y1="34" x2="1200" y2="34" stroke="#2A2D3D" stroke-width="1"/>
+  <circle cx="22" cy="17" r="4" fill="#86dbce">
+    <animate attributeName="opacity" values="1;0.35;1" dur="2.8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="36" y="21" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11" fill="#86dbce" letter-spacing="1.2">REGISTRY // 0xTSOA</text>
+  <text x="1178" y="21" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11" fill="#94A3B8" text-anchor="end" letter-spacing="1">[STATUS: VERIFIED_REPRODUCIBLE]</text>
+
+  <!-- 0xTsoa BD Brick Logo Centered -->
+  <g transform="translate(340, 22) scale(0.33)" fill="#FBFBFA">
+    <animate attributeName="opacity" values="0.92;1;0.92" dur="5s" repeatCount="indefinite"/>
+    <polygon points="339,226 399,226 399,285 328,289 266,289 265,287 289,262 323,228"/>
+    <polygon points="409,285 409,226 469,226 484,228 486,229 508,251 542,286 542,287 540,289 480,289"/>
+    <polygon points="263,361 263,300 264,299 326,299 327,300 327,361"/>
+    <polygon points="479,360 480,299 542,299 543,300 543,361 480,361"/>
+    <polygon points="263,372 327,372 327,445 326,446 264,446 263,445"/>
+    <polygon points="480,372 543,372 543,445 522,446 481,446 480,445"/>
+    <polygon points="264,456 327,456 329,471 330,528 329,529 323,529 272,478 265,470 264,457"/>
+    <polygon points="480,456 542,456 542,470 515,498 485,528 478,529 477,528 477,526 478,472"/>
+    <polygon points="338,512 339,471 399,471 399,531 339,531 338,522"/>
+    <polygon points="409,471 469,471 469,531 410,531 409,530"/>
+    <polygon points="726,336 758,335 816,335 822,336 822,337 791,369 757,403 720,404 660,404 660,403 711,351" fill="#86dbce"/>
+    <polygon points="587,336 649,336 653,404 653,408 650,461 587,401" fill="#86dbce"/>
+    <polygon points="758,463 758,414 785,441 805,462 805,463" fill="#86dbce"/>
+    <polygon points="816,530 757,530 758,470 759,469 814,469 817,472 817,528" fill="#86dbce"/>
+    <polygon points="661,479 662,470 752,470 753,471 753,472 749,477 697,530 691,531 663,531 661,530" fill="#86dbce"/>
+    <polygon points="631,471 651,471 651,530 649,531 587,531 573,530 595,507" fill="#86dbce"/>
+    <polygon points="837,283 837,225 898,225 899,228 899,282 898,283"/>
+    <polygon points="970,225 970,283 909,283 908,282 908,226 909,225"/>
+    <polygon points="980,225 1042,225 1042,283 980,283"/>
+    <polygon points="908,293 970,293 970,350 908,350"/>
+    <polygon points="908,444 908,361 909,360 970,360 970,444"/>
+    <polygon points="970,455 970,529 928,530 919,530 908,529 908,455 913,454 969,454"/>
+    <polygon points="1139,334 1204,334 1204,392 1128,394 1067,394 1066,393 1123,336"/>
+    <polygon points="1215,392 1215,334 1267,334 1269,335 1269,388 1265,392"/>
+    <polygon points="1275,345 1276,335 1322,335 1322,336 1276,382 1275,381"/>
+    <polygon points="1069,402 1128,402 1128,458 1124,459 1075,410 1069,403"/>
+    <polygon points="1260,459 1260,402 1262,402 1268,408 1298,439 1317,459 1317,460 1306,460"/>
+    <polygon points="1215,529 1215,470 1257,468 1305,468 1306,469 1306,470 1247,529"/>
+    <polygon points="1052,528 1110,470 1129,470 1129,529 1052,529"/>
+    <polygon points="1139,470 1204,470 1204,529 1139,529"/>
+    <polygon points="1470,392 1470,334 1511,333 1526,333 1527,334 1527,391 1526,392"/>
+    <polygon points="1404,334 1461,334 1461,391 1460,392 1404,392"/>
+    <polygon points="1396,336 1396,392 1341,393 1340,392 1340,391 1379,351 1394,336"/>
+    <polygon points="1534,392 1534,336 1536,336 1571,371 1590,391 1590,392"/>
+    <polygon points="1338,402 1396,402 1396,460 1338,460"/>
+    <polygon points="1534,402 1592,402 1592,459 1534,459"/>
+    <polygon points="1534,526 1534,470 1535,469 1589,469 1590,470 1590,471 1536,527"/>
+    <polygon points="1340,470 1396,470 1396,526 1395,527 1374,506 1340,471"/>
+    <polygon points="1404,470 1461,470 1461,529 1404,529"/>
+    <polygon points="1470,470 1527,470 1527,528 1526,529 1470,529"/>
+    <polygon points="1687,391 1687,335 1689,333 1742,333 1743,334 1743,391"/>
+    <polygon points="1752,391 1752,334 1753,333 1802,333 1803,334 1803,391 1802,392"/>
+    <polygon points="1624,392 1624,390 1679,335 1680,336 1680,392"/>
+    <polygon points="1810,336 1812,335 1851,374 1867,391 1865,392 1812,392 1811,391 1810,344"/>
+    <polygon points="1809,452 1810,402 1811,401 1867,401 1868,402 1868,458 1867,459 1810,459 1809,458"/>
+    <polygon points="1621,402 1680,402 1680,460 1622,460 1621,459"/>
+    <polygon points="1624,470 1625,469 1679,469 1679,526 1678,527 1667,516 1626,474 1624,471"/>
+    <polygon points="1743,470 1743,528 1742,529 1688,529 1687,528 1687,470 1689,469 1741,469"/>
+    <polygon points="1868,470 1868,527 1866,529 1810,529 1809,528 1809,496 1810,469 1867,469"/>
+    <polygon points="1752,470 1803,470 1805,474 1805,475 1760,522 1755,527 1753,527 1752,526"/>
+  </g>
+
+  <!-- Subtitle Tagline -->
+  <text x="600" y="198" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12" font-weight="600" fill="#86dbce" text-anchor="middle" letter-spacing="3.5">
+    LINUX DESKTOP ARCHITECTURE MADE SIMPLE.
+  </text>
+
+  <!-- Slow Horizontal Scan Line Animation -->
+  <g>
+    <rect x="0" y="36" width="1200" height="28" fill="url(#scan-glow)">
+      <animate attributeName="y" values="36;176;36" dur="9s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="80" y="50" width="1040" height="1.5" fill="url(#scan-line)">
+      <animate attributeName="y" values="50;190;50" dur="9s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+</svg>
