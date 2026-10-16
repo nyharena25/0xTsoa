@@ -38,5 +38,18 @@
     "repo": "https://github.com/davatorium/rofi",
     "ref": "1ad1df6b72d4c8b0e40e8ced1249ef8a8a6bc0ad",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install rofi (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed rofi",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "2.0.0"
 }

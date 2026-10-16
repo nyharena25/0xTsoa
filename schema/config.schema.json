@@ -197,14 +197,6 @@
         "editor": {
           "type": "string",
           "maxLength": 60
-        },
-        "ramIdleMiB": {
-          "type": "integer",
-          "exclusiveMinimum": 0,
-          "maximum": 16384
-        },
-        "batteryProfile": {
-          "type": "boolean"
         }
       }
     },
@@ -263,10 +255,6 @@
       ]
     },
     "install": {
-      "default": {
-        "steps": [],
-        "packages": []
-      },
       "type": "object",
       "properties": {
         "script": {
@@ -297,7 +285,7 @@
           ]
         },
         "steps": {
-          "default": [],
+          "minItems": 1,
           "maxItems": 3,
           "type": "array",
           "items": {
@@ -309,7 +297,8 @@
                   "deps",
                   "dotfiles",
                   "reload"
-                ]
+                ],
+                "description": "deps = install packages / clone, dotfiles = deploy config or theme, reload = apply or restart"
               },
               "title": {
                 "type": "string",
@@ -365,7 +354,10 @@
             ]
           }
         }
-      }
+      },
+      "required": [
+        "steps"
+      ]
     },
     "keybindings": {
       "default": [],
@@ -408,7 +400,8 @@
     "wm",
     "displayServer",
     "screenshots",
-    "source"
+    "source",
+    "install"
   ],
   "additionalProperties": false,
   "$id": "https://github.com/nyharena25/0xTsoa/blob/main/schema/config.schema.json",

@@ -31,5 +31,17 @@
     "repo": "https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme",
     "ref": "c4fdfa62a9eb6941a36b2cd5026fc64123aaa0dd",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install rose-pine-gtk-theme-full (AUR)",
+        "commands": [
+          "yay -S rose-pine-gtk-theme-full  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

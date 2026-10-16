@@ -31,5 +31,17 @@
     "repo": "https://github.com/Fausto-Korpsvart/Gruvbox-GTK-Theme",
     "ref": "578cd220b5ff6e86b078a6111d26bb20ec8c733f",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install gruvbox-gtk-theme-git (AUR)",
+        "commands": [
+          "yay -S gruvbox-gtk-theme-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

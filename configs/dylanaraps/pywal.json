@@ -35,5 +35,18 @@
     "repo": "https://github.com/dylanaraps/pywal",
     "ref": "236aa48e741ff8d65c4c3826db2813bf2ee6f352",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install python-pywal (AUR)",
+        "commands": [
+          "yay -S python-pywal  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "3.3.0"
 }

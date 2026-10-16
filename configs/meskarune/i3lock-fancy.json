@@ -34,5 +34,18 @@
     "repo": "https://github.com/meskarune/i3lock-fancy",
     "ref": "55f5c30071403faf5ae4363a54b6d1f63876d5ce",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install i3lock-fancy-git (AUR)",
+        "commands": [
+          "yay -S i3lock-fancy-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "0.2"
 }

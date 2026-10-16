@@ -9,7 +9,7 @@
   "summary": "Soothing pastel color themes (Mocha, Macchiato, Frappe, Latte) for Hyprland.",
   "description": "The official Catppuccin color palette ported to Hyprland. Includes pre-configured color border variables, active window gradient rings, drop shadows, and matching styling across four pastel flavor tiers.",
   "license": "MIT",
-  "version": "v1.3.0",
+  "version": "v2.0.0",
   "updatedAt": "2026-10-12",
   "distros": [
     "arch",
@@ -33,9 +33,7 @@
     "notifications": "Dunst Mocha",
     "theme": "Catppuccin Mocha Pastel",
     "shell": "fish",
-    "editor": "Neovim",
-    "ramIdleMiB": 310,
-    "batteryProfile": true
+    "editor": "Neovim"
   },
   "screenshots": [
     {

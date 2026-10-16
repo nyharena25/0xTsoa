@@ -38,5 +38,18 @@
     "repo": "https://github.com/zayronxio/Zafiro-icons",
     "ref": "5c7f38ca3b01194104481ffb803111e31851cf5d",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install zafiro-icon-theme (AUR)",
+        "commands": [
+          "yay -S zafiro-icon-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "1.3"
 }

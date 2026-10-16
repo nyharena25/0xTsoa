@@ -9,8 +9,8 @@
   "summary": "Next-generation scrollable-tiling Wayland compositor inspired by paper tape and infinite screens.",
   "description": "Niri reimagines desktop tiling by placing windows in an infinitely expanding horizontal ribbon. Windows never tile down into microscopic slivers. Built entirely in Rust with smooth animations, Waybar support, and touch gesture integration.",
   "license": "GPL-3.0-or-later",
-  "version": "v0.1.10",
-  "updatedAt": "2026-10-14",
+  "version": "v26.04",
+  "updatedAt": "2026-10-16",
   "distros": [
     "arch",
     "fedora",
@@ -33,9 +33,7 @@
     "notifications": "Mako / Dunst",
     "theme": "Clean Monochrome Ribbon",
     "shell": "fish / bash",
-    "editor": "Neovim / Helix",
-    "ramIdleMiB": 240,
-    "batteryProfile": true
+    "editor": "Neovim / Helix"
   },
   "screenshots": [
     {
@@ -51,7 +49,7 @@
   ],
   "source": {
     "repo": "https://github.com/niri-wm/niri",
-    "ref": "fc9e8c425e2267d877a65918f030c86f3c698179",
+    "ref": "45739bc072f9875a674d335ae724f10d3b35c665",
     "readme": "README.md"
   },
   "install": {

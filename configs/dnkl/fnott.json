@@ -34,5 +34,18 @@
     "repo": "https://codeberg.org/dnkl/fnott",
     "ref": "404d116118235ee9bca58fc2bce50c7a01351d0e",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install fnott (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed fnott",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "1.8.0"
 }

@@ -31,5 +31,18 @@
     "repo": "https://github.com/Alexays/Waybar",
     "ref": "4e207a0cb51a9eb89b4245d90245721f5e39bf06",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install waybar (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed waybar",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "0.15.0"
 }

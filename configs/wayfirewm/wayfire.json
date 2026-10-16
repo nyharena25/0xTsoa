@@ -31,5 +31,18 @@
     "repo": "https://github.com/WayfireWM/wayfire",
     "ref": "fdf8832e4263db54e2fef2abf30326e16877b8a2",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install wayfire (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed wayfire",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.11.0"
 }

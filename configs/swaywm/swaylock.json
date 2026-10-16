@@ -29,5 +29,18 @@
     "repo": "https://github.com/swaywm/swaylock",
     "ref": "44b82de635c3bc66b0093abd1cf8cc1c8b1b9c0f",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install swaylock (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed swaylock",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v1.8.6"
 }

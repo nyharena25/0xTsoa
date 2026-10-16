@@ -37,5 +37,18 @@
     "repo": "https://github.com/vinceliuice/WhiteSur-icon-theme",
     "ref": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install whitesur-icon-theme (AUR)",
+        "commands": [
+          "yay -S whitesur-icon-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "2024.04.08"
 }

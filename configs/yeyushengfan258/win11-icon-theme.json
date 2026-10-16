@@ -37,5 +37,17 @@
     "repo": "https://github.com/yeyushengfan258/Win11-icon-theme",
     "ref": "a5b460a407da143b32f19a503d7fcebb3edf2371",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install win11-icon-theme-git (AUR)",
+        "commands": [
+          "yay -S win11-icon-theme-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

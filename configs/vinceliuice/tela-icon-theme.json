@@ -34,5 +34,17 @@
     "repo": "https://github.com/vinceliuice/Tela-icon-theme",
     "ref": "a1fffc5bfab716bd022dd228ee96fe3965cdb33d",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install tela-icon-theme (AUR)",
+        "commands": [
+          "yay -S tela-icon-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

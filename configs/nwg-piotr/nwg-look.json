@@ -34,5 +34,18 @@
     "repo": "https://github.com/nwg-piotr/nwg-look",
     "ref": "b9cc3e6b85fcb0aa04c1e66f092ebbca7e245b7f",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install nwg-look (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed nwg-look",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v1.2.1"
 }

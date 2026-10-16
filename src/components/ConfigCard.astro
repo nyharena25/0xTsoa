@@ -1,5 +1,6 @@
 ---
 import { getVotesForConfig } from '../lib/votes';
+import { getStarsForConfig } from '../lib/stats';
 import { type ConfigData, WM_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../lib/schema';
 import { withBase } from '../../site.config';
 
@@ -12,6 +13,7 @@ interface Props {
 const { id, data } = Astro.props;
 
 const votes = getVotesForConfig(id);
+const stars = getStarsForConfig(id);
 const specUrl = withBase(`/configs/${id}/`);
 const primaryShot = data.screenshots[0];
 const shortHash = `0x${id.slice(-6).toUpperCase().replace(/[^0-9A-F]/g, 'C')}`;
@@ -69,18 +71,11 @@ const wmLabel = WM_LABELS[data.wm] || data.wm;
 
       <!-- Card Metadata Footer -->
       <div class="font-mono text-xs flex flex-wrap items-center gap-y-2 gap-x-3 text-zinc-500 pt-4 border-t border-zinc-100 mt-5">
-        {data.specs.ramIdleMiB ? (
-          <span class="inline-flex items-center gap-1 font-semibold text-zinc-800">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            RAM: ~{data.specs.ramIdleMiB} MiB idle
-          </span>
-        ) : (
-          <span class="text-zinc-400">RAM: Not measured</span>
-        )}
-        <span class="text-zinc-300">|</span>
         <span class="font-semibold text-zinc-800 flex items-center gap-1">
           <span class="text-emerald-600 font-bold">▲</span> {votes.toLocaleString()} approved
         </span>
+        <span class="text-zinc-300">|</span>
+        <span title="GitHub stars upstream">★ {stars.toLocaleString()}</span>
         <span class="text-zinc-300">|</span>
         <span>{data.updatedAt}</span>
         {data.version && (

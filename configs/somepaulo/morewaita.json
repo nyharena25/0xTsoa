@@ -30,5 +30,18 @@
     "repo": "https://github.com/somepaulo/MoreWaita",
     "ref": "298968f878ce5f529321aecf586bf98061969e9b",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install morewaita-icon-theme (AUR)",
+        "commands": [
+          "yay -S morewaita-icon-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v50.1"
 }

@@ -38,5 +38,18 @@
     "repo": "https://github.com/ful1e5/Bibata_Cursor",
     "ref": "ddb09273cde49faeb6a32282660ff4293f52d6e0",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install bibata-cursor-theme (AUR)",
+        "commands": [
+          "yay -S bibata-cursor-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v2.0.7"
 }

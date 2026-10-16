@@ -217,15 +217,15 @@ function transformGitHubAlerts(markdown: string): string {
 export async function getRenderedReadme(
   configId: string,
   source: ConfigData['source'],
-  configData?: ConfigData,
-): Promise<{ html: string; rawUrl: string; isError?: boolean }> {
+): Promise<{ html: string; rawUrl: string; missing?: boolean }> {
   const parsedRepo = parseGitHubRepo(source.repo);
   const ref = source.ref || 'HEAD';
   const configuredReadme = source.readme || 'README.md';
 
+  // Codeberg / GitLab: derive the pinned raw root from the forge-specific README URL.
   const repoRawRoot = parsedRepo
     ? `https://raw.githubusercontent.com/${parsedRepo.owner}/${parsedRepo.repo}/${ref}/`
-    : source.repo.endsWith('/') ? source.repo : `${source.repo}/`;
+    : readmeRawUrl(source).slice(0, -configuredReadme.length);
 
   const repoBlobRoot = parsedRepo
     ? `https://github.com/${parsedRepo.owner}/${parsedRepo.repo}/blob/${ref}/`
@@ -279,8 +279,8 @@ export async function getRenderedReadme(
 
   // 3. Fetch raw markdown directly from candidate paths
   // This avoids GitHub API 60 req/hr rate limits and preserves permanent user-attachment URLs
-  if (parsedRepo) {
-    const candidates = [
+  {
+    const candidates = !parsedRepo ? [configuredReadme] : [
       configuredReadme,
       '.github/README.md',
       'README.md',
@@ -360,48 +360,9 @@ export async function getRenderedReadme(
     }
   }
 
-  // 5. Fallback: Structured specification from configData
+  // 5. Nothing found: the page drops its README section instead of showing a placeholder.
   if (!finalHtml) {
-    if (configData) {
-      const stepsMd = configData.install.steps
-        .map((s) => `### ${s.title}\n\`\`\`bash\n${s.commands.join('\n')}\n\`\`\``)
-        .join('\n\n');
-
-      const fallbackMarkdown = `
-# ${configData.name}
-
-> **Architecture Spec:** ${configData.summary}
-
-## 📋 Technical Specifications
-- **Window Manager / Compositor:** \`${configData.wm}\` (${configData.displayServer})
-- **Theme & Style:** \`${configData.themeStyle || 'minimalist'}\` (${configData.specs.theme || 'Default'})
-- **Terminal:** \`${configData.specs.terminal || 'Kitty'}\`
-- **Status Bar:** \`${configData.specs.bar || 'Waybar'}\`
-- **Idle RAM Footprint:** ~${configData.specs.ramIdleMiB || 280} MiB
-- **Source Repository:** [${configData.source.repo}](${configData.source.repo})
-
----
-
-## 🚀 Installation & Deployment Guide
-
-${stepsMd || `\`\`\`bash\ngit clone ${configData.source.repo} ~/.dotfiles\n\`\`\``}
-
----
-
-*Documentation automatically generated from 0xTsoa specification metadata.*
-`;
-      const rendered = await renderMarkdownToGithubHtml(
-        fallbackMarkdown,
-        repoRawRoot,
-        repoBlobRoot,
-        repoRawRoot,
-        repoBlobRoot,
-        activeRawUrl
-      );
-      finalHtml = rendered.html;
-    } else {
-      finalHtml = `<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title">Remote specification unavailable</p><p>Unable to load README from: <code>${activeRawUrl}</code></p></div>`;
-    }
+    return { html: '', rawUrl: activeRawUrl, missing: true };
   }
 
   // 6. Save to cache

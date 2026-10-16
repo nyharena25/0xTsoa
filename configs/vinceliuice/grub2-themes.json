@@ -33,5 +33,32 @@
     "repo": "https://github.com/vinceliuice/grub2-themes",
     "ref": "4c5a77125b93f833edc9bf7b14a899faa8ac79c6",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/vinceliuice/grub2-themes",
+          "cd grub2-themes"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Run the upstream installer",
+        "commands": [
+          "bash install.sh"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Regenerate the boot configuration",
+        "commands": [
+          "sudo grub-mkconfig -o /boot/grub/grub.cfg"
+        ]
+      }
+    ]
+  },
+  "version": "1.2"
 }

@@ -38,5 +38,25 @@
     "repo": "https://github.com/luisbocanegra/plasma-panel-colorizer",
     "ref": "d0b1d4cab773f05cdcda2c1b2970093a5c367b54",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install plasma6-applets-panel-colorizer (AUR)",
+        "commands": [
+          "yay -S plasma6-applets-panel-colorizer  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# Right-click the panel > Add Widgets, then add it"
+        ]
+      }
+    ]
+  },
+  "version": "v8.0.0"
 }

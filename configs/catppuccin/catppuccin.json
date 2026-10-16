@@ -38,5 +38,25 @@
     "repo": "https://github.com/catppuccin/catppuccin",
     "ref": "d09787dd98ca6fba08af5ef2ae94a7e09f17daca",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/catppuccin/catppuccin",
+          "cd catppuccin"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/catppuccin/catppuccin#readme"
+        ]
+      }
+    ]
+  },
+  "version": "v0.2.0"
 }

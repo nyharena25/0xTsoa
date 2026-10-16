@@ -30,5 +30,18 @@
     "repo": "https://gitlab.com/o9000/tint2",
     "ref": "f3aa2ef0c61838ce16a88733e4d31990c5b5cdf2",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install tint2 (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed tint2",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v17.0.2"
 }

@@ -34,5 +34,18 @@
     "repo": "https://github.com/mjakeman/extension-manager",
     "ref": "43a5460222dc8b98deeb4ab444b6720adc8834fa",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install extension-manager (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed extension-manager",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.6.5"
 }

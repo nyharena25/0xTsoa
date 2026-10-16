@@ -30,5 +30,18 @@
     "repo": "https://github.com/albertlauncher/albert",
     "ref": "24f4f16e6f8fdd63d5b024ce165a63d004babd47",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install albert (AUR)",
+        "commands": [
+          "yay -S albert  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v35.1.0"
 }

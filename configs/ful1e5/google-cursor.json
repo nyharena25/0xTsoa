@@ -33,5 +33,25 @@
     "repo": "https://github.com/ful1e5/Google_Cursor",
     "ref": "7e416f8ae074a9346bf860961a0c4d47a58f4f00",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/ful1e5/Google_Cursor",
+          "cd Google_Cursor"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/ful1e5/Google_Cursor#readme"
+        ]
+      }
+    ]
+  },
+  "version": "v2.0.0"
 }

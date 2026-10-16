@@ -35,9 +35,7 @@
     "notifications": "GNOME Notification Center",
     "theme": "Nordic Dark Polar Frost",
     "shell": "bash",
-    "editor": "VSCode / Neovim",
-    "ramIdleMiB": 540,
-    "batteryProfile": true
+    "editor": "VSCode / Neovim"
   },
   "screenshots": [
     {

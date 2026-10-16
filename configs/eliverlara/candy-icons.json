@@ -38,5 +38,17 @@
     "repo": "https://github.com/EliverLara/candy-icons",
     "ref": "83512fbcadcb7e1015ebbe1729a1894946b021be",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install candy-icons-git (AUR)",
+        "commands": [
+          "yay -S candy-icons-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

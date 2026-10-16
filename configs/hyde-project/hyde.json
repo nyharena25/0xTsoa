@@ -40,5 +40,32 @@
     "repo": "https://github.com/HyDE-Project/HyDE",
     "ref": "fa2fd57afc7203b1b5653d3271f3a57ea3873f97",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone HyDE",
+        "commands": [
+          "git clone --depth 1 https://github.com/HyDE-Project/HyDE ~/HyDE"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Run the HyDE installer",
+        "commands": [
+          "cd ~/HyDE/Scripts",
+          "./install.sh"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Reboot into Hyprland",
+        "commands": [
+          "reboot"
+        ]
+      }
+    ]
+  },
+  "version": "v2025.7.3"
 }

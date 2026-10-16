@@ -31,5 +31,25 @@
     "repo": "https://github.com/caelestia-dots/shell",
     "ref": "a3a8fe59aba2c0048ab02dc817748678f96076ff",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/caelestia-dots/shell",
+          "cd shell"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/caelestia-dots/shell#readme"
+        ]
+      }
+    ]
+  },
+  "version": "v2.5.0"
 }

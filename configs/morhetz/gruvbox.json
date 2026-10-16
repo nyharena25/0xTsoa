@@ -38,5 +38,24 @@
     "repo": "https://github.com/morhetz/gruvbox",
     "ref": "ef8864bb42bf244f0295d1c5a403b27e3d139695",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Add the plugin (lazy.nvim)",
+        "commands": [
+          "# lua: { \"morhetz/gruvbox\", lazy = false, priority = 1000 }"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Activate the colorscheme",
+        "commands": [
+          "nvim +\"colorscheme gruvbox\""
+        ]
+      }
+    ]
+  },
+  "version": "v2.0.0"
 }

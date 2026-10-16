@@ -39,5 +39,18 @@
     "repo": "https://github.com/InioX/matugen",
     "ref": "9f8c7fd583e44310a642772ff8f13b693949baf2",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install matugen (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed matugen",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v4.2.0"
 }

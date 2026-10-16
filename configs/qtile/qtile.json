@@ -30,5 +30,18 @@
     "repo": "https://github.com/qtile/qtile",
     "ref": "fcda60dd5b252421dbcc017764a726cb09fc7424",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install qtile (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed qtile",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.37.1"
 }

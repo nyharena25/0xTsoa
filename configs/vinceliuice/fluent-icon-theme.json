@@ -30,5 +30,17 @@
     "repo": "https://github.com/vinceliuice/Fluent-icon-theme",
     "ref": "c8a244f571ef8fb47812bdc9dbce76546cedce69",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install fluent-icon-theme-git (AUR)",
+        "commands": [
+          "yay -S fluent-icon-theme-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

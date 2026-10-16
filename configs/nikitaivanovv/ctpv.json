@@ -31,5 +31,18 @@
     "repo": "https://github.com/NikitaIvanovV/ctpv",
     "ref": "4efa0f976eaf8cb814e0aba4f4f1a1d12ee9262e",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install ctpv-git (AUR)",
+        "commands": [
+          "yay -S ctpv-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v1.1"
 }

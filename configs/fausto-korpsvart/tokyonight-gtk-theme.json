@@ -31,5 +31,17 @@
     "repo": "https://github.com/Fausto-Korpsvart/Tokyonight-GTK-Theme",
     "ref": "6c340e058e84c1975a038a8e5d1e384477225dc0",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install tokyonight-gtk-theme-git (AUR)",
+        "commands": [
+          "yay -S tokyonight-gtk-theme-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

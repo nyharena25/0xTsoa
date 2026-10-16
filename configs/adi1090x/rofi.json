@@ -39,5 +39,24 @@
     "repo": "https://github.com/adi1090x/rofi",
     "ref": "512a585fff6da5b2a90e5948059b062516ddb2e7",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/adi1090x/rofi",
+          "cd rofi"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Run the upstream installer",
+        "commands": [
+          "bash setup.sh"
+        ]
+      }
+    ]
   }
 }

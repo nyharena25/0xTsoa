@@ -11,9 +11,10 @@ interface Screenshot {
 interface Props {
   screenshots: Screenshot[];
   configName: string;
+  title: string;
 }
 
-const { configName } = Astro.props;
+const { configName, title } = Astro.props;
 const screenshots = Astro.props.screenshots.map((s) => ({ ...s, url: s.url.startsWith('/') ? withBase(s.url) : s.url }));
 const t = useTranslations('en');
 const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
@@ -24,7 +25,7 @@ const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
     <div class="flex items-center gap-2">
       <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
       <h2 class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider">
-        {t('spec.sectionScreenshots')} // {configName}
+        {title} // {configName}
       </h2>
     </div>
 

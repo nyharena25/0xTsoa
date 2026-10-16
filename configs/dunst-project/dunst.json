@@ -38,5 +38,18 @@
     "repo": "https://github.com/dunst-project/dunst",
     "ref": "1249932aab9b7f687f1befe05ebf46b8d1ce0e42",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install dunst (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed dunst",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v1.13.2"
 }

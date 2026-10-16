@@ -34,5 +34,18 @@
     "repo": "https://github.com/nwg-piotr/nwg-dock-hyprland",
     "ref": "028ad56aa1dafbeed1772166749cedf00bef4108",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install nwg-dock-hyprland (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed nwg-dock-hyprland",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.4.11"
 }

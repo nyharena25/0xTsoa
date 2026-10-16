@@ -38,5 +38,18 @@
     "repo": "https://github.com/lassekongo83/adw-gtk3",
     "ref": "47922ed96562c002696ad2d2d80383f2ad30dc93",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install adw-gtk-theme (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed adw-gtk-theme",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v6.5"
 }

@@ -38,5 +38,25 @@
     "repo": "https://github.com/aunetx/blur-my-shell",
     "ref": "48cdbf01e5b75dc90feca6d9cdcf669b46692105",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install gnome-shell-extension-blur-my-shell (AUR)",
+        "commands": [
+          "yay -S gnome-shell-extension-blur-my-shell  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# Log out and back in, then enable it in Extension Manager or: gnome-extensions enable <uuid>"
+        ]
+      }
+    ]
+  },
+  "version": "v75"
 }

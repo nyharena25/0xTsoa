@@ -34,5 +34,18 @@
     "repo": "https://github.com/emersion/mako",
     "ref": "cce37cd3405f64eee1b07d4656b5ecbbc912b46d",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install mako (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed mako",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v1.11.0"
 }

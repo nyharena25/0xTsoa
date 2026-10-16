@@ -9,8 +9,8 @@
   "summary": "Official dynamic tiling Wayland compositor that doesn't sacrifice on the looks.",
   "description": "The reference configuration for Hyprland: dynamic tiling, fluid bezier curves, rounded borders, GPU-accelerated blur, and comprehensive IPC controls. Serves as the high-performance foundation for modern Wayland desktops.",
   "license": "BSD-3-Clause",
-  "version": "v0.45.0",
-  "updatedAt": "2026-10-15",
+  "version": "v0.56.2",
+  "updatedAt": "2026-10-16",
   "distros": [
     "arch",
     "nixos",
@@ -34,9 +34,7 @@
     "notifications": "Dunst",
     "theme": "Hyprland Cyan & Charcoal",
     "shell": "zsh",
-    "editor": "Neovim",
-    "ramIdleMiB": 290,
-    "batteryProfile": false
+    "editor": "Neovim"
   },
   "screenshots": [
     {
@@ -52,7 +50,7 @@
   ],
   "source": {
     "repo": "https://github.com/hyprwm/Hyprland",
-    "ref": "e2ad066c9ffd45ddfbe4dc76d2de16b382fbe3eb",
+    "ref": "25f09b26f9db7dbca4a4b3c265fdb96802db122c",
     "readme": "README.md"
   },
   "install": {

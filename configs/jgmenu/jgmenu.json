@@ -34,5 +34,18 @@
     "repo": "https://github.com/jgmenu/jgmenu",
     "ref": "57a76517993d1558286b7c5ac0532e5bf5dff30d",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install jgmenu (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed jgmenu",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v4.7.0"
 }

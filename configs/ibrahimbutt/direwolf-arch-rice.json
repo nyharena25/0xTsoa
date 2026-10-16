@@ -38,5 +38,16 @@
     "repo": "https://github.com/ibrahimbutt/direwolf-arch-rice",
     "ref": "e9d75ff223faf12939b933be1b9b012790683493",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Read online or clone for offline browsing",
+        "commands": [
+          "git clone --depth 1 https://github.com/ibrahimbutt/direwolf-arch-rice"
+        ]
+      }
+    ]
   }
 }

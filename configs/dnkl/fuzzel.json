@@ -30,5 +30,18 @@
     "repo": "https://codeberg.org/dnkl/fuzzel",
     "ref": "815d4385afb844f74243a6bc1c7836c4fbebe830",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install fuzzel (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed fuzzel",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "1.15.0"
 }

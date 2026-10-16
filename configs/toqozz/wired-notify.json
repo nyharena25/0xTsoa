@@ -38,5 +38,18 @@
     "repo": "https://github.com/Toqozz/wired-notify",
     "ref": "9a6b3674587dc0a01d14b83fb6513b802eee5ed1",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install wired (AUR)",
+        "commands": [
+          "yay -S wired  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "0.10.7"
 }

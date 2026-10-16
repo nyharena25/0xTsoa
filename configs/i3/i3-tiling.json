@@ -9,7 +9,7 @@
   "summary": "The iconic, rock-solid X11 tiling window manager designed for speed and clarity.",
   "description": "The golden standard of manual tiling window managers. i3 is lightweight, extremely well-documented, clean, and runs reliably on any Linux distribution without needing composite GPU drivers.",
   "license": "BSD-3-Clause",
-  "version": "v4.23.0",
+  "version": "4.25.1",
   "updatedAt": "2026-10-10",
   "distros": [
     "debian",
@@ -35,9 +35,7 @@
     "notifications": "Dunst",
     "theme": "Classic Engineering Monochrome",
     "shell": "bash",
-    "editor": "Vim",
-    "ramIdleMiB": 120,
-    "batteryProfile": true
+    "editor": "Vim"
   },
   "screenshots": [
     {

@@ -30,5 +30,17 @@
     "repo": "https://github.com/enkore/j4-dmenu-desktop",
     "ref": "558dfec6fa9f53959d8005a614ac868f6917ed53",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install j4-dmenu-desktop (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed j4-dmenu-desktop",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

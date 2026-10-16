@@ -31,5 +31,24 @@
     "repo": "https://github.com/mitchellh/nixos-config",
     "ref": "40d483d74cf48d64379fc9a857237ee18c519ff4",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the configuration",
+        "commands": [
+          "git clone https://github.com/mitchellh/nixos-config ~/nixos-config",
+          "cd ~/nixos-config"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Apply with the provided Makefile",
+        "commands": [
+          "make switch NIXNAME=<vm-name>"
+        ]
+      }
+    ]
   }
 }

@@ -30,5 +30,25 @@
     "repo": "https://github.com/nwg-piotr/nwg-hello",
     "ref": "7377f8c86c9c159fb4636c17f1e402660eccf7f5",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install nwg-hello (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed nwg-hello",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable on next boot",
+        "commands": [
+          "# Set it as your display manager / greeter, then reboot"
+        ]
+      }
+    ]
+  },
+  "version": "v0.5.0"
 }

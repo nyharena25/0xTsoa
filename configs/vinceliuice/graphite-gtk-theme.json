@@ -34,5 +34,17 @@
     "repo": "https://github.com/vinceliuice/Graphite-gtk-theme",
     "ref": "364173f47407164948788e4abb5e2eb46600f71a",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install graphite-gtk-theme-git (AUR)",
+        "commands": [
+          "yay -S graphite-gtk-theme-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

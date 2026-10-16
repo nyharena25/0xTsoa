@@ -30,5 +30,25 @@
     "repo": "https://github.com/Schneegans/Fly-Pie",
     "ref": "28ea7f4c810fa692eaa2f4629f87b227a0c37a19",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install gnome-shell-extension-fly-pie (AUR)",
+        "commands": [
+          "yay -S gnome-shell-extension-fly-pie  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# Log out and back in, then enable it in Extension Manager or: gnome-extensions enable <uuid>"
+        ]
+      }
+    ]
+  },
+  "version": "v33"
 }

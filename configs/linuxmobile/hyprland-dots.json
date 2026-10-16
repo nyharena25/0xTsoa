@@ -34,5 +34,24 @@
     "repo": "https://github.com/linuxmobile/hyprland-dots",
     "ref": "ccf0161276fac2e87301d399609dcad377038c4e",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/linuxmobile/hyprland-dots",
+          "cd hyprland-dots"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/linuxmobile/hyprland-dots#readme"
+        ]
+      }
+    ]
   }
 }

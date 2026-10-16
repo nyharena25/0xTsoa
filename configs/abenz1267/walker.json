@@ -30,5 +30,18 @@
     "repo": "https://github.com/abenz1267/walker",
     "ref": "a515085fd39fae80acc086c8fbfd9b7771a9a11d",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install walker (AUR)",
+        "commands": [
+          "yay -S walker  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v2.17.2"
 }

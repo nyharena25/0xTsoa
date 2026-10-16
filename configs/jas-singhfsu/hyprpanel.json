@@ -36,5 +36,17 @@
     "repo": "https://github.com/Jas-SinghFSU/HyprPanel",
     "ref": "1961ba86ad5ab880beb639e5454054b2b5037e0d",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install ags-hyprpanel-git (AUR)",
+        "commands": [
+          "yay -S ags-hyprpanel-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

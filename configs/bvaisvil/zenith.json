@@ -35,5 +35,18 @@
     "repo": "https://github.com/bvaisvil/zenith",
     "ref": "b65891608978bb6f9654931d393a3797d33a8306",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install zenith (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed zenith",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "0.15.1"
 }

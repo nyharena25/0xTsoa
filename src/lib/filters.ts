@@ -19,14 +19,24 @@ export interface CatalogueItem {
     launcher?: string;
     theme?: string;
     shell?: string;
-    ramIdleMiB?: number;
-    batteryProfile?: boolean;
   };
   thumbUrl: string;
   thumbAlt: string;
   version?: string;
   updatedAt: string;
   votes: number;
+  stars: number;
+}
+
+export const SORT_KEYS = ['votes', 'new', 'old', 'popular'] as const;
+export type SortKey = (typeof SORT_KEYS)[number];
+export const PAGE_SIZE = 10;
+
+/** One page (1-based) of an already filtered and sorted list. */
+export function paginate<T>(items: T[], page = 1): { items: T[]; page: number; pageCount: number } {
+  const pageCount = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const current = Math.min(Math.max(1, page), pageCount);
+  return { items: items.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE), page: current, pageCount };
 }
 
 export interface FilterState {
@@ -34,12 +44,10 @@ export interface FilterState {
   wm?: string;
   style?: string;
   distro?: string;
-  ramMax?: number;
-  battery?: boolean;
   tag?: string;
   query?: string;
   favoritesOnly?: boolean;
-  sort?: 'votes' | 'recent' | 'ram';
+  sort?: SortKey;
   page?: number;
 }
 
@@ -66,13 +74,6 @@ export function filterConfigs(items: CatalogueItem[], filters: FilterState): Cat
     );
   }
 
-  if (filters.ramMax !== undefined && filters.ramMax > 0) {
-    result = result.filter((item) => item.specs.ramIdleMiB !== undefined && item.specs.ramIdleMiB <= filters.ramMax!);
-  }
-
-  if (filters.battery === true) {
-    result = result.filter((item) => item.specs.batteryProfile === true);
-  }
 
   if (filters.tag) {
     const targetTag = filters.tag.toLowerCase().replace(/^#/, '');
@@ -97,15 +98,12 @@ export function filterConfigs(items: CatalogueItem[], filters: FilterState): Cat
     );
   }
 
-  // Sort
+  const date = (item: CatalogueItem) => new Date(item.updatedAt).getTime();
   const sort = filters.sort ?? 'votes';
-  if (sort === 'votes') {
-    result.sort((a, b) => b.votes - a.votes);
-  } else if (sort === 'recent') {
-    result.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-  } else if (sort === 'ram') {
-    result.sort((a, b) => (a.specs.ramIdleMiB ?? 99999) - (b.specs.ramIdleMiB ?? 99999));
-  }
+  if (sort === 'new') result.sort((a, b) => date(b) - date(a));
+  else if (sort === 'old') result.sort((a, b) => date(a) - date(b));
+  else if (sort === 'popular') result.sort((a, b) => b.stars - a.stars);
+  else result.sort((a, b) => b.votes - a.votes || b.stars - a.stars);
 
   return result;
 }
@@ -115,18 +113,15 @@ export function parseQueryToFilters(searchParams: URLSearchParams): FilterState 
   const wm = searchParams.get('wm') || undefined;
   const style = searchParams.get('style') || undefined;
   const distro = searchParams.get('distro') || undefined;
-  const ramParam = searchParams.get('ramMax');
-  const ramMax = ramParam ? parseInt(ramParam, 10) : undefined;
-  const battery = searchParams.get('battery') === 'true' ? true : undefined;
   const tag = searchParams.get('tag') || undefined;
   const query = searchParams.get('q') || undefined;
   const favoritesOnly = searchParams.get('fav') === 'true' ? true : undefined;
   const sortParam = searchParams.get('sort');
-  const sort = sortParam === 'recent' || sortParam === 'ram' ? sortParam : 'votes';
+  const sort: SortKey = (SORT_KEYS as readonly string[]).includes(sortParam ?? '') ? (sortParam as SortKey) : 'votes';
   const pageParam = searchParams.get('p');
   const page = pageParam ? Math.max(1, parseInt(pageParam, 10)) : 1;
 
-  return { category, wm, style, distro, ramMax, battery, tag, query, favoritesOnly, sort, page };
+  return { category, wm, style, distro, tag, query, favoritesOnly, sort, page };
 }
 
 export function filtersToQueryString(filters: FilterState): string {
@@ -135,8 +130,6 @@ export function filtersToQueryString(filters: FilterState): string {
   if (filters.wm && filters.wm !== 'all') p.set('wm', filters.wm);
   if (filters.style && filters.style !== 'all') p.set('style', filters.style);
   if (filters.distro && filters.distro !== 'all') p.set('distro', filters.distro);
-  if (filters.ramMax !== undefined) p.set('ramMax', String(filters.ramMax));
-  if (filters.battery) p.set('battery', 'true');
   if (filters.tag) p.set('tag', filters.tag);
   if (filters.query) p.set('q', filters.query);
   if (filters.favoritesOnly) p.set('fav', 'true');

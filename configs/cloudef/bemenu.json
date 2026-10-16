@@ -29,5 +29,18 @@
     "repo": "https://github.com/Cloudef/bemenu",
     "ref": "44b82f9f3fb9f04acfaa89471dddc05a20e16883",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install bemenu (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed bemenu",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "0.6.23"
 }

@@ -39,5 +39,17 @@
     "repo": "https://github.com/scorpion-26/gBar",
     "ref": "03bedc7471add061fb15e0ca1c9d2f729b8c5d7b",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install gbar-git (AUR)",
+        "commands": [
+          "yay -S gbar-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

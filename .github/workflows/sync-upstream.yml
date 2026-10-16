@@ -1,0 +1,51 @@
+name: Sync Upstream Repositories
+
+# Nightly: move every config to its repo's latest commit, refresh its version tag and star count.
+# Runs before the 03:17 deploy cron so the rebuilt site picks up the new refs.
+on:
+  schedule:
+    - cron: '23 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Pull latest upstream refs, versions and stars
+        run: npm run sync-upstream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate updated configs
+        run: npm run validate
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet; then
+            echo "Everything already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add configs src/generated/repo-stats.json
+          git commit -m "chore: sync configs with upstream repositories"
+          git push

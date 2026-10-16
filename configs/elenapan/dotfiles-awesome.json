@@ -9,7 +9,6 @@
   "summary": "Iconic pastel r/unixporn aesthetic with handcrafted Lua widgets and exquisite typography.",
   "description": "One of the most revered desktop rices in UNIX customization history. Features custom pastel aesthetic, modular AwesomeWM status panels, custom battery monitors, floating action centers, and custom icons.",
   "license": "MIT",
-  "version": "v2.0.0",
   "updatedAt": "2026-10-08",
   "distros": [
     "arch",
@@ -33,9 +32,7 @@
     "notifications": "AwesomeWM Naughty",
     "theme": "Pastel & Monochrome Clean",
     "shell": "zsh",
-    "editor": "Neovim",
-    "ramIdleMiB": 190,
-    "batteryProfile": true
+    "editor": "Neovim"
   },
   "screenshots": [
     {

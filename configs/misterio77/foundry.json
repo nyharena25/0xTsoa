@@ -35,5 +35,24 @@
     "repo": "https://github.com/Misterio77/Foundry",
     "ref": "5840c2ccec173be0814db98d2228f2a3b185cf52",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the flake",
+        "commands": [
+          "git clone https://github.com/Misterio77/Foundry ~/nix-config",
+          "cd ~/nix-config"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Build a host from the flake",
+        "commands": [
+          "sudo nixos-rebuild switch --flake .#<hostname>"
+        ]
+      }
+    ]
   }
 }

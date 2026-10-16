@@ -35,5 +35,24 @@
     "repo": "https://github.com/janleigh/dotfiles",
     "ref": "07b458027e0cac476034b6b07d386e476b0c87fe",
     "readme": ".github/README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/janleigh/dotfiles",
+          "cd dotfiles"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/janleigh/dotfiles#readme"
+        ]
+      }
+    ]
   }
 }

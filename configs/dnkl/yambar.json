@@ -30,5 +30,18 @@
     "repo": "https://codeberg.org/dnkl/yambar",
     "ref": "abeffbd9a9fd0b2133343e1149e65d4a795a43d0",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install yambar (AUR)",
+        "commands": [
+          "yay -S yambar  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "1.11.0"
 }

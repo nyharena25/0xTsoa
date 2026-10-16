@@ -39,5 +39,17 @@
     "repo": "https://github.com/vinceliuice/Orchis-theme",
     "ref": "a4c48a425e63808345e824495964bd9c2f462e04",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install orchis-theme (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed orchis-theme",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

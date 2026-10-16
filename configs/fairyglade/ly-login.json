@@ -30,5 +30,25 @@
     "repo": "https://github.com/fairyglade/ly",
     "ref": "4e0f23f08406f20b95146de6ce2e876918d7903d",
     "readme": "readme.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install ly (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed ly",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable on next boot",
+        "commands": [
+          "# Set it as your display manager / greeter, then reboot"
+        ]
+      }
+    ]
+  },
+  "version": "v1.5.0"
 }

@@ -38,5 +38,18 @@
     "repo": "https://github.com/polybar/polybar",
     "ref": "f99e0b1c7a5b094f5a04b14101899d0cb4ece69d",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install polybar (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed polybar",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "3.7.2"
 }

@@ -38,5 +38,24 @@
     "repo": "https://github.com/folke/tokyonight.nvim",
     "ref": "cdc07ac78467a233fd62c493de29a17e0cf2b2b6",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Add the plugin (lazy.nvim)",
+        "commands": [
+          "# lua: { \"folke/tokyonight.nvim\", lazy = false, priority = 1000 }"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Activate the colorscheme",
+        "commands": [
+          "nvim +\"colorscheme tokyonight\""
+        ]
+      }
+    ]
+  },
+  "version": "v4.14.1"
 }

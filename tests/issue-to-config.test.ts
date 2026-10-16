@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { configSchema } from '../src/lib/schema';
-import { parseIssueBody, convertIssueToConfig, parseChecked } from '../scripts/issue-to-config';
+import { parseIssueBody, convertIssueToConfig, parseChecked, parseCommands } from '../scripts/issue-to-config';
 
 describe('Issue Body Parser & Config Converter', () => {
   const sampleIssue = `
@@ -23,7 +23,7 @@ wayland
 Arch, Fedora
 
 ### Tags / Mots-clés
-minimal, battery-tuned
+minimal, waybar
 
 ### URLs des captures d'écran
 https://raw.githubusercontent.com/test-user/dots/v1.0/screen.png
@@ -103,7 +103,24 @@ _No response_
 ### Condensat SHA-256 du script
 
 _No response_
+
+### Install: Dependencies
+
+\`\`\`bash
+git clone --depth 1 https://github.com/test-user/dots ~/dots
+\`\`\`
 `;
+
+  it('strips code fences from command textareas', () => {
+    expect(parseCommands('```bash\nhyprctl reload\n\n```')).toEqual(['hyprctl reload']);
+    expect(parseCommands('')).toEqual([]);
+  });
+
+  it('rejects a submission without install steps', async () => {
+    const noInstall = githubRendered.replace(/### Install: Dependencies[\s\S]*$/, '');
+    const { config } = await convertIssueToConfig('test-user', noInstall);
+    expect(configSchema.safeParse(config).success).toBe(false);
+  });
 
   it('keeps only checked checkboxes', () => {
     expect(parseChecked('- [X] Arch\n- [ ] Fedora\n- [x] Void')).toEqual(['Arch', 'Void']);
@@ -120,7 +137,7 @@ _No response_
   });
 
   // Headings must match the labels in .github/ISSUE_TEMPLATE/new-config.yml.
-  const englishRendered = `### Configuration Name
+  const englishRendered = `### Project Name
 
 Hyprland Paper Minimal
 
@@ -140,9 +157,17 @@ _No response_
 
 GPL-3.0-only
 
+### Desktop Part
+
+Bars & panels
+
 ### Window Manager
 
-COSMIC
+Any WM / DE
+
+### Theme Style
+
+Rosé Pine
 
 ### Display Server
 
@@ -170,6 +195,23 @@ https://github.com/test-user/dots
 
 v1.0.0
 
+### Install: Dependencies
+
+\`\`\`bash
+sudo pacman -S --needed waybar
+# Other distros: see the README
+\`\`\`
+
+### Install: Deploy
+
+_No response_
+
+### Install: Reload
+
+\`\`\`bash
+killall -SIGUSR2 waybar
+\`\`\`
+
 ### Install Script URL
 
 _No response_
@@ -182,14 +224,6 @@ _No response_
 
 zsh
 
-### Idle RAM
-
-280
-
-### Battery Profile
-
-Yes (tlp / auto-cpufreq / power-profiles-daemon)
-
 ### Submission Checklist
 
 - [X] My Git ref is a commit SHA or a tag, not a branch.
@@ -199,9 +233,15 @@ Yes (tlp / auto-cpufreq / power-profiles-daemon)
     const { config, slug } = await convertIssueToConfig('test-user', englishRendered);
     expect(slug).toBe('hyprland-paper-minimal');
     expect(config.license).toBe('GPL-3.0-only');
-    expect(config.wm).toBe('cosmic');
+    expect(config.wm).toBe('any');
+    expect(config.category).toBe('bar');
+    expect(config.themeStyle).toBe('rose-pine');
+    expect(config.install.steps).toEqual([
+      { id: 'deps', title: 'Install dependencies', commands: ['sudo pacman -S --needed waybar', '# Other distros: see the README'] },
+      { id: 'reload', title: 'Reload', commands: ['killall -SIGUSR2 waybar'] },
+    ]);
     expect(config.distros).toEqual(['arch', 'opensuse']);
-    expect(config.specs).toMatchObject({ shell: 'zsh', ramIdleMiB: 280, batteryProfile: true });
+    expect(config.specs).toMatchObject({ shell: 'zsh' });
     expect(config.lang).toBe('en');
     const parsed = configSchema.safeParse(config);
     expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);

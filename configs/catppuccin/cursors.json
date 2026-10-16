@@ -38,5 +38,18 @@
     "repo": "https://github.com/catppuccin/cursors",
     "ref": "a7eb08527dcce01010fa0ec46fa2bc4c3154f0d4",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install catppuccin-cursors-mocha (AUR)",
+        "commands": [
+          "yay -S catppuccin-cursors-mocha  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v2.0.0"
 }

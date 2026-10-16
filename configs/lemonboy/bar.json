@@ -31,5 +31,18 @@
     "repo": "https://github.com/LemonBoy/bar",
     "ref": "59b0d2826a74b62c1ec0ed8bc71dea873dfc8135",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install lemonbar (AUR)",
+        "commands": [
+          "yay -S lemonbar  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v1.5"
 }

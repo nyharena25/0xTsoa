@@ -30,5 +30,18 @@
     "repo": "https://github.com/Jannomag/Yaru-Colors",
     "ref": "74f8179dab3ab0d0ac9858883815ff7941e74c0f",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install yaru-colors-gtk-theme (AUR)",
+        "commands": [
+          "yay -S yaru-colors-gtk-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "21.04"
 }

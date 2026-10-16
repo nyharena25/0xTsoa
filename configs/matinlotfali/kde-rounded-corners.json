@@ -30,5 +30,26 @@
     "repo": "https://github.com/matinlotfali/KDE-Rounded-Corners",
     "ref": "9795a58c9ee96f10467cbb4e5f75955737913d19",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install kwin-effect-rounded-corners-git (AUR)",
+        "commands": [
+          "yay -S kwin-effect-rounded-corners-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# System Settings > Window Management > KWin Scripts / Desktop Effects: enable it",
+          "qdbus org.kde.KWin /KWin reconfigure"
+        ]
+      }
+    ]
+  },
+  "version": "v0.10.0"
 }

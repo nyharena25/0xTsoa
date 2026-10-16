@@ -1,11 +1,14 @@
-### Contribution 0xTsoa — Nouvelle configuration
+### 0xTsoa: new or updated project
 
-Merci pour votre contribution au registre décentralisé 0xTsoa !
+Thanks for contributing to the 0xTsoa registry!
 
-#### Checklist de soumission :
-- [ ] Le fichier est placé dans `configs/<votre-github-user>/<slug>.json`.
-- [ ] Le champ `author.github` correspond exactement au nom de dossier et à votre compte GitHub.
-- [ ] Les captures d'écran proviennent d'un hôte autorisé (`raw.githubusercontent.com`, `i.imgur.com`, etc.).
-- [ ] Si un script d'installation `.sh` est fourni, il est épinglé à un tag fixe ou commit SHA, et son empreinte `sha256` a été calculée.
-- [ ] La commande `npm run validate` a été exécutée et passe sans erreur.
-- [ ] La licence de vos dotfiles est libre (MIT, GPL, Apache, etc.) et mentionnée en identifiant SPDX valide.
+#### Submission checklist
+- [ ] The file lives at `configs/<github-user>/<slug>.json` and `author.github` matches the folder name.
+- [ ] `category` names the desktop part (dotfiles, bar, launcher, icons, gtk-theme…), and `wm` is `any` if the project isn't tied to one WM.
+- [ ] Tags list components and features only (no WM, distro, display server or theme-style duplicates).
+- [ ] `install.steps` has at least a `deps` step, and the commands work on a clean system for one listed distro.
+- [ ] `source.ref` is a full commit SHA or a tag, never a branch.
+- [ ] Screenshots come from an allowed host (`raw.githubusercontent.com`, `github.com/user-attachments`, `i.imgur.com`, `i.redd.it`, `codeberg.org`, `gitlab.com`…).
+- [ ] Any `.sh` install script is pinned to a tag or commit and has its `sha256`.
+- [ ] `license` is a valid SPDX identifier.
+- [ ] `npm run validate` passes.

@@ -38,5 +38,18 @@
     "repo": "https://github.com/fastfetch-cli/fastfetch",
     "ref": "99785f54dd110caaf8c633d6abea01c9dfbf31fe",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install fastfetch (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed fastfetch",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "2.70.0"
 }

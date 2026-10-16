@@ -30,5 +30,18 @@
     "repo": "https://github.com/Raymo111/i3lock-color",
     "ref": "e6c0caf9b7aa22cc7864493132a1a2e258da1761",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install i3lock-color (AUR)",
+        "commands": [
+          "yay -S i3lock-color  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "2.10"
 }

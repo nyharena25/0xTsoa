@@ -39,5 +39,18 @@
     "repo": "https://github.com/nwg-piotr/nwg-panel",
     "ref": "27ede8e0a4e4a8ddb19120a0b4cf18edecd7e81e",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install nwg-panel (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed nwg-panel",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.12.1"
 }

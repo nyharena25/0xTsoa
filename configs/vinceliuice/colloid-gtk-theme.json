@@ -39,5 +39,18 @@
     "repo": "https://github.com/vinceliuice/Colloid-gtk-theme",
     "ref": "fe11342f37f124f1b29d44cf33e9a06053f4bba2",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install colloid-gtk-theme-git (AUR)",
+        "commands": [
+          "yay -S colloid-gtk-theme-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "2023.04.11"
 }

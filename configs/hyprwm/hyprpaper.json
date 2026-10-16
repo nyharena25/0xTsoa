@@ -29,5 +29,18 @@
     "repo": "https://github.com/hyprwm/hyprpaper",
     "ref": "39029bdfda857a5ea60340a427681893d12d4892",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install hyprpaper (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed hyprpaper",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.8.4"
 }

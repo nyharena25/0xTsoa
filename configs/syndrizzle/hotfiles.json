@@ -39,5 +39,24 @@
     "repo": "https://github.com/Syndrizzle/hotfiles",
     "ref": "37c38f46ef1518caf7c04b8a3821bf0ef0bda4cf",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/Syndrizzle/hotfiles",
+          "cd hotfiles"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/Syndrizzle/hotfiles#readme"
+        ]
+      }
+    ]
   }
 }

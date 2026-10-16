@@ -31,5 +31,18 @@
     "repo": "https://github.com/catppuccin/gtk",
     "ref": "23b52b5b9cde1e11c07315e79a55804d2ac77e3a",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install catppuccin-gtk-theme-mocha (AUR)",
+        "commands": [
+          "yay -S catppuccin-gtk-theme-mocha  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v1.0.3"
 }

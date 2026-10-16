@@ -39,5 +39,18 @@
     "repo": "https://github.com/elkowar/eww",
     "ref": "48f5aa8b379adf29da0b0bb9ca04164f65d8bdaa",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install eww (AUR)",
+        "commands": [
+          "yay -S eww  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.6.0"
 }

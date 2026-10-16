@@ -30,5 +30,26 @@
     "repo": "https://github.com/zeroxoneafour/polonium",
     "ref": "227967ed448205d42b5e63e4cc4b868d72606467",
     "readme": "readme.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install kwin-polonium (AUR)",
+        "commands": [
+          "yay -S kwin-polonium  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# System Settings > Window Management > KWin Scripts / Desktop Effects: enable it",
+          "qdbus org.kde.KWin /KWin reconfigure"
+        ]
+      }
+    ]
+  },
+  "version": "v1.2.1"
 }

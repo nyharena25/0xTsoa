@@ -1,0 +1,521 @@
+{
+  "0pandadev/awesome-unixporn": {
+    "stars": 58
+  },
+  "abenz1267/walker": {
+    "stars": 3080
+  },
+  "adapta-project/adapta-gtk-theme": {
+    "stars": 3347
+  },
+  "adi1090x/plymouth-themes": {
+    "stars": 2966
+  },
+  "adi1090x/polybar-themes": {
+    "stars": 6258
+  },
+  "adi1090x/rofi": {
+    "stars": 8820
+  },
+  "adisoncavani/distro-grub-themes": {
+    "stars": 1164
+  },
+  "albertlauncher/albert": {
+    "stars": 8007
+  },
+  "alexays/waybar": {
+    "stars": 12082
+  },
+  "anametologin/krohnkite": {
+    "stars": 1228
+  },
+  "anishathalye/dotbot": {
+    "stars": 8019
+  },
+  "anyrun-org/anyrun": {
+    "stars": 1311
+  },
+  "aunetx/blur-my-shell": {
+    "stars": 2327
+  },
+  "avtzis/awesome-linux-ricing": {
+    "stars": 1325
+  },
+  "axenide/ax-shell": {
+    "stars": 1568
+  },
+  "aylur/ags": {
+    "stars": 3111
+  },
+  "aylur/dotfiles": {
+    "stars": 3100
+  },
+  "baskerville/bspwm": {
+    "stars": 8329
+  },
+  "betterlockscreen/betterlockscreen": {
+    "stars": 2650
+  },
+  "bikass/kora": {
+    "stars": 957
+  },
+  "bismuth-forge/bismuth": {
+    "stars": 2417
+  },
+  "bvaisvil/zenith": {
+    "stars": 3064
+  },
+  "caelestia-dots/shell": {
+    "stars": 12909
+  },
+  "cairo-dock/cairo-dock-core": {
+    "stars": 312
+  },
+  "catppuccin/catppuccin": {
+    "stars": 19843
+  },
+  "catppuccin/cursors": {
+    "stars": 758
+  },
+  "catppuccin/grub": {
+    "stars": 645
+  },
+  "catppuccin/gtk": {
+    "stars": 949
+  },
+  "catppuccin/hyprland-theme": {
+    "stars": 427
+  },
+  "catppuccin/papirus-folders": {
+    "stars": 269
+  },
+  "catppuccin/sddm": {
+    "stars": 529
+  },
+  "cerebroapp/cerebro": {
+    "stars": 8563
+  },
+  "christitustech/dwm-titus": {
+    "stars": 464
+  },
+  "cloudef/bemenu": {
+    "stars": 1503
+  },
+  "danielrosehill/linux-desktop-tools-index": {
+    "stars": 1
+  },
+  "danihek/hellwal": {
+    "stars": 854
+  },
+  "davatorium/rofi": {
+    "stars": 16473
+  },
+  "deviantfero/wpgtk": {
+    "stars": 2193
+  },
+  "dnkl/fnott": {
+    "stars": 187
+  },
+  "dnkl/fuzzel": {
+    "stars": 951
+  },
+  "dnkl/yambar": {
+    "stars": 296
+  },
+  "domferr/tilingshell": {
+    "stars": 2088
+  },
+  "dracula/gtk": {
+    "stars": 1058
+  },
+  "dunst-project/dunst": {
+    "stars": 5612
+  },
+  "dylanaraps/pywal": {
+    "stars": 9067
+  },
+  "elenapan/dotfiles-awesome": {
+    "stars": 3903
+  },
+  "eliverlara/candy-icons": {
+    "stars": 1324
+  },
+  "eliverlara/nordic-gtk": {
+    "stars": 2736
+  },
+  "eliverlara/sweet": {
+    "stars": 1709
+  },
+  "elkowar/eww": {
+    "stars": 12708
+  },
+  "emersion/mako": {
+    "stars": 3282
+  },
+  "end-4/dots-hyprland": {
+    "stars": 16378
+  },
+  "enkore/j4-dmenu-desktop": {
+    "stars": 745
+  },
+  "erikreider/swaynotificationcenter": {
+    "stars": 2616
+  },
+  "explosion-mental/wallust": {
+    "stars": 183
+  },
+  "eylles/pywal16": {
+    "stars": 816
+  },
+  "fabric-development/fabric": {
+    "stars": 1389
+  },
+  "fairyglade/ly-login": {
+    "stars": 7628
+  },
+  "fastfetch-cli/fastfetch": {
+    "stars": 25045
+  },
+  "fausto-korpsvart/gruvbox-gtk-theme": {
+    "stars": 1008
+  },
+  "fausto-korpsvart/rose-pine-gtk-theme": {
+    "stars": 223
+  },
+  "fausto-korpsvart/tokyonight-gtk-theme": {
+    "stars": 825
+  },
+  "flickowoa/dotfiles": {
+    "stars": 1988
+  },
+  "folke/tokyonight-nvim": {
+    "stars": 8221
+  },
+  "fosslife/awesome-ricing": {
+    "stars": 4549
+  },
+  "ful1e5/apple-cursor": {
+    "stars": 2075
+  },
+  "ful1e5/bibata-cursor": {
+    "stars": 4193
+  },
+  "ful1e5/google-cursor": {
+    "stars": 444
+  },
+  "gh0stzk/dotfiles-bspwm": {
+    "stars": 4765
+  },
+  "gideonwolfe/chameleon": {
+    "stars": 192
+  },
+  "gogh-co/gogh": {
+    "stars": 10340
+  },
+  "home-sweet-gnome/dash-to-panel": {
+    "stars": 4472
+  },
+  "hyde-project/hyde": {
+    "stars": 9668
+  },
+  "hykilpikonna/hyfetch": {
+    "stars": 2126
+  },
+  "hyprland-community/awesome-hyprland": {
+    "stars": 5358
+  },
+  "hyprwm/hyprland-core": {
+    "stars": 38891
+  },
+  "hyprwm/hyprlock": {
+    "stars": 1674
+  },
+  "hyprwm/hyprpaper": {
+    "stars": 1353
+  },
+  "i3/i3-tiling": {
+    "stars": 10596
+  },
+  "ibrahimbutt/direwolf-arch-rice": {
+    "stars": 992
+  },
+  "iniox/matugen": {
+    "stars": 2063
+  },
+  "jakestanger/ironbar": {
+    "stars": 1491
+  },
+  "jakoolit/arch-hyprland": {
+    "stars": 4581
+  },
+  "janleigh/dotfiles": {
+    "stars": 936
+  },
+  "jannomag/yaru-colors": {
+    "stars": 527
+  },
+  "jas-singhfsu/hyprpanel": {
+    "stars": 2186
+  },
+  "jeffshee/gnome-ext-hanabi": {
+    "stars": 1644
+  },
+  "jgmenu/jgmenu": {
+    "stars": 961
+  },
+  "jirutka/swaylock-effects": {
+    "stars": 228
+  },
+  "keeferrourke/la-capitaine-icon-theme": {
+    "stars": 1996
+  },
+  "keyitdev/sddm-astronaut-theme": {
+    "stars": 3325
+  },
+  "labwc/labwc": {
+    "stars": 2851
+  },
+  "lassekongo83/adw-gtk3": {
+    "stars": 2066
+  },
+  "lbonn/rofi": {
+    "stars": 1327
+  },
+  "lemonboy/bar": {
+    "stars": 1690
+  },
+  "lgfae/swww": {
+    "stars": 3587
+  },
+  "linuxmobile/hyprland-dots": {
+    "stars": 1703
+  },
+  "luisbocanegra/plasma-panel-colorizer": {
+    "stars": 1232
+  },
+  "luong-komorebi/awesome-linux-software": {
+    "stars": 25631
+  },
+  "marianarlt/sddm-sugar-dark": {
+    "stars": 312
+  },
+  "matinlotfali/kde-rounded-corners": {
+    "stars": 1268
+  },
+  "meskarune/i3lock-fancy": {
+    "stars": 1560
+  },
+  "misterio77/foundry": {
+    "stars": 1345
+  },
+  "mitchellh/nixos-config": {
+    "stars": 3114
+  },
+  "mjakeman/extension-manager": {
+    "stars": 1380
+  },
+  "molasseslover/nordzy-icon": {
+    "stars": 424
+  },
+  "morhetz/gruvbox": {
+    "stars": 15790
+  },
+  "mylinuxforwork/dotfiles": {
+    "stars": 5075
+  },
+  "myugan/awesome-linux-customization": {
+    "stars": 360
+  },
+  "namishh/crystal": {
+    "stars": 885
+  },
+  "nana-4/materia-theme": {
+    "stars": 3514
+  },
+  "nikitaivanovv/ctpv": {
+    "stars": 297
+  },
+  "nix-community/stylix": {
+    "stars": 2435
+  },
+  "nordtheme/nord": {
+    "stars": 6894
+  },
+  "numixproject/numix-icon-theme-circle": {
+    "stars": 930
+  },
+  "nwg-piotr/nwg-dock-hyprland": {
+    "stars": 454
+  },
+  "nwg-piotr/nwg-hello": {
+    "stars": 104
+  },
+  "nwg-piotr/nwg-look": {
+    "stars": 1014
+  },
+  "nwg-piotr/nwg-panel": {
+    "stars": 782
+  },
+  "o9000/tint2": {
+    "stars": 294
+  },
+  "owl4ce/dotfiles": {
+    "stars": 2167
+  },
+  "paperwm/paperwm": {
+    "stars": 4347
+  },
+  "papirusdevelopmentteam/papirus-icon-theme": {
+    "stars": 8147
+  },
+  "philj56/tofi": {
+    "stars": 1405
+  },
+  "phuhl/linux-notification-center": {
+    "stars": 1047
+  },
+  "polybar/polybar": {
+    "stars": 15352
+  },
+  "prasanthrangan/hyprdots": {
+    "stars": 8484
+  },
+  "qtile/qtile": {
+    "stars": 5309
+  },
+  "quickshell-mirror/quickshell": {
+    "stars": 3152
+  },
+  "raymo111/i3lock-color": {
+    "stars": 1206
+  },
+  "rebelot/kanagawa-nvim": {
+    "stars": 6430
+  },
+  "rharish101/regreet": {
+    "stars": 826
+  },
+  "ricotz/plank": {
+    "stars": 522
+  },
+  "rose-pine/rose-pine-theme": {
+    "stars": 1631
+  },
+  "rxyhn/yoru-awesome": {
+    "stars": 3579
+  },
+  "sainnhe/everforest": {
+    "stars": 4252
+  },
+  "schneegans/burn-my-windows": {
+    "stars": 3094
+  },
+  "schneegans/fly-pie": {
+    "stars": 1313
+  },
+  "scorpion-26/gbar": {
+    "stars": 539
+  },
+  "siduck/chadwm": {
+    "stars": 3026
+  },
+  "somepaulo/morewaita": {
+    "stars": 1113
+  },
+  "supercuber/dotter": {
+    "stars": 2022
+  },
+  "swaywm/sway-core": {
+    "stars": 17437
+  },
+  "swaywm/swaylock": {
+    "stars": 1237
+  },
+  "syleleuth/gruvbox-plus-icon-pack": {
+    "stars": 810
+  },
+  "syndrizzle/hotfiles": {
+    "stars": 1575
+  },
+  "themix-project/themix-gui": {
+    "stars": 2324
+  },
+  "tinted-theming/home": {
+    "stars": 468
+  },
+  "toqozz/wired-notify": {
+    "stars": 706
+  },
+  "tuigreet/tuigreet": {
+    "stars": 1820
+  },
+  "twpayne/chezmoi": {
+    "stars": 21953
+  },
+  "ulauncher/ulauncher": {
+    "stars": 4526
+  },
+  "vinceliuice/colloid-gtk-theme": {
+    "stars": 1501
+  },
+  "vinceliuice/colloid-icon-theme": {
+    "stars": 1181
+  },
+  "vinceliuice/fluent-icon-theme": {
+    "stars": 878
+  },
+  "vinceliuice/graphite-gtk-theme": {
+    "stars": 1533
+  },
+  "vinceliuice/grub2-themes": {
+    "stars": 4649
+  },
+  "vinceliuice/orchis-theme": {
+    "stars": 4140
+  },
+  "vinceliuice/qogir-icon-theme": {
+    "stars": 937
+  },
+  "vinceliuice/tela-icon-theme": {
+    "stars": 1890
+  },
+  "vinceliuice/vimix-cursors": {
+    "stars": 461
+  },
+  "vinceliuice/whitesur-gtk-theme": {
+    "stars": 9353
+  },
+  "vinceliuice/whitesur-icon-theme": {
+    "stars": 2096
+  },
+  "wayfirewm/wayfire": {
+    "stars": 3066
+  },
+  "webpro/awesome-dotfiles": {
+    "stars": 10902
+  },
+  "yadm-dev/yadm": {
+    "stars": 6453
+  },
+  "yalter/niri-desktop": {
+    "stars": 28451
+  },
+  "yeyushengfan258/win11-icon-theme": {
+    "stars": 389
+  },
+  "zayronxio/zafiro-icons": {
+    "stars": 465
+  },
+  "zemmsoares/awesome-rices": {
+    "stars": 1372
+  },
+  "zeroxoneafour/polonium": {
+    "stars": 1168
+  },
+  "zquestz/plank-reloaded": {
+    "stars": 455
+  },
+  "zren/plasma-hud": {
+    "stars": 244
+  }
+}

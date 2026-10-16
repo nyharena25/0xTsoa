@@ -31,5 +31,18 @@
     "repo": "https://github.com/EliverLara/Sweet",
     "ref": "c405a6a73878ce3beb4323d26bc6fa674a485f36",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install sweet-gtk-theme (AUR)",
+        "commands": [
+          "yay -S sweet-gtk-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v6.0"
 }

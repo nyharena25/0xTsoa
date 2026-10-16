@@ -38,5 +38,25 @@
     "repo": "https://github.com/home-sweet-gnome/dash-to-panel",
     "ref": "c3aed934f927852a9ec28103e788d1954034bf4c",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install gnome-shell-extension-dash-to-panel (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed gnome-shell-extension-dash-to-panel",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# Log out and back in, then enable it in Extension Manager or: gnome-extensions enable <uuid>"
+        ]
+      }
+    ]
+  },
+  "version": "v74"
 }

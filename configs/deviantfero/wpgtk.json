@@ -30,5 +30,18 @@
     "repo": "https://github.com/deviantfero/wpgtk",
     "ref": "42853aa798764111d19fd221f4d8ac2e0bff6728",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install wpgtk (AUR)",
+        "commands": [
+          "yay -S wpgtk  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "6.7.1"
 }

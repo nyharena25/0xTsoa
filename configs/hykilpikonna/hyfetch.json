@@ -38,5 +38,18 @@
     "repo": "https://github.com/hykilpikonna/hyfetch",
     "ref": "520f3799f1bba88ffe8e9e0da43eac08c7a2c3c7",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install hyfetch (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed hyfetch",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "2.1.0"
 }

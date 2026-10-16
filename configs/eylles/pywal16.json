@@ -34,5 +34,18 @@
     "repo": "https://github.com/eylles/pywal16",
     "ref": "af711710cdc3c88248b667342e5d4289f00f8c6e",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install python-pywal16 (AUR)",
+        "commands": [
+          "yay -S python-pywal16  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "3.8.15"
 }

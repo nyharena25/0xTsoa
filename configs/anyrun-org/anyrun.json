@@ -30,5 +30,18 @@
     "repo": "https://github.com/anyrun-org/anyrun",
     "ref": "55230c6650ee3dde481b11c64cab717f738fa0dd",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install anyrun (AUR)",
+        "commands": [
+          "yay -S anyrun  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v26.6.1"
 }

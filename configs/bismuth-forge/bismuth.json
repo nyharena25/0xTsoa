@@ -35,5 +35,34 @@
     "repo": "https://github.com/Bismuth-Forge/bismuth",
     "ref": "ef69afe69f615149ab347e4402862ee900452a65",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/Bismuth-Forge/bismuth",
+          "cd bismuth"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Build and install with make",
+        "commands": [
+          "make",
+          "sudo make install"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# System Settings > Window Management > KWin Scripts / Desktop Effects: enable it",
+          "qdbus org.kde.KWin /KWin reconfigure"
+        ]
+      }
+    ]
+  },
+  "version": "v3.1.4"
 }

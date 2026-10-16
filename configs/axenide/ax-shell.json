@@ -41,5 +41,24 @@
     "repo": "https://github.com/Axenide/Ax-Shell",
     "ref": "1a3551fb6d1d5354c99f31880a39f7c7149da78e",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/Axenide/Ax-Shell",
+          "cd Ax-Shell"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Run the upstream installer",
+        "commands": [
+          "bash install.sh"
+        ]
+      }
+    ]
   }
 }

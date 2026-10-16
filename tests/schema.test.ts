@@ -25,6 +25,7 @@ describe('Config Schema & Validation Rules', () => {
         ref: 'v1.0.0',
         readme: 'README.md',
       },
+      install: { steps: [{ id: 'deps', title: 'Install deps', commands: ['sudo pacman -S hyprland'] }] },
     };
 
     const res = configSchema.safeParse(valid);
@@ -57,6 +58,7 @@ describe('Config Schema & Validation Rules', () => {
         ref: 'v1.0.0',
         readme: 'README.md',
       },
+      install: { steps: [{ id: 'deps', title: 'Install deps', commands: ['sudo pacman -S hyprland'] }] },
     };
 
     const res = configSchema.safeParse(validLocal);
@@ -65,6 +67,26 @@ describe('Config Schema & Validation Rules', () => {
       expect(res.data.themeStyle).toBe('cyberpunk');
       expect(res.data.screenshots[0].url).toBe('/0xtsoa/screenshots/cyberpunk-preview.png');
     }
+  });
+
+  it('requires at least one install step with unique ids', () => {
+    const base = {
+      name: 'No Install Setup',
+      author: { name: 'carol', github: 'carol' },
+      summary: 'A setup that forgets its install steps.',
+      license: 'MIT',
+      updatedAt: '2026-10-15',
+      distros: ['arch'],
+      wm: 'sway',
+      displayServer: 'wayland',
+      screenshots: [{ url: '/screenshots/fallback-terminal.svg', alt: 'Preview capture' }],
+      source: { repo: 'https://github.com/carol/dots', ref: 'v1.0.0' },
+    };
+    const step = { id: 'deps', title: 'Install deps', commands: ['sudo pacman -S sway'] };
+    expect(configSchema.safeParse(base).success).toBe(false);
+    expect(configSchema.safeParse({ ...base, install: { steps: [] } }).success).toBe(false);
+    expect(configSchema.safeParse({ ...base, install: { steps: [step, step] } }).success).toBe(false);
+    expect(configSchema.safeParse({ ...base, install: { steps: [step] } }).success).toBe(true);
   });
 
   it('rejects unallowed image hostnames', () => {

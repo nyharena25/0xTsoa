@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { filterConfigs, parseQueryToFilters, filtersToQueryString, type CatalogueItem } from '../src/lib/filters';
+import { filterConfigs, parseQueryToFilters, filtersToQueryString, paginate, PAGE_SIZE, type CatalogueItem } from '../src/lib/filters';
 
 const mockItems: CatalogueItem[] = [
   {
@@ -12,12 +12,13 @@ const mockItems: CatalogueItem[] = [
     wm: 'hyprland',
     themeStyle: 'cyberpunk',
     displayServer: 'wayland',
-    tags: ['battery-tuned', 'minimal'],
-    specs: { ramIdleMiB: 280, batteryProfile: true },
+    tags: ['waybar', 'minimal'],
+    specs: {},
     thumbUrl: 'https://example.com/thumb1.png',
     thumbAlt: 'Thumb 1',
     updatedAt: '2026-10-10',
     votes: 1400,
+    stars: 500,
   },
   {
     id: 'user2/sway-setup',
@@ -30,11 +31,12 @@ const mockItems: CatalogueItem[] = [
     themeStyle: 'nord',
     displayServer: 'wayland',
     tags: ['thinkpad'],
-    specs: { ramIdleMiB: 450, batteryProfile: false },
+    specs: {},
     thumbUrl: 'https://example.com/thumb2.png',
     thumbAlt: 'Thumb 2',
     updatedAt: '2026-10-12',
     votes: 900,
+    stars: 9000,
   },
   {
     id: 'user3/bspwm-setup',
@@ -47,11 +49,12 @@ const mockItems: CatalogueItem[] = [
     themeStyle: 'gruvbox',
     displayServer: 'x11',
     tags: ['lightweight'],
-    specs: { ramIdleMiB: 180, batteryProfile: true },
+    specs: {},
     thumbUrl: 'https://example.com/thumb3.png',
     thumbAlt: 'Thumb 3',
     updatedAt: '2026-10-01',
     votes: 500,
+    stars: 120,
   },
 ];
 
@@ -77,26 +80,28 @@ describe('Catalogue Filter & Query State Logic', () => {
     expect(res[0].id).toBe('user2/sway-setup');
   });
 
-  it('filters by RAM ceiling', () => {
-    const res = filterConfigs(mockItems, { ramMax: 300 });
-    expect(res.length).toBe(2);
-    expect(res.map((r) => r.id)).toEqual(['user1/hypr-setup', 'user3/bspwm-setup']);
+  it('sorts by newest and oldest update date', () => {
+    expect(filterConfigs(mockItems, { sort: 'new' })[0].id).toBe('user2/sway-setup'); // 2026-10-12
+    const old = filterConfigs(mockItems, { sort: 'old' });
+    expect(old[old.length - 1].id).toBe('user2/sway-setup');
   });
 
-  it('filters by battery optimization flag', () => {
-    const res = filterConfigs(mockItems, { battery: true });
-    expect(res.length).toBe(2);
+  it('sorts by most popular (upstream stars)', () => {
+    expect(filterConfigs(mockItems, { sort: 'popular' }).map((r) => r.stars)).toEqual([9000, 500, 120]);
   });
 
-  it('sorts by lowest RAM', () => {
-    const res = filterConfigs(mockItems, { sort: 'ram' });
-    expect(res[0].specs.ramIdleMiB).toBe(180);
-    expect(res[2].specs.ramIdleMiB).toBe(450);
+  it('sorts by most approved, using stars to break ties', () => {
+    const tied = mockItems.map((m) => ({ ...m, votes: 0 }));
+    expect(filterConfigs(tied, { sort: 'votes' })[0].stars).toBe(9000);
   });
 
-  it('sorts by most recent update date', () => {
-    const res = filterConfigs(mockItems, { sort: 'recent' });
-    expect(res[0].id).toBe('user2/sway-setup'); // 2026-10-12
+  it('paginates 10 per page and clamps out-of-range pages', () => {
+    const many = Array.from({ length: 23 }, (_, i) => i);
+    expect(PAGE_SIZE).toBe(10);
+    expect(paginate(many, 1).items).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(paginate(many, 3)).toEqual({ items: [20, 21, 22], page: 3, pageCount: 3 });
+    expect(paginate(many, 99).page).toBe(3);
+    expect(paginate([], 1)).toEqual({ items: [], page: 1, pageCount: 1 });
   });
 
   it('serializes and parses URL query string round-trip with style', () => {
@@ -104,9 +109,8 @@ describe('Catalogue Filter & Query State Logic', () => {
       wm: 'hyprland',
       style: 'cyberpunk',
       distro: 'arch',
-      ramMax: 300,
-      battery: true,
-      sort: 'ram' as const,
+      sort: 'popular' as const,
+      page: 2,
     };
 
     const qs = filtersToQueryString(state);
@@ -115,8 +119,7 @@ describe('Catalogue Filter & Query State Logic', () => {
     expect(parsed.wm).toBe('hyprland');
     expect(parsed.style).toBe('cyberpunk');
     expect(parsed.distro).toBe('arch');
-    expect(parsed.ramMax).toBe(300);
-    expect(parsed.battery).toBe(true);
-    expect(parsed.sort).toBe('ram');
+    expect(parsed.sort).toBe('popular');
+    expect(parsed.page).toBe(2);
   });
 });

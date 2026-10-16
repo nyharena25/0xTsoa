@@ -30,5 +30,18 @@
     "repo": "https://github.com/hyprwm/hyprlock",
     "ref": "0332e40b8e56404f11cd79f859f208a4b9de8714",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install hyprlock (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed hyprlock",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.9.6"
 }

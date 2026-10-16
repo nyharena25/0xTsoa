@@ -39,5 +39,18 @@
     "repo": "https://github.com/themix-project/themix-gui",
     "ref": "fc15a4fd2db46c40937fa7d93f37ada123f722b8",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install themix-full-git (AUR)",
+        "commands": [
+          "yay -S themix-full-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "1.15.1"
 }

@@ -31,5 +31,18 @@
     "repo": "https://github.com/baskerville/bspwm",
     "ref": "e11eff4cb3333216ad03c815609a4ed79e08929c",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install bspwm (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed bspwm",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "0.9.12"
 }

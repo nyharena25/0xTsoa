@@ -31,5 +31,25 @@
     "repo": "https://github.com/LGFae/swww",
     "ref": "8a3b1bf9f3363683097aa5467d3058cc2278da1a",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/LGFae/swww",
+          "cd swww"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Build and install with Cargo",
+        "commands": [
+          "cargo install --path ."
+        ]
+      }
+    ]
+  },
+  "version": "v0.11.2"
 }

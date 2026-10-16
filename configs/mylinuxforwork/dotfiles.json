@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Full Hyprland desktop with a settings app, wallpaper-driven colors and guided installer.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-10-12",
+  "updatedAt": "2026-10-16",
   "distros": [
     "arch",
     "fedora",
@@ -32,7 +32,27 @@
   ],
   "source": {
     "repo": "https://github.com/mylinuxforwork/dotfiles",
-    "ref": "aeadb93395fa2e64a575161696fed978f0588f12",
+    "ref": "c8b8ef199da4ab0d75706101f534426d2c5703e1",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/mylinuxforwork/dotfiles",
+          "cd dotfiles"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Run the upstream installer",
+        "commands": [
+          "bash setup"
+        ]
+      }
+    ]
+  },
+  "version": "2.16.1"
 }

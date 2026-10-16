@@ -38,5 +38,18 @@
     "repo": "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme",
     "ref": "bf539287ef5dc18529424a02cccee76175920a6f",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install papirus-icon-theme (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed papirus-icon-theme",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "20260801"
 }

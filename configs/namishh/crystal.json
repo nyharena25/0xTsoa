@@ -39,5 +39,24 @@
     "repo": "https://github.com/namishh/crystal",
     "ref": "b43ab1d0fd4e9f686739a20cdc130c5cfc9d0159",
     "readme": ".github/README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/namishh/crystal",
+          "cd crystal"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/namishh/crystal#readme"
+        ]
+      }
+    ]
   }
 }

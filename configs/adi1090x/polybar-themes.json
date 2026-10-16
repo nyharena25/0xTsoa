@@ -38,5 +38,24 @@
     "repo": "https://github.com/adi1090x/polybar-themes",
     "ref": "7735b96afd72f835c7c909599265fb431886d7c0",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/adi1090x/polybar-themes",
+          "cd polybar-themes"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Run the upstream installer",
+        "commands": [
+          "bash setup.sh"
+        ]
+      }
+    ]
   }
 }

@@ -38,5 +38,16 @@
     "repo": "https://github.com/0PandaDEV/awesome-unixporn",
     "ref": "f35639dee902020dd6309cd167956f144c7db8d6",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Read online or clone for offline browsing",
+        "commands": [
+          "git clone --depth 1 https://github.com/0PandaDEV/awesome-unixporn"
+        ]
+      }
+    ]
   }
 }

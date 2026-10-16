@@ -9,7 +9,6 @@
   "summary": "Complete automated Arch Linux Hyprland installation and configuration setup.",
   "description": "Battle-tested, turnkey Hyprland desktop environment tailored for Arch Linux and its derivatives. Bundles pre-configured Waybar layouts, Rofi styling, SDDM theme integration, automatic monitor hotplugging, and gaming/GPU driver optimizations.",
   "license": "GPL-3.0-only",
-  "version": "v2.2.8",
   "updatedAt": "2026-10-14",
   "distros": [
     "arch",
@@ -33,9 +32,7 @@
     "notifications": "Dunst / Swaync",
     "theme": "Nordic Dark Frost",
     "shell": "zsh",
-    "editor": "Neovim / VSCode",
-    "ramIdleMiB": 350,
-    "batteryProfile": true
+    "editor": "Neovim / VSCode"
   },
   "screenshots": [
     {

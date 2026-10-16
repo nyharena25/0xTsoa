@@ -39,5 +39,24 @@
     "repo": "https://github.com/Keyitdev/sddm-astronaut-theme",
     "ref": "abb3163c724935af888ba5ea9ac0c4f22afd8048",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install sddm-astronaut-theme (AUR)",
+        "commands": [
+          "yay -S sddm-astronaut-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable on next boot",
+        "commands": [
+          "# Set it as your display manager / greeter, then reboot"
+        ]
+      }
+    ]
   }
 }

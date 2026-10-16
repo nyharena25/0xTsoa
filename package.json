@@ -18,6 +18,7 @@
     "validate": "tsx scripts/validate-configs.ts",
     "schema": "tsx scripts/generate-schema.ts",
     "votes": "tsx scripts/fetch-votes.ts",
+    "sync-upstream": "tsx scripts/sync-upstream.ts",
     "vote-issues": "tsx scripts/ensure-vote-issues.ts",
     "ingest": "tsx scripts/ingest-configs.ts",
     "issue-to-config": "tsx scripts/issue-to-config.ts"

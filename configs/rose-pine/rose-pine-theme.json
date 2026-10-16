@@ -38,5 +38,24 @@
     "repo": "https://github.com/rose-pine/rose-pine-theme",
     "ref": "781bb844aae0bcec2763b23a4c7d3cc6aede780c",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/rose-pine/rose-pine-theme",
+          "cd rose-pine-theme"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/rose-pine/rose-pine-theme#readme"
+        ]
+      }
+    ]
   }
 }

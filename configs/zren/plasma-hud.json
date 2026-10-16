@@ -38,5 +38,32 @@
     "repo": "https://github.com/Zren/plasma-hud",
     "ref": "2c5456af63a15926a7b20ae03ff868d3c2b4de3d",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/Zren/plasma-hud",
+          "cd plasma-hud"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/Zren/plasma-hud#readme"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# Right-click the panel > Add Widgets, then add it"
+        ]
+      }
+    ]
+  },
+  "version": "22.01.0"
 }

@@ -54,7 +54,7 @@
 - **GitHub Issues Sign-Off Engine**: Each config gets one `vote` issue; community approval is the 👍 ❤️ 🎉 reactions on it, compiled into static snapshots at build time.
 - **Live Markdown Synchronizer**: Automatically fetches and rewrites author dotfile READMEs, translating volatile GitHub user attachment URLs into permanent assets and resolving relative path hierarchies.
 - **Neo-Brutalist « Paper & Ink » Design**: High-contrast, accessibility-focused UI built with *Space Grotesk*, *Geist*, *JetBrains Mono*, and authentic *BD Brick* glyph typography.
-- **Full Offline Client Search**: Instant sub-millisecond local filtering across window managers, idle memory footprints (<300 MiB), battery profiles, and aesthetic styles powered by Pagefind.
+- **Full Offline Client Search**: Instant sub-millisecond local filtering across desktop parts, window managers, distros and aesthetic styles, plus Pagefind full-text search.
 
 ---
 
@@ -69,7 +69,7 @@
 <br/><br/>
 
 ### 02. Spotlight Interactive Showcase
-<p>Integrated desktop preview cycle, hardware resource telemetry (RAM idle / Fastfetch), and one-click shell install.</p>
+<p>Integrated desktop preview cycle, pinned upstream README, and one-click shell install.</p>
 <img src=".github/assets/02-spotlight-showcase.png" alt="0xTsoa Spotlight Showcase" width="100%" />
 
 <br/><br/>
@@ -173,8 +173,8 @@ npm run build
 
 We welcome community submissions of well-crafted, minimal, and reproducible Linux configurations.
 
-- **Fast Track (No Git Required)**: Open a [New Configuration Issue Form](https://github.com/nyharena25/0xtsoa/issues/new?template=new-config.yml). Our automated GitHub Actions bot validates your submission and opens a Pull Request automatically.
-- **Direct Pull Request**: Create `configs/<your-username>/<your-setup>.json` following [`schema/config.schema.json`](./schema/config.schema.json).
+- **Fast Track (No Git Required)**: Open a [New Project Issue Form](https://github.com/nyharena25/0xtsoa/issues/new?template=new-config.yml). Our automated GitHub Actions bot validates your submission and opens a Pull Request automatically.
+- **Direct Pull Request**: Create `configs/<your-username>/<your-project>.json` following [`schema/config.schema.json`](./schema/config.schema.json). Set the desktop part (`category`) and at least one `install.steps` entry.
 
 Read our full [Contribution Guidelines](./CONTRIBUTING.md) for field definitions, screenshot criteria, and security rules.
 

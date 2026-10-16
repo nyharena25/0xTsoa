@@ -213,8 +213,6 @@ export const configSchema = z
         theme: z.string().max(80).optional(),
         shell: z.string().max(60).optional(),
         editor: z.string().max(60).optional(),
-        ramIdleMiB: z.number().int().positive().max(16384).optional(),
-        batteryProfile: z.boolean().optional(),
       })
       .default({}),
     screenshots: z
@@ -246,22 +244,25 @@ export const configSchema = z
             shell: z.enum(['sh', 'bash']).default('bash'),
           })
           .optional(),
+        // "02. Installation & Deployment" on the detail page: at least the `deps` step is mandatory.
         steps: z
           .array(
             z.object({
-              id: z.enum(['deps', 'dotfiles', 'reload']),
+              id: z.enum(['deps', 'dotfiles', 'reload']).meta({
+                description: 'deps = install packages / clone, dotfiles = deploy config or theme, reload = apply or restart',
+              }),
               title: z.string().min(3).max(80),
               commands: z.array(command).min(1).max(30),
             }),
           )
+          .min(1, 'Provide at least one install step (deps), shown under "02. Installation & Deployment"')
           .max(3)
-          .default([]),
+          .refine((steps) => new Set(steps.map((s) => s.id)).size === steps.length, { message: 'Each step id may appear only once' }),
         packages: z
           .array(z.object({ type: z.enum(['tar.gz', 'zip', 'deb', 'rpm', 'aur', 'nix', 'flatpak']), url: https }))
           .max(6)
           .default([]),
-      })
-      .default({ steps: [], packages: [] }),
+      }),
     keybindings: z
       .array(z.object({ keys: z.string().max(40), action: z.string().max(80), effect: z.string().max(120).optional() }))
       .max(30)

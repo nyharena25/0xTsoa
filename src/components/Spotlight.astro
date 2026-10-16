@@ -56,7 +56,6 @@ const serializedSetups = configs.map((c, idx) => {
     wm: `${wmLabel} (${c.data.displayServer})`,
     bar: c.data.specs.bar || 'Waybar',
     theme: c.data.specs.theme || 'Paper Monochrome',
-    ram: c.data.specs.ramIdleMiB ? `~${c.data.specs.ramIdleMiB} MiB idle` : 'Not measured',
     cmd: installCmd,
     votesCount: votes,
     votesFormatted: `${votes.toLocaleString()} sign-offs`,
@@ -235,13 +234,6 @@ const defaultSetup = serializedSetups[0];
               {defaultSetup?.theme}
             </span>
           </div>
-
-          <div class="grid grid-cols-12 gap-1 py-0.5 border-t border-zinc-200/80 pt-2">
-            <span class="col-span-5 text-zinc-500 font-medium">{t('spotlight.ram')}</span>
-            <span class="col-span-7 font-bold text-zinc-900 text-right" id="spec-ram">
-              {defaultSetup?.ram}
-            </span>
-          </div>
         </div>
 
         <!-- 1-Line Deployment Command Card -->
@@ -414,9 +406,6 @@ const defaultSetup = serializedSetups[0];
 
     const theme = document.getElementById('spec-theme');
     if (theme) theme.textContent = s.theme;
-
-    const ram = document.getElementById('spec-ram');
-    if (ram) ram.textContent = s.ram;
 
     const cmd = document.getElementById('spotlight-cmd');
     if (cmd) cmd.textContent = s.cmd;

@@ -29,5 +29,16 @@
     "repo": "https://github.com/fosslife/awesome-ricing",
     "ref": "efc5f9ea276aa129e4f64f1b9b3bddaec4b82a1c",
     "readme": "readme.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Read online or clone for offline browsing",
+        "commands": [
+          "git clone --depth 1 https://github.com/fosslife/awesome-ricing"
+        ]
+      }
+    ]
   }
 }

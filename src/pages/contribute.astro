@@ -4,6 +4,7 @@ import CopyButton from '../components/CopyButton.astro';
 import BdBrickLogo from '../components/BdBrickLogo.astro';
 import { useTranslations } from '../lib/i18n';
 import { NEW_CONFIG_ISSUE_URL, REPO_URL, ALLOWED_IMAGE_HOSTS } from '../../site.config';
+import { CATEGORIES } from '../lib/schema';
 // Single source for the example: validated against the schema in tests/schema.test.ts
 import exampleJsonSnippet from '../../schema/example.config.json?raw';
 
@@ -87,7 +88,7 @@ const t = useTranslations(locale);
           </p>
 
           <div class="bg-zinc-50 border border-zinc-200/60 rounded-lg p-3.5 font-mono text-xs text-zinc-600 leading-relaxed">
-            Our automated GitHub Action analyzes your ticket, computes the SHA-256 hash of your install scripts, and opens the Pull Request with automated CI validation.
+            Pick the desktop part, paste your install commands (dependencies, deploy, reload) and screenshots. Our GitHub Action builds the JSON, computes the SHA-256 of any install script, and opens the Pull Request with CI validation.
           </div>
         </div>
 
@@ -127,6 +128,18 @@ const t = useTranslations(locale);
           <span class="font-mono font-bold text-zinc-900 shrink-0">3.</span>
           <div>
             <strong class="font-semibold text-zinc-900">Pinned README reference:</strong> The <code>source.ref</code> property must be a fixed tag or commit for deterministic builds and historical preservation.
+          </div>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="font-mono font-bold text-zinc-900 shrink-0">4.</span>
+          <div>
+            <strong class="font-semibold text-zinc-900">Installation is required:</strong> <code>install.steps</code> needs at least a <code>deps</code> step (packages or clone); <code>dotfiles</code> and <code>reload</code> are optional. They render as "02. Installation &amp; Deployment".
+          </div>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="font-mono font-bold text-zinc-900 shrink-0">5.</span>
+          <div>
+            <strong class="font-semibold text-zinc-900">Desktop part &amp; tags:</strong> set <code>category</code> to one of <code class="font-mono text-xs bg-zinc-100 px-1 py-0.5 rounded">{CATEGORIES.join(', ')}</code>. Tags name components and features, never the WM, distro or theme style (those are filters already).
           </div>
         </li>
       </ul>

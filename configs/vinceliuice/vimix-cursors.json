@@ -33,5 +33,17 @@
     "repo": "https://github.com/vinceliuice/Vimix-cursors",
     "ref": "9bc292f40904e0a33780eda5c5d92eb9a1154e9c",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install vimix-cursors (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed vimix-cursors",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

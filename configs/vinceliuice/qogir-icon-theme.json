@@ -37,5 +37,17 @@
     "repo": "https://github.com/vinceliuice/Qogir-icon-theme",
     "ref": "c633057ba0d27a504b3255144071c9691ed0264a",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install qogir-icon-theme (AUR)",
+        "commands": [
+          "yay -S qogir-icon-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

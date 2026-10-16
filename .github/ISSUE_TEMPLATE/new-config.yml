@@ -1,5 +1,5 @@
-name: 🐧 Submit a Linux Desktop Configuration
-description: Add your setup (dotfiles, theme, install script) to the 0xTsoa registry. No code or Git required.
+name: 🐧 Submit a Linux Desktop Project
+description: Add dotfiles, a theme, a bar, a launcher or any other desktop part to the 0xTsoa registry. No code or Git required.
 title: "[Config]: "
 labels: ["new-config"]
 body:
@@ -11,7 +11,7 @@ body:
 
         **How it works:** once you submit this form, our bot converts it into a validated JSON spec and **opens a Pull Request for you**. Your GitHub account is automatically credited as the author.
 
-        > 💡 **Before you start:** have a pinned commit SHA or tag, plus at least one screenshot hosted on `raw.githubusercontent.com`, `github.com/user-attachments`, `user-images.githubusercontent.com` or `i.imgur.com`.
+        > 💡 **Before you start:** have a pinned commit SHA or tag, at least one screenshot on an allowed host (`raw.githubusercontent.com`, `github.com/user-attachments`, `user-images.githubusercontent.com`, `i.imgur.com`, `i.redd.it`, `codeberg.org`, `gitlab.com`), and the commands needed to install it: they become the **02. Installation & Deployment** section of your page.
 
   - type: markdown
     attributes:
@@ -20,7 +20,7 @@ body:
   - type: input
     id: name
     attributes:
-      label: Configuration Name
+      label: Project Name
       description: A clear, memorable name (3–80 characters).
       placeholder: Hyprland Paper Minimal
     validations:
@@ -64,10 +64,36 @@ body:
       value: "### 🖥️ Environment"
 
   - type: dropdown
+    id: category
+    attributes:
+      label: Desktop Part
+      description: Which part of the desktop does this project cover? It drives the catalogue filter.
+      options:
+        - Dotfiles & full rices
+        - WM & compositors
+        - Bars & panels
+        - Widgets & shells
+        - Launchers & menus
+        - Notifications
+        - Docks
+        - Icon themes
+        - Cursor themes
+        - GTK & shell themes
+        - Color schemes & generators
+        - Login & greeters
+        - Lock screens
+        - Boot (GRUB / Plymouth)
+        - DE extensions
+        - Tools & utilities
+        - Lists & guides
+    validations:
+      required: true
+
+  - type: dropdown
     id: wm
     attributes:
       label: Window Manager
-      description: Your window manager, compositor or desktop environment.
+      description: The window manager, compositor or desktop environment it targets. Use "Any WM / DE" for generic tools and themes.
       options:
         - Hyprland
         - Sway
@@ -88,6 +114,30 @@ body:
         - Xfce
         - Cinnamon
         - COSMIC
+        - Any WM / DE
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: theme_style
+    attributes:
+      label: Theme Style
+      description: Dominant palette or look. Pick "Other" if none fits.
+      options:
+        - Minimalist
+        - Cyberpunk
+        - Nord
+        - Gruvbox
+        - Dracula
+        - Tokyo Night
+        - Catppuccin
+        - Solarized
+        - Monochrome
+        - Rosé Pine
+        - Material
+        - macOS-like
+        - Wallpaper-based
         - Other
     validations:
       required: true
@@ -129,8 +179,8 @@ body:
     id: tags
     attributes:
       label: Tags
-      description: Up to 10 keywords, separated by commas or spaces (lowercase, digits, hyphens).
-      placeholder: battery-tuned, waybar, monochrome
+      description: Up to 10 keywords, separated by commas or spaces (lowercase, digits, hyphens). Name the components you use (`waybar`, `rofi`, `quickshell`…); don't repeat the WM, distro or theme style, they are already filters.
+      placeholder: waybar, rofi, auto-install
 
   - type: markdown
     attributes:
@@ -141,7 +191,7 @@ body:
     attributes:
       label: Screenshots URLs
       description: |
-        Direct `https://` image links, one per line (1–8). Allowed hosts: `raw.githubusercontent.com`, `github.com/user-attachments`, `user-images.githubusercontent.com`, `i.imgur.com`.
+        Direct `https://` image links, one per line (1–8). Allowed hosts: `raw.githubusercontent.com`, `github.com/user-attachments`, `user-images.githubusercontent.com`, `i.imgur.com`, `i.redd.it`, `codeberg.org`, `gitlab.com`.
         Clean 1080p / 1440p captures of your desktop, bar or fastfetch work best.
       placeholder: |
         https://raw.githubusercontent.com/your-user/dots/v1.0.0/preview.png
@@ -170,6 +220,42 @@ body:
       placeholder: v1.0.0
     validations:
       required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        #### 02. Installation & Deployment
+        One shell command per line. Lines starting with `#` are shown as comments. At least the **Dependencies** step is required.
+
+  - type: textarea
+    id: install_deps
+    attributes:
+      label: "Install: Dependencies"
+      description: Required. Install packages or clone the repository.
+      render: bash
+      placeholder: |
+        sudo pacman -S --needed hyprland waybar kitty rofi-wayland
+        git clone --depth 1 https://github.com/your-user/dotfiles ~/dotfiles
+    validations:
+      required: true
+
+  - type: textarea
+    id: install_dotfiles
+    attributes:
+      label: "Install: Deploy"
+      description: Optional. Copy configs, run the installer or apply the theme.
+      render: bash
+      placeholder: |
+        cd ~/dotfiles
+        ./install.sh
+
+  - type: textarea
+    id: install_reload
+    attributes:
+      label: "Install: Reload"
+      description: Optional. Apply or restart (reload the compositor, regenerate GRUB, enable the extension…).
+      render: bash
+      placeholder: hyprctl reload
 
   - type: input
     id: script_url
@@ -220,21 +306,6 @@ body:
       description: Theme or color palette name.
       placeholder: Paper & Ink Monochrome
 
-  - type: input
-    id: ram_idle
-    attributes:
-      label: Idle RAM
-      description: Memory usage at idle, in MiB (numbers only).
-      placeholder: "280"
-
-  - type: dropdown
-    id: battery_profile
-    attributes:
-      label: Battery Profile
-      description: Is your setup tuned for battery life?
-      options:
-        - "No"
-        - "Yes (tlp / auto-cpufreq / power-profiles-daemon)"
 
   - type: checkboxes
     id: checklist
@@ -242,6 +313,8 @@ body:
       label: Submission Checklist
       options:
         - label: My Git ref is a commit SHA or a tag, not a branch.
+          required: true
+        - label: My install commands work on a clean system for at least one listed distribution.
           required: true
         - label: My screenshots are hosted on an allowed host.
           required: true

@@ -30,5 +30,18 @@
     "repo": "https://github.com/jirutka/swaylock-effects",
     "ref": "496059a8565c2d5eed672c2e5bc5e1edd14b3de8",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install swaylock-effects (AUR)",
+        "commands": [
+          "yay -S swaylock-effects  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v1.7.0.0"
 }

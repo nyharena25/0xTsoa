@@ -37,5 +37,18 @@
     "repo": "https://github.com/MolassesLover/Nordzy-icon",
     "ref": "829c47bda534d3c9f3c7d46c73a6fe9d946eca41",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install nordzy-icon-theme (AUR)",
+        "commands": [
+          "yay -S nordzy-icon-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "1.8.7"
 }

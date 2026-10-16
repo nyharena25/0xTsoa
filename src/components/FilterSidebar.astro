@@ -8,8 +8,6 @@ interface FacetCounts {
   wms: Record<string, number>;
   styles: Record<string, number>;
   distros: Record<string, number>;
-  ramUnder300: number;
-  battery: number;
 }
 
 interface Props {
@@ -162,55 +160,6 @@ const topDistros = Object.entries(counts.distros)
           </li>
         ))}
       </ul>
-    </div>
-
-    <!-- Section 4: Hardware & Autonomy -->
-    <div class="pt-4 border-t border-zinc-100 mb-4">
-      <div class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
-        <span>{t('catalogue.hardwareSection')}</span>
-        <span class="text-[11px] text-zinc-400 font-normal">(2)</span>
-      </div>
-      <ul class="space-y-2 font-mono text-xs">
-        <li>
-          <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
-            <div class="flex items-center gap-2.5">
-              <input
-                type="checkbox"
-                name="ramMax"
-                value="300"
-                class="filter-checkbox w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
-              />
-              <span class="text-zinc-800 group-hover:text-zinc-950 font-medium">{t('catalogue.ramFilter')}</span>
-            </div>
-            <span class="text-zinc-400 font-normal">({counts.ramUnder300})</span>
-          </label>
-        </li>
-        <li>
-          <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
-            <div class="flex items-center gap-2.5">
-              <input
-                type="checkbox"
-                name="battery"
-                value="true"
-                class="filter-checkbox w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
-              />
-              <span class="text-zinc-800 group-hover:text-zinc-950 font-medium">{t('catalogue.batteryFilter')}</span>
-            </div>
-            <span class="text-zinc-400 font-normal">({counts.battery})</span>
-          </label>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Clean Advice Box -->
-    <div class="bg-zinc-900 text-zinc-100 p-3.5 rounded-lg font-mono text-xs shadow-xs">
-      <div class="font-bold flex items-center gap-1.5 mb-1 text-[11px] text-zinc-300">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
-        <span>{t('catalogue.batteryTipTitle')}</span>
-      </div>
-      <p class="text-[11px] text-zinc-400 leading-relaxed">
-        {t('catalogue.batteryTipText')}
-      </p>
     </div>
   </div>
 

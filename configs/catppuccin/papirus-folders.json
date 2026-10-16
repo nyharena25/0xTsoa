@@ -38,5 +38,17 @@
     "repo": "https://github.com/catppuccin/papirus-folders",
     "ref": "f83671d17ea67e335b34f8028a7e6d78bca735d7",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install papirus-folders-catppuccin-git (AUR)",
+        "commands": [
+          "yay -S papirus-folders-catppuccin-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

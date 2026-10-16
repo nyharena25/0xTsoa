@@ -31,5 +31,18 @@
     "repo": "https://github.com/JakeStanger/ironbar",
     "ref": "149c0d0d7e26366d066b14878a8e85cf1ee32f42",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install ironbar (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed ironbar",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.19.1"
 }

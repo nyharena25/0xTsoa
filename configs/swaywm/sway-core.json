@@ -9,7 +9,7 @@
   "summary": "Drop-in replacement for the i3 window manager designed specifically for Wayland.",
   "description": "Sway provides a rock-solid, standards-compliant tiling Wayland environment. It works seamlessly with existing i3 configurations while offering tearing-free rendering, fractional scaling, and ultra-low CPU footprint.",
   "license": "MIT",
-  "version": "v1.10.0",
+  "version": "1.12",
   "updatedAt": "2026-10-13",
   "distros": [
     "arch",
@@ -34,9 +34,7 @@
     "notifications": "Mako",
     "theme": "Sway Charcoal Minimal",
     "shell": "bash",
-    "editor": "Vim",
-    "ramIdleMiB": 180,
-    "batteryProfile": true
+    "editor": "Vim"
   },
   "screenshots": [
     {

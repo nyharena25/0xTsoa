@@ -38,5 +38,16 @@
     "repo": "https://github.com/zemmsoares/awesome-rices",
     "ref": "04825ade79944a6022b6f84a309f4c506d56f4c9",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Read online or clone for offline browsing",
+        "commands": [
+          "git clone --depth 1 https://github.com/zemmsoares/awesome-rices"
+        ]
+      }
+    ]
   }
 }

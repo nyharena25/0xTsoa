@@ -9,7 +9,6 @@
   "summary": "Legendary BSPWM environment with 18 distinct themes, live switcher and custom Polybar.",
   "description": "One of the most comprehensive and refined BSPWM environments in the Linux customization world. Featuring 18 handcrafted color themes (Gruvbox, Nord, Dracula, Cyberpunk, Monochrome, Tokyo Night), dynamically generated Polybars, custom Rofi applets, Dunst notification themes, and instant keybindings.",
   "license": "MIT",
-  "version": "v4.0.0",
   "updatedAt": "2026-10-11",
   "distros": [
     "arch",
@@ -35,9 +34,7 @@
     "notifications": "Dunst",
     "theme": "Gruvbox Retro & Modern",
     "shell": "zsh",
-    "editor": "Neovim",
-    "ramIdleMiB": 210,
-    "batteryProfile": false
+    "editor": "Neovim"
   },
   "screenshots": [
     {

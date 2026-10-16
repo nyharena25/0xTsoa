@@ -31,5 +31,18 @@
     "repo": "https://codeberg.org/explosion-mental/wallust",
     "ref": "a09480bc85d27556381eabfb73f18baa2235c25f",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install wallust (AUR)",
+        "commands": [
+          "yay -S wallust  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "3.5.2"
 }

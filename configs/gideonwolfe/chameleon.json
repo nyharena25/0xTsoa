@@ -34,5 +34,25 @@
     "repo": "https://github.com/GideonWolfe/Chameleon",
     "ref": "125687cc842758329d95940f1cd7557a006d1d79",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/GideonWolfe/Chameleon",
+          "cd Chameleon"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Build and install with make",
+        "commands": [
+          "make",
+          "sudo make install"
+        ]
+      }
+    ]
   }
 }

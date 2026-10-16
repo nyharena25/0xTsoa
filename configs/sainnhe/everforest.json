@@ -38,5 +38,24 @@
     "repo": "https://github.com/sainnhe/everforest",
     "ref": "85a86eb62409e3ec88713bff3d1b9d7374e112e4",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Add the plugin (lazy.nvim)",
+        "commands": [
+          "# lua: { \"sainnhe/everforest\", lazy = false, priority = 1000 }"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Activate the colorscheme",
+        "commands": [
+          "nvim +\"colorscheme everforest\""
+        ]
+      }
+    ]
+  },
+  "version": "v0.3.0"
 }

@@ -20,8 +20,7 @@
   "displayServer": "wayland",
   "tags": [
     "hyprland",
-    "arch",
-    "battery-tuned"
+    "arch"
   ],
   "specs": {
     "bar": "Waybar",
@@ -30,9 +29,7 @@
     "notifications": "Dunst",
     "theme": "Paper Monochrome",
     "shell": "zsh",
-    "editor": "Neovim",
-    "ramIdleMiB": 280,
-    "batteryProfile": true
+    "editor": "Neovim"
   },
   "screenshots": [
     {

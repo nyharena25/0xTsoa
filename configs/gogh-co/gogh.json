@@ -38,5 +38,24 @@
     "repo": "https://github.com/Gogh-Co/Gogh",
     "ref": "2fbe9bbf3715173fc6f477d4992b66f11afca2b1",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install curl",
+        "commands": [
+          "sudo pacman -S --needed curl"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Run the interactive scheme picker",
+        "commands": [
+          "bash -c \"$(curl -sLo- https://git.io/vQgMr)\""
+        ]
+      }
+    ]
+  },
+  "version": "v1250"
 }

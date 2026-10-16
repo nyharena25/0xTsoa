@@ -38,5 +38,25 @@
     "repo": "https://github.com/rharish101/ReGreet",
     "ref": "290e6f8d65b7034c5b63bc950a20bcf8277ebe5f",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install greetd-regreet (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed greetd-regreet",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable on next boot",
+        "commands": [
+          "# Set it as your display manager / greeter, then reboot"
+        ]
+      }
+    ]
+  },
+  "version": "0.5.0"
 }

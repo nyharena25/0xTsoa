@@ -35,5 +35,26 @@
     "repo": "https://github.com/anametologin/krohnkite",
     "ref": "f5865562955c45fddb9f4c6ae7e657140d670a95",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install kwin-scripts-krohnkite-git (AUR)",
+        "commands": [
+          "yay -S kwin-scripts-krohnkite-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# System Settings > Window Management > KWin Scripts / Desktop Effects: enable it",
+          "qdbus org.kde.KWin /KWin reconfigure"
+        ]
+      }
+    ]
+  },
+  "version": "0.9.9.2"
 }

@@ -38,5 +38,24 @@
     "repo": "https://github.com/flickowoa/dotfiles",
     "ref": "4e23f15a78fecdc3b3c71fcca2b650eab0599f88",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/flickowoa/dotfiles",
+          "cd dotfiles"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/flickowoa/dotfiles#readme"
+        ]
+      }
+    ]
   }
 }

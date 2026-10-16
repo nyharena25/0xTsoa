@@ -31,5 +31,24 @@
     "repo": "https://github.com/Aylur/dotfiles",
     "ref": "35e29f2b29d23a15f377baa0df7c84ad0f962b0f",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/Aylur/dotfiles",
+          "cd dotfiles"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/Aylur/dotfiles#readme"
+        ]
+      }
+    ]
   }
 }

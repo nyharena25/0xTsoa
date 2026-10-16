@@ -38,5 +38,25 @@
     "repo": "https://github.com/catppuccin/sddm",
     "ref": "28699090372cce33c12a923cf8fc297a9cae2cd4",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install catppuccin-sddm-theme-mocha (AUR)",
+        "commands": [
+          "yay -S catppuccin-sddm-theme-mocha  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable on next boot",
+        "commands": [
+          "# Set it as your display manager / greeter, then reboot"
+        ]
+      }
+    ]
+  },
+  "version": "v1.1.2"
 }

@@ -40,5 +40,18 @@
     "repo": "https://github.com/vinceliuice/WhiteSur-gtk-theme",
     "ref": "d5782652d412137e26fb8ff55b55a5572e4c6995",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install whitesur-gtk-theme (AUR)",
+        "commands": [
+          "yay -S whitesur-gtk-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "2024.09.02"
 }

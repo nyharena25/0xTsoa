@@ -38,5 +38,18 @@
     "repo": "https://github.com/bikass/kora",
     "ref": "ba1e9e279aa5b3f6674ec6b17534ea05032de580",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install kora-icon-theme (AUR)",
+        "commands": [
+          "yay -S kora-icon-theme  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v2.0.6"
 }

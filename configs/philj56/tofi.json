@@ -38,5 +38,18 @@
     "repo": "https://github.com/philj56/tofi",
     "ref": "1eb6137572ab6c257ab6ab851d5d742167c18120",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install tofi (AUR)",
+        "commands": [
+          "yay -S tofi  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.9.1"
 }

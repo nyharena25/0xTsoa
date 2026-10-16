@@ -29,5 +29,32 @@
     "repo": "https://github.com/AdisonCavani/distro-grub-themes",
     "ref": "6e9e018abf38c0b3ed2bff1912ecf30a94e0c917",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/AdisonCavani/distro-grub-themes",
+          "cd distro-grub-themes"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/AdisonCavani/distro-grub-themes#readme"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Regenerate the boot configuration",
+        "commands": [
+          "sudo grub-mkconfig -o /boot/grub/grub.cfg"
+        ]
+      }
+    ]
+  },
+  "version": "v3.2"
 }

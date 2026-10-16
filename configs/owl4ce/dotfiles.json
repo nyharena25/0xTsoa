@@ -32,5 +32,23 @@
     "repo": "https://github.com/owl4ce/dotfiles",
     "ref": "c5c33b46ef90131fff88c2b9b954cab27e0b0972",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone with submodules",
+        "commands": [
+          "git clone --depth 1 --recurse-submodules https://github.com/owl4ce/dotfiles ~/owl4ce-dots"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Copy the configs into $HOME",
+        "commands": [
+          "cp -r ~/owl4ce-dots/{.config,.local,.themes,.Xresources,.gtkrc-2.0} ~/  # back up first"
+        ]
+      }
+    ]
   }
 }

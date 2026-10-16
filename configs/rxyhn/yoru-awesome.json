@@ -9,7 +9,6 @@
   "summary": "Clean, dark and minimalist AwesomeWM desktop with custom Lua widgets and Tokyo Night palette.",
   "description": "A celebrated masterpiece of AwesomeWM configuration featuring bespoke Lua-driven status bars, music player controls, battery status meters, and silky window tiling. Built around the Tokyo Night color scheme for maximum nighttime comfort and clarity.",
   "license": "GPL-3.0-only",
-  "version": "v1.0.0",
   "updatedAt": "2026-10-09",
   "distros": [
     "arch",
@@ -33,9 +32,7 @@
     "notifications": "Naughty (Lua native)",
     "theme": "Tokyo Night Dark",
     "shell": "zsh",
-    "editor": "Neovim",
-    "ramIdleMiB": 230,
-    "batteryProfile": true
+    "editor": "Neovim"
   },
   "screenshots": [
     {

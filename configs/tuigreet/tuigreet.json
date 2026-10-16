@@ -30,5 +30,25 @@
     "repo": "https://github.com/tuigreet/tuigreet",
     "ref": "2109f4e381d1e6541a52b6093670c0d517185ecb",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install greetd-tuigreet (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed greetd-tuigreet",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable on next boot",
+        "commands": [
+          "# Set it as your display manager / greeter, then reboot"
+        ]
+      }
+    ]
+  },
+  "version": "0.11.1"
 }

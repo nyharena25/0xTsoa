@@ -30,5 +30,18 @@
     "repo": "https://github.com/SuperCuber/dotter",
     "ref": "7dec24fea4f6516a014f1a3ea51491e23d9005d4",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install dotter-rs-bin (AUR)",
+        "commands": [
+          "yay -S dotter-rs-bin  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.13.5"
 }

@@ -30,5 +30,18 @@
     "repo": "https://github.com/twpayne/chezmoi",
     "ref": "40dcf243fbdda2b8dc912aa02f7ddb2219b96f6b",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install chezmoi (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed chezmoi",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v2.73.1"
 }

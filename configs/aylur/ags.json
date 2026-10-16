@@ -31,5 +31,18 @@
     "repo": "https://github.com/Aylur/ags",
     "ref": "bbee2f18939f1ec7ff720e717cf305e73635628f",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install aylurs-gtk-shell (AUR)",
+        "commands": [
+          "yay -S aylurs-gtk-shell  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v3.1.2"
 }

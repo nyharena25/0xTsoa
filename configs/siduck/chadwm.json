@@ -31,5 +31,31 @@
     "repo": "https://github.com/siduck/chadwm",
     "ref": "7991ac8d33878b716e7e7cabf58b47503864f622",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone chadwm",
+        "commands": [
+          "git clone --depth 1 https://github.com/siduck/chadwm ~/.config/chadwm"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Build and install dwm",
+        "commands": [
+          "cd ~/.config/chadwm/chadwm",
+          "sudo make install"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Start it from your xinitrc",
+        "commands": [
+          "# ~/.xinitrc: exec ~/.config/chadwm/scripts/run.sh"
+        ]
+      }
+    ]
   }
 }

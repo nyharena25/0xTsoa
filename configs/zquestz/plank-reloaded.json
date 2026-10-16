@@ -38,5 +38,18 @@
     "repo": "https://github.com/zquestz/plank-reloaded",
     "ref": "5d26e5a0a28e2f52b06cfb8d550c33bc762aa08e",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install plank-reloaded (AUR)",
+        "commands": [
+          "yay -S plank-reloaded  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "0.11.177"
 }

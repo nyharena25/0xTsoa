@@ -34,5 +34,18 @@
     "repo": "https://github.com/cerebroapp/cerebro",
     "ref": "62830502cd287d69c08c6da7a07d875710425615",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install cerebro (AUR)",
+        "commands": [
+          "yay -S cerebro  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v0.11.0"
 }

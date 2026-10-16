@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { getVotesForConfig } from '../lib/votes';
+import { getStarsForConfig } from '../lib/stats';
 import type { CatalogueItem } from '../lib/filters';
 
 export const GET: APIRoute = async () => {
@@ -30,14 +31,13 @@ export const GET: APIRoute = async () => {
         launcher: data.specs.launcher,
         theme: data.specs.theme,
         shell: data.specs.shell,
-        ramIdleMiB: data.specs.ramIdleMiB,
-        batteryProfile: data.specs.batteryProfile,
       },
       thumbUrl: primaryShot?.url || '',
       thumbAlt: primaryShot?.alt || data.name,
       version: data.version,
       updatedAt: data.updatedAt,
       votes,
+      stars: getStarsForConfig(entry.id),
     };
   });
 

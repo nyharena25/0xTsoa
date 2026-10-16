@@ -29,5 +29,18 @@
     "repo": "https://github.com/numixproject/numix-icon-theme-circle",
     "ref": "6d4a4aad60994e688ab9dc8f021cb4ec86e9e532",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install numix-circle-icon-theme-git (AUR)",
+        "commands": [
+          "yay -S numix-circle-icon-theme-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "26.02.21"
 }

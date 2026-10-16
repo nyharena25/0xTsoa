@@ -35,5 +35,31 @@
     "repo": "https://github.com/nix-community/stylix",
     "ref": "2856c4c6a845b9bec98828ef197abe176e4806bb",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Add Stylix to your flake",
+        "commands": [
+          "# flake.nix inputs: stylix.url = \"github:nix-community/stylix\";",
+          "# modules: stylix.nixosModules.stylix"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Set a wallpaper and base16 scheme",
+        "commands": [
+          "# configuration.nix: stylix.enable = true; stylix.image = ./wallpaper.png;"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Rebuild the system",
+        "commands": [
+          "sudo nixos-rebuild switch --flake ."
+        ]
+      }
+    ]
   }
 }

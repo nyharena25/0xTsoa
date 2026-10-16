@@ -31,5 +31,18 @@
     "repo": "https://github.com/labwc/labwc",
     "ref": "6ab9d3fe464b31eed25fe2126d6b0dfb6cd0bff4",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install labwc (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed labwc",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "0.20.2"
 }

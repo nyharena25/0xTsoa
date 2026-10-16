@@ -38,5 +38,18 @@
     "repo": "https://github.com/ful1e5/apple_cursor",
     "ref": "fe044a42b4e9cea16ea762d2ed9004f6d7b35543",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install apple_cursor (AUR)",
+        "commands": [
+          "yay -S apple_cursor  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v2.0.1"
 }

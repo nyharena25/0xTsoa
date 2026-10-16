@@ -38,5 +38,18 @@
     "repo": "https://github.com/Cairo-Dock/cairo-dock-core",
     "ref": "6304cf5db4fa24c9b918266de67158706a3c5a5b",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install cairo-dock (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed cairo-dock",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "3.6.2"
 }

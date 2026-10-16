@@ -30,5 +30,24 @@
     "repo": "https://github.com/jeffshee/gnome-ext-hanabi",
     "ref": "c18dd7666606f893e5caf4a96066975530761dc8",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install gnome-shell-extension-hanabi-git (AUR)",
+        "commands": [
+          "yay -S gnome-shell-extension-hanabi-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# Log out and back in, then enable it in Extension Manager or: gnome-extensions enable <uuid>"
+        ]
+      }
+    ]
   }
 }

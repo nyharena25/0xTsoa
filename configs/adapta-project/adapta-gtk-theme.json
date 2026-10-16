@@ -39,5 +39,18 @@
     "repo": "https://github.com/adapta-project/adapta-gtk-theme",
     "ref": "51c02f689ccaa5a08bbe317d03c55b49dc4084c8",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install adapta-gtk-theme (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed adapta-gtk-theme",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "3.95.0.11"
 }

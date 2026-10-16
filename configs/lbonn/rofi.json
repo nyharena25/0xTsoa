@@ -38,5 +38,26 @@
     "repo": "https://github.com/lbonn/rofi",
     "ref": "9b0363ca542ff0d63e46093eb33bfd0053933b96",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/lbonn/rofi",
+          "cd rofi"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Build and install with Meson",
+        "commands": [
+          "meson setup build",
+          "ninja -C build",
+          "sudo ninja -C build install"
+        ]
+      }
+    ]
   }
 }

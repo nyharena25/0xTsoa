@@ -30,5 +30,18 @@
     "repo": "https://github.com/phuhl/linux_notification_center",
     "ref": "6c3de4644b4c6cd027f2c0a9fb73f203327efd94",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install deadd-notification-center (AUR)",
+        "commands": [
+          "yay -S deadd-notification-center  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "2.1.1"
 }

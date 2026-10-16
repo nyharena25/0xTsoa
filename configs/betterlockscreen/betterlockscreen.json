@@ -31,5 +31,18 @@
     "repo": "https://github.com/betterlockscreen/betterlockscreen",
     "ref": "bdfc4faf7142aa1d555528ab1a9a103be95a3f80",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install betterlockscreen (AUR)",
+        "commands": [
+          "yay -S betterlockscreen  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v4.4.0"
 }

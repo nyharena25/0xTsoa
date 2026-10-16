@@ -5,10 +5,12 @@ import { withBase } from '../../site.config';
 interface Props {
   configId: string;
   name: string;
+  /** Sections actually rendered on the page, already numbered (e.g. "03. Screenshot Gallery"). */
+  sections: { id: string; title: string }[];
   locale?: string;
 }
 
-const { configId, name } = Astro.props;
+const { configId, name, sections } = Astro.props;
 
 const votes = getVotesForConfig(configId);
 const discussionUrl = getDiscussionUrlForConfig(configId);
@@ -52,21 +54,9 @@ const cataloguePath = withBase('/catalogue/');
 
     <!-- Quick anchor jump pills -->
     <div class="flex items-center gap-1.5 overflow-x-auto pt-1 pb-0.5 font-mono text-xs whitespace-nowrap scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
-      <a href="#overview" class="tag-pill">
-        Overview
-      </a>
-      <a href="#installation" class="tag-pill">
-        Install
-      </a>
-      <a href="#screenshots" class="tag-pill">
-        Screenshots
-      </a>
-      <a href="#readme" class="tag-pill">
-        README.md
-      </a>
-      <a href="#keybindings" class="tag-pill">
-        Keybindings
-      </a>
+      {sections.map((s) => (
+        <a href={`#${s.id}`} class="tag-pill">{s.title}</a>
+      ))}
     </div>
   </div>
 </div>

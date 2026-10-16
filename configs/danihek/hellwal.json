@@ -30,5 +30,18 @@
     "repo": "https://github.com/danihek/hellwal",
     "ref": "ccd87f113080f11279e9d89a1fc3a097a8475899",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install hellwal (AUR)",
+        "commands": [
+          "yay -S hellwal  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "1.0.8"
 }

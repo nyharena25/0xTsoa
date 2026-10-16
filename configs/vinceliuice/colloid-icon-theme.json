@@ -37,5 +37,17 @@
     "repo": "https://github.com/vinceliuice/Colloid-icon-theme",
     "ref": "ceac6608ecd0e40025cbc2ebbd32bf0e0f4ebc6a",
     "readme": "README.md"
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install colloid-icon-theme-git (AUR)",
+        "commands": [
+          "yay -S colloid-icon-theme-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
   }
 }

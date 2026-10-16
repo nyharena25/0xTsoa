@@ -37,5 +37,32 @@
     "repo": "https://github.com/catppuccin/grub",
     "ref": "0a37ab19f654e77129b409fed371891c01ffd0b9",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the theme",
+        "commands": [
+          "git clone --depth 1 https://github.com/catppuccin/grub && cd grub"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Copy a flavor and point GRUB at it",
+        "commands": [
+          "sudo cp -r src/catppuccin-mocha-grub-theme /usr/share/grub/themes/",
+          "# /etc/default/grub: GRUB_THEME=\"/usr/share/grub/themes/catppuccin-mocha-grub-theme/theme.txt\""
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Regenerate the GRUB config",
+        "commands": [
+          "sudo grub-mkconfig -o /boot/grub/grub.cfg"
+        ]
+      }
+    ]
+  },
+  "version": "v1.0.0"
 }

@@ -30,5 +30,18 @@
     "repo": "https://github.com/yadm-dev/yadm",
     "ref": "bbb58e6625de5d934fd49b4b81c1981e137e3057",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install yadm (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed yadm",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "3.5.0"
 }

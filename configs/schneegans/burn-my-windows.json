@@ -31,5 +31,25 @@
     "repo": "https://github.com/Schneegans/Burn-My-Windows",
     "ref": "041c587e8294464a8e6fe8c55d6f5db95a8cda3a",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install gnome-shell-extension-burn-my-windows (AUR)",
+        "commands": [
+          "yay -S gnome-shell-extension-burn-my-windows  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# Log out and back in, then enable it in Extension Manager or: gnome-extensions enable <uuid>"
+        ]
+      }
+    ]
+  },
+  "version": "v49"
 }

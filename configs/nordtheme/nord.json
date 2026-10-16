@@ -29,5 +29,25 @@
     "repo": "https://github.com/nordtheme/nord",
     "ref": "1cef71605416a222e57225b544540ce0fcec18d4",
     "readme": "readme.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone the repository",
+        "commands": [
+          "git clone --depth 1 https://github.com/nordtheme/nord",
+          "cd nord"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Follow the upstream README",
+        "commands": [
+          "xdg-open https://github.com/nordtheme/nord#readme"
+        ]
+      }
+    ]
+  },
+  "version": "v0.2.0"
 }

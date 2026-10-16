@@ -38,5 +38,25 @@
     "repo": "https://github.com/paperwm/PaperWM",
     "ref": "2d460db8365b2dee235dde15103161e67df83247",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install gnome-shell-extension-paperwm-git (AUR)",
+        "commands": [
+          "yay -S gnome-shell-extension-paperwm-git  # AUR",
+          "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "reload",
+        "title": "Enable it",
+        "commands": [
+          "# Log out and back in, then enable it in Extension Manager or: gnome-extensions enable <uuid>"
+        ]
+      }
+    ]
+  },
+  "version": "v51.0.0"
 }

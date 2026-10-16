@@ -39,5 +39,18 @@
     "repo": "https://github.com/nana-4/materia-theme",
     "ref": "d7f59a37ef51f893c28b55dc344146e04b2cd52c",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install materia-gtk-theme (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed materia-gtk-theme",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "v20210322"
 }

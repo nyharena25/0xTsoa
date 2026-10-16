@@ -31,8 +31,6 @@ const configs = [
         theme: 'Catppuccin Mocha / Dynamic',
         shell: 'zsh + Starship',
         editor: 'Neovim',
-        ramIdleMiB: 420,
-        batteryProfile: true,
       },
       screenshots: [
         {
@@ -117,8 +115,6 @@ const configs = [
         theme: 'Dynamic Material Colors',
         shell: 'fish + Starship',
         editor: 'Neovim',
-        ramIdleMiB: 380,
-        batteryProfile: true,
       },
       screenshots: [
         {
@@ -216,8 +212,6 @@ const configs = [
         theme: 'Nordic Dark Frost',
         shell: 'zsh',
         editor: 'Neovim / VSCode',
-        ramIdleMiB: 350,
-        batteryProfile: true,
       },
       screenshots: [
         {
@@ -301,8 +295,6 @@ const configs = [
         theme: 'Gruvbox Retro & Modern',
         shell: 'zsh',
         editor: 'Neovim',
-        ramIdleMiB: 210,
-        batteryProfile: false,
       },
       screenshots: [
         {
@@ -385,8 +377,6 @@ const configs = [
         theme: 'Tokyo Night Dark',
         shell: 'zsh',
         editor: 'Neovim',
-        ramIdleMiB: 230,
-        batteryProfile: true,
       },
       screenshots: [
         {
@@ -470,8 +460,6 @@ const configs = [
         theme: 'Pastel & Monochrome Clean',
         shell: 'zsh',
         editor: 'Neovim',
-        ramIdleMiB: 190,
-        batteryProfile: true,
       },
       screenshots: [
         {
@@ -547,8 +535,6 @@ const configs = [
         theme: 'Clean Monochrome Ribbon',
         shell: 'fish / bash',
         editor: 'Neovim / Helix',
-        ramIdleMiB: 240,
-        batteryProfile: true,
       },
       screenshots: [
         {
@@ -632,8 +618,6 @@ const configs = [
         theme: 'Hyprland Cyan & Charcoal',
         shell: 'zsh',
         editor: 'Neovim',
-        ramIdleMiB: 290,
-        batteryProfile: false,
       },
       screenshots: [
         {
@@ -716,8 +700,6 @@ const configs = [
         theme: 'Sway Charcoal Minimal',
         shell: 'bash',
         editor: 'Vim',
-        ramIdleMiB: 180,
-        batteryProfile: true,
       },
       screenshots: [
         {
@@ -800,8 +782,6 @@ const configs = [
         theme: 'Classic Engineering Monochrome',
         shell: 'bash',
         editor: 'Vim',
-        ramIdleMiB: 120,
-        batteryProfile: true,
       },
       screenshots: [
         {
@@ -884,8 +864,6 @@ const configs = [
         theme: 'Catppuccin Mocha Pastel',
         shell: 'fish',
         editor: 'Neovim',
-        ramIdleMiB: 310,
-        batteryProfile: true,
       },
       screenshots: [
         {
@@ -965,8 +943,6 @@ const configs = [
         theme: 'Nordic Dark Polar Frost',
         shell: 'bash',
         editor: 'VSCode / Neovim',
-        ramIdleMiB: 540,
-        batteryProfile: true,
       },
       screenshots: [
         {

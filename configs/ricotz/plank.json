@@ -29,5 +29,18 @@
     "repo": "https://github.com/ricotz/plank",
     "ref": "396b87108a798912baa06db3e7bfe9862189c39b",
     "readme": "README.md"
-  }
+  },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Install plank (Arch repos)",
+        "commands": [
+          "sudo pacman -S --needed plank",
+          "# Other distros: see the upstream README"
+        ]
+      }
+    ]
+  },
+  "version": "0.11.89"
 }
