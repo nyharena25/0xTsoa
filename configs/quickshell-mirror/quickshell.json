@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "QtQuick toolkit for building bars, widgets and whole desktop shells in QML.",
   "license": "LGPL-3.0-only",
-  "updatedAt": "2026-10-08",
+  "updatedAt": "2026-10-17",
   "distros": [
     "any"
   ],
@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/quickshell-mirror/quickshell",
-    "ref": "4f508be500dea6e5732cc3d50382a0048b17e7b1",
+    "ref": "2b4501a282689792b62e94f3fb30d8f512324fe6",
     "readme": "README.md"
   },
   "install": {
