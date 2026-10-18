@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Python application launcher with extensions and themes.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-10-13",
+  "updatedAt": "2026-10-18",
   "distros": [
     "any"
   ],
@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/Ulauncher/Ulauncher",
-    "ref": "dc418b50f0961addd4af9aa3cdb827006413ffd2",
+    "ref": "78573a7b1901dd077f127b73708a0af4ae808e19",
     "readme": "README.md"
   },
   "install": {

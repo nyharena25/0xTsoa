@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "neofetch with pride flag color presets.",
   "license": "MIT",
-  "updatedAt": "2026-10-15",
+  "updatedAt": "2026-10-18",
   "distros": [
     "any"
   ],
@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/hykilpikonna/hyfetch",
-    "ref": "520f3799f1bba88ffe8e9e0da43eac08c7a2c3c7",
+    "ref": "b6288822eadcfe48ebae1aef504e69940e09401f",
     "readme": "README.md"
   },
   "install": {

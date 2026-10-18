@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Maintained fork of Plank with fixes and new docklets.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-10-17",
+  "updatedAt": "2026-10-18",
   "distros": [
     "any"
   ],
@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/zquestz/plank-reloaded",
-    "ref": "6e3ecfa06541ca1848f57d9b017d6e8907f36e92",
+    "ref": "619ff1c5e3b2efff3e72403b129078302ed71df0",
     "readme": "README.md"
   },
   "install": {
@@ -51,5 +51,5 @@
       }
     ]
   },
-  "version": "0.11.177"
+  "version": "0.11.178"
 }

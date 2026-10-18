@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Personal Hyprland setup by the author of AGS, built around a custom GTK shell.",
   "license": "NOASSERTION",
-  "updatedAt": "2026-08-04",
+  "updatedAt": "2026-10-18",
   "distros": [
     "any"
   ],
@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/Aylur/dotfiles",
-    "ref": "35e29f2b29d23a15f377baa0df7c84ad0f962b0f",
+    "ref": "b3a43b1229d747ec089b62b06303eb09cb01d389",
     "readme": "README.md"
   },
   "install": {

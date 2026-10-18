@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Manage dotfiles across multiple machines, with templates and secrets.",
   "license": "MIT",
-  "updatedAt": "2026-10-16",
+  "updatedAt": "2026-10-18",
   "distros": [
     "any"
   ],
@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/twpayne/chezmoi",
-    "ref": "40dcf243fbdda2b8dc912aa02f7ddb2219b96f6b",
+    "ref": "cd643211529b8e849d86f2a89b2eb3005adc3cfd",
     "readme": "README.md"
   },
   "install": {
@@ -43,5 +43,5 @@
       }
     ]
   },
-  "version": "v2.73.1"
+  "version": "v2.73.2"
 }

@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Windows 11 style snap layouts and tiling for GNOME.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-06-20",
+  "updatedAt": "2026-10-18",
   "distros": [
     "any"
   ],
@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/domferr/tilingshell",
-    "ref": "de30eb72d5436424929e78b0be612114ba073a68",
+    "ref": "5c3c052cf095d10ad3a468205c6b647d05bacba7",
     "readme": "README.md"
   },
   "install": {
@@ -58,5 +58,5 @@
       }
     ]
   },
-  "version": "17.3"
+  "version": "18.0"
 }
