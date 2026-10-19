@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Tiling window manager and Wayland compositor configured entirely in Python.",
   "license": "MIT",
-  "updatedAt": "2026-10-16",
+  "updatedAt": "2026-10-19",
   "distros": [
     "any"
   ],
@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/qtile/qtile",
-    "ref": "fcda60dd5b252421dbcc017764a726cb09fc7424",
+    "ref": "557e4645ee397420d77a35c3f85ecb43fc78a194",
     "readme": "README.md"
   },
   "install": {

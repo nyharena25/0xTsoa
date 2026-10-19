@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Flake-based NixOS and home-manager setup with Hyprland and generated colors.",
   "license": "MIT",
-  "updatedAt": "2026-10-18",
+  "updatedAt": "2026-10-19",
   "distros": [
     "nixos"
   ],
@@ -33,7 +33,7 @@
   ],
   "source": {
     "repo": "https://github.com/Misterio77/Foundry",
-    "ref": "40496d0a91483de728166e6201b0f4e01fef2a9d",
+    "ref": "fac70beeaebe970ecbea0b91bd0fe59f225741b3",
     "readme": "README.md"
   },
   "install": {

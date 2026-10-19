@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "GTK4 bar for wlroots compositors written in Rust, styled with CSS.",
   "license": "MIT",
-  "updatedAt": "2026-10-14",
+  "updatedAt": "2026-10-19",
   "distros": [
     "any"
   ],
@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/JakeStanger/ironbar",
-    "ref": "149c0d0d7e26366d066b14878a8e85cf1ee32f42",
+    "ref": "a778e96b687f72801ea6f52e832e569d0164ce5b",
     "readme": "README.md"
   },
   "install": {

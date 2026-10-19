@@ -10,7 +10,7 @@
   "description": "Niri reimagines desktop tiling by placing windows in an infinitely expanding horizontal ribbon. Windows never tile down into microscopic slivers. Built entirely in Rust with smooth animations, Waybar support, and touch gesture integration.",
   "license": "GPL-3.0-or-later",
   "version": "v26.04",
-  "updatedAt": "2026-10-16",
+  "updatedAt": "2026-10-19",
   "distros": [
     "arch",
     "fedora",
@@ -49,7 +49,7 @@
   ],
   "source": {
     "repo": "https://github.com/niri-wm/niri",
-    "ref": "45739bc072f9875a674d335ae724f10d3b35c665",
+    "ref": "36e91606b75d4793debfa151d9ffe7a010191cba",
     "readme": "README.md"
   },
   "install": {

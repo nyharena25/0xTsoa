@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "3D Wayland compositor with Compiz-style plugins such as wobbly windows and cube.",
   "license": "MIT",
-  "updatedAt": "2026-10-08",
+  "updatedAt": "2026-10-19",
   "distros": [
     "any"
   ],
@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/WayfireWM/wayfire",
-    "ref": "fdf8832e4263db54e2fef2abf30326e16877b8a2",
+    "ref": "988c20ab6938b0bfb08058c5971709a597aa411d",
     "readme": "README.md"
   },
   "install": {

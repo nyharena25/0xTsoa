@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "GTK3 panel for sway and Hyprland with a graphical config editor.",
   "license": "MIT",
-  "updatedAt": "2026-10-15",
+  "updatedAt": "2026-10-19",
   "distros": [
     "any"
   ],
@@ -37,7 +37,7 @@
   ],
   "source": {
     "repo": "https://github.com/nwg-piotr/nwg-panel",
-    "ref": "27ede8e0a4e4a8ddb19120a0b4cf18edecd7e81e",
+    "ref": "0abbbc5d6b1d9d6d8a3625bc630e28e0011e8f5c",
     "readme": "README.md"
   },
   "install": {

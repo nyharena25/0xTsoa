@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "KWin effect that rounds window corners and adds an outline.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-10-18",
+  "updatedAt": "2026-10-19",
   "distros": [
     "any"
   ],
@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/matinlotfali/KDE-Rounded-Corners",
-    "ref": "26a56c981f498481fb85a4bcb504165780383e96",
+    "ref": "66d7ce91a4f26062bba91bc7274ba85b6211391f",
     "readme": "README.md"
   },
   "install": {

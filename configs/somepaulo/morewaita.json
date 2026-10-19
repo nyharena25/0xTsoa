@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Expanded Adwaita-style icon set covering many third-party apps.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-10-12",
+  "updatedAt": "2026-10-19",
   "distros": [
     "any"
   ],
@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/somepaulo/MoreWaita",
-    "ref": "298968f878ce5f529321aecf586bf98061969e9b",
+    "ref": "ec99a2b6cbc7f68ec0e5ec01849e6a4b33028eb2",
     "readme": "README.md"
   },
   "install": {
