@@ -342,7 +342,7 @@ Join the 0xTsoa community to share rices, request configurations, ask troublesho
 - **Documentation Wiki**: [github.com/nyharena25/0xTsoa/wiki](https://github.com/nyharena25/0xTsoa/wiki)
 - **GitHub Discussions**: [github.com/nyharena25/0xTsoa/discussions](https://github.com/nyharena25/0xTsoa/discussions)
 - **Community Sign-Off Issues**: [Vote Issues (`label:vote`)](https://github.com/nyharena25/0xTsoa/issues?q=is%3Aissue+label%3Avote)
-- **Discord Server**: [Join our Discord (`DISCORD_INVITE_URL`)](DISCORD_INVITE_URL)
+
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/section-divider-dark.svg">
