@@ -21,7 +21,8 @@
     "sync-upstream": "tsx scripts/sync-upstream.ts",
     "vote-issues": "tsx scripts/ensure-vote-issues.ts",
     "ingest": "tsx scripts/ingest-configs.ts",
-    "issue-to-config": "tsx scripts/issue-to-config.ts"
+    "issue-to-config": "tsx scripts/issue-to-config.ts",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

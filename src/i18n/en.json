@@ -10,13 +10,15 @@
     "getStarted": "Get Started",
     "contribute": "Contribute",
     "manifesto": "Manifesto",
+    "about": "About",
+    "cookieSettings": "Cookie settings",
     "specification": "Specification",
     "github": "GitHub"
   },
   "hero": {
     "badge": "OPEN DOTFILES REGISTRY • WAYLAND & X11",
     "title": "REPRODUCIBLE LINUX DESKTOP CONFIGS & DOTFILES.",
-    "subtitle": "Browse peer-reviewed Hyprland, Niri, Sway, i3, and BSPWM setups for Arch Linux, NixOS, and Fedora. Inspect component specs, verify SHA-256 install scripts, and deploy from pinned Git commits."
+    "subtitle": "0xTsoa (pronounced ZeroTsoa) is an open-source registry of reproducible Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer. Browse peer-reviewed Hyprland, Niri, Sway, i3, and BSPWM setups for Arch Linux, NixOS, and Fedora. Inspect component specs, verify SHA-256 install scripts, and deploy from pinned Git commits."
   },
   "spotlight": {
     "title": "TOP 5 SPOTLIGHT",
@@ -120,5 +122,22 @@
     "method2Desc": "Fill out the structured GitHub Issue Form (desktop part, screenshots, install commands). The issue-to-config Action computes the script SHA-256 digest, validates the JSON entry, and opens a Pull Request.",
     "btnOpenIssue": "Open GitHub Issue Form ↗",
     "btnViewSchema": "View JSON Schema"
+  },
+  "about": {
+    "metaTitle": "About 0xTsoa (ZeroTsoa) & Creator Ny Harena RAVELOMANANTSOA",
+    "metaDescription": "0xTsoa (pronounced ZeroTsoa) is an open-source registry of reproducible Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer.",
+    "badge": "ENTITY & ORIGIN • ABOUT",
+    "title": "ABOUT 0xTsoa",
+    "canonicalIntro": "0xTsoa (pronounced ZeroTsoa) is an open-source registry of reproducible Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer.",
+    "privacyHeading": "05 // Analytics & Cookie Privacy",
+    "privacyNote": "0xTsoa uses Google Analytics 4 with Google Consent Mode v2 to measure aggregate visitor counts, active users, and engagement time. Analytics storage is denied by default until you explicitly accept, all advertising and personalization signals remain permanently denied, and no personal data, email addresses, or user IDs are ever sent. You can accept, decline, or update your preference at any time via the \"Cookie settings\" link in the footer."
+  },
+  "consent": {
+    "ariaLabel": "Cookie and analytics consent",
+    "title": "ANALYTICS CONSENT",
+    "message": "We use Google Analytics (Consent Mode v2) to measure anonymous visitor counts and engagement time. Ads signals are always disabled and no personal data is collected.",
+    "learnMore": "Privacy note",
+    "accept": "Accept",
+    "decline": "Decline"
   }
 }

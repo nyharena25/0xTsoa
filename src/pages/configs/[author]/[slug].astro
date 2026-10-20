@@ -150,11 +150,23 @@ const setupJsonLd = [
     url: canonicalPageUrl,
     codeRepository: data.source.repo,
     ...(data.version ? { version: data.version } : {}),
-    author: {
-      '@type': 'Person',
-      name: data.author.name,
-      url: `https://github.com/${data.author.github}`,
-    },
+    author:
+      data.author.github.toLowerCase() === 'nyharena25'
+        ? {
+            '@type': 'Person',
+            '@id': 'https://0xtsoa.vercel.app/#founder',
+            name: 'Ny Harena RAVELOMANANTSOA',
+            url: 'https://0xtsoa.vercel.app/about/',
+            sameAs: [
+              'https://github.com/nyharena25',
+              'https://www.linkedin.com/in/rnyharena-dev/',
+            ],
+          }
+        : {
+            '@type': 'Person',
+            name: data.author.name,
+            url: `https://github.com/${data.author.github}`,
+          },
     license: `https://spdx.org/licenses/${data.license}.html`,
     dateModified: data.updatedAt,
     image: resolvedShotUrl,

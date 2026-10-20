@@ -87,3 +87,5 @@ export const ALLOWED_IMAGE_HOSTS = [
 ] as const;
 
 export const NEW_CONFIG_ISSUE_URL = `${REPO_URL}/issues/new?template=new-config.yml`;
+
+export const GA_MEASUREMENT_ID = env.GA_MEASUREMENT_ID || 'G-Z0TVXR7C39';

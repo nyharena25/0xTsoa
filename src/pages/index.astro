@@ -6,27 +6,85 @@ import Manifesto from '../components/Manifesto.astro';
 import { getCollection } from 'astro:content';
 import { getTop5Configs } from '../lib/votes';
 import { useTranslations } from '../lib/i18n';
-import { withBase } from '../../site.config';
+import { withBase, REPO_URL } from '../../site.config';
 
 const t = useTranslations('en');
 const allConfigs = await getCollection('configs');
 const spotlightConfigs = getTop5Configs(allConfigs);
 
 const siteRootUrl = new URL(withBase('/'), Astro.site).href;
+const logoUrl = new URL(withBase('/logo.png'), Astro.site).href;
 const searchTargetUrl = `${new URL(withBase('/catalogue/'), Astro.site).href}?q={search_term_string}`;
 
 const homeJsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: '0xTsoa',
-  alternateName: 'ZeroTsoa',
-  url: siteRootUrl,
-  description: t('site.description'),
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: searchTargetUrl,
-    'query-input': 'required name=search_term_string',
-  },
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': 'https://0xtsoa.vercel.app/#founder',
+      name: 'Ny Harena RAVELOMANANTSOA',
+      givenName: 'Ny Harena',
+      familyName: 'RAVELOMANANTSOA',
+      alternateName: 'nyharena25',
+      nationality: {
+        '@type': 'Country',
+        name: 'Madagascar',
+      },
+      jobTitle: 'Software Developer',
+      url: 'https://0xtsoa.vercel.app/about/',
+      sameAs: [
+        'https://github.com/nyharena25',
+        'https://www.linkedin.com/in/rnyharena-dev/',
+        // TODO: Add X, Mastodon, and dev.to profile URLs once created
+      ],
+    },
+    {
+      '@type': 'Organization',
+      '@id': 'https://0xtsoa.vercel.app/#org',
+      name: '0xTsoa',
+      alternateName: ['ZeroTsoa', '0x Tsoa', '0xtsoa'],
+      url: siteRootUrl,
+      logo: logoUrl,
+      description: t('site.description'),
+      founder: { '@id': 'https://0xtsoa.vercel.app/#founder' },
+      sameAs: [
+        REPO_URL,
+        // TODO: Add official 0xTsoa / creator profiles (X, Mastodon, dev.to) once created
+      ],
+    },
+    {
+      '@type': 'SoftwareApplication',
+      name: '0xTsoa',
+      alternateName: 'ZeroTsoa',
+      url: siteRootUrl,
+      description: t('site.description'),
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Linux',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+      license: 'https://spdx.org/licenses/MIT.html',
+      codeRepository: REPO_URL,
+      author: { '@id': 'https://0xtsoa.vercel.app/#founder' },
+      publisher: { '@id': 'https://0xtsoa.vercel.app/#org' },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://0xtsoa.vercel.app/#website',
+      name: '0xTsoa',
+      alternateName: 'ZeroTsoa',
+      url: siteRootUrl,
+      description: t('site.description'),
+      publisher: { '@id': 'https://0xtsoa.vercel.app/#org' },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: searchTargetUrl,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  ],
 };
 ---
 

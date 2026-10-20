@@ -11,6 +11,7 @@ const t = useTranslations('en');
 
 const homePath = withBase('/');
 const contributePath = withBase('/contribute/');
+const aboutPath = withBase('/about/');
 ---
 
 <footer class="w-full bg-white border-t border-zinc-200 mt-16">
@@ -25,12 +26,22 @@ const contributePath = withBase('/contribute/');
       <a href={`${homePath}#section-manifesto`} class="text-zinc-600 hover:text-zinc-900 transition-colors">
         {t('nav.manifesto')}
       </a>
+      <a href={aboutPath} class="text-zinc-600 hover:text-zinc-900 transition-colors">
+        {t('nav.about')}
+      </a>
       <a href={contributePath} class="text-zinc-600 hover:text-zinc-900 transition-colors">
         {t('nav.contribute')}
       </a>
       <a href={REPO_URL} target="_blank" rel="noopener noreferrer" class="text-zinc-600 hover:text-zinc-900 transition-colors">
         {t('nav.github')}
       </a>
+      <button
+        type="button"
+        id="btn-cookie-settings"
+        class="text-zinc-600 hover:text-zinc-900 transition-colors cursor-pointer bg-transparent border-0 p-0 font-mono text-xs"
+      >
+        {t('nav.cookieSettings')}
+      </button>
 
       <div class="flex items-center gap-2 ml-1">
         <div class="border border-zinc-200 bg-zinc-50 px-2 py-0.5 rounded text-[11px] text-zinc-600 font-medium">

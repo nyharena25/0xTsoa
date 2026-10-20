@@ -13,7 +13,7 @@
   </p>
 
   <p>
-    An open-source, zero-database community registry for reproducible Linux desktop environments, dotfiles, and window manager setups (Wayland and X11).
+    0xTsoa (pronounced ZeroTsoa) is an open-source registry of reproducible Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer.
   </p>
 
   <p>
@@ -62,7 +62,9 @@
 <a id="what-is-0xtsoa"></a>
 ## <picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/icons/info-dark.svg"><img src=".github/assets/icons/info.svg" width="20" height="20" align="top" alt="What is 0xTsoa icon"></picture> What is 0xTsoa
 
-**0xTsoa** (also known as **ZeroTsoa**) is an open-source, zero-database community registry for Linux desktop configurations. It indexes complete dotfile setups alongside individual desktop components: window managers, compositors, status bars, widget engines, application launchers, notification daemons, docks, icon and cursor packs, GTK and Qt themes, color scheme generators, display managers, lock screens, boot themes, desktop extensions, ricing utilities, and curated guides.
+0xTsoa (pronounced ZeroTsoa) is an open-source registry of reproducible Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer. It indexes complete dotfile setups alongside individual desktop components: window managers, compositors, status bars, widget engines, application launchers, notification daemons, docks, icon and cursor packs, GTK and Qt themes, color scheme generators, display managers, lock screens, boot themes, desktop extensions, ricing utilities, and curated guides.
+
+Created by **Ny Harena RAVELOMANANTSOA** ([GitHub](https://github.com/nyharena25) · [LinkedIn](https://www.linkedin.com/in/rnyharena-dev/)).
 
 Every entry is stored as a human-readable, schema-validated JSON file inside `configs/<author>/<slug>.json`. At build time, Astro compiles the registry into a static web application deployed to Vercel (`https://0xtsoa.vercel.app`) and GitHub Pages (`https://nyharena25.github.io/0xTsoa/`), complete with rewritten upstream README documentation, reproducible installation steps, community vote counts, and offline search indices.
 
