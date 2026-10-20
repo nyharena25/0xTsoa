@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Console greeter for greetd.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-10-11",
+  "updatedAt": "2026-10-20",
   "distros": [
     "any"
   ],
@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/tuigreet/tuigreet",
-    "ref": "2109f4e381d1e6541a52b6093670c0d517185ecb",
+    "ref": "5199ce58b6fe1ad0abd1e0f6a5daff13f5d61aeb",
     "readme": "README.md"
   },
   "install": {

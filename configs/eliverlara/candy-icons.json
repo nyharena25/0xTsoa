@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Vivid gradient icon theme, a match for neon setups.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-10-17",
+  "updatedAt": "2026-10-20",
   "distros": [
     "any"
   ],
@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/EliverLara/candy-icons",
-    "ref": "b06767992a46f4c3950e400b7ad55e1cb17c62b7",
+    "ref": "8d21022f3b77d6a3b44f9a4a1ed26d6a974c41f6",
     "readme": "README.md"
   },
   "install": {

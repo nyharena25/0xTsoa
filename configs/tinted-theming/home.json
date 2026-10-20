@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Home of the Base16 and Base24 schemes, templates and builders.",
   "license": "MIT",
-  "updatedAt": "2026-08-22",
+  "updatedAt": "2026-10-20",
   "distros": [
     "any"
   ],
@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/tinted-theming/home",
-    "ref": "38fdf7d4c74417ea86f1e354c628fc2d2aeb5d96",
+    "ref": "0134a6de9a3ffab7e2fcb588ab1d20a2dbda20da",
     "readme": "README.md"
   },
   "install": {
