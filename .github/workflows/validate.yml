@@ -4,13 +4,8 @@ permissions:
   contents: read
 
 on:
+  # Every PR runs validate: it is a required check on main, so it must always report.
   pull_request:
-    paths:
-      - 'configs/**'
-      - 'schema/**'
-      - 'src/**'
-      - 'scripts/**'
-      - 'package.json'
   push:
     branches:
       - main

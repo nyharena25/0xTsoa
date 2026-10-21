@@ -1,0 +1,27 @@
+name: Main Gate
+
+# main only receives final updates from dev. This job is a required check on main:
+# it fails any pull request whose source is not the dev branch of this repository.
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  from-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the dev branch of this repository as source
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.repository }}
+        run: |
+          if [ "$HEAD_REF" != "dev" ] || [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+            echo "::error::Pull requests into main must come from $BASE_REPO:dev (got $HEAD_REPO:$HEAD_REF). Retarget this PR to dev."
+            exit 1
+          fi
+          echo "Source is $BASE_REPO:dev ✓"
