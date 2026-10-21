@@ -1,6 +1,6 @@
 /**
  * Central site configuration.
- * Automatically adapts between Vercel (root deployment) and GitHub Pages (subpath /<repo>).
+ * Canonical production deployment lives on Vercel (https://0xtsoa.vercel.app at root path "").
  * Every value can be overridden through environment variables.
  */
 const env = (typeof process !== 'undefined' ? process.env : {}) as Record<string, string | undefined>;
@@ -13,40 +13,28 @@ export const REPO_OWNER = env.REPO_OWNER || ghOwnerPart || 'nyharena25';
 export const REPO_NAME = env.REPO_NAME || ghRepoPart || '0xTsoa';
 export const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
 
-// Deployment target detection
-const isVercel = Boolean(env.VERCEL);
-const isNetlify = Boolean(env.NETLIFY);
-const isCloudflare = Boolean(env.CF_PAGES);
-const isGitHubActions = Boolean(env.GITHUB_ACTIONS);
-
 /**
  * Base path resolution:
- * - When deployed on Vercel, Netlify, Cloudflare: root "" (served at https://0xtsoa.vercel.app/)
- * - When deployed in GitHub Actions without custom domain: `/${REPO_NAME}` (served at https://<owner>.github.io/<repo>/)
- * - In local dev (default): "" (served at http://localhost:4321/)
- * - Explicit override via BASE_PATH env var takes highest precedence.
+ * - Default: "" (root deployment on https://0xtsoa.vercel.app/ and local dev)
+ * - Explicit override via BASE_PATH env var takes precedence.
  */
 function resolveBasePath(): string {
   if (env.BASE_PATH !== undefined) {
     if (env.BASE_PATH === '/' || env.BASE_PATH === '') return '';
     return env.BASE_PATH.replace(/\/$/, '');
   }
-  if (isVercel || isNetlify || isCloudflare) {
-    return '';
-  }
-  if (isGitHubActions) {
-    return `/${REPO_NAME}`;
-  }
   return '';
 }
 
 export const BASE_PATH = resolveBasePath();
 
-/** Public site origin */
+/**
+ * Public site origin:
+ * - Default: https://0xtsoa.vercel.app regardless of CI environment
+ * - Explicit override via SITE_URL env var takes precedence.
+ */
 function resolveSiteUrl(): string {
   if (env.SITE_URL) return env.SITE_URL.replace(/\/$/, '');
-  // Not VERCEL_URL: it's the per-deployment hash URL, which would leak into canonical/sitemap.
-  if (isGitHubActions) return `https://${REPO_OWNER.toLowerCase()}.github.io`;
   return 'https://0xtsoa.vercel.app';
 }
 
@@ -57,9 +45,9 @@ export const SITE_URL = resolveSiteUrl();
  * Prevents double-slashes or protocol-relative URLs (`//`).
  *
  * Examples:
- *   withBase('/')                 -> '/' on Vercel, '/0xTsoa/' on GitHub Pages
- *   withBase('/catalogue/')       -> '/catalogue/' on Vercel, '/0xTsoa/catalogue/' on GitHub Pages
- *   withBase('screenshots/f.svg') -> '/screenshots/f.svg' on Vercel, '/0xTsoa/screenshots/f.svg' on GitHub Pages
+ *   withBase('/')                 -> '/' (or '<BASE_PATH>/' when BASE_PATH is set)
+ *   withBase('/catalogue/')       -> '/catalogue/'
+ *   withBase('screenshots/f.svg') -> '/screenshots/f.svg'
  */
 export function withBase(path: string = '/'): string {
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
@@ -70,7 +58,7 @@ export function withBase(path: string = '/'): string {
   return `${cleanBase}${cleanPath}`;
 }
 
-/** One GitHub issue per config, carrying this label, collects the votes (👍 ❤️ 🎉 = sign-off). */
+/** One GitHub issue per config, carrying this label, collects the votes (👍 = sign-off). */
 export const VOTE_LABEL = 'vote';
 export const voteIssueTitle = (id: string) => `[0xTsoa] ${id}`;
 
@@ -88,4 +76,4 @@ export const ALLOWED_IMAGE_HOSTS = [
 
 export const NEW_CONFIG_ISSUE_URL = `${REPO_URL}/issues/new?template=new-config.yml`;
 
-export const GA_MEASUREMENT_ID = env.GA_MEASUREMENT_ID || 'G-Z0TVXR7C39';
+export const GA_MEASUREMENT_ID = env.GA_MEASUREMENT_ID?.trim() || '';

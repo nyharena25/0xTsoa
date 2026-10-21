@@ -47,7 +47,8 @@
         "id": "deps",
         "title": "Clone HyDE",
         "commands": [
-          "git clone --depth 1 https://github.com/HyDE-Project/HyDE ~/HyDE"
+          "git clone --filter=blob:none https://github.com/HyDE-Project/HyDE ~/HyDE",
+          "git -C ~/HyDE checkout {{ref}}"
         ]
       },
       {

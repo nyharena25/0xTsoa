@@ -20,6 +20,22 @@ export interface CatalogueItem {
     theme?: string;
     shell?: string;
   };
+  source?: {
+    repo: string;
+    ref: string;
+  };
+  install?: {
+    steps: {
+      id: 'deps' | 'dotfiles' | 'reload';
+      title: string;
+      commands: string[];
+    }[];
+    script?: {
+      url: string;
+      sha256: string;
+      shell: 'sh' | 'bash';
+    };
+  };
   thumbUrl: string;
   thumbAlt: string;
   version?: string;
@@ -40,44 +56,63 @@ export function paginate<T>(items: T[], page = 1): { items: T[]; page: number; p
 }
 
 export interface FilterState {
-  category?: string;
-  wm?: string;
-  style?: string;
-  distro?: string;
+  category?: string | string[];
+  wm?: string | string[];
+  style?: string | string[];
+  distro?: string | string[];
   tag?: string;
   query?: string;
   favoritesOnly?: boolean;
+  favorites?: string[];
   sort?: SortKey;
   page?: number;
+}
+
+function normalizeFacetValues(val?: string | string[]): string[] {
+  if (!val) return [];
+  const list = Array.isArray(val) ? val : [val];
+  return list
+    .map((v) => v.trim())
+    .filter((v) => v.length > 0 && v.toLowerCase() !== 'all');
 }
 
 export function filterConfigs(items: CatalogueItem[], filters: FilterState): CatalogueItem[] {
   let result = items.slice();
 
-  if (filters.category && filters.category !== 'all') {
-    result = result.filter((item) => item.category === filters.category);
+  const categories = normalizeFacetValues(filters.category).map((c) => c.toLowerCase());
+  if (categories.length > 0) {
+    result = result.filter((item) => categories.includes(item.category.toLowerCase()));
   }
 
-  if (filters.wm && filters.wm !== 'all') {
-    result = result.filter((item) => item.wm.toLowerCase() === filters.wm?.toLowerCase());
+  const wms = normalizeFacetValues(filters.wm).map((w) => w.toLowerCase());
+  if (wms.length > 0) {
+    result = result.filter((item) => wms.includes(item.wm.toLowerCase()));
   }
 
-  if (filters.style && filters.style !== 'all') {
-    result = result.filter(
-      (item) => (item.themeStyle || '').toLowerCase() === filters.style?.toLowerCase(),
+  const styles = normalizeFacetValues(filters.style).map((s) => s.toLowerCase());
+  if (styles.length > 0) {
+    result = result.filter((item) =>
+      styles.includes((item.themeStyle || 'minimalist').toLowerCase()),
     );
   }
 
-  if (filters.distro && filters.distro !== 'all') {
+  const distros = normalizeFacetValues(filters.distro).map((d) => d.toLowerCase());
+  if (distros.length > 0) {
     result = result.filter(
-      (item) => item.distros.includes('any') || item.distros.map((d) => d.toLowerCase()).includes(filters.distro!.toLowerCase()),
+      (item) =>
+        item.distros.includes('any') ||
+        item.distros.some((d) => distros.includes(d.toLowerCase())),
     );
   }
-
 
   if (filters.tag) {
     const targetTag = filters.tag.toLowerCase().replace(/^#/, '');
-    result = result.filter((item) => item.tags.map((t) => t.toLowerCase()).includes(targetTag));
+    result = result.filter((item) => item.tags.some((t) => t.toLowerCase() === targetTag));
+  }
+
+  if (filters.favoritesOnly) {
+    const favSet = new Set(filters.favorites ?? []);
+    result = result.filter((item) => favSet.has(item.id));
   }
 
   if (filters.query && filters.query.trim().length > 0) {
@@ -89,12 +124,15 @@ export function filterConfigs(items: CatalogueItem[], filters: FilterState): Cat
         item.author.name.toLowerCase().includes(q) ||
         item.author.github.toLowerCase().includes(q) ||
         item.summary.toLowerCase().includes(q) ||
+        item.category.toLowerCase().includes(q) ||
         item.wm.toLowerCase().includes(q) ||
         (item.themeStyle && item.themeStyle.toLowerCase().includes(q)) ||
         item.tags.some((t) => t.toLowerCase().includes(q)) ||
         (item.specs.terminal && item.specs.terminal.toLowerCase().includes(q)) ||
         (item.specs.bar && item.specs.bar.toLowerCase().includes(q)) ||
-        (item.specs.theme && item.specs.theme.toLowerCase().includes(q)),
+        (item.specs.launcher && item.specs.launcher.toLowerCase().includes(q)) ||
+        (item.specs.theme && item.specs.theme.toLowerCase().includes(q)) ||
+        (item.specs.shell && item.specs.shell.toLowerCase().includes(q)),
     );
   }
 
@@ -108,28 +146,37 @@ export function filterConfigs(items: CatalogueItem[], filters: FilterState): Cat
   return result;
 }
 
+function parseFacetParam(searchParams: URLSearchParams, key: string): string | string[] | undefined {
+  const vals = searchParams
+    .getAll(key)
+    .map((v) => v.trim())
+    .filter(Boolean);
+  if (vals.length === 0) return undefined;
+  return vals.length === 1 ? vals[0] : vals;
+}
+
 export function parseQueryToFilters(searchParams: URLSearchParams): FilterState {
-  const category = searchParams.get('category') || undefined;
-  const wm = searchParams.get('wm') || undefined;
-  const style = searchParams.get('style') || undefined;
-  const distro = searchParams.get('distro') || undefined;
+  const category = parseFacetParam(searchParams, 'category');
+  const wm = parseFacetParam(searchParams, 'wm');
+  const style = parseFacetParam(searchParams, 'style');
+  const distro = parseFacetParam(searchParams, 'distro');
   const tag = searchParams.get('tag') || undefined;
   const query = searchParams.get('q') || undefined;
   const favoritesOnly = searchParams.get('fav') === 'true' ? true : undefined;
   const sortParam = searchParams.get('sort');
   const sort: SortKey = (SORT_KEYS as readonly string[]).includes(sortParam ?? '') ? (sortParam as SortKey) : 'votes';
   const pageParam = searchParams.get('p');
-  const page = pageParam ? Math.max(1, parseInt(pageParam, 10)) : 1;
+  const page = pageParam ? Math.max(1, parseInt(pageParam, 10) || 1) : 1;
 
   return { category, wm, style, distro, tag, query, favoritesOnly, sort, page };
 }
 
 export function filtersToQueryString(filters: FilterState): string {
   const p = new URLSearchParams();
-  if (filters.category && filters.category !== 'all') p.set('category', filters.category);
-  if (filters.wm && filters.wm !== 'all') p.set('wm', filters.wm);
-  if (filters.style && filters.style !== 'all') p.set('style', filters.style);
-  if (filters.distro && filters.distro !== 'all') p.set('distro', filters.distro);
+  for (const c of normalizeFacetValues(filters.category)) p.append('category', c);
+  for (const w of normalizeFacetValues(filters.wm)) p.append('wm', w);
+  for (const s of normalizeFacetValues(filters.style)) p.append('style', s);
+  for (const d of normalizeFacetValues(filters.distro)) p.append('distro', d);
   if (filters.tag) p.set('tag', filters.tag);
   if (filters.query) p.set('q', filters.query);
   if (filters.favoritesOnly) p.set('fav', 'true');

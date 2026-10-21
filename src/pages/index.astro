@@ -13,15 +13,19 @@ const allConfigs = await getCollection('configs');
 const spotlightConfigs = getTop5Configs(allConfigs);
 
 const siteRootUrl = new URL(withBase('/'), Astro.site).href;
+const aboutUrl = new URL(withBase('/about/'), Astro.site).href;
 const logoUrl = new URL(withBase('/logo.png'), Astro.site).href;
 const searchTargetUrl = `${new URL(withBase('/catalogue/'), Astro.site).href}?q={search_term_string}`;
+const founderId = `${siteRootUrl}#founder`;
+const orgId = `${siteRootUrl}#org`;
+const websiteId = `${siteRootUrl}#website`;
 
 const homeJsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
     {
       '@type': 'Person',
-      '@id': 'https://0xtsoa.vercel.app/#founder',
+      '@id': founderId,
       name: 'Ny Harena RAVELOMANANTSOA',
       givenName: 'Ny Harena',
       familyName: 'RAVELOMANANTSOA',
@@ -31,7 +35,7 @@ const homeJsonLd = {
         name: 'Madagascar',
       },
       jobTitle: 'Software Developer',
-      url: 'https://0xtsoa.vercel.app/about/',
+      url: aboutUrl,
       sameAs: [
         'https://github.com/nyharena25',
         'https://www.linkedin.com/in/rnyharena-dev/',
@@ -40,13 +44,13 @@ const homeJsonLd = {
     },
     {
       '@type': 'Organization',
-      '@id': 'https://0xtsoa.vercel.app/#org',
+      '@id': orgId,
       name: '0xTsoa',
       alternateName: ['ZeroTsoa', '0x Tsoa', '0xtsoa'],
       url: siteRootUrl,
       logo: logoUrl,
       description: t('site.description'),
-      founder: { '@id': 'https://0xtsoa.vercel.app/#founder' },
+      founder: { '@id': founderId },
       sameAs: [
         REPO_URL,
         // TODO: Add official 0xTsoa / creator profiles (X, Mastodon, dev.to) once created
@@ -67,17 +71,17 @@ const homeJsonLd = {
       },
       license: 'https://spdx.org/licenses/MIT.html',
       codeRepository: REPO_URL,
-      author: { '@id': 'https://0xtsoa.vercel.app/#founder' },
-      publisher: { '@id': 'https://0xtsoa.vercel.app/#org' },
+      author: { '@id': founderId },
+      publisher: { '@id': orgId },
     },
     {
       '@type': 'WebSite',
-      '@id': 'https://0xtsoa.vercel.app/#website',
+      '@id': websiteId,
       name: '0xTsoa',
       alternateName: 'ZeroTsoa',
       url: siteRootUrl,
       description: t('site.description'),
-      publisher: { '@id': 'https://0xtsoa.vercel.app/#org' },
+      publisher: { '@id': orgId },
       potentialAction: {
         '@type': 'SearchAction',
         target: searchTargetUrl,

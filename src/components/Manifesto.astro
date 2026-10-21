@@ -127,11 +127,26 @@ const t = useTranslations('en');
 </section>
 
 <script>
-  const track = document.getElementById('manifesto-track');
-  document.getElementById('manifesto-scroll-left')?.addEventListener('click', () => {
-    track?.scrollBy({ left: -340, behavior: 'smooth' });
-  });
-  document.getElementById('manifesto-scroll-right')?.addEventListener('click', () => {
-    track?.scrollBy({ left: 340, behavior: 'smooth' });
-  });
+  function setupManifestoScroll() {
+    const track = document.getElementById('manifesto-track');
+    const leftBtn = document.getElementById('manifesto-scroll-left');
+    const rightBtn = document.getElementById('manifesto-scroll-right');
+
+    if (leftBtn && !leftBtn.dataset.bound) {
+      leftBtn.dataset.bound = 'true';
+      leftBtn.addEventListener('click', () => {
+        track?.scrollBy({ left: -340, behavior: 'smooth' });
+      });
+    }
+
+    if (rightBtn && !rightBtn.dataset.bound) {
+      rightBtn.dataset.bound = 'true';
+      rightBtn.addEventListener('click', () => {
+        track?.scrollBy({ left: 340, behavior: 'smooth' });
+      });
+    }
+  }
+
+  setupManifestoScroll();
+  document.addEventListener('astro:page-load', setupManifestoScroll);
 </script>

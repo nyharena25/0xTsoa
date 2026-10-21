@@ -38,7 +38,8 @@
         "id": "deps",
         "title": "Clone chadwm",
         "commands": [
-          "git clone --depth 1 https://github.com/siduck/chadwm ~/.config/chadwm"
+          "git clone --filter=blob:none https://github.com/siduck/chadwm ~/.config/chadwm",
+          "git -C ~/.config/chadwm checkout {{ref}}"
         ]
       },
       {

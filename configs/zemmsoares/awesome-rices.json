@@ -45,7 +45,8 @@
         "id": "deps",
         "title": "Read online or clone for offline browsing",
         "commands": [
-          "git clone --depth 1 https://github.com/zemmsoares/awesome-rices"
+          "git clone --filter=blob:none https://github.com/zemmsoares/awesome-rices",
+          "git -C awesome-rices checkout {{ref}}"
         ]
       }
     ]

@@ -45,7 +45,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/adi1090x/polybar-themes",
+          "git clone --filter=blob:none https://github.com/adi1090x/polybar-themes",
+          "git -C polybar-themes checkout {{ref}}",
           "cd polybar-themes"
         ]
       },

@@ -59,7 +59,8 @@
         "id": "deps",
         "title": "Clone dotfiles repository",
         "commands": [
-          "git clone --depth=1 https://github.com/gh0stzk/dotfiles.git ~/.dotfiles"
+          "git clone --filter=blob:none https://github.com/gh0stzk/dotfiles.git ~/.dotfiles",
+          "git -C ~/.dotfiles checkout {{ref}}"
         ]
       },
       {

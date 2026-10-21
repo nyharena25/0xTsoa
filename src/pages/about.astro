@@ -18,11 +18,11 @@ const aboutJsonLd = {
   description: t('about.metaDescription'),
   url: aboutUrl,
   isPartOf: {
-    '@id': 'https://0xtsoa.vercel.app/#website',
+    '@id': `${siteRootUrl}#website`,
   },
   mainEntity: {
     '@type': 'Person',
-    '@id': 'https://0xtsoa.vercel.app/#founder',
+    '@id': `${siteRootUrl}#founder`,
     name: 'Ny Harena RAVELOMANANTSOA',
     givenName: 'Ny Harena',
     familyName: 'RAVELOMANANTSOA',
@@ -84,7 +84,7 @@ const aboutJsonLd = {
         </p>
 
         <p class="font-sans text-sm text-zinc-600 leading-relaxed">
-          Every setup in the registry is stored as a schema-validated JSON specification in Git (<code>configs/&lt;author&gt;/&lt;slug&gt;.json</code>), pinned to an immutable commit SHA or release tag, and paired with SHA-256 checksum verification for any external installation script.
+          Every setup in the registry is stored as a schema-validated JSON specification in Git (<code>configs/&lt;author&gt;/&lt;slug&gt;.json</code>), referencing an upstream commit SHA or version tag, with optional SHA-256 checksum verification when an external installation script is provided.
         </p>
       </section>
 

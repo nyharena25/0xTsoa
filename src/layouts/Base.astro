@@ -90,7 +90,6 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google-site-verification" content="teSYi3Oiia7lE7wcbzWwjfrd3Qm3kc_pdzAQbeYXb2M" />
-    <meta name="msvalidate.01" content="TODO_BING_VERIFICATION_CODE" />
     <meta name="author" content="Ny Harena RAVELOMANANTSOA" />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDesc} />
@@ -136,7 +135,7 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
       <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
 
-    {import.meta.env.PROD && (
+    {import.meta.env.PROD && Boolean(GA_MEASUREMENT_ID) && (
       <>
         <script
           is:inline
@@ -261,73 +260,53 @@ gtag('config', ${JSON.stringify(GA_MEASUREMENT_ID)});`}
         }
 
         // 2. Intercept internal navigation links: Delete title letter-by-letter before navigating
-        document.addEventListener('click', async (e) => {
-          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-          const targetLink = (e.target as HTMLElement)?.closest('a');
-          if (!targetLink) return;
+        if (!document.documentElement.dataset.navTransitionBound) {
+          document.documentElement.dataset.navTransitionBound = 'true';
+          document.addEventListener('click', async (e) => {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const targetLink = (e.target as HTMLElement)?.closest('a');
+            if (!targetLink) return;
 
-          const href = targetLink.getAttribute('href');
-          if (!href) return;
+            const href = targetLink.getAttribute('href');
+            if (!href) return;
 
-          // Ignore anchors, external links, downloads, new tabs, modifier keys
-          if (
-            href.startsWith('#') ||
-            href.startsWith('mailto:') ||
-            targetLink.getAttribute('target') === '_blank' ||
-            targetLink.hasAttribute('download') ||
-            e.ctrlKey || e.metaKey || e.shiftKey || e.altKey
-          ) {
-            return;
-          }
+            // Ignore anchors, external links, downloads, new tabs, modifier keys
+            if (
+              href.startsWith('#') ||
+              href.startsWith('mailto:') ||
+              targetLink.getAttribute('target') === '_blank' ||
+              targetLink.hasAttribute('download') ||
+              e.ctrlKey || e.metaKey || e.shiftKey || e.altKey
+            ) {
+              return;
+            }
 
-          try {
-            const url = new URL(href, window.location.href);
-            if (url.origin !== window.location.origin) return;
-            if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+            try {
+              const url = new URL(href, window.location.href);
+              if (url.origin !== window.location.origin) return;
+              if (url.pathname === window.location.pathname && url.search === window.location.search) return;
 
-            e.preventDefault();
-            const activeTitleEl = getTitleEl();
+              e.preventDefault();
+              const activeTitleEl = getTitleEl();
 
-            if (activeTitleEl) {
-              const lockedHeight = activeTitleEl.offsetHeight;
-              if (lockedHeight > 0) {
-                activeTitleEl.style.minHeight = `${lockedHeight}px`;
+              if (activeTitleEl) {
+                const lockedHeight = activeTitleEl.offsetHeight;
+                if (lockedHeight > 0) {
+                  activeTitleEl.style.minHeight = `${lockedHeight}px`;
+                }
+                const currentText = activeTitleEl.textContent || '';
+                // Delete letter-by-letter in reverse
+                for (let i = currentText.length; i >= 0; i--) {
+                  activeTitleEl.textContent = currentText.slice(0, i);
+                  await sleep(14);
+                }
               }
-              const currentText = activeTitleEl.textContent || '';
-              // Delete letter-by-letter in reverse
-              for (let i = currentText.length; i >= 0; i--) {
-                activeTitleEl.textContent = currentText.slice(0, i);
-                await sleep(14);
-              }
-            }
 
-            sessionStorage.setItem('0xtsoa_page_transition', 'true');
-            window.location.href = href;
-          } catch {}
-        });
-
-        // 3. Tab Switching: When returning to browser tab, delete & retype document.title
-        const originalDocTitle = document.title;
-        let isTabRetyping = false;
-        document.addEventListener('visibilitychange', async () => {
-          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-          if (document.visibilityState === 'visible' && !isTabRetyping) {
-            isTabRetyping = true;
-            const currentTitle = document.title;
-            // Delete backwards
-            for (let i = currentTitle.length; i >= 0; i--) {
-              document.title = currentTitle.slice(0, i);
-              await sleep(12);
-            }
-            await sleep(60);
-            // Retype forward
-            for (let i = 1; i <= originalDocTitle.length; i++) {
-              document.title = originalDocTitle.slice(0, i);
-              await sleep(18);
-            }
-            isTabRetyping = false;
-          }
-        });
+              sessionStorage.setItem('0xtsoa_page_transition', 'true');
+              window.location.href = href;
+            } catch {}
+          });
+        }
       }
 
       function setupCookieConsent() {

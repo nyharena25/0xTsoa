@@ -46,7 +46,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/namishh/crystal",
+          "git clone --filter=blob:none https://github.com/namishh/crystal",
+          "git -C crystal checkout {{ref}}",
           "cd crystal"
         ]
       },

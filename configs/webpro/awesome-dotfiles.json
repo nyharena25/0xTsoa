@@ -37,7 +37,8 @@
         "id": "deps",
         "title": "Read online or clone for offline browsing",
         "commands": [
-          "git clone --depth 1 https://github.com/webpro/awesome-dotfiles"
+          "git clone --filter=blob:none https://github.com/webpro/awesome-dotfiles",
+          "git -C awesome-dotfiles checkout {{ref}}"
         ]
       }
     ]

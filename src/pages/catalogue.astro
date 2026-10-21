@@ -6,6 +6,7 @@ import { getCollection } from 'astro:content';
 import { getVotesForConfig } from '../lib/votes';
 import { useTranslations } from '../lib/i18n';
 import { getStarsForConfig } from '../lib/stats';
+import { PAGE_SIZE } from '../lib/filters';
 
 const locale = 'en';
 const t = useTranslations(locale);
@@ -31,10 +32,10 @@ for (const c of allConfigs) {
 }
 
 // Same order as the client-side default sort ("Most approved", stars break ties).
-const PAGE_SIZE = 10;
 const sortedConfigs = allConfigs
   .slice()
   .sort((a, b) => getVotesForConfig(b.id) - getVotesForConfig(a.id) || getStarsForConfig(b.id) - getStarsForConfig(a.id));
+const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
 ---
 
 <Base
@@ -55,9 +56,7 @@ const sortedConfigs = allConfigs
         </span>
       </div>
       <div class="flex flex-wrap items-center gap-3 text-zinc-500 my-1 sm:my-0 text-xs">
-        <span>{t('catalogue.totalRecords')} <strong class="text-zinc-900">{allConfigs.length}</strong></span>
-        <span>•</span>
-        <span>STATUS: <strong class="text-emerald-600 font-semibold text-xs">VERIFIED_REPRODUCIBLE</strong></span>
+        <span>{t('catalogue.totalRecords')} <strong class="text-zinc-900">{allConfigs.length}</strong> {t('catalogue.interfacesIndexed')}</span>
       </div>
     </div>
 
@@ -122,6 +121,7 @@ const sortedConfigs = allConfigs
           <button
             id="btn-filter-favs"
             type="button"
+            aria-pressed="false"
             class="px-3.5 py-2 min-h-[44px] rounded-lg font-mono text-xs font-semibold uppercase border border-zinc-200 bg-white text-zinc-800 hover:bg-zinc-100 cursor-pointer shrink-0 transition-all shadow-xs flex items-center justify-center"
           >
             ★ {t('catalogue.favoritesOnly')}
@@ -160,13 +160,16 @@ const sortedConfigs = allConfigs
               class="config-card-item"
               style={idx >= PAGE_SIZE ? 'display:none' : undefined}
               data-id={c.id}
-              data-name={c.data.name.toLowerCase()}
-              data-author={c.data.author.name.toLowerCase()}
-              data-summary={c.data.summary.toLowerCase()}
+              data-name={c.data.name}
+              data-author={c.data.author.name}
+              data-author-github={c.data.author.github}
+              data-summary={c.data.summary}
               data-category={c.data.category}
               data-wm={c.data.wm}
               data-style={c.data.themeStyle || 'minimalist'}
+              data-display-server={c.data.displayServer}
               data-distros={c.data.distros.join(',')}
+              data-specs={JSON.stringify(c.data.specs || {})}
               data-stars={getStarsForConfig(c.id)}
               data-tags={c.data.tags.join(',')}
               data-votes={getVotesForConfig(c.id)}
@@ -178,7 +181,21 @@ const sortedConfigs = allConfigs
         </div>
 
         <!-- Pagination (10 per page, ?p=N) -->
-        <nav id="pagination" aria-label="Catalogue pages" class="flex flex-wrap items-center justify-center gap-1.5 font-mono text-xs" data-page-size={PAGE_SIZE}></nav>
+        <nav id="pagination" aria-label="Catalogue pages" class="flex flex-wrap items-center justify-center gap-1.5 font-mono text-xs" data-page-size={PAGE_SIZE}>
+          {totalPages > 1 && Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+            <a
+              href={`?p=${n}`}
+              aria-current={n === 1 ? 'page' : undefined}
+              class={`min-w-[36px] min-h-[36px] px-2.5 rounded-md border font-semibold transition-colors inline-flex items-center justify-center ${
+                n === 1
+                  ? 'bg-zinc-900 text-white border-zinc-900'
+                  : 'bg-white text-zinc-800 border-zinc-300 hover:bg-zinc-100 cursor-pointer'
+              }`}
+            >
+              {n}
+            </a>
+          ))}
+        </nav>
 
         <!-- Empty state message -->
         <div
@@ -201,6 +218,11 @@ const sortedConfigs = allConfigs
 </Base>
 
 <script>
+  import { filterConfigs, paginate, PAGE_SIZE, type CatalogueItem, type FilterState } from '../lib/filters';
+
+  const FAV_ACTIVE_CLASSES = ['bg-zinc-900', 'text-white', 'border-zinc-900', 'hover:bg-zinc-800'];
+  const FAV_INACTIVE_CLASSES = ['bg-white', 'text-zinc-800', 'border-zinc-200', 'hover:bg-zinc-100'];
+
   function setupFilters() {
     const cardItems = Array.from(document.querySelectorAll<HTMLElement>('.config-card-item'));
     const countLabel = document.getElementById('results-count-label');
@@ -213,6 +235,38 @@ const sortedConfigs = allConfigs
     const favsBtn = document.getElementById('btn-filter-favs');
     const resetEmptyBtn = document.getElementById('btn-empty-reset');
     const resetSidebarBtn = document.getElementById('btn-reset-filters');
+    const paginationNav = document.getElementById('pagination');
+
+    const cardById = new Map<string, HTMLElement>();
+    const catalogueItems: CatalogueItem[] = cardItems.map((card) => {
+      const id = card.getAttribute('data-id') || '';
+      cardById.set(id, card);
+      let specs: CatalogueItem['specs'] = {};
+      try {
+        specs = JSON.parse(card.getAttribute('data-specs') || '{}');
+      } catch {}
+      return {
+        id,
+        name: card.getAttribute('data-name') || '',
+        author: {
+          name: card.getAttribute('data-author') || '',
+          github: card.getAttribute('data-author-github') || '',
+        },
+        summary: card.getAttribute('data-summary') || '',
+        category: card.getAttribute('data-category') || 'dotfiles',
+        distros: (card.getAttribute('data-distros') || '').split(',').filter(Boolean),
+        wm: card.getAttribute('data-wm') || '',
+        themeStyle: card.getAttribute('data-style') || 'minimalist',
+        displayServer: card.getAttribute('data-display-server') || 'wayland',
+        tags: (card.getAttribute('data-tags') || '').split(',').filter(Boolean),
+        specs,
+        thumbUrl: '',
+        thumbAlt: '',
+        updatedAt: card.getAttribute('data-date') || '1970-01-01',
+        votes: parseInt(card.getAttribute('data-votes') || '0', 10) || 0,
+        stars: parseInt(card.getAttribute('data-stars') || '0', 10) || 0,
+      };
+    });
 
     function updateGrepState() {
       const val = searchInput?.value || '';
@@ -227,8 +281,11 @@ const sortedConfigs = allConfigs
       }
     }
 
-    const paginationNav = document.getElementById('pagination');
-    const PAGE_SIZE = parseInt(paginationNav?.dataset.pageSize || '10', 10);
+    function buildPageHref(n: number): string {
+      const p = new URLSearchParams(window.location.search);
+      p.set('p', String(n));
+      return `?${p.toString()}`;
+    }
 
     function goToPage(n: number) {
       const p = new URLSearchParams(window.location.search);
@@ -244,17 +301,29 @@ const sortedConfigs = allConfigs
       paginationNav.innerHTML = '';
       if (pageCount <= 1) return;
       const add = (label: string, target: number | null, active = false) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.textContent = label;
-        btn.disabled = target === null;
-        if (active) btn.setAttribute('aria-current', 'page');
-        btn.className = `min-w-[36px] min-h-[36px] px-2.5 rounded-md border font-semibold transition-colors ${
-          active ? 'bg-zinc-900 text-white border-zinc-900'
-          : target === null ? 'bg-white text-zinc-300 border-zinc-200 cursor-default'
-          : 'bg-white text-zinc-800 border-zinc-300 hover:bg-zinc-100 cursor-pointer'}`;
-        if (target !== null && !active) btn.onclick = () => goToPage(target);
-        paginationNav.appendChild(btn);
+        if (target === null) {
+          const span = document.createElement('span');
+          span.textContent = label;
+          span.setAttribute('aria-disabled', 'true');
+          span.className = 'min-w-[36px] min-h-[36px] px-2.5 rounded-md border font-semibold transition-colors inline-flex items-center justify-center bg-white text-zinc-300 border-zinc-200 cursor-default';
+          paginationNav.appendChild(span);
+          return;
+        }
+        const link = document.createElement('a');
+        link.href = buildPageHref(target);
+        link.textContent = label;
+        if (active) link.setAttribute('aria-current', 'page');
+        link.className = `min-w-[36px] min-h-[36px] px-2.5 rounded-md border font-semibold transition-colors inline-flex items-center justify-center ${
+          active
+            ? 'bg-zinc-900 text-white border-zinc-900'
+            : 'bg-white text-zinc-800 border-zinc-300 hover:bg-zinc-100 cursor-pointer'
+        }`;
+        link.addEventListener('click', (e) => {
+          if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+          e.preventDefault();
+          if (!active) goToPage(target);
+        });
+        paginationNav.appendChild(link);
       };
       add('← Prev', current > 1 ? current - 1 : null);
       // First, last and a window of two pages around the current one.
@@ -296,6 +365,10 @@ const sortedConfigs = allConfigs
         if (cb.name === 'wm') cb.checked = selectedWms.includes(cb.value);
         if (cb.name === 'style') cb.checked = selectedStyles.includes(cb.value);
         if (cb.name === 'distro') cb.checked = selectedDistros.includes(cb.value);
+        if (cb.checked) {
+          const details = cb.closest('details');
+          if (details) details.open = true;
+        }
       });
 
       if (searchInput && searchInput.value !== q) {
@@ -304,13 +377,9 @@ const sortedConfigs = allConfigs
       updateGrepState();
 
       if (favsBtn) {
-        if (favOnly) {
-          favsBtn.classList.add('bg-black', 'text-white');
-          favsBtn.classList.remove('bg-white', 'text-black');
-        } else {
-          favsBtn.classList.remove('bg-black', 'text-white');
-          favsBtn.classList.add('bg-white', 'text-black');
-        }
+        favsBtn.classList.remove(...(favOnly ? FAV_INACTIVE_CLASSES : FAV_ACTIVE_CLASSES));
+        favsBtn.classList.add(...(favOnly ? FAV_ACTIVE_CLASSES : FAV_INACTIVE_CLASSES));
+        favsBtn.setAttribute('aria-pressed', String(favOnly));
       }
 
       if (sortSelect && sort) sortSelect.value = sort;
@@ -354,7 +423,6 @@ const sortedConfigs = allConfigs
       sort: string,
       page: number,
     ) {
-      let visibleCount = 0;
       const savedFavorites = getSavedFavorites();
 
       if (chipsContainer) {
@@ -372,7 +440,13 @@ const sortedConfigs = allConfigs
         allActive.forEach((item) => {
           const chip = document.createElement('span');
           chip.className = 'px-2.5 py-1 bg-zinc-900 text-white font-mono text-[11px] font-semibold rounded-md flex items-center gap-1.5 cursor-pointer hover:bg-zinc-800 transition-colors shadow-xs';
-          chip.innerHTML = `<span>${item.label}</span> <span class="text-zinc-400 hover:text-white">✕</span>`;
+          const labelSpan = document.createElement('span');
+          labelSpan.textContent = item.label;
+          const closeSpan = document.createElement('span');
+          closeSpan.className = 'text-zinc-400 hover:text-white';
+          closeSpan.textContent = '✕';
+          chip.appendChild(labelSpan);
+          chip.appendChild(closeSpan);
           chip.onclick = item.onRemove;
           chipsContainer.appendChild(chip);
         });
@@ -383,65 +457,34 @@ const sortedConfigs = allConfigs
         }
       }
 
-      cardItems.forEach((card) => {
-        const cardId = card.getAttribute('data-id') || '';
-        const cardCategory = card.getAttribute('data-category') || '';
-        const cardWm = card.getAttribute('data-wm') || '';
-        const cardStyle = card.getAttribute('data-style') || 'minimalist';
-        const cardDistros = (card.getAttribute('data-distros') || '').split(',');
-        const cardTags = (card.getAttribute('data-tags') || '').split(',');
-        const cardName = card.getAttribute('data-name') || '';
-        const cardAuthor = card.getAttribute('data-author') || '';
-        const cardSummary = card.getAttribute('data-summary') || '';
-
-        let match = true;
-
-        if (categories.length > 0 && !categories.includes(cardCategory)) match = false;
-        if (wms.length > 0 && !wms.includes(cardWm)) match = false;
-        if (styles.length > 0 && !styles.includes(cardStyle)) match = false;
-        if (distros.length > 0 && !cardDistros.includes('any') && !distros.some((d) => cardDistros.includes(d))) match = false;
-        if (tag && !cardTags.includes(tag.toLowerCase())) match = false;
-        if (favOnly && !savedFavorites.includes(cardId)) match = false;
-
-        if (query && query.trim()) {
-          const qLower = query.toLowerCase().trim();
-          const textMatch =
-            cardName.includes(qLower) ||
-            cardAuthor.includes(qLower) ||
-            cardSummary.includes(qLower) ||
-            cardWm.includes(qLower) ||
-            cardCategory.includes(qLower) ||
-            cardStyle.includes(qLower) ||
-            cardTags.some((t) => t.includes(qLower));
-          if (!textMatch) match = false;
-        }
-
-        card.dataset.match = match ? '1' : '0';
-        if (match) visibleCount++;
+      const filtered = filterConfigs(catalogueItems, {
+        category: categories,
+        wm: wms,
+        style: styles,
+        distro: distros,
+        tag: tag || undefined,
+        query,
+        favoritesOnly: favOnly,
+        favorites: savedFavorites,
+        sort: (sort as FilterState['sort']) || 'votes',
       });
 
-      const num = (el: HTMLElement, attr: string) => parseInt(el.getAttribute(attr) || '0', 10);
-      const date = (el: HTMLElement) => new Date(el.getAttribute('data-date') || '1970').getTime();
-      const sorted = cardItems.slice().sort((a, b) => {
-        if (sort === 'new') return date(b) - date(a);
-        if (sort === 'old') return date(a) - date(b);
-        if (sort === 'popular') return num(b, 'data-stars') - num(a, 'data-stars');
-        return num(b, 'data-votes') - num(a, 'data-votes') || num(b, 'data-stars') - num(a, 'data-stars');
-      });
+      const visibleCount = filtered.length;
+      const { items: pageItems, page: current, pageCount } = paginate(filtered, page);
+      const pageIds = new Set(pageItems.map((item) => item.id));
+
       const container = document.getElementById('cards-container');
-      sorted.forEach((el) => container?.appendChild(el));
-
-      // Only the matching cards of the current page are shown.
-      const pageCount = Math.max(1, Math.ceil(visibleCount / PAGE_SIZE));
-      const current = Math.min(page, pageCount);
-      const start = (current - 1) * PAGE_SIZE;
-      let rank = 0;
-      sorted.forEach((card) => {
-        const onPage = card.dataset.match === '1' && rank >= start && rank < start + PAGE_SIZE;
-        if (card.dataset.match === '1') rank++;
-        card.style.display = onPage ? '' : 'none';
+      filtered.forEach((item) => {
+        const el = cardById.get(item.id);
+        if (el) container?.appendChild(el);
       });
 
+      cardItems.forEach((card) => {
+        const id = card.getAttribute('data-id') || '';
+        card.style.display = pageIds.has(id) ? '' : 'none';
+      });
+
+      const start = (current - 1) * PAGE_SIZE;
       if (countLabel) {
         countLabel.textContent = visibleCount === 0
           ? '0 entries'
@@ -499,43 +542,70 @@ const sortedConfigs = allConfigs
       readStateFromUrl();
     }
 
-    checkboxes.forEach((cb) => cb.addEventListener('change', writeStateToUrl));
-    sortSelect?.addEventListener('change', writeStateToUrl);
+    checkboxes.forEach((cb) => {
+      if (!cb.dataset.bound) {
+        cb.dataset.bound = 'true';
+        cb.addEventListener('change', writeStateToUrl);
+      }
+    });
+
+    if (sortSelect && !sortSelect.dataset.bound) {
+      sortSelect.dataset.bound = 'true';
+      sortSelect.addEventListener('change', writeStateToUrl);
+    }
 
     let searchDebounceTimer: ReturnType<typeof setTimeout>;
-    searchInput?.addEventListener('input', () => {
-      updateGrepState();
-      clearTimeout(searchDebounceTimer);
-      searchDebounceTimer = setTimeout(writeStateToUrl, 180);
-    });
+    if (searchInput && !searchInput.dataset.bound) {
+      searchInput.dataset.bound = 'true';
+      searchInput.addEventListener('input', () => {
+        updateGrepState();
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(writeStateToUrl, 180);
+      });
 
-    searchInput?.addEventListener('keydown', (e) => {
-      // Snap [ ↵ ] into place immediately on very first character keystroke
-      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        grepSubmitBtn?.classList.remove('hidden');
-        grepSubmitBtn?.classList.add('inline-flex');
-      }
-      if (e.key === 'Enter') {
+      searchInput.addEventListener('keydown', (e) => {
+        // Snap [ ↵ ] into place immediately on very first character keystroke
+        if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          grepSubmitBtn?.classList.remove('hidden');
+          grepSubmitBtn?.classList.add('inline-flex');
+        }
+        if (e.key === 'Enter') {
+          clearTimeout(searchDebounceTimer);
+          writeStateToUrl();
+        }
+        if (e.key === 'Escape') {
+          clearSearch();
+        }
+      });
+    }
+
+    if (grepSubmitBtn && !grepSubmitBtn.dataset.bound) {
+      grepSubmitBtn.dataset.bound = 'true';
+      grepSubmitBtn.addEventListener('click', () => {
         clearTimeout(searchDebounceTimer);
         writeStateToUrl();
-      }
-      if (e.key === 'Escape') {
-        clearSearch();
-      }
-    });
+      });
+    }
 
-    grepSubmitBtn?.addEventListener('click', () => {
-      clearTimeout(searchDebounceTimer);
-      writeStateToUrl();
-    });
-
-    clearSearchBtn?.addEventListener('click', clearSearch);
-    favsBtn?.addEventListener('click', toggleFavFilter);
-    resetEmptyBtn?.addEventListener('click', resetAllFilters);
-    resetSidebarBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      resetAllFilters();
-    });
+    if (clearSearchBtn && !clearSearchBtn.dataset.bound) {
+      clearSearchBtn.dataset.bound = 'true';
+      clearSearchBtn.addEventListener('click', clearSearch);
+    }
+    if (favsBtn && !favsBtn.dataset.bound) {
+      favsBtn.dataset.bound = 'true';
+      favsBtn.addEventListener('click', toggleFavFilter);
+    }
+    if (resetEmptyBtn && !resetEmptyBtn.dataset.bound) {
+      resetEmptyBtn.dataset.bound = 'true';
+      resetEmptyBtn.addEventListener('click', resetAllFilters);
+    }
+    if (resetSidebarBtn && !resetSidebarBtn.dataset.bound) {
+      resetSidebarBtn.dataset.bound = 'true';
+      resetSidebarBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetAllFilters();
+      });
+    }
 
     // Mobile filter drawer toggle
     const toggleMobileBtn = document.getElementById('btn-toggle-filters-mobile');

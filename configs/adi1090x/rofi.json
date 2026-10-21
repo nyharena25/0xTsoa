@@ -46,7 +46,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/adi1090x/rofi",
+          "git clone --filter=blob:none https://github.com/adi1090x/rofi",
+          "git -C rofi checkout {{ref}}",
           "cd rofi"
         ]
       },

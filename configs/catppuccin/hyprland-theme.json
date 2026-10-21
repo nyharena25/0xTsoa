@@ -58,7 +58,8 @@
         "id": "deps",
         "title": "Clone Catppuccin Hyprland repository",
         "commands": [
-          "git clone https://github.com/catppuccin/hyprland.git ~/.config/hypr/catppuccin"
+          "git clone https://github.com/catppuccin/hyprland.git ~/.config/hypr/catppuccin",
+          "git -C ~/.config/hypr/catppuccin checkout {{ref}}"
         ]
       },
       {

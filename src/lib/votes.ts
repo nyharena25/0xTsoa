@@ -50,7 +50,7 @@ export interface VoteIssue {
   pull_request?: unknown;
 }
 
-const POSITIVE_REACTIONS = ['+1', 'heart', 'hooray'];
+const POSITIVE_REACTIONS = ['+1'];
 const VOTE_TITLE_RE = /^\[0xTsoa\]\s+([\w.-]+\/[\w.-]+)$/;
 
 /**
@@ -79,7 +79,7 @@ export async function listVoteIssues(owner: string, repo: string, token?: string
   }
 }
 
-/** Vote issues → { configId: { votes, discussionUrl } }, counting 👍 ❤️ 🎉 reactions. */
+/** Vote issues → { configId: { votes, discussionUrl } }, counting 👍 (+1) reactions. */
 export function votesFromIssues(issues: VoteIssue[]): VotesMap {
   const map: VotesMap = {};
   for (const issue of issues) {

@@ -40,7 +40,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/ful1e5/Google_Cursor",
+          "git clone --filter=blob:none https://github.com/ful1e5/Google_Cursor",
+          "git -C Google_Cursor checkout {{ref}}",
           "cd Google_Cursor"
         ]
       },

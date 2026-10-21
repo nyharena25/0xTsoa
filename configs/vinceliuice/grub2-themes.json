@@ -40,7 +40,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/vinceliuice/grub2-themes",
+          "git clone --filter=blob:none https://github.com/vinceliuice/grub2-themes",
+          "git -C grub2-themes checkout {{ref}}",
           "cd grub2-themes"
         ]
       },

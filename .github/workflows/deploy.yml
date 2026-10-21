@@ -1,4 +1,4 @@
-name: Deploy Static Site to GitHub Pages
+name: Nightly refresh
 
 on:
   push:
@@ -10,26 +10,21 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
   issues: write
 
 concurrency:
-  group: 'pages'
+  group: 'nightly-refresh'
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  refresh:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: 'npm'
@@ -39,26 +34,11 @@ jobs:
 
       # One issue per config collects the ✓ Sign-Off reactions (needs `issues: write`).
       - name: Ensure a vote issue exists for every config
-        continue-on-error: true
         run: npm run vote-issues
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # `prebuild` fetches the votes. Owner/repo/base path come from GITHUB_REPOSITORY
-      # (see site.config.ts), which is set on every trigger including the nightly cron.
-      - name: Build static site & Pagefind index
-        run: npm run build
+      - name: Trigger Vercel production deploy
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: curl -fsS -X POST "$VERCEL_DEPLOY_HOOK"

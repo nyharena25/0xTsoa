@@ -44,7 +44,8 @@
         "id": "deps",
         "title": "Clone the theme",
         "commands": [
-          "git clone --depth 1 https://github.com/catppuccin/grub && cd grub"
+          "git clone --filter=blob:none https://github.com/catppuccin/grub && cd grub",
+          "git -C grub checkout {{ref}}"
         ]
       },
       {

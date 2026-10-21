@@ -41,7 +41,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/GideonWolfe/Chameleon",
+          "git clone --filter=blob:none https://github.com/GideonWolfe/Chameleon",
+          "git -C Chameleon checkout {{ref}}",
           "cd Chameleon"
         ]
       },

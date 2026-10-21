@@ -4,9 +4,11 @@ import SpecSubNav from '../../../components/SpecSubNav.astro';
 import CopyButton from '../../../components/CopyButton.astro';
 import Accordion from '../../../components/Accordion.astro';
 import ScreenshotGallery from '../../../components/ScreenshotGallery.astro';
+import AssuranceBadges from '../../../components/AssuranceBadges.astro';
 import { getCollection } from 'astro:content';
 import { getRenderedReadme, extractScreenshotsFromReadme } from '../../../lib/readme';
-import { rawToBlobUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
+import { rawToBlobUrl, blobUrl, isAllowedImageUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
+import { buildInstallScript, renderCommand, verifiedScriptCommand } from '../../../lib/install';
 import { useTranslations } from '../../../lib/i18n';
 import { withBase } from '../../../../site.config';
 
@@ -33,7 +35,7 @@ const readmeHtml = rawReadmeHtml.replace(
     `<${slash}h${Math.min(6, Math.max(3, Number(level) + 1))}${attrs}>`,
 );
 
-const readmeScreenshots = extractScreenshotsFromReadme(readmeHtml);
+const readmeScreenshots = extractScreenshotsFromReadme(readmeHtml).filter((s) => isAllowedImageUrl(s.url));
 const existingShotUrls = new Set(data.screenshots.map((s) => s.url));
 const mergedScreenshots = [...data.screenshots];
 for (const shot of readmeScreenshots) {
@@ -140,6 +142,8 @@ const resolvedShotUrl = !ogImageUrl
     ? ogImageUrl
     : new URL(withBase(ogImageUrl), Astro.site).href;
 const canonicalPageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const siteRootUrl = new URL(withBase('/'), Astro.site).href;
+const aboutUrl = new URL(withBase('/about/'), Astro.site).href;
 
 const setupJsonLd = [
   {
@@ -154,9 +158,9 @@ const setupJsonLd = [
       data.author.github.toLowerCase() === 'nyharena25'
         ? {
             '@type': 'Person',
-            '@id': 'https://0xtsoa.vercel.app/#founder',
+            '@id': `${siteRootUrl}#founder`,
             name: 'Ny Harena RAVELOMANANTSOA',
-            url: 'https://0xtsoa.vercel.app/about/',
+            url: aboutUrl,
             sameAs: [
               'https://github.com/nyharena25',
               'https://www.linkedin.com/in/rnyharena-dev/',
@@ -167,7 +171,9 @@ const setupJsonLd = [
             name: data.author.name,
             url: `https://github.com/${data.author.github}`,
           },
-    license: `https://spdx.org/licenses/${data.license}.html`,
+    license: /^[A-Za-z0-9.+-]+$/.test(data.license)
+      ? `https://spdx.org/licenses/${data.license}.html`
+      : data.license,
     dateModified: data.updatedAt,
     image: resolvedShotUrl,
     operatingSystem: 'Linux',
@@ -199,43 +205,13 @@ const setupJsonLd = [
   },
 ];
 
-let defaultInstallCmd = data.category === 'dotfiles' ? `git clone ${data.source.repo} ~/.dotfiles` : `git clone ${data.source.repo}`;
-let scriptBlobUrl = '';
-if (data.install.script) {
-  defaultInstallCmd = `curl -fsSL ${data.install.script.url} | ${data.install.script.shell || 'bash'}`;
-  scriptBlobUrl = rawToBlobUrl(data.install.script.url);
-}
-
-const installScriptContent = `#!/usr/bin/env bash
-# ==============================================================================
-# 0xTSOA AUTOMATED INSTALLER // ${data.name.toUpperCase()}
-# Version: ${data.version || 'v1.0'}
-# Maintainer: ${data.author.name} (@${data.author.github})
-# Source: ${data.source.repo}
-# Window Manager: ${wmLabel}
-# Supported Distros: ${distroLabels}
-# ==============================================================================
-set -euo pipefail
-
-echo "======================================================================"
-echo " [0xTSOA] Starting installation of ${data.name}..."
-echo "======================================================================"
-
-${
-  data.install.steps && data.install.steps.length > 0
-    ? data.install.steps
-        .map(
-          (step) =>
-            `# --- Step: ${step.title} ---\n${step.commands.join('\n')}`,
-        )
-        .join('\n\n')
-    : defaultInstallCmd
-}
-
-echo "======================================================================"
-echo " [0xTSOA] Installation completed successfully!"
-echo "======================================================================"
-`;
+const scriptBlobUrl = data.install.script ? rawToBlobUrl(data.install.script.url) : '';
+const verifiedScriptCmd = data.install.script ? verifiedScriptCommand(data.install.script) : null;
+const installScriptContent = buildInstallScript(data);
+const renderedSteps = data.install.steps.map((step) => ({
+  ...step,
+  commands: step.commands.map((cmd) => renderCommand(cmd, data)),
+}));
 ---
 
 <Base
@@ -267,7 +243,13 @@ echo "======================================================================"
             {sectionTitle.overview}
           </h2>
         </div>
-        <span class="font-mono text-xs text-zinc-600 bg-zinc-100 border border-zinc-200 px-2.5 py-0.5 rounded-md">Profile: {data.version || 'v1.0'}</span>
+        {data.version && (
+          <span class="font-mono text-xs text-zinc-600 bg-zinc-100 border border-zinc-200 px-2.5 py-0.5 rounded-md">Profile: {data.version}</span>
+        )}
+      </div>
+
+      <div class="mb-4">
+        <AssuranceBadges data={data} />
       </div>
 
       <div class="border border-zinc-200 rounded-lg overflow-hidden bg-white font-mono text-xs">
@@ -292,52 +274,42 @@ echo "======================================================================"
             <dd class="md:col-span-9 text-zinc-900 font-medium min-w-0 break-words">{wmLabel} <span class="text-zinc-400">/</span> {data.specs.theme || STYLE_LABELS[data.themeStyle]}</dd>
           </div>
 
-          {(data.specs.bar || data.specs.terminal || data.specs.launcher) && (
+          {(data.specs.bar || data.specs.terminal || data.specs.launcher || data.specs.notifications || data.specs.editor || data.specs.shell) && (
           <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-zinc-50/70 min-w-0 break-words gap-1.5 md:gap-0">
             <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Key Components</dt>
             <dd class="md:col-span-9 text-zinc-900 leading-relaxed font-sans text-sm min-w-0 break-words">
               <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs">
-                <span class="inline-flex items-center gap-1"><span class="font-mono font-semibold text-zinc-500">Bar:</span> <span class="font-medium text-zinc-900">{data.specs.bar || 'N/A'}</span></span>
-                <span class="text-zinc-300">•</span>
-                <span class="inline-flex items-center gap-1"><span class="font-mono font-semibold text-zinc-500">Terminal:</span> <span class="font-medium text-zinc-900">{data.specs.terminal || 'N/A'}</span></span>
-                <span class="text-zinc-300">•</span>
-                <span class="inline-flex items-center gap-1"><span class="font-mono font-semibold text-zinc-500">Launcher:</span> <span class="font-medium text-zinc-900">{data.specs.launcher || 'N/A'}</span></span>
-                {data.specs.notifications && (
+                {(
+                  [
+                    data.specs.bar && ['Bar', data.specs.bar],
+                    data.specs.terminal && ['Terminal', data.specs.terminal],
+                    data.specs.launcher && ['Launcher', data.specs.launcher],
+                    data.specs.notifications && ['Notifications', data.specs.notifications],
+                    data.specs.editor && ['Editor', data.specs.editor],
+                    data.specs.shell && ['Shell', data.specs.shell],
+                  ].filter(Boolean) as [string, string][]
+                ).map(([label, value], idx) => (
                   <>
-                    <span class="text-zinc-300">•</span>
-                    <span class="inline-flex items-center gap-1"><span class="font-mono font-semibold text-zinc-500">Notifications:</span> <span class="font-medium text-zinc-900">{data.specs.notifications}</span></span>
+                    {idx > 0 && <span class="text-zinc-300">•</span>}
+                    <span class="inline-flex items-center gap-1">
+                      <span class="font-mono font-semibold text-zinc-500">{label}:</span>
+                      <span class="font-medium text-zinc-900">{value}</span>
+                    </span>
                   </>
-                )}
-                {data.specs.editor && (
-                  <>
-                    <span class="text-zinc-300">•</span>
-                    <span class="inline-flex items-center gap-1"><span class="font-mono font-semibold text-zinc-500">Editor:</span> <span class="font-medium text-zinc-900">{data.specs.editor}</span></span>
-                  </>
-                )}
+                ))}
               </div>
             </dd>
           </div>
-
           )}
 
-          <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-white min-w-0 break-words">
-            <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Full Description</dt>
-            <dd class="md:col-span-9 text-zinc-700 font-sans leading-relaxed text-sm min-w-0 break-words">{data.description || data.summary}</dd>
-          </div>
+          {data.description && (
+            <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-white min-w-0 break-words">
+              <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Full Description</dt>
+              <dd class="md:col-span-9 text-zinc-700 font-sans leading-relaxed text-sm min-w-0 break-words">{data.description}</dd>
+            </div>
+          )}
         </dl>
       </div>
-
-      {data.description && (
-        <div class="mt-4 p-4 rounded-xl border border-zinc-200 bg-zinc-50/50">
-          <div class="font-mono text-xs uppercase font-semibold text-zinc-500 mb-2 flex items-center gap-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-zinc-500 inline-block"></span>
-            <span>Architecture & Technical Design</span>
-          </div>
-          <p class="font-sans text-sm text-zinc-800 leading-relaxed">
-            {data.description}
-          </p>
-        </div>
-      )}
     </section>
 
     <!-- INSTALLATION & PACKAGES -->
@@ -349,7 +321,6 @@ echo "======================================================================"
             {sectionTitle.installation}
           </h2>
         </div>
-        <span class="font-mono text-xs text-zinc-400">Method: Verified Command</span>
       </div>
 
       <div class="flex flex-col gap-3 w-full min-w-0">
@@ -389,6 +360,18 @@ echo "======================================================================"
           </div>
         )}
 
+        {data.install.script && verifiedScriptCmd && (
+          <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
+            <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
+              <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
+              <code class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">{verifiedScriptCmd}</code>
+            </div>
+            <div class="shrink-0">
+              <CopyButton text={verifiedScriptCmd} class="bg-zinc-800 text-zinc-200 border-zinc-700 hover:bg-zinc-700 hover:text-white" />
+            </div>
+          </div>
+        )}
+
         {data.install.script && (
           <div class="border border-zinc-200 rounded-xl bg-zinc-50 p-3 font-mono text-xs text-zinc-600 flex flex-wrap items-center justify-between gap-2">
             <span class="font-medium">{t('spec.checksum')}</span>
@@ -418,11 +401,9 @@ echo "======================================================================"
       )}
 
       <!-- Deployment Accordion Steps -->
-      {data.install.steps && data.install.steps.length > 0 && (
-        <div class="pt-2">
-          <Accordion steps={data.install.steps} locale={locale} />
-        </div>
-      )}
+      <div class="pt-2">
+        <Accordion steps={renderedSteps} data={data} locale={locale} />
+      </div>
     </section>
 
     <!-- SCREENSHOT GALLERY -->
@@ -441,7 +422,7 @@ echo "======================================================================"
           </h2>
         </div>
         <div class="flex items-center gap-3 text-zinc-500">
-          <span>Source: <a href={data.source.repo} target="_blank" rel="noopener noreferrer" class="underline text-zinc-900 font-semibold">{data.source.repo.replace('https://github.com/', '')}</a></span>
+          <span>Source: <a href={data.source.repo} target="_blank" rel="noopener noreferrer" class="underline text-zinc-900 font-semibold">{data.source.repo.replace(/^https:\/\/(github\.com|gitlab\.com|codeberg\.org)\//, '')}</a></span>
           <span>Ref: <code class="text-zinc-900 font-medium">{data.source.ref.slice(0, 10)}</code></span>
         </div>
       </div>
@@ -470,12 +451,12 @@ echo "======================================================================"
               <span>Raw</span>
             </a>
             <a
-              href={`${data.source.repo}/blob/${data.source.ref}/${data.source.readme || 'README.md'}`}
+              href={blobUrl(data.source)}
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium text-zinc-700 bg-white border border-zinc-300 rounded hover:bg-zinc-100 hover:text-zinc-900 transition-colors shadow-2xs"
             >
-              <span>GitHub ↗</span>
+              <span>Source ↗</span>
             </a>
           </div>
         </div>
@@ -488,7 +469,7 @@ echo "======================================================================"
 
       <div class="border-t border-zinc-100 pt-3 flex items-center justify-between font-mono text-xs text-zinc-400">
         <span>GitHub Flavored Markdown (github-markdown-css)</span>
-        <span class="text-emerald-700 font-semibold">● Live Repo Synced</span>
+        <span>README snapshot at {data.source.ref.slice(0, 10)}</span>
       </div>
     </section>
     )}
@@ -523,7 +504,7 @@ echo "======================================================================"
                     <kbd class="px-2 py-0.5 bg-zinc-100 border border-zinc-300 rounded font-semibold text-zinc-800 shadow-2xs">{kb.keys}</kbd>
                   </td>
                   <td class="p-3 border-r border-zinc-100 font-semibold text-zinc-900">{kb.action}</td>
-                  <td class="p-3 text-zinc-500">{kb.effect || 'System action'}</td>
+                  <td class="p-3 text-zinc-500">{kb.effect || '—'}</td>
                 </tr>
               ))}
             </tbody>
@@ -578,7 +559,6 @@ echo "======================================================================"
     }
 
     setupDetailActions();
-    document.addEventListener('DOMContentLoaded', setupDetailActions);
     document.addEventListener('astro:page-load', setupDetailActions);
   </script>
 </Base>

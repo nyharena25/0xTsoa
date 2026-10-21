@@ -61,7 +61,8 @@
         "title": "Download and extract Nordic theme",
         "commands": [
           "mkdir -p ~/.themes",
-          "git clone https://github.com/EliverLara/Nordic.git ~/.themes/Nordic"
+          "git clone https://github.com/EliverLara/Nordic.git ~/.themes/Nordic",
+          "git -C ~/.themes/Nordic checkout {{ref}}"
         ]
       },
       {

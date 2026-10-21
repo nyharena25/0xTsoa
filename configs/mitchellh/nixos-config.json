@@ -39,6 +39,7 @@
         "title": "Clone the configuration",
         "commands": [
           "git clone https://github.com/mitchellh/nixos-config ~/nixos-config",
+          "git -C ~/nixos-config checkout {{ref}}",
           "cd ~/nixos-config"
         ]
       },

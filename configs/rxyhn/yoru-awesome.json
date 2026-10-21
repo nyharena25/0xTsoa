@@ -58,7 +58,8 @@
         "title": "Install AwesomeWM and Lua dependencies",
         "commands": [
           "sudo pacman -S --needed awesome rofi alacritty picom feh",
-          "git clone --depth=1 https://github.com/raexera/yoru.git ~/.config/awesome"
+          "git clone --filter=blob:none https://github.com/raexera/yoru.git ~/.config/awesome",
+          "git -C ~/.config/awesome checkout {{ref}}"
         ]
       },
       {

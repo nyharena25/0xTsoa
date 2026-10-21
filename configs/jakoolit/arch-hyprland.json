@@ -57,7 +57,8 @@
         "id": "deps",
         "title": "Clone installer repository",
         "commands": [
-          "git clone --depth=1 https://github.com/JaKooLit/Arch-Hyprland.git ~/Arch-Hyprland"
+          "git clone --filter=blob:none https://github.com/JaKooLit/Arch-Hyprland.git ~/Arch-Hyprland",
+          "git -C ~/Arch-Hyprland checkout {{ref}}"
         ]
       },
       {

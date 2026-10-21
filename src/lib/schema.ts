@@ -155,7 +155,6 @@ export function safeUrl(v: string): URL | null {
 }
 
 const https = z
-  .string()
   .url()
   .refine((v) => v.startsWith('https://'), { message: 'Must be an https:// URL' })
   .meta({ pattern: '^https://' });
@@ -233,7 +232,11 @@ export const configSchema = z
         .meta({ pattern: SOURCE_REPO_PATTERN, description: `Repository on ${SOURCE_HOSTS.join(', ')}` }),
       ref: z.string().refine(isPinnedRef, { message: 'source.ref must be a full commit SHA or a version tag' })
         .meta({ pattern: PINNED_REF_PATTERN, description: 'Full 40-char commit SHA or version tag (never a branch)' }),
-      readme: z.string().regex(/^[\w./-]+\.(md|markdown)$/i).default('README.md'),
+      readme: z
+        .string()
+        .regex(/^[\w./-]+\.(md|markdown)$/i)
+        .refine((v) => !v.includes('..'), { message: 'source.readme must not contain ..' })
+        .default('README.md'),
     }),
     install: z
       .object({
@@ -267,12 +270,94 @@ export const configSchema = z
       .array(z.object({ keys: z.string().max(40), action: z.string().max(80), effect: z.string().max(120).optional() }))
       .max(30)
       .default([]),
+    review: z
+      .object({
+        installReviewed: z.boolean().default(false),
+        reviewedBy: z.string().regex(/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/, 'Invalid GitHub username').optional(),
+        reviewedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD').optional(),
+      })
+      .optional(),
     example: z.boolean().default(false),
   })
-  .strict();
+  .strict()
+  .superRefine((data, ctx) => {
+    const { errors } = validateCloneSteps(data);
+    for (const err of errors) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['install', 'steps'],
+        message: err,
+      });
+    }
+  });
+
+// Astro's content sync calls `schema.extend({ $schema: ... })`, which Zod 4 forbids on refined objects with existing keys unless `safeExtend` is used.
+configSchema.extend = configSchema.safeExtend.bind(configSchema) as typeof configSchema.extend;
 
 export type ConfigData = z.output<typeof configSchema>;
 export type ConfigInput = z.input<typeof configSchema>;
+
+export interface CloneValidationResult {
+  errors: string[];
+  warnings: string[];
+}
+
+/** Normalize a repository URL for comparison (lowercase, strip trailing slash and `.git`). */
+export function normalizeRepoUrl(url: string): string {
+  return url
+    .trim()
+    .replace(/^['"]|['"]$/g, '')
+    .toLowerCase()
+    .replace(/\/+$/, '')
+    .replace(/\.git$/, '')
+    .replace(/\/+$/, '');
+}
+
+/**
+ * Validate `git clone` commands in `install.steps`:
+ * - Any `git clone` using `--depth` is an error (shallow clones cannot check out an arbitrary SHA).
+ * - Any `git clone` of `source.repo` must be followed by a later command containing `checkout {{ref}}`.
+ * - Clones of other repositories produce a warning, not an error.
+ */
+export function validateCloneSteps(data: {
+  source: { repo: string };
+  install: { steps: { commands: string[] }[] };
+}): CloneValidationResult {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const normalizedSourceRepo = normalizeRepoUrl(data.source.repo);
+  const allCommands = data.install.steps.flatMap((s) => s.commands);
+
+  for (let i = 0; i < allCommands.length; i++) {
+    const cmd = allCommands[i];
+    if (cmd.trim().startsWith('#')) continue;
+    if (!/\bgit\s+clone\b/.test(cmd)) continue;
+
+    if (/(?:^|\s)--depth(?:=|\s|$)/.test(cmd)) {
+      errors.push(`git clone must not use --depth (use --filter=blob:none instead): ${cmd}`);
+    }
+
+    const cloneClause = cmd.split(/&&|\|\||;|\|/)[0] ?? cmd;
+    const urlMatch = cloneClause.match(/(?:https?:\/\/|git@|ssh:\/\/|git:\/\/)[^\s"']+/i);
+    if (!urlMatch) continue;
+
+    const clonedRepoUrl = urlMatch[0];
+    if (normalizeRepoUrl(clonedRepoUrl) === normalizedSourceRepo) {
+      const hasLaterCheckout = allCommands
+        .slice(i + 1)
+        .some((later) => !later.trim().startsWith('#') && later.includes('checkout {{ref}}'));
+      if (!hasLaterCheckout) {
+        errors.push(`git clone of source.repo must be followed by a command containing 'checkout {{ref}}': ${cmd}`);
+      }
+    } else {
+      warnings.push(
+        `git clone targets external repository '${clonedRepoUrl}' instead of source.repo '${data.source.repo}'`,
+      );
+    }
+  }
+
+  return { errors, warnings };
+}
 
 /** `configs/<author>/<slug>.json` → `<author>/<slug>` */
 export const SLUG_RE = /^[a-z0-9][a-z0-9-]{2,47}$/;
@@ -294,6 +379,24 @@ export function readmeRawUrl(source: ConfigData['source']): string {
       return `https://codeberg.org/${owner}/${r}/raw/${SHA1.test(source.ref) ? 'commit' : 'tag'}/${source.ref}/${source.readme}`;
     default:
       return `https://raw.githubusercontent.com/${owner}/${r}/${source.ref}/${source.readme}`;
+  }
+}
+
+/** Browsable (HTML) blob URL for a file in a pinned source repo on GitHub, GitLab, or Codeberg. */
+export function blobUrl(
+  source: { repo: string; ref: string; readme?: string },
+  path: string = source.readme || 'README.md',
+): string {
+  const u = new URL(source.repo);
+  const repoPath = u.pathname.replace(/\/+$/, '').replace(/\.git$/, '');
+  const cleanPath = path.replace(/^\/+/, '');
+  switch (u.hostname) {
+    case 'gitlab.com':
+      return `https://gitlab.com${repoPath}/-/blob/${source.ref}/${cleanPath}`;
+    case 'codeberg.org':
+      return `https://codeberg.org${repoPath}/src/${SHA1.test(source.ref) ? 'commit' : 'tag'}/${source.ref}/${cleanPath}`;
+    default:
+      return `https://github.com${repoPath}/blob/${source.ref}/${cleanPath}`;
   }
 }
 

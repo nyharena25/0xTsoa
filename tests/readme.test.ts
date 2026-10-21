@@ -4,6 +4,7 @@ import {
   normalizeGitHubImageUrl,
   normalizeGitHubLinkUrl,
   extractScreenshotsFromReadme,
+  sanitizeAndRewriteHtml,
 } from '../src/lib/readme';
 
 describe('README URL Normalization and Asset Extraction', () => {
@@ -40,6 +41,22 @@ describe('README URL Normalization and Asset Extraction', () => {
       expect(normalized).toBe(
         'https://github.com/user-attachments/assets/09533e64-b6d7-47eb-a840-ee90c6776adf'
       );
+    });
+
+    it('leaves off-GitHub /assets/<uuid> URLs untouched', () => {
+      const offGitHubUrl =
+        'https://gitlab.com/end-4/dots-hyprland/-/raw/v1.0.0/assets/09533e64-b6d7-47eb-a840-ee90c6776adf.png';
+      expect(normalizeGitHubImageUrl(offGitHubUrl, readmeRawDir, repoRawRoot)).toBe(offGitHubUrl);
+      expect(
+        normalizeGitHubLinkUrl(
+          offGitHubUrl,
+          'https://github.com/end-4/dots-hyprland/blob/main/.github/',
+          'https://github.com/end-4/dots-hyprland/blob/main/'
+        )
+      ).toBe(offGitHubUrl);
+      const extracted = extractScreenshotsFromReadme(`<img src="${offGitHubUrl}" alt="GitLab Shot" />`);
+      expect(extracted).toHaveLength(1);
+      expect(extracted[0].url).toBe(offGitHubUrl);
     });
 
     it('resolves relative images with the readme directory base', () => {
@@ -127,6 +144,38 @@ describe('README URL Normalization and Asset Extraction', () => {
       `;
       const extracted = extractScreenshotsFromReadme(sampleHtml);
       expect(extracted).toHaveLength(1);
+    });
+  });
+
+  describe('sanitizeAndRewriteHtml', () => {
+    const rawDir = 'https://raw.githubusercontent.com/user/repo/v1.0.0/';
+    const blobDir = 'https://github.com/user/repo/blob/v1.0.0/';
+
+    it('strips style attributes while preserving align, width, and height', () => {
+      const dirty = `
+        <div align="center" style="position:fixed;inset:0;background:red">
+          <span style="color:red">Title</span>
+          <img src="https://raw.githubusercontent.com/user/repo/v1.0.0/a.png" width="400" height="300" align="left" style="opacity:0" />
+          <table><tr><th align="left" style="color:blue">H</th><td align="right" style="color:green">D</td></tr></table>
+        </div>
+      `;
+      const clean = sanitizeAndRewriteHtml(dirty, rawDir, blobDir, rawDir, blobDir);
+      expect(clean).not.toContain('style=');
+      expect(clean).toContain('align="center"');
+      expect(clean).toContain('width="400"');
+      expect(clean).toContain('height="300"');
+      expect(clean).toContain('align="left"');
+      expect(clean).toContain('align="right"');
+    });
+
+    it('removes data: href on links while allowing data: src on images', () => {
+      const dirty = `
+        <a href="data:text/html,<script>alert(1)</script>">Click me</a>
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="pixel" />
+      `;
+      const clean = sanitizeAndRewriteHtml(dirty, rawDir, blobDir, rawDir, blobDir);
+      expect(clean).not.toContain('href="data:');
+      expect(clean).toContain('src="data:image/png;base64,');
     });
   });
 });

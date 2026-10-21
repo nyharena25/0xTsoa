@@ -45,7 +45,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/catppuccin/catppuccin",
+          "git clone --filter=blob:none https://github.com/catppuccin/catppuccin",
+          "git -C catppuccin checkout {{ref}}",
           "cd catppuccin"
         ]
       },

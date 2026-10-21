@@ -50,7 +50,7 @@ async function main() {
     const body =
       `### Community sign-off for \`${id}\`\n\n` +
       `- 📋 **Config page:** ${configUrl}\n` +
-      `- ✓ **To sign off:** react to this message with 👍, ❤️ or 🎉.\n\n` +
+      `- ✓ **To sign off:** react to this message with 👍 (+1).\n\n` +
       `Votes are counted at every site rebuild. Please keep comments on-topic (feedback about this setup).`;
     const res = await fetch(`${api}/issues`, {
       method: 'POST',

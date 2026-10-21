@@ -38,7 +38,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/ChrisTitusTech/dwm-titus",
+          "git clone --filter=blob:none https://github.com/ChrisTitusTech/dwm-titus",
+          "git -C dwm-titus checkout {{ref}}",
           "cd dwm-titus"
         ]
       },

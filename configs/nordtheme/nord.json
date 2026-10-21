@@ -36,7 +36,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/nordtheme/nord",
+          "git clone --filter=blob:none https://github.com/nordtheme/nord",
+          "git -C nord checkout {{ref}}",
           "cd nord"
         ]
       },

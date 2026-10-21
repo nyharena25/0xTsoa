@@ -36,7 +36,8 @@
         "id": "deps",
         "title": "Read online or clone for offline browsing",
         "commands": [
-          "git clone --depth 1 https://github.com/myugan/awesome-linux-customization"
+          "git clone --filter=blob:none https://github.com/myugan/awesome-linux-customization",
+          "git -C awesome-linux-customization checkout {{ref}}"
         ]
       }
     ]

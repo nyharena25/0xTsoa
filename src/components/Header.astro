@@ -335,15 +335,18 @@ const finalStatusText = `${statusPrefix}${statusFinal}]`;
     }
 
     // 2. Shortcut key '/' focuses search input
-    window.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
-        const input = document.getElementById('nav-search-input') as HTMLInputElement | null;
-        if (input) {
-          e.preventDefault();
-          input.focus();
+    if (!document.documentElement.dataset.slashShortcutBound) {
+      document.documentElement.dataset.slashShortcutBound = 'true';
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+          const input = document.getElementById('nav-search-input') as HTMLInputElement | null;
+          if (input) {
+            e.preventDefault();
+            input.focus();
+          }
         }
-      }
-    });
+      });
+    }
 
     // 3. Initialize Grep Search Activation
     setupGrepActivation();

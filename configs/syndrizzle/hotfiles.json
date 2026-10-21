@@ -46,7 +46,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/Syndrizzle/hotfiles",
+          "git clone --filter=blob:none https://github.com/Syndrizzle/hotfiles",
+          "git -C hotfiles checkout {{ref}}",
           "cd hotfiles"
         ]
       },

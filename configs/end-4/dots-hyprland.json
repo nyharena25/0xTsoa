@@ -73,7 +73,8 @@
         "id": "deps",
         "title": "Clone repository dotfiles",
         "commands": [
-          "git clone --depth 1 https://github.com/end-4/dots-hyprland.git ~/.config/hypr/dots"
+          "git clone --filter=blob:none https://github.com/end-4/dots-hyprland.git ~/.config/hypr/dots",
+          "git -C ~/.config/hypr/dots checkout {{ref}}"
         ]
       },
       {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { configSchema, isPinnedRef, extractRawRef, idFromPath, SLUG_RE } from '../src/lib/schema';
+import { configSchema, isPinnedRef, extractRawRef, blobUrl, idFromPath, SLUG_RE } from '../src/lib/schema';
 
 describe('Config Schema & Validation Rules', () => {
   it('validates a correct configuration', () => {
@@ -150,6 +150,79 @@ describe('Config Schema & Validation Rules', () => {
     });
     expect(idFromPath('invalid/path.json')).toBeNull();
   });
+
+  it('validates optional review object and defaults installReviewed to false', () => {
+    const base = {
+      name: 'Reviewed Setup',
+      author: { name: 'alice', github: 'alice' },
+      summary: 'A setup with maintainer review metadata.',
+      license: 'MIT',
+      updatedAt: '2026-10-15',
+      distros: ['arch'],
+      wm: 'hyprland',
+      displayServer: 'wayland',
+      screenshots: [{ url: '/screenshots/fallback-terminal.svg', alt: 'Preview capture' }],
+      source: { repo: 'https://github.com/alice/dots', ref: 'v1.0.0' },
+      install: { steps: [{ id: 'deps', title: 'Install deps', commands: ['sudo pacman -S hyprland'] }] },
+    };
+
+    const withEmptyReview = configSchema.safeParse({ ...base, review: {} });
+    expect(withEmptyReview.success).toBe(true);
+    if (withEmptyReview.success) {
+      expect(withEmptyReview.data.review?.installReviewed).toBe(false);
+    }
+
+    const withFullReview = configSchema.safeParse({
+      ...base,
+      review: { installReviewed: true, reviewedBy: 'nyharena25', reviewedAt: '2026-10-21' },
+    });
+    expect(withFullReview.success).toBe(true);
+
+    const invalidReviewer = configSchema.safeParse({
+      ...base,
+      review: { installReviewed: true, reviewedBy: '-bad-handle', reviewedAt: '2026-10-21' },
+    });
+    expect(invalidReviewer.success).toBe(false);
+
+    const invalidDate = configSchema.safeParse({
+      ...base,
+      review: { installReviewed: true, reviewedBy: 'nyharena25', reviewedAt: '21-10-2026' },
+    });
+    expect(invalidDate.success).toBe(false);
+  });
+
+  it('rejects .. in source.readme and builds forge-specific blobUrl links', () => {
+    const base = {
+      name: 'Readme Path Test',
+      author: { name: 'alice', github: 'alice' },
+      summary: 'A setup testing source.readme path validation.',
+      license: 'MIT',
+      updatedAt: '2026-10-15',
+      distros: ['arch'],
+      wm: 'hyprland',
+      displayServer: 'wayland',
+      screenshots: [{ url: '/screenshots/fallback-terminal.svg', alt: 'Preview capture' }],
+      source: { repo: 'https://github.com/alice/dots', ref: 'v1.0.0', readme: '../secret.md' },
+      install: { steps: [{ id: 'deps', title: 'Install deps', commands: ['sudo pacman -S hyprland'] }] },
+    };
+    expect(configSchema.safeParse(base).success).toBe(false);
+
+    expect(blobUrl({ repo: 'https://github.com/alice/dots', ref: 'v1.0.0', readme: 'docs/README.md' })).toBe(
+      'https://github.com/alice/dots/blob/v1.0.0/docs/README.md',
+    );
+    expect(blobUrl({ repo: 'https://gitlab.com/alice/dots', ref: 'v1.0.0' })).toBe(
+      'https://gitlab.com/alice/dots/-/blob/v1.0.0/README.md',
+    );
+    expect(
+      blobUrl({
+        repo: 'https://codeberg.org/alice/dots',
+        ref: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4',
+      }),
+    ).toBe('https://codeberg.org/alice/dots/src/commit/e3b0c44298fc1c149afbf4c8996fb92427ae41e4/README.md');
+    expect(blobUrl({ repo: 'https://codeberg.org/alice/dots', ref: 'v1.0.0' })).toBe(
+      'https://codeberg.org/alice/dots/src/tag/v1.0.0/README.md',
+    );
+  });
 });
 
 describe('Published JSON Schema & example', () => {
@@ -165,3 +238,35 @@ describe('Published JSON Schema & example', () => {
     expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
   });
 });
+
+describe('Validator CLI, Collision Detection & Network Helpers', () => {
+  it('detects duplicate IDs and case collisions across configs/*/', async () => {
+    const { detectIdCollisions } = await import('../scripts/validate-configs');
+    const errs = detectIdCollisions([
+      '/repo/configs/Foo/x.json',
+      '/repo/configs/foo/x.json',
+      '/repo/configs/bar/y.json',
+    ]);
+    expect(errs).toHaveLength(1);
+    expect(errs[0]).toMatch(/foo\/x/i);
+  });
+
+  it('parses --network, --scripts, and --only flags', async () => {
+    const { parseCliArgs } = await import('../scripts/validate-configs');
+    expect(
+      parseCliArgs(['--network', '--only', 'configs/a/b.json', 'configs/c/d.json', '--scripts']),
+    ).toEqual({
+      network: true,
+      scripts: true,
+      only: ['configs/a/b.json', 'configs/c/d.json'],
+    });
+  });
+
+  it('supports wildcard host patterns in isHostAllowed', async () => {
+    const { isHostAllowed } = await import('../src/lib/fetch-limited');
+    const hosts = ['github.com', 'github-production-user-asset-*.s3.amazonaws.com'];
+    expect(isHostAllowed('github-production-user-asset-6210df.s3.amazonaws.com', hosts)).toBe(true);
+    expect(isHostAllowed('evil.s3.amazonaws.com', hosts)).toBe(false);
+  });
+});
+

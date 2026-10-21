@@ -231,11 +231,12 @@ body:
     id: install_deps
     attributes:
       label: "Install: Dependencies"
-      description: Required. Install packages or clone the repository.
+      description: Required. Install packages or clone the repository. When cloning the source repo, use `--filter=blob:none` (never `--depth`) and follow it with `git -C <dir> checkout {{ref}}` (`{{ref}}` is replaced with your pinned Git Ref).
       render: bash
       placeholder: |
         sudo pacman -S --needed hyprland waybar kitty rofi-wayland
-        git clone --depth 1 https://github.com/your-user/dotfiles ~/dotfiles
+        git clone --filter=blob:none https://github.com/your-user/dotfiles ~/dotfiles
+        git -C ~/dotfiles checkout {{ref}}
     validations:
       required: true
 

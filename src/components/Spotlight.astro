@@ -3,6 +3,7 @@ import CopyButton from './CopyButton.astro';
 import { useTranslations, type Locale } from '../lib/i18n';
 import { getVotesForConfig, getDiscussionUrlForConfig } from '../lib/votes';
 import { WM_LABELS, DISTRO_LABELS, type ConfigData } from '../lib/schema';
+import { renderCommand, verifiedScriptCommand } from '../lib/install';
 import { withBase } from '../../site.config';
 
 interface SpotlightItem {
@@ -26,12 +27,9 @@ const serializedSetups = configs.map((c, idx) => {
   const wmLabel = WM_LABELS[c.data.wm] || c.data.wm;
   const specPath = withBase(`/configs/${c.id}/`);
 
-  let installCmd = `git clone ${c.data.source.repo} ~/.dotfiles`;
-  if (c.data.install.script) {
-    installCmd = `curl -fsSL ${c.data.install.script.url} | ${c.data.install.script.shell || 'bash'}`;
-  } else if (c.data.install.steps?.[0]?.commands?.[0]) {
-    installCmd = c.data.install.steps[0].commands[0];
-  }
+  const installCmd = c.data.install.script
+    ? verifiedScriptCommand(c.data.install.script)
+    : c.data.install.steps[0].commands.map((cmd) => renderCommand(cmd, c.data)).join(' && ');
 
   const screenshots = c.data.screenshots && c.data.screenshots.length > 0
     ? c.data.screenshots.map((s, sIdx) => ({
@@ -54,8 +52,8 @@ const serializedSetups = configs.map((c, idx) => {
     desc: c.data.summary,
     distro: distroLabel,
     wm: `${wmLabel} (${c.data.displayServer})`,
-    bar: c.data.specs.bar || 'Waybar',
-    theme: c.data.specs.theme || 'Paper Monochrome',
+    bar: c.data.specs.bar || null,
+    theme: c.data.specs.theme || null,
     cmd: installCmd,
     votesCount: votes,
     votesFormatted: `${votes.toLocaleString()} sign-offs`,
@@ -65,7 +63,6 @@ const serializedSetups = configs.map((c, idx) => {
     screenshots,
     imgUrl: screenshots[0].url,
     imgAlt: screenshots[0].alt,
-    hash: `0x${c.id.slice(-6).toUpperCase().replace(/[^0-9A-F]/g, 'A')}`,
   };
 });
 
@@ -97,6 +94,15 @@ const defaultSetup = serializedSetups[0];
       <span class="font-mono text-xs text-zinc-500 mr-2" id="spotlight-counter">
         1 / {serializedSetups.length}
       </span>
+      <button
+        type="button"
+        id="spotlight-pause-play"
+        aria-label="Pause autoplay"
+        aria-pressed="false"
+        class="min-w-[44px] min-h-[44px] px-2.5 flex items-center justify-center gap-1 rounded-md border border-zinc-200 bg-white font-mono text-xs font-semibold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 transition-colors cursor-pointer"
+      >
+        <span id="spotlight-pause-play-label">Pause</span>
+      </button>
       <button
         type="button"
         id="spotlight-prev"
@@ -165,15 +171,6 @@ const defaultSetup = serializedSetups[0];
           10s SETUP / 2s IMAGE
         </div>
       </div>
-
-      <!-- Screenshot Footer Meta -->
-      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 text-xs font-mono text-zinc-400">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
-          <span class="text-zinc-300 font-medium">{t('spotlight.verifiedSpec')}</span>
-        </div>
-        <span class="text-zinc-500" id="spotlight-hash">ID: {defaultSetup?.hash}</span>
-      </div>
     </div>
 
     <!-- Right Volet: Balanced Specs, FastFetch Dashboard & 1-Line Deployment -->
@@ -184,9 +181,6 @@ const defaultSetup = serializedSetups[0];
           <div class="flex flex-wrap items-center justify-between gap-2">
             <span class="font-mono text-xs uppercase font-bold text-zinc-500 tracking-wider" id="spotlight-kicker">
               {defaultSetup?.kicker}
-            </span>
-            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-              READY TO USE
             </span>
           </div>
 
@@ -221,14 +215,14 @@ const defaultSetup = serializedSetups[0];
             </span>
           </div>
 
-          <div class="grid grid-cols-12 gap-1 py-0.5">
+          <div id="spec-bar-row" class={`grid grid-cols-12 gap-1 py-0.5 ${defaultSetup?.bar ? '' : 'hidden'}`}>
             <span class="col-span-5 text-zinc-500 font-medium">{t('spotlight.bar')}</span>
             <span class="col-span-7 font-bold text-zinc-900 text-right truncate" id="spec-bar">
               {defaultSetup?.bar}
             </span>
           </div>
 
-          <div class="grid grid-cols-12 gap-1 py-0.5">
+          <div id="spec-theme-row" class={`grid grid-cols-12 gap-1 py-0.5 ${defaultSetup?.theme ? '' : 'hidden'}`}>
             <span class="col-span-5 text-zinc-500 font-medium">{t('spotlight.theme')}</span>
             <span class="col-span-7 font-bold text-zinc-900 text-right truncate" id="spec-theme">
               {defaultSetup?.theme}
@@ -238,11 +232,11 @@ const defaultSetup = serializedSetups[0];
 
         <!-- 1-Line Deployment Command Card -->
         <div class="flex flex-col gap-2">
-          <label class="font-mono text-xs text-zinc-600 font-medium">
+          <span id="spotlight-cmd-label" class="font-mono text-xs text-zinc-600 font-medium">
             {t('spotlight.deployCmd')}
-          </label>
+          </span>
           <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-3 font-mono text-xs shadow-inner">
-            <code class="text-zinc-200 truncate select-all flex-1" id="spotlight-cmd">
+            <code aria-labelledby="spotlight-cmd-label" class="text-zinc-200 truncate select-all flex-1" id="spotlight-cmd">
               {defaultSetup?.cmd}
             </code>
             <CopyButton text={defaultSetup?.cmd || ''} id="spotlight-copy-btn" class="bg-zinc-800 text-zinc-200 border-zinc-700 hover:bg-zinc-700 hover:text-white" />
@@ -311,10 +305,54 @@ const defaultSetup = serializedSetups[0];
   let currentImageIndex = 0;
   let setupCycleTimer = null;
   let imageCycleTimer = null;
+  const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let userPaused = reducedMotionQuery.matches;
+  let isHovered = false;
+  let isFocusedWithin = false;
+
+  function stopTimers() {
+    if (setupCycleTimer) {
+      clearTimeout(setupCycleTimer);
+      setupCycleTimer = null;
+    }
+    if (imageCycleTimer) {
+      clearInterval(imageCycleTimer);
+      imageCycleTimer = null;
+    }
+  }
+
+  function startTimers() {
+    stopTimers();
+    if (reducedMotionQuery.matches || userPaused || isHovered || isFocusedWithin) {
+      return;
+    }
+    const s = serializedSetups[currentSetupIndex];
+    if (!s) return;
+
+    if (s.screenshots && s.screenshots.length > 1) {
+      imageCycleTimer = setInterval(() => {
+        swapScreenshot(currentImageIndex + 1);
+      }, 2000);
+    }
+
+    setupCycleTimer = setTimeout(() => {
+      showSetup((currentSetupIndex + 1) % serializedSetups.length, true);
+    }, 10000);
+  }
+
+  function updatePausePlayButton() {
+    const btn = document.getElementById('spotlight-pause-play');
+    const label = document.getElementById('spotlight-pause-play-label');
+    if (!btn || !label) return;
+    const paused = userPaused || reducedMotionQuery.matches;
+    label.textContent = paused ? 'Play' : 'Pause';
+    btn.setAttribute('aria-label', paused ? 'Play autoplay' : 'Pause autoplay');
+    btn.setAttribute('aria-pressed', String(paused));
+  }
 
   async function typeTitleTransition(el, newText) {
     if (!el) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (reducedMotionQuery.matches) {
       el.textContent = newText;
       return;
     }
@@ -363,9 +401,7 @@ const defaultSetup = serializedSetups[0];
   function showSetup(idx, animateTitle = true) {
     if (!serializedSetups || serializedSetups.length === 0) return;
 
-    // Reset both timers
-    if (setupCycleTimer) clearTimeout(setupCycleTimer);
-    if (imageCycleTimer) clearInterval(imageCycleTimer);
+    stopTimers();
 
     currentSetupIndex = (idx + serializedSetups.length) % serializedSetups.length;
     currentImageIndex = 0;
@@ -401,11 +437,15 @@ const defaultSetup = serializedSetups[0];
     const wm = document.getElementById('spec-wm');
     if (wm) wm.textContent = s.wm;
 
+    const barRow = document.getElementById('spec-bar-row');
     const bar = document.getElementById('spec-bar');
-    if (bar) bar.textContent = s.bar;
+    if (bar) bar.textContent = s.bar || '';
+    if (barRow) barRow.classList.toggle('hidden', !s.bar);
 
+    const themeRow = document.getElementById('spec-theme-row');
     const theme = document.getElementById('spec-theme');
-    if (theme) theme.textContent = s.theme;
+    if (theme) theme.textContent = s.theme || '';
+    if (themeRow) themeRow.classList.toggle('hidden', !s.theme);
 
     const cmd = document.getElementById('spotlight-cmd');
     if (cmd) cmd.textContent = s.cmd;
@@ -428,9 +468,6 @@ const defaultSetup = serializedSetups[0];
     const imgLink = document.getElementById('spotlight-image-link');
     if (imgLink) imgLink.setAttribute('href', s.specUrl);
 
-    const hash = document.getElementById('spotlight-hash');
-    if (hash) hash.textContent = `ID: ${s.hash}`;
-
     // Update active tab buttons (instant snap)
     const tabButtons = document.querySelectorAll('.spotlight-tab-btn');
     tabButtons.forEach((btn, i) => {
@@ -443,21 +480,7 @@ const defaultSetup = serializedSetups[0];
       }
     });
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return;
-    }
-
-    // 4. Feature 4: 2s Image Rhythm (cycle screenshots every 2 seconds)
-    if (s.screenshots && s.screenshots.length > 1) {
-      imageCycleTimer = setInterval(() => {
-        swapScreenshot(currentImageIndex + 1);
-      }, 2000);
-    }
-
-    // 5. Feature 4: 10s Setup Rhythm (hard cut to next setup after exactly 10s)
-    setupCycleTimer = setTimeout(() => {
-      showSetup((currentSetupIndex + 1) % serializedSetups.length, true);
-    }, 10000);
+    startTimers();
   }
 
   // Setup tab click handlers
@@ -467,6 +490,50 @@ const defaultSetup = serializedSetups[0];
       showSetup(idx, true);
     });
   });
+
+  // Pause / Play button
+  document.getElementById('spotlight-pause-play')?.addEventListener('click', () => {
+    if (reducedMotionQuery.matches) return;
+    userPaused = !userPaused;
+    updatePausePlayButton();
+    if (userPaused) {
+      stopTimers();
+    } else {
+      startTimers();
+    }
+  });
+
+  // Stop entirely when prefers-reduced-motion changes
+  reducedMotionQuery.addEventListener('change', (e) => {
+    if (e.matches) {
+      userPaused = true;
+      stopTimers();
+    }
+    updatePausePlayButton();
+  });
+
+  // Pause on hover / focus inside #vitrine-spotlight
+  const spotlightSection = document.getElementById('vitrine-spotlight');
+  if (spotlightSection) {
+    spotlightSection.addEventListener('mouseenter', () => {
+      isHovered = true;
+      stopTimers();
+    });
+    spotlightSection.addEventListener('mouseleave', () => {
+      isHovered = false;
+      startTimers();
+    });
+    spotlightSection.addEventListener('focusin', () => {
+      isFocusedWithin = true;
+      stopTimers();
+    });
+    spotlightSection.addEventListener('focusout', (e) => {
+      if (!spotlightSection.contains(e.relatedTarget)) {
+        isFocusedWithin = false;
+        startTimers();
+      }
+    });
+  }
 
   // Next / Prev buttons
   document.getElementById('spotlight-prev')?.addEventListener('click', () => {
@@ -478,5 +545,6 @@ const defaultSetup = serializedSetups[0];
   });
 
   // Initialize rhythm on page load
+  updatePausePlayButton();
   showSetup(0, false);
 </script>

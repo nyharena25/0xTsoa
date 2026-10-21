@@ -36,7 +36,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/AdisonCavani/distro-grub-themes",
+          "git clone --filter=blob:none https://github.com/AdisonCavani/distro-grub-themes",
+          "git -C distro-grub-themes checkout {{ref}}",
           "cd distro-grub-themes"
         ]
       },
