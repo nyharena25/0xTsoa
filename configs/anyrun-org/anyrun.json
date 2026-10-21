@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Plugin-based launcher for Wayland written in Rust.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-09-29",
+  "updatedAt": "2026-10-21",
   "distros": [
     "any"
   ],
@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/anyrun-org/anyrun",
-    "ref": "55230c6650ee3dde481b11c64cab717f738fa0dd",
+    "ref": "089316560b1f115013fe3947fc14878947cfbc21",
     "readme": "README.md"
   },
   "install": {
@@ -43,5 +43,5 @@
       }
     ]
   },
-  "version": "v26.6.1"
+  "version": "v26.10.0"
 }

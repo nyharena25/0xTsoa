@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Clean, customizable GTK4 greeter for greetd.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-07-17",
+  "updatedAt": "2026-10-21",
   "distros": [
     "any"
   ],
@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/rharish101/ReGreet",
-    "ref": "290e6f8d65b7034c5b63bc950a20bcf8277ebe5f",
+    "ref": "855db82e9587f2f12db0c02ef0ed8c4f4f30b9ae",
     "readme": "README.md"
   },
   "install": {

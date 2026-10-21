@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Adds blur to the GNOME Shell panel, overview and apps.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-10-20",
+  "updatedAt": "2026-10-21",
   "distros": [
     "any"
   ],
@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/aunetx/blur-my-shell",
-    "ref": "45a968f32d29c96e76acf290edbfe70f523f4019",
+    "ref": "30a8e73f370e8e32577b6916803ef139bdd91282",
     "readme": "README.md"
   },
   "install": {

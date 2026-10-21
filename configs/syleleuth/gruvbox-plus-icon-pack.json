@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Icon pack built around the Gruvbox palette.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-10-20",
+  "updatedAt": "2026-10-21",
   "distros": [
     "any"
   ],
@@ -35,7 +35,7 @@
   ],
   "source": {
     "repo": "https://github.com/SylEleuth/gruvbox-plus-icon-pack",
-    "ref": "4b8fcef99365bac0f011a7c187a9ef8d782116b4",
+    "ref": "788efb291c0feb216c48d74d2da5bdf199cd5481",
     "readme": "README.md"
   },
   "install": {

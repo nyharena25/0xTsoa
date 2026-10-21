@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Quickshell-based desktop shell for Hyprland with dashboard, launcher and dynamic colors.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-10-19",
+  "updatedAt": "2026-10-21",
   "distros": [
     "arch"
   ],
@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/caelestia-dots/shell",
-    "ref": "f7447a81c21363840f2e8420d9d42e1ccf55a0d4",
+    "ref": "d6cc0d5d901f20856058d62267c6c307cfc1e3fd",
     "readme": "README.md"
   },
   "install": {

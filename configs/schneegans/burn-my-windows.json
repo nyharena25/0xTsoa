@@ -8,7 +8,7 @@
   "lang": "en",
   "summary": "Retro window open/close effects for GNOME Shell and KWin.",
   "license": "GPL-3.0-only",
-  "updatedAt": "2026-10-19",
+  "updatedAt": "2026-10-21",
   "distros": [
     "any"
   ],
@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/Schneegans/Burn-My-Windows",
-    "ref": "d0536052f2cfa84096e6fb43ddbf08c449bcf470",
+    "ref": "b09d5e602c72b2ce626acfbcf732dc6d0654a84b",
     "readme": "README.md"
   },
   "install": {
