@@ -486,7 +486,7 @@ const defaultSetup = serializedSetups[0];
   // Setup tab click handlers
   document.querySelectorAll('.spotlight-tab-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const idx = parseInt(btn.getAttribute('data-index') || '0', 10);
+      const idx = Number.parseInt(btn.getAttribute('data-index') || '0', 10);
       showSetup(idx, true);
     });
   });

@@ -12,6 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { stripLeadingSlashes, stripTrailingSlashes } from '../src/lib/strings';
 
 const run = promisify(execFile);
 const CONFIGS_DIR = path.resolve(process.cwd(), 'configs');
@@ -87,9 +88,9 @@ export function versionTagAtRef(lsRemoteTagsOutput: string, ref: string): string
 
 /** Builds a commit comparison URL for GitHub, GitLab, or Codeberg. */
 export function buildCompareUrl(repoUrl: string, oldRef: string, newRef: string): string {
-  const cleaned = repoUrl.trim().replace(/\/+$/, '').replace(/\.git$/i, '');
+  const cleaned = stripTrailingSlashes(repoUrl.trim()).replace(/\.git$/i, '');
   const u = new URL(cleaned);
-  const repoPath = u.pathname.replace(/^\/+|\/+$/g, '');
+  const repoPath = stripTrailingSlashes(stripLeadingSlashes(u.pathname));
   if (u.hostname === 'gitlab.com') {
     return `https://gitlab.com/${repoPath}/-/compare/${oldRef}...${newRef}`;
   }

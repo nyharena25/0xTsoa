@@ -4,6 +4,7 @@ import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import { readmeRawUrl, type ConfigData } from './schema';
 import { fetchLimited } from './fetch-limited';
+import { stripTrailingSlashes } from './strings';
 
 const CACHE_DIR = path.resolve(process.cwd(), 'node_modules/.cache/0xtsoa-readme');
 const README_MAX_BYTES = 2 * 1024 * 1024;
@@ -58,7 +59,7 @@ function getCachePath(id: string, ref: string): string {
  */
 export function parseGitHubRepo(repoUrl: string): { owner: string; repo: string } | null {
   if (!repoUrl || typeof repoUrl !== 'string') return null;
-  const clean = repoUrl.trim().replace(/\/+$/, '').replace(/\.git$/, '');
+  const clean = stripTrailingSlashes(repoUrl.trim()).replace(/\.git$/, '');
 
   const urlMatch = clean.match(/github\.com[:/]([^/]+)\/([^/]+)$/);
   if (urlMatch) {

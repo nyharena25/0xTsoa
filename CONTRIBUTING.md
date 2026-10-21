@@ -349,7 +349,16 @@ Every configuration pull request is reviewed against `.github/PULL_REQUEST_TEMPL
 ### Review Process
 1. **Automated CI Check**: When a pull request is opened, `.github/workflows/validate.yml` runs `npx tsx scripts/validate-configs.ts --scripts`, `npx tsx scripts/validate-configs.ts --network --only <changed-configs>`, `npm test`, and `npm run build`.
 2. **Maintainer Review**: A maintainer reviews the JSON metadata and upstream attribution. If a maintainer manually audits the installation commands, they may set `review: { installReviewed: true, reviewedBy: "<handle>", reviewedAt: "YYYY-MM-DD" }`.
-3. **Merge and Deployment**: Once approved and merged into `main`, `.github/workflows/deploy.yml` creates the `[0xTsoa] <author>/<slug>` vote issue and triggers the Vercel production deployment.
+3. **Merge and Release**: Pull requests target `dev`, the working branch (Vercel builds a preview of it). Finished work is merged from `dev` into `main`, which only receives final updates; `.github/workflows/deploy.yml` then creates the `[0xTsoa] <author>/<slug>` vote issue. A release fast-forwards `production` (the live site) to `main`, and a `registry-YYYY.MM.DD` tag publishes a downloadable GitHub Release.
+
+### Branches
+
+| Branch | Role |
+| :--- | :--- |
+| `dev` | Working branch: all pull requests, bot submissions and upstream-sync PRs land here. Previewed by Vercel. |
+| `main` | Final updates only, merged from `dev` once a batch of changes is complete. |
+| `production` | What `0xtsoa.vercel.app` serves; fast-forwarded from `main` on release. |
+| `registry-*` tags | Downloadable releases (registry snapshot attached). |
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/section-divider-dark.svg">

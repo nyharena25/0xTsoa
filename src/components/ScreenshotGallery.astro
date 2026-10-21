@@ -190,7 +190,7 @@ const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
 
   document.querySelectorAll('.gallery-thumb').forEach((thumb) => {
     thumb.addEventListener('click', () => {
-      const idx = parseInt(thumb.getAttribute('data-shot-index') || '0', 10);
+      const idx = Number.parseInt(thumb.getAttribute('data-shot-index') || '0', 10);
       showImage(idx);
       modal?.showModal();
     });

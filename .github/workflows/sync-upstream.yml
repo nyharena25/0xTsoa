@@ -23,6 +23,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           token: ${{ secrets.BOT_TOKEN }}
+          ref: dev
 
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -42,17 +43,19 @@ jobs:
         run: npm run validate
 
       - name: Set sync date
-        run: echo "SYNC_DATE=$(date -u +%Y-%m-%d)" >> "$GITHUB_ENV"
+        id: sync-date
+        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
 
       - name: Create or update Pull Request
         uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
         with:
           token: ${{ secrets.BOT_TOKEN }}
+          base: dev
           add-paths: |
             configs
             src/generated/repo-stats.json
           commit-message: "chore: sync configs with upstream repositories"
           branch: bot/upstream-sync
-          title: "chore: upstream ref updates (${{ env.SYNC_DATE }})"
+          title: "chore: upstream ref updates (${{ steps.sync-date.outputs.date }})"
           body-path: sync-summary.md
           labels: upstream-sync

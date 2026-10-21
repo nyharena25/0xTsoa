@@ -263,8 +263,8 @@ const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
         thumbUrl: '',
         thumbAlt: '',
         updatedAt: card.getAttribute('data-date') || '1970-01-01',
-        votes: parseInt(card.getAttribute('data-votes') || '0', 10) || 0,
-        stars: parseInt(card.getAttribute('data-stars') || '0', 10) || 0,
+        votes: Number.parseInt(card.getAttribute('data-votes') || '0', 10) || 0,
+        stars: Number.parseInt(card.getAttribute('data-stars') || '0', 10) || 0,
       };
     });
 
@@ -354,7 +354,7 @@ const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
       const selectedWms = p.getAll('wm');
       const selectedStyles = p.getAll('style');
       const selectedDistros = p.getAll('distro');
-      const page = Math.max(1, parseInt(p.get('p') || '1', 10) || 1);
+      const page = Math.max(1, Number.parseInt(p.get('p') || '1', 10) || 1);
       const tag = p.get('tag');
       const q = p.get('q') || '';
       const favOnly = p.get('fav') === 'true';

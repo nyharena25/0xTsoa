@@ -1,0 +1,26 @@
+name: Publish Registry Release
+
+# Pushing a tag such as `registry-2026.10.21` (from main) publishes a downloadable
+# GitHub Release with a snapshot of the registry data attached.
+on:
+  push:
+    tags:
+      - 'registry-*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Build registry snapshot
+        run: tar -czf "${GITHUB_REF_NAME}.tar.gz" configs schema LICENSE README.md
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" "${GITHUB_REF_NAME}.tar.gz" --title "$GITHUB_REF_NAME" --generate-notes --verify-tag

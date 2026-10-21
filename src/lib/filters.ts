@@ -166,7 +166,7 @@ export function parseQueryToFilters(searchParams: URLSearchParams): FilterState 
   const sortParam = searchParams.get('sort');
   const sort: SortKey = (SORT_KEYS as readonly string[]).includes(sortParam ?? '') ? (sortParam as SortKey) : 'votes';
   const pageParam = searchParams.get('p');
-  const page = pageParam ? Math.max(1, parseInt(pageParam, 10) || 1) : 1;
+  const page = pageParam ? Math.max(1, Number.parseInt(pageParam, 10) || 1) : 1;
 
   return { category, wm, style, distro, tag, query, favoritesOnly, sort, page };
 }

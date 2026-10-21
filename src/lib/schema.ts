@@ -1,10 +1,11 @@
 /**
  * Single source of truth for the configuration JSON format.
  * Used by: Astro content collection, CI validation, Issue→PR bot, JSON Schema generation.
- * Keep this module dependency-free (only zod + site.config) so it runs in Node scripts too.
+ * Keep this module dependency-free (only zod, site.config and ./strings) so it runs in Node scripts too.
  */
 import { z } from 'zod';
 import { ALLOWED_IMAGE_HOSTS } from '../../site.config';
+import { stripLeadingSlashes, stripTrailingSlashes } from './strings';
 
 export const WMS = [
   'hyprland', 'sway', 'river', 'niri', 'wayfire', 'labwc',
@@ -304,13 +305,8 @@ export interface CloneValidationResult {
 
 /** Normalize a repository URL for comparison (lowercase, strip trailing slash and `.git`). */
 export function normalizeRepoUrl(url: string): string {
-  return url
-    .trim()
-    .replace(/^['"]|['"]$/g, '')
-    .toLowerCase()
-    .replace(/\/+$/, '')
-    .replace(/\.git$/, '')
-    .replace(/\/+$/, '');
+  const unquoted = url.trim().replace(/^['"]|['"]$/g, '').toLowerCase();
+  return stripTrailingSlashes(stripTrailingSlashes(unquoted).replace(/\.git$/, ''));
 }
 
 /**
@@ -388,8 +384,8 @@ export function blobUrl(
   path: string = source.readme || 'README.md',
 ): string {
   const u = new URL(source.repo);
-  const repoPath = u.pathname.replace(/\/+$/, '').replace(/\.git$/, '');
-  const cleanPath = path.replace(/^\/+/, '');
+  const repoPath = stripTrailingSlashes(u.pathname).replace(/\.git$/, '');
+  const cleanPath = stripLeadingSlashes(path);
   switch (u.hostname) {
     case 'gitlab.com':
       return `https://gitlab.com${repoPath}/-/blob/${source.ref}/${cleanPath}`;

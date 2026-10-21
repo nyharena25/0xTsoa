@@ -14,6 +14,7 @@
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check && vitest run",
+    "typecheck": "astro check",
     "test": "vitest run",
     "validate": "tsx scripts/validate-configs.ts",
     "schema": "tsx scripts/generate-schema.ts",
