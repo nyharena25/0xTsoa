@@ -281,7 +281,7 @@ async function main() {
     const cleanSlug = slug.replace(/[^a-z0-9_-]/g, '');
     if (cleanSlug) {
       const candidateFile = path.resolve(outDir, `${cleanSlug}.json`);
-      outRelPath = path.relative(process.cwd(), candidateFile).replace(/\\/g, '/');
+      outRelPath = path.relative(process.cwd(), candidateFile).replaceAll('\\', '/');
       if (fs.existsSync(candidateFile)) {
         mode = 'update';
       }
@@ -303,7 +303,7 @@ async function main() {
     }
 
     const outFile = safeOutputFile(outDir, slug);
-    outRelPath = path.relative(process.cwd(), outFile).replace(/\\/g, '/');
+    outRelPath = path.relative(process.cwd(), outFile).replaceAll('\\', '/');
     mode = fs.existsSync(outFile) ? 'update' : 'create';
 
     fs.writeFileSync(outFile, JSON.stringify(parsed.data, null, 2), 'utf-8');
@@ -324,5 +324,8 @@ async function main() {
 }
 
 if (process.argv[1] && process.argv[1].endsWith('issue-to-config.ts')) {
-  main();
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
 }

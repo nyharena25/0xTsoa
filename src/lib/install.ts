@@ -20,7 +20,7 @@ export function renderCommand(cmd: string, data: Pick<ConfigData, 'source'>): st
 
 /** POSIX single-quote escaping: wraps in `'` and escapes internal `'` as `'\''`. */
 export function shQuote(s: string): string {
-  return `'${s.replace(/'/g, "'\\''")}'`;
+  return `'${s.replaceAll("'", "'\\''")}'`;
 }
 
 /** Build a SHA-256 verified one-liner for executing a remote install script. */

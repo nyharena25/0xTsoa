@@ -13,6 +13,11 @@ const SITE_URL = (process.env.SITE_URL || 'https://0xtsoa.vercel.app').replace(/
 const INDEXNOW_KEY = process.env.INDEXNOW_KEY || '4f8b2e9a1c7d6035e8a4b2c9d1f7063a';
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 
+/** Remote text is logged as data: strip control characters (no forged log lines) and cap its length. */
+function forLog(value) {
+  return String(value).replace(/[\u0000-\u001f\u007f]+/g, ' ').slice(0, 500);
+}
+
 function extractLocUrls(xml) {
   const matches = xml.matchAll(/<loc>([^<]+)<\/loc>/g);
   return Array.from(matches, (m) => m[1].trim()).filter(Boolean);
@@ -74,12 +79,12 @@ async function main() {
     console.log(`[IndexNow] Success (HTTP ${response.status}). Submitted ${urlList.length} URLs.`);
   } else {
     const body = await response.text().catch(() => '');
-    console.error(`[IndexNow] Failed with HTTP ${response.status}: ${body}`);
+    console.error(`[IndexNow] Failed with HTTP ${response.status}: ${forLog(body)}`);
     process.exit(1);
   }
 }
 
 main().catch((err) => {
-  console.error('[IndexNow] Error:', err instanceof Error ? err.message : err);
+  console.error('[IndexNow] Error:', forLog(err instanceof Error ? err.message : err));
   process.exit(1);
 });
