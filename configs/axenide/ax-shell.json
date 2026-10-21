@@ -48,7 +48,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/Axenide/Ax-Shell",
+          "git clone --filter=blob:none https://github.com/Axenide/Ax-Shell",
+          "git -C Ax-Shell checkout {{ref}}",
           "cd Ax-Shell"
         ]
       },

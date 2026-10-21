@@ -43,6 +43,7 @@
         "title": "Clone the flake",
         "commands": [
           "git clone https://github.com/Misterio77/Foundry ~/nix-config",
+          "git -C ~/nix-config checkout {{ref}}",
           "cd ~/nix-config"
         ]
       },

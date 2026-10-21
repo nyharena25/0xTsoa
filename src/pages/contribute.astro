@@ -114,7 +114,7 @@ const t = useTranslations(locale);
         <li class="flex items-start gap-2">
           <span class="font-mono font-bold text-zinc-900 shrink-0">1.</span>
           <div>
-            <strong class="font-semibold text-zinc-900">Reproducible install scripts:</strong> If you provide an install script URL (<code>.sh</code>), it must point to a full 40-character commit SHA or immutable tag, and include a verified <code>sha256</code> checksum.
+            <strong class="font-semibold text-zinc-900">External install scripts:</strong> If you provide an optional install script URL (<code>.sh</code>), it must point to a raw URL at a 40-character commit SHA or version tag and include its 64-character <code>sha256</code> digest (checked by CI).
           </div>
         </li>
         <li class="flex items-start gap-2">
@@ -127,7 +127,7 @@ const t = useTranslations(locale);
         <li class="flex items-start gap-2">
           <span class="font-mono font-bold text-zinc-900 shrink-0">3.</span>
           <div>
-            <strong class="font-semibold text-zinc-900">Pinned README reference:</strong> The <code>source.ref</code> property must be a fixed tag or commit for deterministic builds and historical preservation.
+            <strong class="font-semibold text-zinc-900">Pinned source reference:</strong> <code>source.ref</code> must be a 40-character commit SHA or a version tag (never a branch name); only a 40-character commit SHA cannot be moved upstream and earns the "Source pinned" badge. Any <code>git clone</code> step must check out <code>&#123;&#123;ref&#125;&#125;</code>.
           </div>
         </li>
         <li class="flex items-start gap-2">

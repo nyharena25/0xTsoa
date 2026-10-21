@@ -16,9 +16,8 @@ You can contribute to 0xTsoa in several ways:
 
 1. **Submit a Desktop Setup or Component (No Git Required)**: Fill out the [Submit a Linux Desktop Project](https://github.com/nyharena25/0xTsoa/issues/new?template=new-config.yml) issue form (`new-config` label). Our GitHub Actions bot converts your form into a validated JSON file and opens a pull request automatically.
 2. **Submit a Setup via Direct Pull Request**: Fork the repository, add or update `configs/<author>/<slug>.json`, validate locally with `npm run validate`, and open a pull request.
-3. **Submit a Showcase Entry**: Fill out the [Submit Linux Showcase Setup](https://github.com/nyharena25/0xTsoa/issues/new?template=submit-showcase.yml) issue form (`showcase-submission` label) to have your setup ingested and ranked by community reactions.
-4. **Vote and Sign Off on Setups**: Visit any setup's `[0xTsoa] <author>/<slug>` vote issue and add a `+1`, `heart`, or `hooray` reaction to endorse setups that work cleanly.
-5. **Improve the Platform Code**: Fix bugs, improve accessibility, refine the Astro components in `src/`, or expand the Vitest test suite in `tests/`.
+3. **Vote and Sign Off on Setups**: Visit any setup's `[0xTsoa] <author>/<slug>` vote issue and add a `+1` reaction to endorse setups that work cleanly.
+4. **Improve the Platform Code**: Fix bugs, improve accessibility, refine the Astro components in `src/`, or expand the Vitest test suite in `tests/`.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/section-divider-dark.svg">
@@ -34,39 +33,22 @@ The fastest way to add a project is through `.github/ISSUE_TEMPLATE/new-config.y
 - **Identity**: Project Name (`3` to `80` chars), URL Slug (`3` to `48` lowercase characters, digits, and hyphens), Short Summary (`10` to `200` chars), optional Description (up to `2000` chars), and SPDX License (defaults to `MIT` if left empty).
 - **Environment**: Desktop Part (`category`), Window Manager (`wm`), Theme Style (`themeStyle`), Display Server (`wayland`, `x11`, or `both`), tested Distributions (`distros`, up to 8), and optional Tags (up to 10).
 - **Screenshots**: 1 to 8 direct `https://` image URLs (one per line) hosted on an allowed domain.
-- **Source and Installation**: Source repository URL (`github.com`, `gitlab.com`, or `codeberg.org`), a pinned Git ref (40-character commit SHA or version tag), required `Install: Dependencies` shell commands, optional `Install: Deploy` and `Install: Reload` commands, and an optional pinned `.sh` script URL and SHA-256 hash.
+- **Source and Installation**: Source repository URL (`github.com`, `gitlab.com`, or `codeberg.org`), a Git ref (40-character commit SHA or version tag), required `Install: Dependencies` shell commands, optional `Install: Deploy` and `Install: Reload` commands, and an optional pinned `.sh` script URL and SHA-256 hash.
 - **Components (Optional)**: Status Bar, Terminal, Launcher, Shell, and Theme names.
 
 ### How `issue-to-pr.yml` Turns Your Issue into a Pull Request
-When you open or edit an issue with the `new-config` label, `.github/workflows/issue-to-pr.yml` runs automatically:
+When you open an issue with the `new-config` label (or when a maintainer adds the `regenerate` label after you edit the issue), `.github/workflows/issue-to-pr.yml` runs automatically:
 
 1. **Safe Input Handling**: The workflow writes `github.event.issue.body` to `temp_issue_body.md` via an environment variable (`ISSUE_BODY`) so untrusted markdown is never interpolated into a shell command.
-2. **Conversion (`scripts/issue-to-config.ts`)**: The script runs `npm run issue-to-config -- temp_issue_body.md "$ISSUE_AUTHOR"`:
+2. **Conversion (`scripts/issue-to-config.ts`)**: The script runs `npm run issue-to-config -- temp_issue_body.md "$ISSUE_AUTHOR"` and writes `issue-to-config-result.json` (`{ status, mode, path, errors }`):
    - Parses all `### <Heading>` sections from the issue body.
    - Maps dropdown labels back to schema enum keys (`CATEGORY_LABELS`, `WM_LABELS`, `STYLE_LABELS`).
    - Credits the GitHub user who opened the issue as both `author.name` and `author.github`.
-   - If you supplied an `Install Script URL` without a 64-character `Script SHA-256`, the script downloads the remote `.sh` file and calculates its SHA-256 digest automatically.
+   - If you supplied an `Install Script URL` without a 64-character `Script SHA-256`, the script downloads the remote `.sh` file (up to 1 MiB) and calculates its SHA-256 digest automatically.
    - Validates the generated object against `configSchema` (`src/lib/schema.ts`) and writes `configs/<issue-author>/<slug>.json`.
-3. **Validation**: Runs `npm run validate` across the repository.
-4. **Pull Request Creation**: Uses `peter-evans/create-pull-request` to open or update branch `config/issue-<number>` with commit message `feat(config): add configuration from issue #<number>` and labels `automated-pr, community-config`.
-5. **Confirmation Comment**: Posts a comment on your issue confirming that the pull request has been created and queued for maintainer review.
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/section-divider-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset=".github/assets/section-divider.svg">
-  <img src=".github/assets/section-divider.svg" alt="Animated section divider" width="100%" height="12" />
-</picture>
-
-## <picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/icons/image-dark.svg"><img src=".github/assets/icons/image.svg" width="20" height="20" align="top" alt="Showcase Submissions icon"></picture> Submitting a Showcase (`submit-showcase.yml`)
-
-For community showcase tracking and automated ingestion, you can also submit `.github/ISSUE_TEMPLATE/submit-showcase.yml` ([open form](https://github.com/nyharena25/0xTsoa/issues/new?template=submit-showcase.yml)), which applies the `showcase-submission` label.
-
-- **Fields**: Project Name, Author GitHub Username, Repository URL (`https://github.com/...`), Linux Distribution, Window Manager / Desktop Environment, and Short Description.
-- **How Ingestion Works (`scripts/ingest-configs.ts` and `.github/workflows/ingest.yml`)**:
-  - `fetchShowcaseIssues()` reads open issues labeled `showcase-submission`.
-  - `processShowcaseIssue()` parses the form fields and fetches positive reactions (`+1`, `heart`, `hooray`) via `fetchIssueReactions()`.
-  - If the submission matches an existing entry in `configs/` (by ID or repository URL), its reaction score is added to that configuration's popularity score. Otherwise, `ingestConfig()` fetches the upstream README and root-level screenshots (`.png`, `.jpg`, `.jpeg`, `.webp`) via the GitHub API and adds it to `src/generated/unified-showcase.json`.
-  - `fetch-votes.ts` also reads `showcase-submission` issue reactions when `GITHUB_TOKEN` is set and merges those counts into `src/generated/votes.json` and `featured.json`.
+3. **Error Reporting or Pull Request Creation**:
+   - If `status` is `error`, the workflow posts the validation error list as a comment on your issue and asks you to edit the issue so a maintainer can re-run it with the `regenerate` label.
+   - If `status` is `ok`, the workflow runs `npm run validate`, opens or updates branch `config/issue-<number>` via `peter-evans/create-pull-request` (using `secrets.BOT_TOKEN` so `validate.yml` runs on the bot PR), and comments on the issue with the PR link.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/section-divider-dark.svg">
@@ -92,7 +74,7 @@ Every configuration file lives at `configs/<author.github>/<slug>.json`.
 | `summary` | `string` | **Required** | None | One-sentence summary: `minLength: 10`, `maxLength: 200` |
 | `description` | `string` | Optional | None | Extended technical overview: `maxLength: 2000` |
 | `license` | `string` | **Required** | None | SPDX license expression matching `^[A-Za-z0-9.+-]+( (AND\|OR\|WITH) [A-Za-z0-9.+-]+)*$` (e.g. `"MIT"`, `"GPL-3.0-only"`) |
-| `version` | `string` | Optional | None | `maxLength: 40` (refreshed nightly by `sync-upstream.ts` from upstream Git tags) |
+| `version` | `string` | Optional | None | `maxLength: 40` (set by `sync-upstream.ts` only when a version-like tag's peeled commit equals `source.ref`) |
 | `updatedAt` | `string` | **Required** | None | ISO date `YYYY-MM-DD` matching `^\d{4}-\d{2}-\d{2}$` |
 | `distros` | `string[]` | **Required** | None | `1` to `8` items from: `"arch"`, `"endeavouros"`, `"manjaro"`, `"fedora"`, `"nixos"`, `"debian"`, `"ubuntu"`, `"mint"`, `"void"`, `"opensuse"`, `"gentoo"`, `"alpine"`, `"any"` |
 | `category` | `string` | Optional | `"dotfiles"` | Desktop part enum: `"dotfiles"`, `"wm"`, `"bar"`, `"widgets"`, `"launcher"`, `"notifications"`, `"dock"`, `"icons"`, `"cursors"`, `"gtk-theme"`, `"colorscheme"`, `"login"`, `"lockscreen"`, `"boot"`, `"extension"`, `"tool"`, `"resource"` |
@@ -105,6 +87,7 @@ Every configuration file lives at `configs/<author.github>/<slug>.json`.
 | `source` | `object` | **Required** | None | Upstream repository pointer (`repo`, `ref`, optional `readme`) |
 | `install` | `object` | **Required** | None | Installation instructions (`steps`, optional `script`, optional `packages`) |
 | `keybindings` | `object[]` | Optional | `[]` | Up to `30` shortcut objects (`keys`, `action`, optional `effect`) |
+| `review` | `object` | Optional | None | Maintainer install review metadata (`installReviewed`, optional `reviewedBy`, optional `reviewedAt`) |
 | `example` | `boolean` | Optional | `false` | Marks synthetic example entries (`false` for all real community submissions) |
 
 ### Nested Object Fields
@@ -124,12 +107,12 @@ Every configuration file lives at `configs/<author.github>/<slug>.json`.
 | `screenshots[].alt` | `string` | **Required** | None | Accessible description (`minLength: 5`, `maxLength: 200`) |
 | `screenshots[].caption` | `string` | Optional | None | Short caption label (`maxLength: 60`, e.g. `"01_DESKTOP.RAW"`) |
 | `source.repo` | `string` | **Required** | None | `https://` repository URL on `github.com`, `gitlab.com`, or `codeberg.org` |
-| `source.ref` | `string` | **Required** | None | 40-char lowercase hex commit SHA (`^[0-9a-f]{40}$`) or version tag (`v1.0.0`, `release-1`). Moving branches (`main`, `master`, `dev`, `develop`, `HEAD`, `latest`, `trunk`) are forbidden |
+| `source.ref` | `string` | **Required** | None | 40-char lowercase hex commit SHA (`^[0-9a-f]{40}$`, immutable — earns **Source pinned**) or version tag (`v1.0.0`, `release-1`, mutable). Moving branches (`main`, `master`, `dev`, `develop`, `HEAD`, `latest`, `trunk`) are forbidden |
 | `source.readme` | `string` | Optional | `"README.md"` | Path to markdown README matching `^[\w./-]+\.(md\|markdown)$` |
-| `install.steps` | `object[]` | **Required** | None | `1` to `3` step objects; each `id` may appear only once |
+| `install.steps` | `object[]` | **Required** | None | `1` to `3` step objects; each `id` may appear only once. If any command runs `git clone` of `source.repo`, it must not use `--depth` and a later command must contain `checkout {{ref}}` |
 | `install.steps[].id` | `string` | **Required** | None | Enum: `"deps"` (install packages or clone), `"dotfiles"` (deploy config or theme), `"reload"` (apply or restart) |
 | `install.steps[].title` | `string` | **Required** | None | Step heading (`minLength: 3`, `maxLength: 80`) |
-| `install.steps[].commands` | `string[]` | **Required** | None | `1` to `30` shell commands (`1` to `500` chars each; `#` lines render as comments) |
+| `install.steps[].commands` | `string[]` | **Required** | None | `1` to `30` shell commands (`1` to `500` chars each; `#` lines render as comments; `{{ref}}` is replaced with `source.ref`, e.g. `git -C <dir> checkout {{ref}}`) |
 | `install.script.url` | `string` | **Required** (if `script` set) | None | Raw `https://` URL pinned to a 40-char commit SHA or version tag on GitHub, GitLab, or Codeberg |
 | `install.script.sha256` | `string` | **Required** (if `script` set) | None | 64-character lowercase hex SHA-256 digest (`^[0-9a-f]{64}$`) |
 | `install.script.shell` | `string` | Optional | `"bash"` | Enum: `"sh"`, `"bash"` |
@@ -137,6 +120,9 @@ Every configuration file lives at `configs/<author.github>/<slug>.json`.
 | `keybindings[].keys` | `string` | **Required** (per item) | None | Key combination (`maxLength: 40`, e.g. `"SUPER + Return"`) |
 | `keybindings[].action` | `string` | **Required** (per item) | None | Dispatched WM command (`maxLength: 80`, e.g. `"exec, kitty"`) |
 | `keybindings[].effect` | `string` | Optional | None | Human-readable description (`maxLength: 120`) |
+| `review.installReviewed` | `boolean` | Optional | `false` | Whether a maintainer manually reviewed `install.steps` |
+| `review.reviewedBy` | `string` | Optional | None | GitHub handle of the reviewer |
+| `review.reviewedAt` | `string` | Optional | None | Review date (`YYYY-MM-DD`) |
 
 ### Reference JSON Example (`schema/example.config.json`)
 
@@ -204,7 +190,8 @@ Every configuration file lives at `configs/<author.github>/<slug>.json`.
         "id": "dotfiles",
         "title": "Deploy dotfiles",
         "commands": [
-          "git clone --branch v1.0.0 https://github.com/my-handle/dots ~/dots",
+          "git clone --filter=blob:none https://github.com/my-handle/dots ~/dots",
+          "git -C ~/dots checkout {{ref}}",
           "cp -r ~/dots/.config/* ~/.config/"
         ]
       },
@@ -247,7 +234,9 @@ All configurations are checked by `scripts/validate-configs.ts` and `src/lib/sch
 - `source.repo` must be hosted on `github.com`, `gitlab.com`, or `codeberg.org`.
 - `source.ref` must pass `isPinnedRef()`: either a 40-character lowercase hex SHA-1 (`^[0-9a-f]{40}$`) or a version tag (`^(v?\d+(\.\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+)$`).
 - Moving branch names (`main`, `master`, `dev`, `develop`, `HEAD`, `latest`, `trunk`) are explicitly blocked.
-- You do not need to bump `source.ref` manually after merging: `.github/workflows/sync-upstream.yml` runs `npm run sync-upstream` nightly at `02:23 UTC` to advance `source.ref` to the latest default-branch commit SHA, update `updatedAt`, update `version` to the newest version tag, and record star counts in `src/generated/repo-stats.json`.
+- Because Git tags can be moved by upstream authors, **only a 40-character commit SHA is immutable** and earns the **Source pinned** assurance badge.
+- Any `install.steps` command that runs `git clone` of `source.repo` must not use `--depth`, and a subsequent command must contain `checkout {{ref}}` (enforced by `validateCloneSteps()` in `src/lib/schema.ts`).
+- `.github/workflows/sync-upstream.yml` runs `npm run sync-upstream` nightly at `02:23 UTC` to check upstream default-branch HEAD commits, leave `updatedAt` untouched, set `version` only when a version-like tag's peeled commit matches the new ref, update `src/generated/repo-stats.json`, and open a pull request on branch `bot/upstream-sync` with a markdown summary and compare links.
 
 ### 2. Install Script Pinning and SHA-256 Checksums (`install.script`)
 - If `install.script` is provided, `extractRawRef(url)` verifies that `url` is a raw file URL pinned to a commit SHA or version tag on one of the four supported patterns:
@@ -256,7 +245,7 @@ All configurations are checked by `scripts/validate-configs.ts` and `src/lib/sch
   - `https://gitlab.com/<group-or-owner>/<repo>/-/raw/<sha-or-tag>/<path>`
   - `https://codeberg.org/<owner>/<repo>/raw/commit/<sha>/<path>` (or `/raw/tag/<tag>/<path>`)
 - `install.script.sha256` must be a 64-character lowercase hex SHA-256 digest (`sha256sum install.sh`).
-- When running `npx tsx scripts/validate-configs.ts --network`, `verifyScriptHash()` downloads the script (with a 10-second timeout), rejects any script larger than `1 MiB` (`1,048,576` bytes), and checks that the actual SHA-256 matches `install.script.sha256`.
+- In CI (`npx tsx scripts/validate-configs.ts --scripts` and `--network`), `verifyScriptHash()` streams the script (up to `1 MiB` / `1,048,576` bytes with a 10-second timeout) and checks that the actual SHA-256 matches `install.script.sha256`.
 - Install scripts must not invoke unverified binary blobs, obfuscated base64 payloads, or silent privilege escalation.
 
 ### 3. Allowed Screenshot Hosts (`ALLOWED_IMAGE_HOSTS`)
@@ -280,9 +269,9 @@ Every `screenshots[].url` must either be a local file inside `public/` (starting
 
 0xTsoa uses GitHub Issues as a zero-database voting backend (`src/lib/votes.ts`, `scripts/ensure-vote-issues.ts`, and `scripts/fetch-votes.ts`):
 
-1. **One Vote Issue per Configuration**: During deployment (`deploy.yml`), `npm run vote-issues` checks every `configs/<author>/<slug>.json` against open and closed issues labeled `vote`. If an entry lacks an issue titled `[0xTsoa] <author>/<slug>`, the script creates it automatically.
-2. **Positive Reaction Counting**: Community members click the **Sign-Off** button on any configuration card or detail page, which takes them to that entry's `[0xTsoa] <author>/<slug>` issue. Reacting to the issue body with `+1` (thumbs up), `heart`, or `hooray` counts as a sign-off vote.
-3. **Build-Time Snapshot (`src/generated/votes.json`)**: Before every build (`prebuild`), `scripts/fetch-votes.ts` queries the GitHub Issues API (working with or without `GITHUB_TOKEN`), sums the `+1`, `heart`, and `hooray` reactions per configuration, incorporates any `showcase-submission` issue reactions when authenticated, writes `src/generated/votes.json`, and updates `featured.json` with the top 5 voted entries.
+1. **One Vote Issue per Configuration**: During the nightly refresh or on push to `main` (`deploy.yml`), `npm run vote-issues` checks every `configs/<author>/<slug>.json` against open and closed issues labeled `vote`. If an entry lacks an issue titled `[0xTsoa] <author>/<slug>`, the script creates it automatically.
+2. **+1 Reaction Counting**: Community members click the **Sign-Off** button on any configuration card or detail page, which takes them to that entry's `[0xTsoa] <author>/<slug>` issue. Reacting to the issue body with `+1` (thumbs up) counts as one vote per GitHub user.
+3. **Build-Time Snapshot (`src/generated/votes.json`)**: Before every build (`prebuild`), `scripts/fetch-votes.ts` queries the GitHub Issues API (working with or without `GITHUB_TOKEN`), counts `+1` reactions per configuration, and writes `src/generated/votes.json`.
 4. **Catalogue Ranking**: By default (`sort=votes`), the catalogue sorts entries by vote count descending, breaking ties by upstream repository star count (`src/generated/repo-stats.json`).
 
 <picture>
@@ -297,8 +286,9 @@ Every `screenshots[].url` must either be a local file inside `public/` (starting
 Node.js `>= 20` is required. Optional environment variables are documented in `.env.example`:
 - `REPO_OWNER` (defaults to `nyharena25`)
 - `REPO_NAME` (defaults to `0xTsoa`)
-- `SITE_URL` (defaults to `https://0xtsoa.vercel.app` locally and on Vercel, or `https://<owner>.github.io` in GitHub Actions)
-- `BASE_PATH` (defaults to `""` locally and on Vercel, or `/<REPO_NAME>` in GitHub Actions)
+- `SITE_URL` (defaults to `https://0xtsoa.vercel.app`)
+- `BASE_PATH` (defaults to `""`)
+- `GA_MEASUREMENT_ID` (optional Google Analytics 4 measurement ID; omitted by default)
 - `GITHUB_TOKEN` (optional GitHub Personal Access Token for higher API rate limits and creating vote issues)
 
 ### Verification Commands
@@ -308,10 +298,13 @@ Run these commands before submitting a pull request:
 # Start the local Astro dev server at http://localhost:4321/
 npm run dev
 
-# Validate all JSON configs (schema, folder-to-author match, slug format, image hosts)
+# Validate all JSON configs (schema, folder-to-author match, slug format, image hosts, {{ref}} checkout)
 npm run validate
 
-# Optional: also verify remote screenshot URLs, README reachability, and install script SHA-256 hashes
+# Verify install.script SHA-256 hashes only
+npx tsx scripts/validate-configs.ts --scripts
+
+# Verify remote screenshot URLs, README reachability, and install script SHA-256 hashes
 npx tsx scripts/validate-configs.ts --network
 
 # If you edited src/lib/schema.ts, regenerate schema/config.schema.json
@@ -346,17 +339,17 @@ Every configuration pull request is reviewed against `.github/PULL_REQUEST_TEMPL
 - [ ] The file lives at `configs/<github-user>/<slug>.json` and `author.github` matches the folder name.
 - [ ] `category` names the desktop part (`dotfiles`, `bar`, `launcher`, `icons`, `gtk-theme`, etc.), and `wm` is `any` if the project is not tied to one window manager.
 - [ ] `tags` list components and features only (no WM, distro, display server, or theme-style duplicates).
-- [ ] `install.steps` has at least a `deps` step, and the commands work on a clean system for at least one listed distribution.
-- [ ] `source.ref` is a full 40-character commit SHA or a version tag, never a branch name.
-- [ ] Screenshots come from an allowed host (`raw.githubusercontent.com`, `github.com`, `user-images.githubusercontent.com`, `i.imgur.com`, `i.redd.it`, `codeberg.org`, `gitlab.com`).
-- [ ] Any `.sh` install script is pinned to a tag or commit SHA and includes its 64-character `sha256` checksum.
+- [ ] `install.steps` has at least a `deps` step, and any `git clone` of `source.repo` is followed by `checkout {{ref}}`.
+- [ ] `source.ref` is a full 40-character commit SHA (recommended, immutable) or a version tag, never a branch name.
+- [ ] Screenshots come from an allowed host (`raw.githubusercontent.com`, `github.com`, `user-images.githubusercontent.com`, `private-user-images.githubusercontent.com`, `i.imgur.com`, `i.redd.it`, `codeberg.org`, `gitlab.com`).
+- [ ] Any `.sh` install script is pinned to a commit SHA or tag and includes its 64-character `sha256` checksum.
 - [ ] `license` is a valid SPDX identifier.
 - [ ] `npm run validate` passes.
 
 ### Review Process
-1. **Automated CI Check**: When a pull request is opened, `.github/workflows/validate.yml` runs `npm run validate`, `npm run test`, and `npm run build`, while `.github/workflows/ingest.yml` verifies README and screenshot ingestion when `configs/**` changes.
-2. **Maintainer Review**: A maintainer reviews the JSON metadata, checks that the installation commands are safe and free of obfuscated code, and verifies upstream attribution.
-3. **Merge and Deployment**: Once approved and merged into `main`, `.github/workflows/deploy.yml` creates the `[0xTsoa] <author>/<slug>` vote issue and publishes the updated static site and Pagefind search index.
+1. **Automated CI Check**: When a pull request is opened, `.github/workflows/validate.yml` runs `npx tsx scripts/validate-configs.ts --scripts`, `npx tsx scripts/validate-configs.ts --network --only <changed-configs>`, `npm test`, and `npm run build`.
+2. **Maintainer Review**: A maintainer reviews the JSON metadata and upstream attribution. If a maintainer manually audits the installation commands, they may set `review: { installReviewed: true, reviewedBy: "<handle>", reviewedAt: "YYYY-MM-DD" }`.
+3. **Merge and Deployment**: Once approved and merged into `main`, `.github/workflows/deploy.yml` creates the `[0xTsoa] <author>/<slug>` vote issue and triggers the Vercel production deployment.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/section-divider-dark.svg">

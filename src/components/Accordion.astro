@@ -1,6 +1,8 @@
 ---
 import CopyButton from './CopyButton.astro';
 import { useTranslations, type Locale } from '../lib/i18n';
+import { renderCommand } from '../lib/install';
+import type { ConfigData } from '../lib/schema';
 
 interface Step {
   id: string;
@@ -9,40 +11,13 @@ interface Step {
 }
 
 interface Props {
-  steps?: Step[];
+  steps: Step[];
+  data?: Pick<ConfigData, 'source'>;
   locale?: Locale;
 }
 
-const { steps, locale = 'en' } = Astro.props;
+const { steps, data, locale = 'en' } = Astro.props;
 const t = useTranslations(locale);
-
-// Default steps if not provided by a specific config
-const displaySteps: Step[] = steps && steps.length > 0 ? steps : [
-  {
-    id: 'deps',
-    title: t('accordion.step1'),
-    commands: [
-      'sudo pacman -S --needed hyprland waybar kitty rofi-wayland dunst cliphist',
-      'systemctl --user enable --now pipewire pipewire-pulse wireplumber',
-    ],
-  },
-  {
-    id: 'dotfiles',
-    title: t('accordion.step2'),
-    commands: [
-      'git clone https://github.com/0xtsoa/hypr-rc01.git ~/.config/hypr',
-      'ln -sf ~/.config/hypr/waybar ~/.config/waybar',
-      'ln -sf ~/.config/hypr/kitty ~/.config/kitty',
-    ],
-  },
-  {
-    id: 'reload',
-    title: t('accordion.step3'),
-    commands: [
-      'hyprctl reload && killall waybar && waybar &',
-    ],
-  },
-];
 ---
 
 <section class="w-full bg-white border border-zinc-200 rounded-xl shadow-xs p-5 flex flex-col gap-3">
@@ -57,7 +32,7 @@ const displaySteps: Step[] = steps && steps.length > 0 ? steps : [
   </div>
 
   <div class="flex flex-col gap-3">
-    {displaySteps.map((step, idx) => (
+    {steps.map((step, idx) => (
       <details class="border border-zinc-200 rounded-lg overflow-hidden bg-white shadow-2xs group" open>
         <summary class="p-3.5 bg-zinc-50 hover:bg-zinc-100/80 border-b border-zinc-200 flex items-center justify-between cursor-pointer select-none transition-colors">
           <div class="flex items-center gap-2.5">
@@ -77,17 +52,20 @@ const displaySteps: Step[] = steps && steps.length > 0 ? steps : [
         </summary>
 
         <div class="p-3.5 bg-zinc-50/50 flex flex-col gap-2 w-full min-w-0">
-          {step.commands.map((cmd) => (
-            <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
-              <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
-                <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
-                <code class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">{cmd}</code>
+          {step.commands.map((rawCmd) => {
+            const cmd = data ? renderCommand(rawCmd, data) : rawCmd;
+            return (
+              <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
+                <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
+                  <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
+                  <code class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">{cmd}</code>
+                </div>
+                <div class="shrink-0">
+                  <CopyButton text={cmd} class="bg-zinc-800 text-zinc-200 border-zinc-700 hover:bg-zinc-700 hover:text-white" />
+                </div>
               </div>
-              <div class="shrink-0">
-                <CopyButton text={cmd} class="bg-zinc-800 text-zinc-200 border-zinc-700 hover:bg-zinc-700 hover:text-white" />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </details>
     ))}

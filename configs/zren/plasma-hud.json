@@ -45,7 +45,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/Zren/plasma-hud",
+          "git clone --filter=blob:none https://github.com/Zren/plasma-hud",
+          "git -C plasma-hud checkout {{ref}}",
           "cd plasma-hud"
         ]
       },

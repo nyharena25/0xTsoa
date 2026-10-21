@@ -38,7 +38,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/tinted-theming/home",
+          "git clone --filter=blob:none https://github.com/tinted-theming/home",
+          "git -C home checkout {{ref}}",
           "cd home"
         ]
       },

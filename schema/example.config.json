@@ -61,7 +61,8 @@
         "id": "dotfiles",
         "title": "Deploy dotfiles",
         "commands": [
-          "git clone --branch v1.0.0 https://github.com/my-handle/dots ~/dots",
+          "git clone --filter=blob:none https://github.com/my-handle/dots ~/dots",
+          "git -C ~/dots checkout {{ref}}",
           "cp -r ~/dots/.config/* ~/.config/"
         ]
       },

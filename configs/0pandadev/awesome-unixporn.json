@@ -45,7 +45,8 @@
         "id": "deps",
         "title": "Read online or clone for offline browsing",
         "commands": [
-          "git clone --depth 1 https://github.com/0PandaDEV/awesome-unixporn"
+          "git clone --filter=blob:none https://github.com/0PandaDEV/awesome-unixporn",
+          "git -C awesome-unixporn checkout {{ref}}"
         ]
       }
     ]

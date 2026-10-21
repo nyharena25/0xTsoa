@@ -3,8 +3,45 @@ import path from 'node:path';
 import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import { readmeRawUrl, type ConfigData } from './schema';
+import { fetchLimited } from './fetch-limited';
 
 const CACHE_DIR = path.resolve(process.cwd(), 'node_modules/.cache/0xtsoa-readme');
+const README_MAX_BYTES = 2 * 1024 * 1024;
+const README_TIMEOUT_MS = 8_000;
+export const README_HOSTS = [
+  'raw.githubusercontent.com',
+  'api.github.com',
+  'gitlab.com',
+  'codeberg.org',
+] as const;
+
+const UUID_RE = /([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i;
+const URI_SCHEME_RE = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
+
+function isGitHubAssetHost(hostname: string): boolean {
+  const h = hostname.toLowerCase();
+  return h === 'github.com' || h.endsWith('.githubusercontent.com');
+}
+
+function rewriteGitHubAssetUuidUrl(raw: string): string | null {
+  let parsed: URL;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    return null;
+  }
+  if (!isGitHubAssetHost(parsed.hostname)) return null;
+  if (
+    parsed.hostname.toLowerCase() === 'private-user-images.githubusercontent.com' ||
+    parsed.pathname.includes('/assets/')
+  ) {
+    const uuidMatch = parsed.pathname.match(UUID_RE);
+    if (uuidMatch) {
+      return `https://github.com/user-attachments/assets/${uuidMatch[1]}`;
+    }
+  }
+  return null;
+}
 
 function getCachePath(id: string, ref: string): string {
   const safeId = id.replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -38,8 +75,8 @@ export function parseGitHubRepo(repoUrl: string): { owner: string; repo: string 
 
 /**
  * Normalizes an image src URL:
- * 1. Rewrites expiring private-user-images (or repo assets URLs) containing UUIDs
- *    to permanent https://github.com/user-attachments/assets/<uuid>
+ * 1. Rewrites expiring private-user-images (or repo assets URLs on github.com / *.githubusercontent.com)
+ *    containing UUIDs to permanent https://github.com/user-attachments/assets/<uuid>
  * 2. Rewrites relative URLs taking into account the directory of the README file
  * 3. Rewrites root-relative URLs (/path) against the repository root
  */
@@ -50,21 +87,11 @@ export function normalizeGitHubImageUrl(
 ): string {
   if (!src) return '';
 
-  // Rewrite private-user-images or repository assets to permanent user-attachments
-  if (src.includes('private-user-images.githubusercontent.com') || src.includes('/assets/')) {
-    const uuidMatch = src.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
-    if (uuidMatch) {
-      return `https://github.com/user-attachments/assets/${uuidMatch[1]}`;
-    }
-  }
+  const rewrittenAsset = rewriteGitHubAssetUuidUrl(src);
+  if (rewrittenAsset) return rewrittenAsset;
 
-  // Already absolute or data URL
-  if (
-    src.startsWith('http://') ||
-    src.startsWith('https://') ||
-    src.startsWith('data:') ||
-    src.startsWith('//')
-  ) {
+  // Already absolute or scheme URL
+  if (URI_SCHEME_RE.test(src) || src.startsWith('//')) {
     return src;
   }
 
@@ -81,7 +108,7 @@ export function normalizeGitHubImageUrl(
 
 /**
  * Normalizes a hyperlink href:
- * - Rewrites private-user-images to permanent user-attachments
+ * - Rewrites private-user-images / GitHub asset UUID URLs to permanent user-attachments
  * - Resolves relative links based on directory or repository root
  */
 export function normalizeGitHubLinkUrl(
@@ -91,20 +118,10 @@ export function normalizeGitHubLinkUrl(
 ): string {
   if (!href) return '';
 
-  if (href.includes('private-user-images.githubusercontent.com') || href.includes('/assets/')) {
-    const uuidMatch = href.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
-    if (uuidMatch) {
-      return `https://github.com/user-attachments/assets/${uuidMatch[1]}`;
-    }
-  }
+  const rewrittenAsset = rewriteGitHubAssetUuidUrl(href);
+  if (rewrittenAsset) return rewrittenAsset;
 
-  if (
-    href.startsWith('http://') ||
-    href.startsWith('https://') ||
-    href.startsWith('mailto:') ||
-    href.startsWith('#') ||
-    href.startsWith('//')
-  ) {
+  if (URI_SCHEME_RE.test(href) || href.startsWith('#') || href.startsWith('//')) {
     return href;
   }
 
@@ -134,11 +151,9 @@ export function extractScreenshotsFromReadme(
     const fullTag = match[0];
     let src = match[1];
 
-    if (src.includes('private-user-images.githubusercontent.com') || src.includes('/assets/')) {
-      const uuidMatch = src.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
-      if (uuidMatch) {
-        src = `https://github.com/user-attachments/assets/${uuidMatch[1]}`;
-      }
+    const rewrittenAsset = rewriteGitHubAssetUuidUrl(src);
+    if (rewrittenAsset) {
+      src = rewrittenAsset;
     }
 
     const lowerSrc = src.toLowerCase();
@@ -293,15 +308,17 @@ export async function getRenderedReadme(
     for (const candidate of candidates) {
       const candidateUrl = `${repoRawRoot}${candidate}`;
       try {
-        const res = await fetch(candidateUrl, {
+        const res = await fetchLimited(candidateUrl, {
+          maxBytes: README_MAX_BYTES,
+          timeoutMs: README_TIMEOUT_MS,
+          allowedHosts: README_HOSTS,
           headers: {
             'User-Agent': '0xTsoa-Static-Builder/1.0 (+https://github.com/nyharena25/0xtsoa)',
           },
-          signal: AbortSignal.timeout(8000),
         });
 
-        if (res.ok) {
-          const rawMarkdown = await res.text();
+        if (res.status >= 200 && res.status < 300) {
+          const rawMarkdown = res.body.toString('utf-8');
           const candidateDir = candidate.includes('/')
             ? candidate.substring(0, candidate.lastIndexOf('/') + 1)
             : '';
@@ -339,14 +356,15 @@ export async function getRenderedReadme(
         headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
       }
 
-      const res = await fetch(apiUrl, {
-        method: 'GET',
+      const res = await fetchLimited(apiUrl, {
+        maxBytes: README_MAX_BYTES,
+        timeoutMs: README_TIMEOUT_MS,
+        allowedHosts: README_HOSTS,
         headers,
-        signal: AbortSignal.timeout(8000),
       });
 
-      if (res.ok) {
-        const githubPreRendered = await res.text();
+      if (res.status >= 200 && res.status < 300) {
+        const githubPreRendered = res.body.toString('utf-8');
         finalHtml = sanitizeAndRewriteHtml(
           githubPreRendered,
           repoRawRoot,
@@ -428,7 +446,7 @@ async function renderMarkdownToGithubHtml(
  * Sanitizes HTML output while preserving GitHub-Flavored Markdown structures
  * and transforming raw HTML relative image and anchor tags to GitHub URLs.
  */
-function sanitizeAndRewriteHtml(
+export function sanitizeAndRewriteHtml(
   rawHtml: string,
   readmeRawDir: string,
   readmeBlobDir: string,
@@ -445,21 +463,25 @@ function sanitizeAndRewriteHtml(
     ],
     allowedAttributes: {
       a: ['href', 'name', 'target', 'rel', 'class', 'id', 'title'],
-      img: ['src', 'alt', 'title', 'class', 'loading', 'width', 'height', 'align', 'style'],
+      img: ['src', 'alt', 'title', 'class', 'loading', 'width', 'height', 'align'],
       input: ['type', 'checked', 'disabled', 'class'],
       source: ['srcset', 'media', 'type'],
       video: ['src', 'controls', 'poster', 'width', 'height', 'autoplay', 'loop', 'muted', 'class'],
-      td: ['align', 'valign', 'colspan', 'rowspan', 'class', 'style'],
-      th: ['align', 'valign', 'colspan', 'rowspan', 'class', 'style'],
-      div: ['class', 'id', 'align', 'style'],
-      span: ['class', 'id', 'style'],
+      td: ['align', 'valign', 'colspan', 'rowspan', 'class'],
+      th: ['align', 'valign', 'colspan', 'rowspan', 'class'],
+      div: ['class', 'id', 'align'],
+      span: ['class', 'id'],
       pre: ['class'],
       code: ['class'],
       svg: ['viewBox', 'width', 'height', 'fill', 'class', 'aria-hidden'],
       path: ['d', 'fill', 'fill-rule', 'clip-rule', 'stroke', 'stroke-width'],
       '*': ['class', 'id'],
     },
-    allowedSchemes: ['http', 'https', 'mailto', 'data'],
+    allowedSchemes: ['http', 'https', 'mailto'],
+    allowedSchemesByTag: {
+      img: ['http', 'https', 'data'],
+      a: ['http', 'https', 'mailto'],
+    },
     transformTags: {
       img: (tagName, attribs) => {
         const src = normalizeGitHubImageUrl(attribs.src || '', readmeRawDir, repoRawRoot);

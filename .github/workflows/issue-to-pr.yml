@@ -2,7 +2,7 @@ name: Convert Issue Form to Pull Request
 
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, labeled]
 
 permissions:
   contents: write
@@ -11,16 +11,20 @@ permissions:
 
 jobs:
   issue-to-pr:
-    if: contains(github.event.issue.labels.*.name, 'new-config')
+    if: >-
+      contains(github.event.issue.labels.*.name, 'new-config') &&
+      (github.event.action == 'opened' || (github.event.action == 'labeled' && github.event.label.name == 'regenerate'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
@@ -33,39 +37,121 @@ jobs:
         run: printf '%s\n' "$ISSUE_BODY" > temp_issue_body.md
 
       - name: Convert Issue to Configuration JSON
+        id: convert
+        continue-on-error: true
         env:
           ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
         run: npm run issue-to-config -- temp_issue_body.md "$ISSUE_AUTHOR"
 
-      - name: Clean temporary issue body
-        run: rm -f temp_issue_body.md
+      - name: Read conversion result and clean temporary files
+        id: result
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const fs = require('node:fs');
+            fs.rmSync('temp_issue_body.md', { force: true });
+
+            let result = {
+              status: 'error',
+              mode: 'create',
+              path: '',
+              errors: ['issue-to-config did not produce issue-to-config-result.json'],
+            };
+
+            if (fs.existsSync('issue-to-config-result.json')) {
+              try {
+                result = JSON.parse(fs.readFileSync('issue-to-config-result.json', 'utf8'));
+              } catch (err) {
+                result.errors = [`Failed to parse issue-to-config-result.json: ${err.message}`];
+              }
+              fs.rmSync('issue-to-config-result.json', { force: true });
+            }
+
+            core.setOutput('status', result.status || 'error');
+            core.setOutput('mode', result.mode || 'create');
+            core.setOutput('path', result.path || '');
+
+            if (result.status !== 'ok') {
+              const bullets = (Array.isArray(result.errors) && result.errors.length > 0
+                ? result.errors
+                : ['Configuration validation failed.']
+              )
+                .map((e) => `- ${e}`)
+                .join('\n');
+
+              const body = [
+                '✖ Configuration validation failed with the following errors:',
+                '',
+                bullets,
+                '',
+                'Please edit the issue to fix the errors above, then a maintainer will re-run it by adding the `regenerate` label.',
+              ].join('\n');
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+
+              core.setFailed('Issue conversion failed; posted error summary to issue.');
+            }
 
       - name: Run Schema Validation
+        if: steps.result.outputs.status == 'ok'
         run: npm run validate
 
       - name: Create Pull Request
+        id: cpr
+        if: steps.result.outputs.status == 'ok'
         uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "feat(config): add configuration from issue #${{ github.event.issue.number }}"
-          title: "[Config Submission]: ${{ github.event.issue.title }} (#${{ github.event.issue.number }})"
+          token: ${{ secrets.BOT_TOKEN }}
+          add-paths: ${{ steps.result.outputs.path }}
+          commit-message: "feat(config): ${{ steps.result.outputs.mode }} configuration from issue #${{ github.event.issue.number }}"
+          title: "[Config] ${{ steps.result.outputs.mode }}: ${{ github.event.issue.title }} (#${{ github.event.issue.number }})"
           body: |
-            Cette Pull Request a été générée automatiquement depuis l'issue #${{ github.event.issue.number }}.
-            
-            - Auteur : @${{ github.event.issue.user.login }}
-            - Issue source : #${{ github.event.issue.number }}
-            
-            Une fois validée et fusionnée, la configuration sera intégrée automatiquement au registre et déployée.
+            This Pull Request was automatically generated from issue #${{ github.event.issue.number }}.
+
+            - **Author:** @${{ github.event.issue.user.login }}
+            - **Action:** `${{ steps.result.outputs.mode }}`
+            - **File:** `${{ steps.result.outputs.path }}`
+            - **Source Issue:** #${{ github.event.issue.number }}
+
+            Once reviewed and merged, the configuration will be added to the registry and deployed automatically.
           branch: "config/issue-${{ github.event.issue.number }}"
           labels: "automated-pr, community-config"
 
       - name: Comment on Issue
-        uses: actions/github-script@v7
+        if: steps.result.outputs.status == 'ok'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          CONFIG_MODE: ${{ steps.result.outputs.mode }}
         with:
           script: |
-            github.rest.issues.createComment({
+            const prUrl = process.env.PR_URL;
+            const mode = process.env.CONFIG_MODE === 'update' ? 'updated' : 'created';
+            const linkSuffix = prUrl ? `: ${prUrl}` : '.';
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '✓ Votre configuration a été analysée avec succès et une Pull Request a été créée automatiquement ! Les mainteneurs vont la relire prochainement.'
-            })
+              body: `✓ Your configuration was validated and a Pull Request has been ${mode} automatically${linkSuffix}\n\nMaintainers will review it shortly.`,
+            });
+
+      - name: Remove regenerate label
+        if: always() && (github.event.label.name == 'regenerate' || contains(github.event.issue.labels.*.name, 'regenerate'))
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                name: 'regenerate',
+              });
+            } catch (err) {
+              if (err.status !== 404) throw err;
+            }

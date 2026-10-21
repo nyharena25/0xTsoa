@@ -42,7 +42,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/Bismuth-Forge/bismuth",
+          "git clone --filter=blob:none https://github.com/Bismuth-Forge/bismuth",
+          "git -C bismuth checkout {{ref}}",
           "cd bismuth"
         ]
       },

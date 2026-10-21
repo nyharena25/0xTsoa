@@ -18,3 +18,5 @@ src/generated/votes.json
 .DS_Store
 Thumbs.db
 temp_issue_body.md
+issue-to-config-result.json
+sync-summary.md

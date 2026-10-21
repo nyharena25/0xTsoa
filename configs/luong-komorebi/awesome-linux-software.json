@@ -38,7 +38,8 @@
         "id": "deps",
         "title": "Read online or clone for offline browsing",
         "commands": [
-          "git clone --depth 1 https://github.com/luong-komorebi/Awesome-Linux-Software"
+          "git clone --filter=blob:none https://github.com/luong-komorebi/Awesome-Linux-Software",
+          "git -C Awesome-Linux-Software checkout {{ref}}"
         ]
       }
     ]

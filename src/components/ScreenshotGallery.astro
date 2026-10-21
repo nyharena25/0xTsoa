@@ -1,6 +1,5 @@
 ---
 import { withBase } from '../../site.config';
-import { useTranslations } from '../lib/i18n';
 
 interface Screenshot {
   url: string;
@@ -16,11 +15,15 @@ interface Props {
 
 const { configName, title } = Astro.props;
 const screenshots = Astro.props.screenshots.map((s) => ({ ...s, url: s.url.startsWith('/') ? withBase(s.url) : s.url }));
-const t = useTranslations('en');
 const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
 ---
 
-<section class="w-full bg-white border border-zinc-200 rounded-xl shadow-xs p-5 sm:p-7 flex flex-col gap-4" id="screenshots">
+<section
+  class="w-full bg-white border border-zinc-200 rounded-xl shadow-xs p-5 sm:p-7 flex flex-col gap-4"
+  id="screenshots"
+  data-screenshots={JSON.stringify(screenshots)}
+  data-fallback-url={fallbackTerminalUrl}
+>
   <div class="border-b border-zinc-200 pb-3 flex items-center justify-between">
     <div class="flex items-center gap-2">
       <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
@@ -44,9 +47,10 @@ const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
   <!-- Thumbnails Grid -->
   <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
     {screenshots.map((shot, idx) => (
-      <div
+      <button
+        type="button"
         data-shot-index={idx}
-        class="gallery-thumb cursor-pointer border border-zinc-200 rounded-xl bg-white p-1.5 flex flex-col shadow-xs hover:border-zinc-400 hover:shadow-card hover:-translate-y-0.5 transition-all group"
+        class="gallery-thumb text-left cursor-pointer border border-zinc-200 rounded-xl bg-white p-1.5 flex flex-col shadow-xs hover:border-zinc-400 hover:shadow-card hover:-translate-y-0.5 transition-all group"
       >
         <div class="relative w-full aspect-video border border-zinc-200/80 rounded-lg overflow-hidden bg-zinc-100 tech-skeleton">
           <img
@@ -55,7 +59,6 @@ const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
             width="1280"
             height="720"
             loading="lazy"
-            onerror={`this.onerror=null; this.src='${fallbackTerminalUrl}'`}
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
           <span class="absolute bottom-1 right-1 bg-zinc-900/80 backdrop-blur-xs text-white font-mono text-[10px] px-1.5 py-0.5 rounded font-medium">
@@ -65,7 +68,7 @@ const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
         <span class="font-mono text-[11px] font-medium text-zinc-600 mt-2 px-1 truncate group-hover:text-zinc-900 transition-colors">
           {shot.caption || `Capture ${String(idx + 1).padStart(2, '0')}`}
         </span>
-      </div>
+      </button>
     ))}
   </div>
 
@@ -98,7 +101,6 @@ const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
           id="modal-active-img"
           src={screenshots[0]?.url}
           alt={screenshots[0]?.alt}
-          onerror={`this.onerror=null; this.src='${fallbackTerminalUrl}'`}
           class="max-h-[65vh] w-auto rounded-lg shadow-lg object-contain"
         />
       </div>
@@ -144,14 +146,32 @@ const fallbackTerminalUrl = withBase('/screenshots/fallback-terminal.svg');
   </dialog>
 </section>
 
-<script define:vars={{ screenshots }}>
+<script>
+  const section = document.getElementById('screenshots');
+  const screenshots: Array<{ url: string; alt: string; caption?: string }> = JSON.parse(
+    section?.getAttribute('data-screenshots') || '[]',
+  );
+  const fallbackTerminalUrl = section?.getAttribute('data-fallback-url') || '/screenshots/fallback-terminal.svg';
+
   let activeIndex = 0;
-  const modal = document.getElementById('gallery-modal');
-  const modalImg = document.getElementById('modal-active-img');
+  const modal = document.getElementById('gallery-modal') as HTMLDialogElement | null;
+  const modalImg = document.getElementById('modal-active-img') as HTMLImageElement | null;
   const modalTitle = document.getElementById('modal-image-title');
   const counter = document.getElementById('gallery-counter');
 
-  function showImage(idx) {
+  document.querySelectorAll<HTMLImageElement>('#screenshots img').forEach((img) => {
+    const onError = () => {
+      if (img.getAttribute('src') !== fallbackTerminalUrl) {
+        img.setAttribute('src', fallbackTerminalUrl);
+      }
+    };
+    img.addEventListener('error', onError);
+    if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) {
+      onError();
+    }
+  });
+
+  function showImage(idx: number) {
     if (!screenshots || screenshots.length === 0) return;
     activeIndex = (idx + screenshots.length) % screenshots.length;
     const shot = screenshots[activeIndex];

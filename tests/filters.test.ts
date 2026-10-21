@@ -49,7 +49,7 @@ const mockItems: CatalogueItem[] = [
     themeStyle: 'gruvbox',
     displayServer: 'x11',
     tags: ['lightweight'],
-    specs: {},
+    specs: { bar: 'polybar', terminal: 'alacritty' },
     thumbUrl: 'https://example.com/thumb3.png',
     thumbAlt: 'Thumb 3',
     updatedAt: '2026-10-01',
@@ -59,10 +59,25 @@ const mockItems: CatalogueItem[] = [
 ];
 
 describe('Catalogue Filter & Query State Logic', () => {
-  it('filters by WM', () => {
+  it('filters by WM (single and multi-value array)', () => {
     const res = filterConfigs(mockItems, { wm: 'hyprland' });
     expect(res.length).toBe(1);
     expect(res[0].id).toBe('user1/hypr-setup');
+
+    const multi = filterConfigs(mockItems, { wm: ['hyprland', 'sway'] });
+    expect(multi.map((m) => m.id)).toEqual(['user1/hypr-setup', 'user2/sway-setup']);
+  });
+
+  it('filters by multi-value category, style, and distro arrays', () => {
+    expect(filterConfigs(mockItems, { category: ['bar'] }).map((m) => m.id)).toEqual(['user3/bspwm-setup']);
+    expect(filterConfigs(mockItems, { style: ['cyberpunk', 'gruvbox'] }).map((m) => m.id)).toEqual([
+      'user1/hypr-setup',
+      'user3/bspwm-setup',
+    ]);
+    expect(filterConfigs(mockItems, { distro: ['arch', 'void'] }).map((m) => m.id)).toEqual([
+      'user1/hypr-setup',
+      'user3/bspwm-setup',
+    ]);
   });
 
   it('filters by Style / Thème', () => {
@@ -74,10 +89,19 @@ describe('Catalogue Filter & Query State Logic', () => {
     expect(resNord[0].id).toBe('user2/sway-setup');
   });
 
-  it('filters by multi-field search query', () => {
-    const res = filterConfigs(mockItems, { query: 'fedora' });
-    expect(res.length).toBe(1);
-    expect(res[0].id).toBe('user2/sway-setup');
+  it('filters by multi-field search query including author.github, specs, and id', () => {
+    expect(filterConfigs(mockItems, { query: 'fedora' }).map((m) => m.id)).toEqual(['user2/sway-setup']);
+    expect(filterConfigs(mockItems, { query: 'user3' }).map((m) => m.id)).toEqual(['user3/bspwm-setup']);
+    expect(filterConfigs(mockItems, { query: 'alacritty' }).map((m) => m.id)).toEqual(['user3/bspwm-setup']);
+    expect(filterConfigs(mockItems, { query: 'user1/hypr-setup' }).map((m) => m.id)).toEqual(['user1/hypr-setup']);
+  });
+
+  it('filters by favoritesOnly when favorites list is provided', () => {
+    const res = filterConfigs(mockItems, {
+      favoritesOnly: true,
+      favorites: ['user2/sway-setup', 'user3/bspwm-setup'],
+    });
+    expect(res.map((m) => m.id)).toEqual(['user2/sway-setup', 'user3/bspwm-setup']);
   });
 
   it('sorts by newest and oldest update date', () => {
@@ -104,7 +128,7 @@ describe('Catalogue Filter & Query State Logic', () => {
     expect(paginate([], 1)).toEqual({ items: [], page: 1, pageCount: 1 });
   });
 
-  it('serializes and parses URL query string round-trip with style', () => {
+  it('serializes and parses URL query string round-trip with single and multi-value facets', () => {
     const state = {
       wm: 'hyprland',
       style: 'cyberpunk',
@@ -121,5 +145,14 @@ describe('Catalogue Filter & Query State Logic', () => {
     expect(parsed.distro).toBe('arch');
     expect(parsed.sort).toBe('popular');
     expect(parsed.page).toBe(2);
+
+    const multiQs = filtersToQueryString({
+      category: ['dotfiles', 'bar'],
+      wm: ['hyprland', 'sway'],
+    });
+    expect(multiQs).toBe('?category=dotfiles&category=bar&wm=hyprland&wm=sway');
+    const parsedMulti = parseQueryToFilters(new URLSearchParams(multiQs.replace('?', '')));
+    expect(parsedMulti.category).toEqual(['dotfiles', 'bar']);
+    expect(parsedMulti.wm).toEqual(['hyprland', 'sway']);
   });
 });

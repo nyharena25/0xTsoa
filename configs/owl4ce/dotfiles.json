@@ -39,7 +39,8 @@
         "id": "deps",
         "title": "Clone with submodules",
         "commands": [
-          "git clone --depth 1 --recurse-submodules https://github.com/owl4ce/dotfiles ~/owl4ce-dots"
+          "git clone --filter=blob:none --recurse-submodules https://github.com/owl4ce/dotfiles ~/owl4ce-dots",
+          "git -C ~/owl4ce-dots checkout {{ref}}"
         ]
       },
       {

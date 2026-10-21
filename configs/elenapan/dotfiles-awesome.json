@@ -52,7 +52,8 @@
         "id": "deps",
         "title": "Fetch repository",
         "commands": [
-          "git clone https://github.com/elenapan/dotfiles.git ~/.dotfiles-elena"
+          "git clone https://github.com/elenapan/dotfiles.git ~/.dotfiles-elena",
+          "git -C ~/.dotfiles-elena checkout {{ref}}"
         ]
       },
       {

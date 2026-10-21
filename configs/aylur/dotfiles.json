@@ -38,7 +38,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/Aylur/dotfiles",
+          "git clone --filter=blob:none https://github.com/Aylur/dotfiles",
+          "git -C dotfiles checkout {{ref}}",
           "cd dotfiles"
         ]
       },

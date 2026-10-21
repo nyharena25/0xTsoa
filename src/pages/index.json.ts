@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { getVotesForConfig } from '../lib/votes';
 import { getStarsForConfig } from '../lib/stats';
+import { renderCommand } from '../lib/install';
 import type { CatalogueItem } from '../lib/filters';
 
 export const GET: APIRoute = async () => {
@@ -23,6 +24,7 @@ export const GET: APIRoute = async () => {
       category: data.category,
       distros: data.distros,
       wm: data.wm,
+      themeStyle: data.themeStyle,
       displayServer: data.displayServer,
       tags: data.tags,
       specs: {
@@ -31,6 +33,18 @@ export const GET: APIRoute = async () => {
         launcher: data.specs.launcher,
         theme: data.specs.theme,
         shell: data.specs.shell,
+      },
+      source: {
+        repo: data.source.repo,
+        ref: data.source.ref,
+      },
+      install: {
+        steps: data.install.steps.map((step) => ({
+          id: step.id,
+          title: step.title,
+          commands: step.commands.map((cmd) => renderCommand(cmd, data)),
+        })),
+        ...(data.install.script ? { script: data.install.script } : {}),
       },
       thumbUrl: primaryShot?.url || '',
       thumbAlt: primaryShot?.alt || data.name,
@@ -45,7 +59,6 @@ export const GET: APIRoute = async () => {
     status: 200,
     headers: {
       'Content-Type': 'application/json',
-      'Cache-Control': 'public, max-age=3600',
     },
   });
 };

@@ -21,17 +21,17 @@ const t = useTranslations('en');
 // Fixed schema order (not by count) so each part of the desktop stays in a predictable place.
 const categories = CATEGORIES.filter((c) => counts.categories[c]).map((c) => [c, counts.categories[c]] as const);
 
-const topWms = Object.entries(counts.wms)
-  .sort((a, b) => b[1] - a[1])
-  .slice(0, 8);
+const allWms = Object.entries(counts.wms).sort((a, b) => b[1] - a[1]);
+const topWms = allWms.slice(0, 8);
+const restWms = allWms.slice(8);
 
-const topStyles = Object.entries(counts.styles)
-  .sort((a, b) => b[1] - a[1])
-  .slice(0, 8);
+const allStyles = Object.entries(counts.styles).sort((a, b) => b[1] - a[1]);
+const topStyles = allStyles.slice(0, 8);
+const restStyles = allStyles.slice(8);
 
-const topDistros = Object.entries(counts.distros)
-  .sort((a, b) => b[1] - a[1])
-  .slice(0, 8);
+const allDistros = Object.entries(counts.distros).sort((a, b) => b[1] - a[1]);
+const topDistros = allDistros.slice(0, 8);
+const restDistros = allDistros.slice(8);
 ---
 
 <aside class="w-full flex flex-col gap-4">
@@ -82,7 +82,7 @@ const topDistros = Object.entries(counts.distros)
     <div class="pt-4 border-t border-zinc-100 mb-5">
       <div class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
         <span>{t('catalogue.wmSection')}</span>
-        <span class="text-[11px] text-zinc-400 font-normal">({topWms.length})</span>
+        <span class="text-[11px] text-zinc-400 font-normal">({allWms.length})</span>
       </div>
       <ul class="space-y-2 font-mono text-xs">
         {topWms.map(([wmKey, count]) => (
@@ -104,13 +104,40 @@ const topDistros = Object.entries(counts.distros)
           </li>
         ))}
       </ul>
+      {restWms.length > 0 && (
+        <details class="mt-2 font-mono text-xs">
+          <summary class="cursor-pointer select-none text-zinc-500 hover:text-zinc-900 py-1 font-semibold">
+            Show all
+          </summary>
+          <ul class="space-y-2 font-mono text-xs mt-2">
+            {restWms.map(([wmKey, count]) => (
+              <li>
+                <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
+                  <div class="flex items-center gap-2.5">
+                    <input
+                      type="checkbox"
+                      name="wm"
+                      value={wmKey}
+                      class="filter-checkbox w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
+                    />
+                    <span class="text-zinc-800 group-hover:text-zinc-950 font-medium">
+                      {WM_LABELS[wmKey as keyof typeof WM_LABELS] || wmKey}
+                    </span>
+                  </div>
+                  <span class="text-zinc-400 font-normal">({count})</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
     </div>
 
     <!-- Section 2: Styles / Themes -->
     <div class="pt-4 border-t border-zinc-100 mb-5">
       <div class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
         <span>{t('catalogue.styleSection')}</span>
-        <span class="text-[11px] text-zinc-400 font-normal">({topStyles.length})</span>
+        <span class="text-[11px] text-zinc-400 font-normal">({allStyles.length})</span>
       </div>
       <ul class="space-y-2 font-mono text-xs">
         {topStyles.map(([styleKey, count]) => (
@@ -132,13 +159,40 @@ const topDistros = Object.entries(counts.distros)
           </li>
         ))}
       </ul>
+      {restStyles.length > 0 && (
+        <details class="mt-2 font-mono text-xs">
+          <summary class="cursor-pointer select-none text-zinc-500 hover:text-zinc-900 py-1 font-semibold">
+            Show all
+          </summary>
+          <ul class="space-y-2 font-mono text-xs mt-2">
+            {restStyles.map(([styleKey, count]) => (
+              <li>
+                <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
+                  <div class="flex items-center gap-2.5">
+                    <input
+                      type="checkbox"
+                      name="style"
+                      value={styleKey}
+                      class="filter-checkbox w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
+                    />
+                    <span class="text-zinc-800 group-hover:text-zinc-950 font-medium">
+                      {STYLE_LABELS[styleKey as keyof typeof STYLE_LABELS] || styleKey}
+                    </span>
+                  </div>
+                  <span class="text-zinc-400 font-normal">({count})</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
     </div>
 
     <!-- Section 3: Distros -->
     <div class="pt-4 border-t border-zinc-100 mb-5">
       <div class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2.5 flex items-center justify-between">
         <span>{t('catalogue.distroSection')}</span>
-        <span class="text-[11px] text-zinc-400 font-normal">({topDistros.length})</span>
+        <span class="text-[11px] text-zinc-400 font-normal">({allDistros.length})</span>
       </div>
       <ul class="space-y-2 font-mono text-xs">
         {topDistros.map(([distroKey, count]) => (
@@ -160,6 +214,33 @@ const topDistros = Object.entries(counts.distros)
           </li>
         ))}
       </ul>
+      {restDistros.length > 0 && (
+        <details class="mt-2 font-mono text-xs">
+          <summary class="cursor-pointer select-none text-zinc-500 hover:text-zinc-900 py-1 font-semibold">
+            Show all
+          </summary>
+          <ul class="space-y-2 font-mono text-xs mt-2">
+            {restDistros.map(([distroKey, count]) => (
+              <li>
+                <label class="flex items-center justify-between group cursor-pointer select-none py-1.5 min-h-[36px]">
+                  <div class="flex items-center gap-2.5">
+                    <input
+                      type="checkbox"
+                      name="distro"
+                      value={distroKey}
+                      class="filter-checkbox w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
+                    />
+                    <span class="text-zinc-800 group-hover:text-zinc-950 font-medium">
+                      {DISTRO_LABELS[distroKey as keyof typeof DISTRO_LABELS] || distroKey}
+                    </span>
+                  </div>
+                  <span class="text-zinc-400 font-normal">({count})</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
     </div>
   </div>
 
@@ -170,16 +251,16 @@ const topDistros = Object.entries(counts.distros)
     </div>
     <div class="space-y-1.5 text-zinc-500">
       <div class="flex justify-between items-center">
-        <span>Script pinning:</span>
-        <span class="font-bold text-zinc-900">SHA-256 + commit/tag</span>
+        <span>Source ref:</span>
+        <span class="font-bold text-zinc-900">Commit SHA or tag</span>
       </div>
       <div class="flex justify-between items-center">
         <span>Image hosts:</span>
         <span class="font-bold text-zinc-900">{ALLOWED_IMAGE_HOSTS.length} allowlisted hosts</span>
       </div>
       <div class="flex justify-between items-center">
-        <span>Spec License:</span>
-        <span class="font-bold text-zinc-900">MIT / CC-BY-4.0</span>
+        <span>License:</span>
+        <span class="font-bold text-zinc-900">Code MIT · Entries CC BY 4.0</span>
       </div>
     </div>
   </div>

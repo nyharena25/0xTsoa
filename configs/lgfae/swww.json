@@ -38,7 +38,8 @@
         "id": "deps",
         "title": "Clone the repository",
         "commands": [
-          "git clone --depth 1 https://github.com/LGFae/swww",
+          "git clone --filter=blob:none https://github.com/LGFae/swww",
+          "git -C swww checkout {{ref}}",
           "cd swww"
         ]
       },

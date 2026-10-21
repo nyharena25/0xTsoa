@@ -1,0 +1,64 @@
+---
+import type { ConfigData } from '../lib/schema';
+
+interface Props {
+  data: ConfigData;
+  compact?: boolean;
+}
+
+const { data, compact = false } = Astro.props;
+
+const isShaPinned = /^[0-9a-f]{40}$/.test(data.source.ref);
+const hasScript = Boolean(data.install.script);
+const isReviewed = Boolean(data.review?.installReviewed);
+const reviewedBy = data.review?.reviewedBy;
+const reviewedAt = data.review?.reviewedAt;
+
+interface Badge {
+  label: string;
+  tooltip: string;
+}
+
+const badges: Badge[] = [
+  {
+    label: 'Schema validated',
+    tooltip: 'Entry metadata, screenshot hosts, and install steps pass the 0xTsoa Zod schema and CI checks.',
+  },
+];
+
+if (isShaPinned) {
+  badges.push({
+    label: 'Source pinned',
+    tooltip: `Pinned to 40-character Git commit SHA (${data.source.ref.slice(0, 10)}); clone steps check out this commit.`,
+  });
+}
+
+if (hasScript) {
+  badges.push({
+    label: 'Script hash-checked',
+    tooltip: 'External install script URL is pinned and its SHA-256 digest is verified in CI.',
+  });
+}
+
+if (isReviewed) {
+  badges.push({
+    label: reviewedBy ? `Install reviewed by @${reviewedBy}` : 'Install reviewed',
+    tooltip: reviewedAt
+      ? `Install commands manually reviewed${reviewedBy ? ` by @${reviewedBy}` : ''} on ${reviewedAt}.`
+      : `Install commands manually reviewed${reviewedBy ? ` by @${reviewedBy}` : ''}.`,
+  });
+}
+
+const badgeClass = compact
+  ? 'px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 cursor-help'
+  : 'px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 cursor-help inline-flex items-center gap-1.5';
+---
+
+<div class={compact ? 'inline-flex flex-wrap items-center gap-1.5' : 'flex flex-wrap items-center gap-2'}>
+  {badges.map((badge) => (
+    <span class={badgeClass} title={badge.tooltip}>
+      {!compact && <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block shrink-0" aria-hidden="true" />}
+      <span>{badge.label}</span>
+    </span>
+  ))}
+</div>

@@ -3,6 +3,7 @@ import { getVotesForConfig } from '../lib/votes';
 import { getStarsForConfig } from '../lib/stats';
 import { type ConfigData, WM_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../lib/schema';
 import { withBase } from '../../site.config';
+import AssuranceBadges from './AssuranceBadges.astro';
 
 interface Props {
   id: string;
@@ -16,7 +17,6 @@ const votes = getVotesForConfig(id);
 const stars = getStarsForConfig(id);
 const specUrl = withBase(`/configs/${id}/`);
 const primaryShot = data.screenshots[0];
-const shortHash = `0x${id.slice(-6).toUpperCase().replace(/[^0-9A-F]/g, 'C')}`;
 const wmLabel = WM_LABELS[data.wm] || data.wm;
 ---
 
@@ -38,9 +38,7 @@ const wmLabel = WM_LABELS[data.wm] || data.wm;
           <span class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-100 text-zinc-700 border border-zinc-200">
             {wmLabel} ({data.displayServer})
           </span>
-          <span class="px-2 py-0.5 rounded text-[11px] font-mono font-medium text-zinc-500 bg-zinc-50 border border-zinc-200">
-            ID: {shortHash}
-          </span>
+          <AssuranceBadges data={data} compact />
         </div>
 
         <!-- Title -->

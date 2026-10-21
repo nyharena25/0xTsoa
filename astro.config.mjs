@@ -48,4 +48,23 @@ export default defineConfig({
   image: {
     domains: [...ALLOWED_IMAGE_HOSTS],
   },
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' https: data:",
+        "connect-src 'self' https://*.google-analytics.com https://www.googletagmanager.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "frame-ancestors 'none'",
+        "form-action 'self'",
+      ],
+      styleDirective: {
+        resources: ["'self'", "'unsafe-inline'"],
+      },
+      scriptDirective: {
+        resources: ["'self'", 'https://www.googletagmanager.com'],
+      },
+    },
+  },
 });

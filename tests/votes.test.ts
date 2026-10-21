@@ -9,14 +9,14 @@ describe('Votes & sign-off URL resolver', () => {
     expect(url).toBe(`${REPO_URL}/issues?q=${encodeURIComponent('is:issue label:vote in:title "[0xTsoa] custom/setup-abc"')}`);
   });
 
-  it('counts 👍 ❤️ 🎉 reactions per vote issue and ignores unrelated titles', () => {
+  it('counts only 👍 (+1) reactions per vote issue and ignores other reactions and unrelated titles', () => {
     const map = votesFromIssues([
       { number: 1, title: '[0xTsoa] catppuccin/hyprland-theme', html_url: 'https://github.com/o/r/issues/1', reactions: { '+1': 3, heart: 1, hooray: 1, '-1': 5, laugh: 2 } },
       { number: 2, title: 'Bug: broken link', html_url: 'https://github.com/o/r/issues/2', reactions: { '+1': 9 } },
       { number: 3, title: '[0xTsoa] i3/i3-tiling', html_url: 'https://github.com/o/r/issues/3' },
     ]);
     expect(map).toEqual({
-      'catppuccin/hyprland-theme': { votes: 5, discussionUrl: 'https://github.com/o/r/issues/1' },
+      'catppuccin/hyprland-theme': { votes: 3, discussionUrl: 'https://github.com/o/r/issues/1' },
       'i3/i3-tiling': { votes: 0, discussionUrl: 'https://github.com/o/r/issues/3' },
     });
   });
