@@ -309,8 +309,12 @@ export function normalizeRepoUrl(url: string): string {
   return stripTrailingSlashes(stripTrailingSlashes(unquoted).replace(/\.git$/, ''));
 }
 
+/** `curl … | sh`, `bash -c "$(curl …)"`, `bash <(curl …)` and the wget equivalents. */
+const REMOTE_EXEC_RE = /(?:curl|wget)\b[^|]*\|\s*(?:sudo\s+)?(?:ba|z)?sh\b|(?:ba|z)?sh\s+(?:-c\s+["']?\$\(|<\()\s*(?:curl|wget)\b/;
+
 /**
  * Validate `git clone` commands in `install.steps`:
+ * - Commands that download a script and run it must use a pinned raw URL.
  * - Any `git clone` using `--depth` is an error (shallow clones cannot check out an arbitrary SHA).
  * - Any `git clone` of `source.repo` must be followed by a later command containing `checkout {{ref}}`.
  * - Clones of other repositories produce a warning, not an error.
@@ -327,6 +331,17 @@ export function validateCloneSteps(data: {
   for (let i = 0; i < allCommands.length; i++) {
     const cmd = allCommands[i];
     if (cmd.trim().startsWith('#')) continue;
+
+    // Remote code run straight from a URL must be pinned, or what users run can change after review.
+    if (REMOTE_EXEC_RE.test(cmd)) {
+      for (const url of cmd.match(/https?:\/\/[^\s"')]+/g) ?? []) {
+        const ref = extractRawRef(url);
+        if (!url.includes('{{ref}}') && !(ref && isPinnedRef(ref))) {
+          errors.push(`remote script must be a raw file URL pinned to a commit SHA, a version tag or {{ref}}: ${url}`);
+        }
+      }
+    }
+
     if (!/\bgit\s+clone\b/.test(cmd)) continue;
 
     if (/(?:^|\s)--depth(?:=|\s|$)/.test(cmd)) {

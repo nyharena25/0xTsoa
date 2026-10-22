@@ -7,7 +7,8 @@ import {
   type ConfigData,
 } from './schema';
 
-import { SITE_URL, withBase } from '../../site.config';
+import { SITE_URL, REPO_OWNER, REPO_NAME, withBase } from '../../site.config';
+import RUNTIME from './installer-runtime.sh?raw';
 
 export { normalizeRepoUrl, validateCloneSteps, type CloneValidationResult };
 
@@ -37,49 +38,152 @@ export function verifiedScriptCommand(script: {
 
 // `<theme>`, `<hostname>`… are placeholders the user must fill in; bash would parse them as redirections.
 const PLACEHOLDER_RE = /<[A-Za-z][\w-]*>/;
+// Upstream installers decide for themselves what they touch.
+const UPSTREAM_RE = /^(?:sudo\s+)?(?:\.\/\S+|(?:ba)?sh\s+(?!-c\b)\S+|make(?:\s.*)?|bash\s+-c\s+.*)$/;
 
 /**
- * Turn one config command into a portable shell line:
- * pacman/apt/dnf installs go through `pkg_install` (native package manager),
- * AUR installs through `aur_install`, and anything that cannot run unattended
- * (comments, placeholders, xdg-open, reboot) becomes a printed note.
- * Returns null for lines that only exist for humans and are covered by the helpers.
+ * Home-relative folders an upstream installer (`./setup.sh`, `make install`…) usually rewrites.
+ * The installer backs them up right before such a step; the page offers the same list for manual installs.
  */
-export function translateCommand(cmd: string, data: Pick<ConfigData, 'source'>): string | null {
-  const rendered = stripNewlines(renderCommand(cmd, data)).trim();
-  if (!rendered) return null;
-  if (/^#\s*Other distros/i.test(rendered)) return null;
-  if (rendered.startsWith('#')) return `note ${shQuote(rendered.replace(/^#\s*/, ''))}`;
-  if (PLACEHOLDER_RE.test(rendered)) return `note ${shQuote(`Run manually (fill in the <placeholder>): ${rendered}`)}`;
+export const UPSTREAM_BACKUP_PATHS = [
+  '.config/hypr', '.config/quickshell', '.config/waybar', '.config/eww', '.config/ags', '.config/hyprpanel',
+  '.config/kitty', '.config/foot', '.config/alacritty', '.config/wezterm', '.config/ghostty',
+  '.config/rofi', '.config/wofi', '.config/fuzzel', '.config/dunst', '.config/mako', '.config/swaync',
+  '.config/i3', '.config/sway', '.config/niri', '.config/bspwm', '.config/sxhkd', '.config/awesome',
+  '.config/polybar', '.config/picom', '.config/qtile', '.config/wlogout', '.config/swaylock',
+  '.config/fish', '.config/nvim', '.config/fastfetch', '.config/starship.toml', '.config/matugen', '.config/wal',
+  '.config/gtk-3.0', '.config/gtk-4.0', '.config/Kvantum', '.config/qt5ct', '.config/qt6ct',
+  '.bashrc', '.zshrc', '.themes',
+] as const;
 
-  const open = /^xdg-open\s+(\S+)/.exec(rendered);
-  if (open) return `note ${shQuote(`Follow the upstream guide: ${open[1]}`)}`;
-  if (/^(sudo\s+)?reboot\b/.test(rendered)) return `note ${shQuote('Reboot to finish: sudo reboot')}`;
+/** What one config command does, as seen by the installer and the page. */
+export type InstallAction =
+  | { kind: 'note'; text: string }
+  | { kind: 'package'; packages: string[]; aur: boolean }
+  | { kind: 'clone'; args: string; dest: string | null }
+  | { kind: 'copy'; args: string; dest: string }
+  | { kind: 'append'; line: string; file: string }
+  | { kind: 'upstream'; command: string }
+  | { kind: 'system'; command: string }
+  | { kind: 'exec'; command: string };
 
-  // Appending a config line twice breaks reruns; only append when the exact line is missing.
-  const append = /^echo\s+("[^"]*"|'[^']*')\s+>>\s+(\S+)$/.exec(rendered);
-  if (append) return `grep -qxF ${append[1]} ${append[2]} 2>/dev/null || ${rendered}`;
-
-  const pkgs = (rest: string) =>
-    rest
-      .replace(/\s+#.*$/, '')
-      .split(/\s+/)
-      .filter((w) => w && !w.startsWith('-'));
-  const pacman = /^sudo\s+pacman\s+-S\w*\s+(.*)$/.exec(rendered);
-  if (pacman) return `pkg_install ${pkgs(pacman[1]).map(shQuote).join(' ')}`;
-  const native = /^sudo\s+(?:apt|apt-get|dnf|zypper)\s+install\s+(.*)$/.exec(rendered);
-  if (native) return `pkg_install ${pkgs(native[1]).map(shQuote).join(' ')}`;
-  const aur = /^(?:yay|paru)\s+-S\w*\s+(.*)$/.exec(rendered);
-  if (aur) return `aur_install ${pkgs(aur[1]).map(shQuote).join(' ')}`;
-
-  return rendered;
+function packageNames(rest: string): string[] {
+  return rest
+    .replace(/\s+#.*$/, '')
+    .split(/\s+/)
+    .filter((w) => w && !w.startsWith('-'));
 }
 
-/** Flat list of the runnable lines (notes excluded), for showing a manual command. */
-export function runnableCommands(data: ConfigData): string[] {
-  return data.install.steps
-    .flatMap((step) => step.commands.map((cmd) => translateCommand(cmd, data)))
-    .filter((line): line is string => !!line && !line.startsWith('note '));
+/** Last non-option word of an argument string (cp/clone destination). */
+function lastOperand(args: string): string | null {
+  const words = args.split(/\s+/).filter((w) => w && !w.startsWith('-'));
+  return words.length > 1 ? words[words.length - 1] : null;
+}
+
+/** Classify one already-rendered, single command. */
+function classify(cmd: string): InstallAction | null {
+  if (!cmd) return null;
+  if (/^#\s*Other distros/i.test(cmd)) return null;
+  if (cmd.startsWith('#')) return { kind: 'note', text: cmd.replace(/^#\s*/, '') };
+  if (PLACEHOLDER_RE.test(cmd)) return { kind: 'note', text: `Run manually (fill in the <placeholder>): ${cmd}` };
+  const open = /^xdg-open\s+(\S+)/.exec(cmd);
+  if (open) return { kind: 'note', text: `Follow the upstream guide: ${open[1]}` };
+  if (/^(sudo\s+)?reboot\b/.test(cmd)) return { kind: 'note', text: 'Reboot to finish: sudo reboot' };
+
+  const pacman = /^sudo\s+pacman\s+-S\w*\s+(.*)$/.exec(cmd);
+  if (pacman) return { kind: 'package', packages: packageNames(pacman[1]), aur: false };
+  const native = /^sudo\s+(?:apt|apt-get|dnf|zypper)\s+install\s+(.*)$/.exec(cmd);
+  if (native) return { kind: 'package', packages: packageNames(native[1]), aur: false };
+  const aur = /^(?:yay|paru)\s+-S\w*\s+(.*)$/.exec(cmd);
+  if (aur) return { kind: 'package', packages: packageNames(aur[1]), aur: true };
+
+  const clone = /^git\s+clone\s+(.*)$/.exec(cmd);
+  if (clone) return { kind: 'clone', args: clone[1], dest: lastOperand(clone[1]) };
+  const copy = /^cp\s+(.*)$/.exec(cmd);
+  if (copy && lastOperand(copy[1])) return { kind: 'copy', args: copy[1], dest: lastOperand(copy[1])! };
+  const append = /^echo\s+("[^"]*"|'[^']*')\s+>>\s+(\S+)$/.exec(cmd);
+  if (append) return { kind: 'append', line: append[1], file: append[2] };
+
+  if (UPSTREAM_RE.test(cmd)) return { kind: 'upstream', command: cmd };
+  if (cmd.startsWith('sudo ')) return { kind: 'system', command: cmd };
+  return { kind: 'exec', command: cmd };
+}
+
+/**
+ * Split a config command into single commands (`a && b` without quotes) and classify each.
+ * Config commands are reviewed in the pull request; this only decides how the installer
+ * wraps them (plan, backup, conflict check), never what they do.
+ */
+export function classifyCommand(cmd: string, data: Pick<ConfigData, 'source'>): InstallAction[] {
+  const rendered = stripNewlines(renderCommand(cmd, data)).trim();
+  const parts = /["']/.test(rendered) ? [rendered] : rendered.split(/\s+&&\s+/);
+  return parts.map((p) => classify(p.trim())).filter((a): a is InstallAction => a !== null);
+}
+
+function actionToShell(a: InstallAction): string {
+  switch (a.kind) {
+    case 'note':
+      return `note ${shQuote(a.text)}`;
+    case 'package':
+      return `${a.aur ? 'aur_install' : 'pkg_install'} ${a.packages.map(shQuote).join(' ')}`;
+    // clone/copy/append keep the config's own words so bash expands ~ and globs as before.
+    case 'clone':
+      return `oxt_clone ${a.args}`;
+    case 'copy':
+      return `oxt_copy ${a.args}`;
+    case 'append':
+      return `oxt_append ${a.line} ${a.file}`;
+    case 'upstream':
+      return `oxt_upstream ${shQuote(a.command)}`;
+    case 'system':
+      return `oxt_system ${shQuote(a.command)}`;
+    case 'exec':
+      return `oxt_exec ${shQuote(a.command)}`;
+  }
+}
+
+/** Shell lines for one config command, or null when nothing is left to run or show. */
+export function translateCommand(cmd: string, data: Pick<ConfigData, 'source'>): string | null {
+  const lines = classifyCommand(cmd, data).map(actionToShell);
+  return lines.length ? lines.join('\n') : null;
+}
+
+/** Facts for the page's "what will change" panel, from the same classification as the script. */
+export interface InstallImpact {
+  packages: string[];
+  aurPackages: string[];
+  userPaths: string[];
+  systemCommands: string[];
+  upstreamCommands: string[];
+  /** Other commands with lasting effects that --rollback does not undo (gsettings set, chmod…). */
+  execCommands: string[];
+  manualNotes: string[];
+}
+
+// Commands that only move around, reload or read state: not worth listing as lasting changes.
+const NO_LASTING_EFFECT_RE =
+  /^(?:cd\b|mkdir\s+-p\b|git\s+-C\s+\S+\s+(?:checkout|fetch)\b|hyprctl\s+reload|swaymsg\s+reload|i3-msg\s+(?:reload|restart)|bspc\s+wm\s+-r|awesome-client\b|qdbus\b.*\breconfigure|gsettings\s+get\b|niri\s+msg\b)/;
+
+export function installImpact(data: ConfigData): InstallImpact {
+  const impact: InstallImpact = { packages: [], aurPackages: [], userPaths: [], systemCommands: [], upstreamCommands: [], execCommands: [], manualNotes: [] };
+  const userPath = (p: string | null) => {
+    if (p && /^(~|\$HOME)\//.test(p) && !impact.userPaths.includes(p)) impact.userPaths.push(p);
+  };
+  for (const step of data.install.steps) {
+    for (const cmd of step.commands) {
+      for (const a of classifyCommand(cmd, data)) {
+        if (a.kind === 'package') (a.aur ? impact.aurPackages : impact.packages).push(...a.packages);
+        else if (a.kind === 'clone') userPath(a.dest);
+        else if (a.kind === 'copy') userPath(a.dest);
+        else if (a.kind === 'append') userPath(a.file);
+        else if (a.kind === 'system') impact.systemCommands.push(a.command);
+        else if (a.kind === 'upstream') impact.upstreamCommands.push(a.command);
+        else if (a.kind === 'note') impact.manualNotes.push(a.text);
+        else if (a.kind === 'exec' && !NO_LASTING_EFFECT_RE.test(a.command)) impact.execCommands.push(a.command);
+      }
+    }
+  }
+  return impact;
 }
 
 /** Public URL of the generated installer for a config id (`author/slug`). */
@@ -100,147 +204,82 @@ export function downloadInstallCommand(id: string): string {
   return `curl -fsSLo install.sh ${shQuote(installScriptUrl(id))}`;
 }
 
-// Shared helpers prepended to every generated script. Kept free of command
-// substitution so config-controlled values (always single-quoted) are the only dynamic input.
-const PREAMBLE = `note() { printf '  -> %s\\n' "$*"; }
-warn() { printf '  !! %s\\n' "$*" >&2; OXT_WARNED=1; }
-OXT_WARNED=0
+/** Workflow that signs the installers (.github/workflows/attest-installers.yml). */
+export const ATTEST_WORKFLOW = '.github/workflows/attest-installers.yml';
 
-# --- Detect distro and package manager ---------------------------------------
-OXT_DISTRO=unknown
-OXT_DISTRO_LIKE=
-oxt_os() { local ID='' ID_LIKE=''; . /etc/os-release; OXT_DISTRO="\${ID:-unknown}"; OXT_DISTRO_LIKE="\${ID_LIKE:-}"; }
-if [ -r /etc/os-release ]; then oxt_os; fi
-OXT_PM=none
-for pm in pacman apt-get dnf zypper xbps-install apk emerge nix-env; do
-  if command -v "$pm" >/dev/null 2>&1; then OXT_PM="$pm"; break; fi
-done
-
-pkg_install() {
-  local ok=1
-  case "$OXT_PM" in
-    pacman) sudo pacman -S --needed "$@" || ok=0 ;;
-    apt-get) sudo apt-get install -y "$@" || ok=0 ;;
-    dnf) sudo dnf install -y "$@" || ok=0 ;;
-    zypper) sudo zypper install -y "$@" || ok=0 ;;
-    xbps-install) sudo xbps-install -y "$@" || ok=0 ;;
-    apk) sudo apk add "$@" || ok=0 ;;
-    emerge) sudo emerge --noreplace "$@" || ok=0 ;;
-    nix-env) warn "NixOS: add to environment.systemPackages, then nixos-rebuild switch: $*"; return 0 ;;
-    *) ok=0 ;;
-  esac
-  if [ "$ok" = 0 ]; then warn "Could not install: $* (names can differ on $OXT_DISTRO). See $OXT_REPO"; fi
-  return 0
+/**
+ * Verifies the downloaded file against the build attestation GitHub signed for this repository,
+ * accepting only signatures made by the installer workflow (not any other workflow in the repo).
+ */
+export function attestationVerifyCommand(): string {
+  return `gh attestation verify install.sh --repo ${REPO_OWNER}/${REPO_NAME} --signer-workflow ${REPO_OWNER}/${REPO_NAME}/${ATTEST_WORKFLOW}`;
 }
 
-aur_install() {
-  local helper
-  for helper in yay paru; do
-    if command -v "$helper" >/dev/null 2>&1; then "$helper" -S --needed "$@" || warn "AUR install failed: $*"; return 0; fi
-  done
-  if [ "$OXT_PM" = pacman ]; then
-    warn "$* is in the AUR: install yay or paru, then rerun this script."
-  else
-    warn "$* is an Arch (AUR) package with no $OXT_DISTRO equivalent here. Install it from $OXT_REPO"
-  fi
-  return 0
-}
-
-# Re-runnable clones: an existing checkout is fetched instead of failing.
-git() {
-  if [ "\${1:-}" = clone ]; then
-    local a dest='' url=''
-    for a in "\${@:2}"; do
-      case "$a" in -*) ;; *) if [ -z "$url" ]; then url="$a"; else dest="$a"; fi ;; esac
-    done
-    if [ -z "$dest" ]; then dest="\${url##*/}"; dest="\${dest%.git}"; fi
-    if [ -d "$dest/.git" ]; then
-      note "$dest already cloned, fetching updates"
-      command git -C "$dest" fetch --quiet origin
-      return 0
-    fi
-  fi
-  command git "$@"
-}
-`;
-
-/** Build the downloadable `.sh` installer script for a configuration entry. */
+/**
+ * Build the installer for a configuration entry: reviewed config data, the fixed
+ * runtime (src/lib/installer-runtime.sh), and the steps. The output depends only on
+ * the config, never on the build environment, so CI and Vercel produce identical bytes
+ * and the GitHub attestation of CI's copy verifies the file served by the site.
+ */
 export function buildInstallScript(data: ConfigData, id = 'setup'): string {
   const wmLabel = WM_LABELS[data.wm] || data.wm;
   const distroLabels = data.distros.map((d) => DISTRO_LABELS[d] || d).join(', ');
   const version = data.version || 'v1.0';
-  const workDir = id.replaceAll('/', '-').replace(/[^\w.-]/g, '');
+  const slug = id.replaceAll('/', '-').replace(/[^\w.-]/g, '');
+  const total = data.install.steps.length;
 
-  const stepsBlock = data.install.steps
+  const steps = data.install.steps
     .map((step, i) => {
-      const header = `# --- Step: ${shQuote(stripNewlines(step.title))} ---`;
-      const title = `printf '\\n[%s/%s] %s\\n' ${i + 1} ${data.install.steps.length} ${shQuote(stripNewlines(step.title))}`;
-      const cmds = step.commands
+      const lines = step.commands
         .map((cmd) => translateCommand(cmd, data))
-        .filter((line): line is string => line !== null)
-        .join('\n');
-      return `${header}\n${title}\n${cmds}`;
+        .filter((line): line is string => line !== null);
+      return [`  step ${i + 1} ${total} ${shQuote(stripNewlines(step.title))}`, ...lines.flatMap((l) => l.split('\n')).map((l) => `  ${l}`)].join('\n');
     })
-    .join('\n\n');
+    .join('\n');
 
   const distroCheck = data.distros.includes('any')
-    ? ''
+    ? '  :'
     : [
-        `case " ${data.distros.join(' ')} " in`,
-        '  *" $OXT_DISTRO "*) ;;',
-        '  *) case " $OXT_DISTRO_LIKE " in',
-        ...data.distros.map((d) => `       *" ${d} "*) ;;`),
-        `       *) warn "Tested on ${stripNewlines(distroLabels).replace(/["$`\\]/g, '')}, you are on $OXT_DISTRO: some packages may be named differently." ;;`,
-        '     esac ;;',
-        'esac',
+        '  case " $OXT_DISTRO $OXT_DISTRO_LIKE " in',
+        `    ${data.distros.map((d) => `*" ${d} "*`).join(' | ')}) ;;`,
+        `    *) warn ${shQuote(`Tested on ${stripNewlines(distroLabels)}. Some packages may be named differently on your distro.`)} ;;`,
+        '  esac',
       ].join('\n');
 
   return [
     '#!/usr/bin/env bash',
     '# ==============================================================================',
-    `# 0xTSOA AUTOMATED INSTALLER // ${shQuote(stripNewlines(data.name.toUpperCase()))}`,
+    `# 0xTSOA INSTALLER // ${shQuote(stripNewlines(data.name.toUpperCase()))}`,
     `# Version: ${shQuote(stripNewlines(version))}`,
     `# Maintainer: ${shQuote(stripNewlines(data.author.name))} (@${shQuote(stripNewlines(data.author.github))})`,
-    `# Source: ${shQuote(stripNewlines(data.source.repo))}`,
+    `# Source: ${shQuote(stripNewlines(data.source.repo))} @ ${shQuote(stripNewlines(data.source.ref))}`,
     `# Window Manager: ${stripNewlines(wmLabel)}`,
     `# Supported Distros: ${stripNewlines(distroLabels)}`,
-    '# Works on Arch, Debian/Ubuntu, Fedora, openSUSE, Void, Alpine, Gentoo (NixOS: prints what to add).',
-    '# Non-interactive: OXTSOA_YES=1. Work dir: OXTSOA_DIR (default ~/.cache/0xtsoa).',
+    '#',
+    '# Read before running. Start with:  bash install.sh --dry-run   (changes nothing)',
+    '# Options: --dry-run  --force  --yes  --rollback  --help',
     '# ==============================================================================',
     'set -euo pipefail',
     '',
+    '# --- Config data (from the reviewed config) ---',
+    `OXT_SLUG=${shQuote(slug)}`,
+    `OXT_NAME=${shQuote(stripNewlines(data.name))}`,
     `OXT_REPO=${shQuote(stripNewlines(data.source.repo))}`,
-    PREAMBLE,
+    `OXT_REF=${shQuote(stripNewlines(data.source.ref))}`,
+    `OXT_COMMON=(${UPSTREAM_BACKUP_PATHS.join(' ')})`,
+    '',
+    RUNTIME.trimEnd(),
+    '',
+    '# --- Steps (from the reviewed config) ---',
+    'oxt_distro_check() {',
     distroCheck,
+    '}',
     '',
-    "printf '%s\\n' '======================================================================'",
-    `printf '%s\\n' ' [0xTSOA] Installing '${shQuote(stripNewlines(data.name))}`,
-    `printf '%s\\n' ' Maintainer: '${shQuote(stripNewlines(data.author.name))}' (@'${shQuote(stripNewlines(data.author.github))}') | Version: '${shQuote(stripNewlines(version))}`,
-    `printf '%s\\n' ' Source: '${shQuote(stripNewlines(data.source.repo))}' @ '${shQuote(stripNewlines(data.source.ref))}`,
-    `printf ' Detected: %s (package manager: %s)\\n' "$OXT_DISTRO" "$OXT_PM"`,
-    "printf '%s\\n' '======================================================================'",
+    'oxt_steps() {',
+    steps,
+    '}',
     '',
-    '# Ask before touching the system; read from the terminal so `curl | bash` still works.',
-    'if [ "${OXTSOA_YES:-0}" != 1 ]; then',
-    "  printf 'Proceed? [y/N] '",
-    "  ans=''",
-    '  { read -r ans </dev/tty; } 2>/dev/null || true',
-    '  case "$ans" in y|Y|yes|YES) ;; *) echo "Aborted."; exit 1 ;; esac',
-    'fi',
-    '',
-    `OXT_WORKDIR="\${OXTSOA_DIR:-$HOME/.cache/0xtsoa}/${workDir}"`,
-    'mkdir -p "$OXT_WORKDIR"',
-    'cd "$OXT_WORKDIR"',
-    '',
-    stepsBlock,
-    '',
-    "printf '%s\\n' '======================================================================'",
-    'if [ "$OXT_WARNED" = 1 ]; then',
-    "  printf '%s\\n' ' [0xTSOA] Done with warnings (see !! lines above).'",
-    'else',
-    "  printf '%s\\n' ' [0xTSOA] Installation completed successfully!'",
-    'fi',
-    "printf '%s\\n' '======================================================================'",
+    'oxt_main "$@"',
     '',
   ].join('\n');
 }

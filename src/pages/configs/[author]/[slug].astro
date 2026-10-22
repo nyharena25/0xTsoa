@@ -3,14 +3,15 @@ import Base from '../../../layouts/Base.astro';
 import SpecSubNav from '../../../components/SpecSubNav.astro';
 import CopyButton from '../../../components/CopyButton.astro';
 import Accordion from '../../../components/Accordion.astro';
+import CommandLine from '../../../components/CommandLine.astro';
 import ScreenshotGallery from '../../../components/ScreenshotGallery.astro';
 import AssuranceBadges from '../../../components/AssuranceBadges.astro';
 import { getCollection } from 'astro:content';
 import { getRenderedReadme, extractScreenshotsFromReadme } from '../../../lib/readme';
 import { rawToBlobUrl, blobUrl, isAllowedImageUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
-import { buildInstallScript, renderCommand, verifiedScriptCommand, downloadInstallCommand, installScriptPath } from '../../../lib/install';
+import { buildInstallScript, renderCommand, verifiedScriptCommand, downloadInstallCommand, installScriptPath, installImpact, attestationVerifyCommand, UPSTREAM_BACKUP_PATHS } from '../../../lib/install';
 import { useTranslations } from '../../../lib/i18n';
-import { withBase } from '../../../../site.config';
+import { withBase, REPO_URL } from '../../../../site.config';
 
 export async function getStaticPaths() {
   const configs = await getCollection('configs');
@@ -210,6 +211,25 @@ const verifiedScriptCmd = data.install.script ? verifiedScriptCommand(data.insta
 const installScriptContent = buildInstallScript(data, entry.id);
 const downloadCmd = downloadInstallCommand(entry.id);
 const scriptHref = withBase(installScriptPath(entry.id));
+// Every fact in the trust panel comes from the same classification the installer uses.
+const impact = installImpact(data);
+const verifyCmd = attestationVerifyCommand();
+const repoUrl = data.source.repo.replace(/\.git$/, '');
+const commitUrl = `${repoUrl}/tree/${data.source.ref}`;
+const configFileUrl = `${REPO_URL}/blob/main/configs/${entry.id}.json`;
+const reviewDir = `~/0xtsoa-review/${entry.id.replace('/', '-')}`;
+const reviewClone = `git clone ${repoUrl} ${reviewDir}`;
+const reviewCheckout = `git -C ${reviewDir} checkout --detach ${data.source.ref}`;
+// Manual path: copy every home path the steps write (plus the usual desktop folders when an
+// upstream installer runs) before running them. Same list as the guided installer.
+const manualBackupPaths = [
+  ...impact.userPaths.map((p) => p.replace(/\/$/, '')),
+  ...(impact.upstreamCommands.length ? UPSTREAM_BACKUP_PATHS.map((p) => `~/${p}`) : []),
+].filter((p, i, all) => all.indexOf(p) === i);
+const manualBackup = manualBackupPaths.length
+  ? `for p in ${manualBackupPaths.join(' ')}; do [ -e "$p" ] && cp -a "$p" "$p.bak-0xtsoa"; done`
+  : '';
+const allPackages = [...impact.packages, ...impact.aurPackages];
 const renderedSteps = data.install.steps.map((step) => ({
   ...step,
   commands: step.commands.map((cmd) => renderCommand(cmd, data)),
@@ -326,44 +346,73 @@ const renderedSteps = data.install.steps.map((step) => ({
       </div>
 
       <div class="flex flex-col gap-3 w-full min-w-0">
-        <!-- 1. Manual steps first: users see every command before anything runs -->
-        <div class="flex flex-col gap-1.5">
-          <span class="font-mono text-xs font-bold text-zinc-900">Option A: run each step yourself</span>
-          <span class="font-mono text-[11px] text-zinc-500">The exact upstream commands, pinned to the reviewed commit. Package commands are written for Arch; other distros, see the upstream README.</span>
+        <!-- Before you install: only claims the installer and its tests guarantee -->
+        <div class="border border-amber-200 bg-amber-50/70 rounded-xl p-3.5 font-mono text-[11px] text-amber-950 leading-relaxed flex flex-col gap-1.5">
+          <span class="font-bold text-xs">Before you install</span>
+          <span>This changes your desktop configuration{allPackages.length > 0 && ' and installs packages'}. Run it as your normal user, never with <code>sudo</code>: it asks for sudo only where a step needs it (listed below).</span>
+          <span>The guided installer shows its plan first. Files it would replace are kept unless you approve. Everything it copies, clones or appends to in your home folder is backed up and verified first, and <code>--rollback</code> restores it. Packages, sudo changes and the other commands listed under Impact are not undone.</span>
+        </div>
+
+        <!-- Trust panel: origin, integrity, impact, recovery -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-mono text-[11px]">
+          <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
+            <span class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">Origin</span>
+            <a href={repoUrl} target="_blank" rel="noopener noreferrer" class="text-zinc-900 font-semibold underline break-all">{repoUrl.replace('https://', '')}</a>
+            <span class="text-zinc-600">Pinned to <a href={commitUrl} target="_blank" rel="noopener noreferrer" class="underline">{data.source.ref.slice(0, 12)}</a> · reviewed in <a href={configFileUrl} target="_blank" rel="noopener noreferrer" class="underline">this config file</a></span>
+          </div>
+          <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
+            <span class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">Integrity</span>
+            <span class="text-zinc-700">Each release from <code class="text-zinc-900">main</code> builds the installers in GitHub Actions and signs them with a GitHub build attestation. Verify your download against the repository, not this website (Option B, step 2). If it does not verify, don't run it.</span>
+          </div>
+          <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
+            <span class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">Impact</span>
+            {allPackages.length > 0 && <span class="text-zinc-700">Packages: <strong class="text-zinc-900">{allPackages.join(', ')}</strong>{impact.aurPackages.length > 0 && ' (some from the Arch AUR)'}</span>}
+            {impact.userPaths.length > 0 && <span class="text-zinc-700 break-all">Writes: <strong class="text-zinc-900">{impact.userPaths.join(', ')}</strong></span>}
+            {impact.systemCommands.map((c) => <span class="text-zinc-700 break-all">Uses sudo: <code class="text-zinc-900">{c}</code></span>)}
+            {impact.upstreamCommands.map((c) => <span class="text-zinc-700 break-all">Runs the upstream installer <code class="text-zinc-900">{c}</code>, which manages its own files. The guided installer backs up your usual desktop config folders first.</span>)}
+            {impact.execCommands.length > 0 && <span class="text-zinc-700 break-all">Also runs (not undone by rollback): {impact.execCommands.map((c, i) => <>{i > 0 && ', '}<code class="text-zinc-900">{c}</code></>)}</span>}
+            {allPackages.length + impact.userPaths.length + impact.systemCommands.length + impact.upstreamCommands.length + impact.execCommands.length === 0 && <span class="text-zinc-700">Runs the commands listed in the steps below.</span>}
+          </div>
+          <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
+            <span class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">Recovery</span>
+            <span class="text-zinc-700">Guided: backups in <code class="text-zinc-900">~/.local/state/0xtsoa/backups/</code>, undo with <code class="text-zinc-900">bash install.sh --rollback</code>.</span>
+            <span class="text-zinc-700">{manualBackup ? 'Manual: back up first (Option A, step 3).' : 'Manual: the steps below only write in the download folder or run listed commands.'}</span>
+          </div>
+        </div>
+
+        <!-- Option A: manual, for people who want to read and run every step -->
+        <div class="flex flex-col gap-2 border border-zinc-200 rounded-xl p-3.5">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-mono text-xs font-bold text-zinc-900">Option A: manual install</span>
+            <span class="font-mono text-[10px] uppercase font-bold text-zinc-500 border border-zinc-200 rounded px-1.5 py-0.5">Advanced</span>
+          </div>
+          <span class="font-mono text-[11px] text-zinc-600">Read the source at the reviewed commit, back up, then run each step yourself.</span>
+          <CommandLine cmd={reviewClone} comment="# 1. clone to a review folder" />
+          <CommandLine cmd={reviewCheckout} comment="# 2. the reviewed commit" />
+          {manualBackup && <CommandLine cmd={manualBackup} comment="# 3. back up what the steps write" />}
+          {impact.upstreamCommands.length > 0 && (
+            <span class="font-mono text-[11px] text-zinc-600">Read the upstream installer in <code class="text-zinc-900">{reviewDir}</code> before running it, and every script it calls.</span>
+          )}
+          <span class="font-mono text-[11px] text-zinc-500">Then the steps. Package commands are written for Arch; on other distros use your package manager.</span>
           <Accordion steps={renderedSteps} data={data} locale={locale} />
         </div>
 
-        <!-- 2. Generated installer: download, read, then run. Never piped into a shell. -->
-        <div class="flex flex-col gap-2 border border-zinc-200 rounded-xl bg-zinc-50 p-3.5">
-          <span class="font-mono text-xs font-bold text-zinc-900">Option B: generated installer (any distro)</span>
+        <!-- Option B: guided installer: download, verify, read, preview, install -->
+        <div class="flex flex-col gap-2 border-2 border-zinc-900 rounded-xl p-3.5">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-mono text-xs font-bold text-zinc-900">Option B: guided installer</span>
+            <span class="font-mono text-[10px] uppercase font-bold text-white bg-zinc-900 rounded px-1.5 py-0.5">Recommended</span>
+          </div>
           <span class="font-mono text-[11px] text-zinc-600 leading-relaxed">
-            The same steps as a script: uses your distro's package manager, skips what is already installed, and asks before changing anything.
-            Download it, read it, then run it. Don't pipe it into a shell.
+            The same steps as one script for any distro. It shows the plan first, keeps files you already have unless you approve replacing them,
+            and backs up everything it changes in your home folder. Never pipe it into a shell.
           </span>
-            <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
-              <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
-                <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
-                <code class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">{downloadCmd}</code>
-                <span class="text-zinc-500 select-none shrink-0"># 1. download</span>
-              </div>
-              <div class="shrink-0"><CopyButton text={downloadCmd} tone="dark" /></div>
-            </div>
-            <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
-              <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
-                <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
-                <code class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">less install.sh</code>
-                <span class="text-zinc-500 select-none shrink-0"># 2. read it</span>
-              </div>
-              <div class="shrink-0"><CopyButton text="less install.sh" tone="dark" /></div>
-            </div>
-            <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
-              <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
-                <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
-                <code class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">bash install.sh</code>
-                <span class="text-zinc-500 select-none shrink-0"># 3. run it</span>
-              </div>
-              <div class="shrink-0"><CopyButton text="bash install.sh" tone="dark" /></div>
-            </div>
+          <CommandLine cmd={downloadCmd} comment="# 1. download" />
+          <CommandLine cmd={verifyCmd} comment="# 2. verify (GitHub CLI 2.49+, signed in)" />
+          <CommandLine cmd="less install.sh" comment="# 3. read it" />
+          <CommandLine cmd="bash install.sh --dry-run" comment="# 4. preview: changes nothing" />
+          <CommandLine cmd="bash install.sh" comment="# 5. install (asks first)" />
+          <CommandLine cmd="bash install.sh --rollback" comment="# undo the file changes" />
           <div class="flex flex-wrap items-center gap-2.5 pt-1">
             <a
               href={scriptHref}
@@ -385,6 +434,7 @@ const renderedSteps = data.install.steps.map((step) => ({
               </svg>
               <span>Download install.sh</span>
             </button>
+            <span class="font-mono text-[11px] text-zinc-500">Other options: <code class="text-zinc-800">--force</code> (replace conflicts, backed up first), <code class="text-zinc-800">--yes</code>, <code class="text-zinc-800">--help</code></span>
           </div>
         </div>
 

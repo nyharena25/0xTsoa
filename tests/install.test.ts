@@ -6,7 +6,12 @@ import {
   verifiedScriptCommand,
   validateCloneSteps,
   translateCommand,
+  installImpact,
+  attestationVerifyCommand,
+  ATTEST_WORKFLOW,
 } from '../src/lib/install';
+import fs from 'node:fs';
+import RUNTIME from '../src/lib/installer-runtime.sh?raw';
 import { configSchema, type ConfigData } from '../src/lib/schema';
 
 const baseConfig: ConfigData = {
@@ -209,10 +214,78 @@ describe('translateCommand (portable installer lines)', () => {
     expect(t('reboot')).toMatch(/^note '/);
   });
 
-  it('makes config appends idempotent and keeps other commands as-is', () => {
-    expect(t('echo "source = x.conf" >> ~/.config/hypr/hyprland.conf')).toBe(
-      'grep -qxF "source = x.conf" ~/.config/hypr/hyprland.conf 2>/dev/null || echo "source = x.conf" >> ~/.config/hypr/hyprland.conf',
-    );
-    expect(t('git -C ~/dots checkout {{ref}}')).toBe(`git -C ~/dots checkout ${baseConfig.source.ref}`);
+  it('wraps file-changing commands so they are planned, backed up and conflict-checked', () => {
+    expect(t('git clone --filter=blob:none https://github.com/a/b ~/b')).toBe('oxt_clone --filter=blob:none https://github.com/a/b ~/b');
+    expect(t('cp -r ~/.dotfiles/config/* ~/.config/')).toBe('oxt_copy -r ~/.dotfiles/config/* ~/.config/');
+    expect(t('echo "source = x.conf" >> ~/.config/hypr/hyprland.conf')).toBe('oxt_append "source = x.conf" ~/.config/hypr/hyprland.conf');
+    expect(t('./install.sh')).toBe("oxt_upstream './install.sh'");
+    expect(t('sudo make install')).toBe("oxt_upstream 'sudo make install'");
+    expect(t('sudo grub-mkconfig -o /boot/grub/grub.cfg')).toBe("oxt_system 'sudo grub-mkconfig -o /boot/grub/grub.cfg'");
+    expect(t('git -C ~/dots checkout {{ref}}')).toBe(`oxt_exec 'git -C ~/dots checkout ${baseConfig.source.ref}'`);
+  });
+
+  it('splits unquoted && chains so each part gets its own wrapper', () => {
+    expect(t('git clone https://github.com/a/grub && cd grub')).toBe("oxt_clone https://github.com/a/grub\noxt_exec 'cd grub'");
+  });
+});
+
+describe('remote script pinning (schema)', () => {
+  const withCmd = (cmd: string) =>
+    validateCloneSteps({ source: baseConfig.source, install: { steps: [{ commands: [cmd] }] } }).errors;
+
+  it('rejects unpinned curl | bash, bash -c "$(curl)" and bash <(curl)', () => {
+    expect(withCmd('curl -fsSL https://example.com/install.sh | bash')).toHaveLength(1);
+    expect(withCmd('bash -c "$(curl -sLo- https://git.io/vQgMr)"')).toHaveLength(1);
+    expect(withCmd('bash <(curl -fsSL https://raw.githubusercontent.com/a/b/main/x.sh)')).toHaveLength(1);
+  });
+
+  it('accepts raw URLs pinned to a SHA, a tag or {{ref}}', () => {
+    expect(withCmd(`bash -c "$(curl -fsSL https://raw.githubusercontent.com/a/b/${baseConfig.source.ref}/x.sh)"`)).toEqual([]);
+    expect(withCmd('curl -fsSL https://raw.githubusercontent.com/a/b/v1.2.0/x.sh | sh')).toEqual([]);
+    expect(withCmd('bash -c "$(curl -fsSL https://raw.githubusercontent.com/a/b/{{ref}}/x.sh)"')).toEqual([]);
+  });
+});
+
+describe('installImpact (page facts)', () => {
+  it('lists packages, home paths, sudo and upstream commands from the same classification', () => {
+    const impact = installImpact({
+      ...baseConfig,
+      install: {
+        ...baseConfig.install,
+        steps: [
+          { id: 'deps', title: 'deps', commands: ['sudo pacman -S --needed waybar', 'yay -S walker  # AUR', 'git clone https://github.com/alice/dots ~/dots', 'git -C ~/dots checkout {{ref}}'] },
+          { id: 'dotfiles', title: 'files', commands: ['cp -r ~/dots/hypr ~/.config/', 'sudo make install', './setup.sh'] },
+        ],
+      },
+    });
+    expect(impact.packages).toEqual(['waybar']);
+    expect(impact.aurPackages).toEqual(['walker']);
+    expect(impact.userPaths).toEqual(['~/dots', '~/.config/']);
+    expect(impact.upstreamCommands).toEqual(['sudo make install', './setup.sh']);
+  });
+});
+
+describe('attestation verify command', () => {
+  it('pins the signer to a workflow file that exists in this repository', () => {
+    expect(fs.existsSync(ATTEST_WORKFLOW)).toBe(true);
+    expect(attestationVerifyCommand()).toContain(`--signer-workflow`);
+    expect(attestationVerifyCommand()).toContain(ATTEST_WORKFLOW);
+  });
+});
+
+describe('installer runtime source', () => {
+  it('keeps single quotes balanced on every line so the injection check above stays meaningful', () => {
+    for (const line of RUNTIME.split('\n')) {
+      expect((line.match(/'/g) || []).length % 2, line).toBe(0);
+    }
+  });
+
+  it('does not depend on the build environment (CI and Vercel must produce the same bytes)', () => {
+    const before = buildInstallScript(baseConfig, 'alice/dots');
+    process.env.SITE_URL = 'https://example.invalid';
+    process.env.BASE_PATH = '/x';
+    expect(buildInstallScript(baseConfig, 'alice/dots')).toBe(before);
+    delete process.env.SITE_URL;
+    delete process.env.BASE_PATH;
   });
 });

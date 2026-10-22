@@ -59,3 +59,11 @@ jobs:
         run: npm run build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # The runtime shared by every installer must stay clean at ShellCheck's strictest level.
+      # Generated scripts embed reviewed upstream commands, so they are checked at warning level;
+      # SC2088 is excluded because configs write a literal ~ into app config files on purpose.
+      - name: ShellCheck installers
+        run: |
+          shellcheck -s bash -S style src/lib/installer-runtime.sh
+          shellcheck -S warning -e SC2088 dist/configs/*/*/install.sh

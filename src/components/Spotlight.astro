@@ -243,7 +243,7 @@ const defaultSetup = serializedSetups[0];
             <CopyButton text={defaultSetup?.cmd || ''} id="spotlight-copy-btn" tone="dark" />
           </div>
           <span class="font-mono text-[11px] text-zinc-500">
-            Then read it (<code class="text-zinc-800">less install.sh</code>) and run <code class="text-zinc-800">bash install.sh</code>, or follow the manual steps in Full Spec.
+            Then verify it, preview with <code class="text-zinc-800">bash install.sh --dry-run</code> (changes nothing), and install. Existing files are kept and backed up; see Full Spec for every step.
           </span>
         </div>
 
