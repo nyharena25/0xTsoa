@@ -37,7 +37,8 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Build installers
-        run: npx astro build
+        # Locally installed astro (package-lock), never an on-demand npx download.
+        run: npm run build:site
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

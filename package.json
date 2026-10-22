@@ -12,6 +12,7 @@
     "dev": "astro dev",
     "prebuild": "tsx scripts/fetch-votes.ts",
     "build": "astro build && pagefind --site dist",
+    "build:site": "astro build",
     "preview": "astro preview",
     "check": "astro check && vitest run",
     "typecheck": "astro check",

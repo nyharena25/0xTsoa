@@ -33,7 +33,7 @@
 **Checked locally** (optional but faster review)
 ```bash
 npm run validate
-npx astro build && bash dist/configs/<github-user>/<slug>/install.sh --dry-run
+npm run build:site && bash dist/configs/<github-user>/<slug>/install.sh --dry-run
 ```
 <!-- Paste the dry-run plan below if the project changes files or runs an upstream installer. -->
 
