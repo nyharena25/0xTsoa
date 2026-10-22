@@ -8,7 +8,7 @@ import AssuranceBadges from '../../../components/AssuranceBadges.astro';
 import { getCollection } from 'astro:content';
 import { getRenderedReadme, extractScreenshotsFromReadme } from '../../../lib/readme';
 import { rawToBlobUrl, blobUrl, isAllowedImageUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
-import { buildInstallScript, renderCommand, verifiedScriptCommand } from '../../../lib/install';
+import { buildInstallScript, renderCommand, verifiedScriptCommand, webInstallCommands } from '../../../lib/install';
 import { useTranslations } from '../../../lib/i18n';
 import { withBase } from '../../../../site.config';
 
@@ -207,7 +207,8 @@ const setupJsonLd = [
 
 const scriptBlobUrl = data.install.script ? rawToBlobUrl(data.install.script.url) : '';
 const verifiedScriptCmd = data.install.script ? verifiedScriptCommand(data.install.script) : null;
-const installScriptContent = buildInstallScript(data);
+const installScriptContent = buildInstallScript(data, entry.id);
+const webInstall = webInstallCommands(entry.id, data);
 const renderedSteps = data.install.steps.map((step) => ({
   ...step,
   commands: step.commands.map((cmd) => renderCommand(cmd, data)),
@@ -324,6 +325,29 @@ const renderedSteps = data.install.steps.map((step) => ({
       </div>
 
       <div class="flex flex-col gap-3 w-full min-w-0">
+        <!-- One-line install: works on Arch, Debian/Ubuntu, Fedora, openSUSE, Void, Alpine, Gentoo -->
+        <div class="flex flex-col gap-2">
+          <span id="install-oneliner-label" class="font-mono text-xs text-zinc-600 font-medium">
+            Install in one line (detects your distro and package manager, asks before changing anything):
+          </span>
+          <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
+            <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
+              <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
+              <code aria-labelledby="install-oneliner-label" class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">{webInstall.quick}</code>
+            </div>
+            <div class="shrink-0">
+              <CopyButton text={webInstall.quick} class="bg-zinc-800! text-zinc-100! border-zinc-700! hover:bg-zinc-700!" />
+            </div>
+          </div>
+          <details class="font-mono text-xs text-zinc-600">
+            <summary class="cursor-pointer select-none hover:text-zinc-900 py-1">Verified variant (checks the SHA-256 before running)</summary>
+            <div class="mt-2 border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 shadow-inner w-full max-w-full overflow-hidden">
+              <code class="text-zinc-200 select-all whitespace-nowrap overflow-x-auto min-w-0 flex-1 text-[11px] sm:text-xs py-0.5">{webInstall.verified}</code>
+              <CopyButton text={webInstall.verified} class="bg-zinc-800! text-zinc-100! border-zinc-700! hover:bg-zinc-700!" />
+            </div>
+          </details>
+        </div>
+
         <!-- Action Toolbar -->
         <div class="border border-zinc-200 rounded-xl bg-zinc-50 p-3 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5">
           <button
@@ -338,6 +362,7 @@ const renderedSteps = data.install.steps.map((step) => ({
             </svg>
             <span class="truncate">Download script (.sh)</span>
           </button>
+          <span class="font-mono text-[11px] text-zinc-500">Then: <code class="text-zinc-800">bash {`${entry.id.replace('/', '-')}-install.sh`}</code></span>
         </div>
 
         <!-- Security Notice & Hash Verification -->

@@ -52,7 +52,7 @@
         "id": "dotfiles",
         "title": "Run the interactive scheme picker",
         "commands": [
-          "bash -c \"$(curl -sLo- https://git.io/vQgMr)\""
+          "bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Gogh-Co/Gogh/{{ref}}/gogh.sh)\""
         ]
       }
     ]

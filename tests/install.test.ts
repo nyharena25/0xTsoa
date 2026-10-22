@@ -5,6 +5,7 @@ import {
   buildInstallScript,
   verifiedScriptCommand,
   validateCloneSteps,
+  translateCommand,
 } from '../src/lib/install';
 import { configSchema, type ConfigData } from '../src/lib/schema';
 
@@ -187,5 +188,31 @@ describe('git clone pinning validator rule', () => {
     expect(res.warnings.length).toBeGreaterThan(0);
     expect(res.warnings[0]).toMatch(/other-owner\/helper-tool/);
     expect(configSchema.safeParse(otherRepo).success).toBe(true);
+  });
+});
+
+describe('translateCommand (portable installer lines)', () => {
+  const t = (cmd: string) => translateCommand(cmd, baseConfig);
+
+  it('routes pacman/apt/dnf through pkg_install and yay through aur_install', () => {
+    expect(t('sudo pacman -S --needed waybar kitty')).toBe("pkg_install 'waybar' 'kitty'");
+    expect(t('sudo pacman -Syu --needed base-devel git')).toBe("pkg_install 'base-devel' 'git'");
+    expect(t('sudo apt install i3 dmenu')).toBe("pkg_install 'i3' 'dmenu'");
+    expect(t('yay -S walker  # AUR')).toBe("aur_install 'walker'");
+  });
+
+  it('turns comments, placeholders, xdg-open and reboot into notes instead of failing commands', () => {
+    expect(t('# Other distros: see the upstream README')).toBeNull();
+    expect(t('# Set it as your display manager')).toBe("note 'Set it as your display manager'");
+    expect(t('sudo plymouth-set-default-theme -R <theme>')).toMatch(/^note '/);
+    expect(t('xdg-open https://github.com/a/b#readme')).toBe("note 'Follow the upstream guide: https://github.com/a/b#readme'");
+    expect(t('reboot')).toMatch(/^note '/);
+  });
+
+  it('makes config appends idempotent and keeps other commands as-is', () => {
+    expect(t('echo "source = x.conf" >> ~/.config/hypr/hyprland.conf')).toBe(
+      'grep -qxF "source = x.conf" ~/.config/hypr/hyprland.conf 2>/dev/null || echo "source = x.conf" >> ~/.config/hypr/hyprland.conf',
+    );
+    expect(t('git -C ~/dots checkout {{ref}}')).toBe(`git -C ~/dots checkout ${baseConfig.source.ref}`);
   });
 });
