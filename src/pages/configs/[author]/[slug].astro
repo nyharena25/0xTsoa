@@ -8,7 +8,7 @@ import ScreenshotGallery from '../../../components/ScreenshotGallery.astro';
 import AssuranceBadges from '../../../components/AssuranceBadges.astro';
 import { getCollection } from 'astro:content';
 import { getRenderedReadme, extractScreenshotsFromReadme } from '../../../lib/readme';
-import { rawToBlobUrl, blobUrl, isAllowedImageUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
+import { rawToBlobUrl, blobUrl, hasInstallSteps, isAllowedImageUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
 import { buildInstallScript, renderCommand, verifiedScriptCommand, downloadInstallCommand, installScriptPath, installImpact, attestationVerifyCommand, UPSTREAM_BACKUP_PATHS } from '../../../lib/install';
 import { useTranslations } from '../../../lib/i18n';
 import { withBase, REPO_URL } from '../../../../site.config';
@@ -26,6 +26,8 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const data = entry.data;
+// Reading lists (category resource) may have no steps: they get "Read online" instead of the installer.
+const install = hasInstallSteps(data) ? data.install : undefined;
 const locale = 'en';
 const t = useTranslations(locale);
 
@@ -55,7 +57,7 @@ const realScreenshots = mergedScreenshots.filter((s) => !s.url.endsWith('/screen
 const sections = (
   [
     ['overview', t('spec.sectionOverview')],
-    ['installation', t('spec.sectionInstall')],
+    install ? ['installation', t('spec.sectionInstall')] : ['read-online', t('spec.sectionReadOnline')],
     realScreenshots.length > 0 && ['screenshots', t('spec.sectionScreenshots')],
     !readmeMissing && ['readme', t('spec.sectionReadme')],
     data.keybindings.length > 0 && ['keybindings', t('spec.keybindings')],
@@ -206,9 +208,9 @@ const setupJsonLd = [
   },
 ];
 
-const scriptBlobUrl = data.install.script ? rawToBlobUrl(data.install.script.url) : '';
-const verifiedScriptCmd = data.install.script ? verifiedScriptCommand(data.install.script) : null;
-const installScriptContent = buildInstallScript(data, entry.id);
+const scriptBlobUrl = install?.script ? rawToBlobUrl(install.script.url) : '';
+const verifiedScriptCmd = install?.script ? verifiedScriptCommand(install.script) : null;
+const installScriptContent = install ? buildInstallScript(data, entry.id) : '';
 const downloadCmd = downloadInstallCommand(entry.id);
 const scriptHref = withBase(installScriptPath(entry.id));
 // Every fact in the trust panel comes from the same classification the installer uses.
@@ -230,7 +232,7 @@ const manualBackup = manualBackupPaths.length
   ? `for p in ${manualBackupPaths.join(' ')}; do [ -e "$p" ] && cp -a "$p" "$p.bak-0xtsoa"; done`
   : '';
 const allPackages = [...impact.packages, ...impact.aurPackages];
-const renderedSteps = data.install.steps.map((step) => ({
+const renderedSteps = (install?.steps ?? []).map((step) => ({
   ...step,
   commands: step.commands.map((cmd) => renderCommand(cmd, data)),
 }));
@@ -334,7 +336,8 @@ const renderedSteps = data.install.steps.map((step) => ({
       </div>
     </section>
 
-    <!-- INSTALLATION & PACKAGES -->
+    <!-- INSTALLATION & PACKAGES (or READ ONLINE for reading lists) -->
+    {install ? (
     <section class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-7 flex flex-col gap-4 w-full min-w-0 overflow-hidden" id="installation">
       <div class="border-b border-zinc-200 pb-3 flex items-center justify-between">
         <div class="flex items-center gap-2.5">
@@ -439,7 +442,7 @@ const renderedSteps = data.install.steps.map((step) => ({
         </div>
 
         <!-- Security Notice & Hash Verification -->
-        {data.install.script && (
+        {install.script && (
           <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-3.5 font-mono text-xs text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs">
             <div class="flex items-center gap-2">
               <span class="w-5 h-5 rounded-md bg-amber-200 text-amber-900 font-bold flex items-center justify-center text-xs shrink-0">!</span>
@@ -458,7 +461,7 @@ const renderedSteps = data.install.steps.map((step) => ({
           </div>
         )}
 
-        {data.install.script && verifiedScriptCmd && (
+        {install.script && verifiedScriptCmd && (
           <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
             <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
               <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
@@ -470,21 +473,21 @@ const renderedSteps = data.install.steps.map((step) => ({
           </div>
         )}
 
-        {data.install.script && (
+        {install.script && (
           <div class="border border-zinc-200 rounded-xl bg-zinc-50 p-3 font-mono text-xs text-zinc-600 flex flex-wrap items-center justify-between gap-2">
             <span class="font-medium">{t('spec.checksum')}</span>
-            <code class="text-zinc-900 font-semibold select-all break-all">{data.install.script.sha256}</code>
-            <CopyButton text={data.install.script.sha256} label="Copy Hash" class="py-0.5 text-[11px]" />
+            <code class="text-zinc-900 font-semibold select-all break-all">{install.script.sha256}</code>
+            <CopyButton text={install.script.sha256} label="Copy Hash" class="py-0.5 text-[11px]" />
           </div>
         )}
       </div>
 
       <!-- Alternative package archives -->
-      {data.install.packages && data.install.packages.length > 0 && (
+      {install.packages.length > 0 && (
         <div class="flex items-center gap-2 font-mono text-xs pt-1">
           <span class="text-zinc-500 uppercase">Alternative Packages:</span>
           <div class="flex flex-wrap gap-2">
-            {data.install.packages.map((pkg) => (
+            {install.packages.map((pkg) => (
               <a
                 href={pkg.url}
                 target="_blank"
@@ -499,6 +502,29 @@ const renderedSteps = data.install.steps.map((step) => ({
       )}
 
     </section>
+    ) : (
+    <section class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-7 flex flex-col gap-4 w-full min-w-0" id="read-online">
+      <div class="border-b border-zinc-200 pb-3 flex items-center gap-2.5">
+        <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+        <h2 class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider">
+          {sectionTitle['read-online']}
+        </h2>
+      </div>
+      <p class="font-mono text-[11px] text-zinc-600 leading-relaxed">
+        A reading list: nothing to install. Browse it at the reviewed commit{' '}
+        <a href={commitUrl} target="_blank" rel="noopener noreferrer" class="underline text-zinc-900">{data.source.ref.slice(0, 12)}</a>.
+      </p>
+      <div class="flex flex-wrap gap-2.5">
+        <a href={commitUrl} target="_blank" rel="noopener noreferrer" class="btn-solid min-h-[44px] justify-center">
+          <span>Browse the repository</span>
+          <span>&rarr;</span>
+        </a>
+        <a href={blobUrl(data.source)} target="_blank" rel="noopener noreferrer" class="btn-outline min-h-[44px] justify-center">
+          Open {data.source.readme}
+        </a>
+      </div>
+    </section>
+    )}
 
     <!-- SCREENSHOT GALLERY -->
     {realScreenshots.length > 0 && (

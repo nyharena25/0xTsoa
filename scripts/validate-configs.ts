@@ -287,17 +287,18 @@ async function main() {
     }
 
     // Script hash checks (--scripts or --network)
-    if ((flags.scripts || flags.network) && data.install.script) {
+    const script = data.install?.script;
+    if ((flags.scripts || flags.network) && script) {
       console.log(`  → Verifying install.script SHA-256...`);
       const { match, actualSha, error } = await verifyScriptHash(
-        data.install.script.url,
-        data.install.script.sha256,
+        script.url,
+        script.sha256,
       );
       if (error) {
         console.error(`  ✖ Failed to download or verify install script: ${error}`);
         errors++;
       } else if (!match) {
-        console.error(`  ✖ SHA-256 hash mismatch! Declared: ${data.install.script.sha256}, Actual: ${actualSha}`);
+        console.error(`  ✖ SHA-256 hash mismatch! Declared: ${script.sha256}, Actual: ${actualSha}`);
         errors++;
       } else {
         console.log(`  ✓ Script SHA-256 verified successfully (${actualSha?.substring(0, 8)}...)`);

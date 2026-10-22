@@ -29,17 +29,5 @@
     "repo": "https://github.com/myugan/awesome-linux-customization",
     "ref": "1aa66b4ddaf6bf60d462b2c70cd809745087e354",
     "readme": "README.md"
-  },
-  "install": {
-    "steps": [
-      {
-        "id": "deps",
-        "title": "Read online or clone for offline browsing",
-        "commands": [
-          "git clone --filter=blob:none https://github.com/myugan/awesome-linux-customization",
-          "git -C awesome-linux-customization checkout {{ref}}"
-        ]
-      }
-    ]
   }
 }

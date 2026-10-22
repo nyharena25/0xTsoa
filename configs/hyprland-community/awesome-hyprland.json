@@ -29,17 +29,5 @@
     "repo": "https://github.com/hyprland-community/awesome-hyprland",
     "ref": "53afd330a1cdf27657e4f8c109899b11aa9086db",
     "readme": "README.md"
-  },
-  "install": {
-    "steps": [
-      {
-        "id": "deps",
-        "title": "Read online or clone for offline browsing",
-        "commands": [
-          "git clone --filter=blob:none https://github.com/hyprland-community/awesome-hyprland",
-          "git -C awesome-hyprland checkout {{ref}}"
-        ]
-      }
-    ]
   }
 }

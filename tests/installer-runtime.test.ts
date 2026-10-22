@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { buildInstallScript } from '../src/lib/install';
-import { configSchema, type ConfigData } from '../src/lib/schema';
+import { configSchema, hasInstallSteps, type ConfigData } from '../src/lib/schema';
 
 const REF = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2';
 
@@ -259,6 +259,7 @@ describe('every real config', () => {
     const failures: string[] = [];
     for (const id of files) {
       const data = configSchema.parse(JSON.parse(fs.readFileSync(`configs/${id}.json`, 'utf8')));
+      if (!hasInstallSteps(data)) continue; // reading lists: no installer is generated
       fs.writeFileSync(script, buildInstallScript(data, id));
       const before = snapshot();
       const { code, out } = run(['--dry-run']);

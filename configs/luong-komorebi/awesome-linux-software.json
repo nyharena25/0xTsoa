@@ -31,17 +31,5 @@
     "repo": "https://github.com/luong-komorebi/Awesome-Linux-Software",
     "ref": "d82162ab61df94cf7f2d7c8e75eb75e9463235c6",
     "readme": "README.md"
-  },
-  "install": {
-    "steps": [
-      {
-        "id": "deps",
-        "title": "Read online or clone for offline browsing",
-        "commands": [
-          "git clone --filter=blob:none https://github.com/luong-komorebi/Awesome-Linux-Software",
-          "git -C Awesome-Linux-Software checkout {{ref}}"
-        ]
-      }
-    ]
   }
 }

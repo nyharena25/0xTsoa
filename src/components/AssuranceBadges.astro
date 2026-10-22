@@ -9,7 +9,7 @@ interface Props {
 const { data, compact = false } = Astro.props;
 
 const isShaPinned = /^[0-9a-f]{40}$/.test(data.source.ref);
-const hasScript = Boolean(data.install.script);
+const hasScript = Boolean(data.install?.script);
 const isReviewed = Boolean(data.review?.installReviewed);
 const reviewedBy = data.review?.reviewedBy;
 const reviewedAt = data.review?.reviewedAt;

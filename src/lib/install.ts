@@ -169,7 +169,7 @@ export function installImpact(data: ConfigData): InstallImpact {
   const userPath = (p: string | null) => {
     if (p && /^(~|\$HOME)\//.test(p) && !impact.userPaths.includes(p)) impact.userPaths.push(p);
   };
-  for (const step of data.install.steps) {
+  for (const step of data.install?.steps ?? []) {
     for (const cmd of step.commands) {
       for (const a of classifyCommand(cmd, data)) {
         if (a.kind === 'package') (a.aur ? impact.aurPackages : impact.packages).push(...a.packages);
@@ -226,9 +226,10 @@ export function buildInstallScript(data: ConfigData, id = 'setup'): string {
   const distroLabels = data.distros.map((d) => DISTRO_LABELS[d] || d).join(', ');
   const version = data.version || 'v1.0';
   const slug = id.replaceAll('/', '-').replace(/[^\w.-]/g, '');
-  const total = data.install.steps.length;
+  const allSteps = data.install?.steps ?? [];
+  const total = allSteps.length;
 
-  const steps = data.install.steps
+  const steps = allSteps
     .map((step, i) => {
       const lines = step.commands
         .map((cmd) => translateCommand(cmd, data))

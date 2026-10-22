@@ -1,27 +1,32 @@
+# The bot (scripts/issue-to-config.ts) reads answers by their label: keep every `label:` text as is.
 name: 🐧 Submit a Linux Desktop Project
-description: Add dotfiles, a theme, a bar, a launcher or any other desktop part to the 0xTsoa registry. No code or Git required.
+description: Add dotfiles, a theme, a bar, a launcher or any other desktop part to the 0xTsoa registry. No JSON or Git needed.
 title: "[Config]: "
 labels: ["new-config"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## 🚀 Welcome to the 0xTsoa Registry!
-        Thanks for sharing your setup with the community. 💙
+        ## Add your project to 0xTsoa
+        Fill in this form. A bot turns it into a validated JSON file and **opens the pull request for you**, credited to your GitHub account. If something is wrong, it comments here with what to fix; edit the issue and it runs again.
 
-        **How it works:** once you submit this form, our bot converts it into a validated JSON spec and **opens a Pull Request for you**. Your GitHub account is automatically credited as the author.
+        **You need 4 things (5 minutes):**
+        1. **A public repository** on GitHub, GitLab or Codeberg.
+        2. **A pinned version:** a tag (`v1.0.0`) or a full commit SHA. Get the SHA with `git rev-parse HEAD`.
+        3. **One screenshot link.** Easiest: drag an image into any GitHub comment box, wait for the upload, and copy the `https://github.com/user-attachments/...` link (no need to post the comment).
+        4. **The commands you would type to install it.** They become the manual steps on your page *and* a guided installer that previews, backs up and can undo its changes.
 
-        > 💡 **Before you start:** have a pinned commit SHA or tag, at least one screenshot on an allowed host (`raw.githubusercontent.com`, `github.com/user-attachments`, `user-images.githubusercontent.com`, `i.imgur.com`, `i.redd.it`, `codeberg.org`, `gitlab.com`), and the commands needed to install it: they become the **02. Installation & Deployment** section of your page.
+        Prefer writing the JSON yourself? See [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md) and `schema/minimal.config.json`.
 
   - type: markdown
     attributes:
-      value: "### 🏷️ Identity"
+      value: "### 1. What is it?"
 
   - type: input
     id: name
     attributes:
       label: Project Name
-      description: A clear, memorable name (3–80 characters).
+      description: A clear name, 3–80 characters.
       placeholder: Hyprland Paper Minimal
     validations:
       required: true
@@ -30,7 +35,7 @@ body:
     id: slug
     attributes:
       label: Slug
-      description: Short identifier used in the URL. Lowercase letters, digits and hyphens only (3–48 characters).
+      description: "Used in the page URL: lowercase letters, digits and hyphens, 3–48 characters. Your page will be `/configs/<your-github>/<slug>/`."
       placeholder: hyprland-paper-minimal
     validations:
       required: true
@@ -39,8 +44,8 @@ body:
     id: summary
     attributes:
       label: Short Summary
-      description: One sentence describing the intent and philosophy of your desktop (10–200 characters).
-      placeholder: Blazing-fast Wayland desktop on Arch Linux with Waybar and Kitty.
+      description: One sentence for cards and search, 10–200 characters. Say what it looks like or does, not "my dotfiles".
+      placeholder: Blazing-fast Wayland desktop with Waybar, Kitty and a paper-white palette.
     validations:
       required: true
 
@@ -48,7 +53,7 @@ body:
     id: description
     attributes:
       label: Description
-      description: Optional. Layout philosophy, workflow, ergonomics tips, what makes it special (max 2000 characters).
+      description: Optional, up to 2000 characters. Layout, workflow, what makes it special. Also searched.
     validations:
       required: false
 
@@ -56,18 +61,18 @@ body:
     id: license
     attributes:
       label: License (SPDX)
-      description: SPDX identifier of your dotfiles' license. Defaults to MIT if left empty.
-      placeholder: MIT, GPL-3.0-only, Apache-2.0
+      description: The license of the repository, as an SPDX identifier. MIT if left empty.
+      placeholder: MIT, GPL-3.0-only, CC0-1.0
 
   - type: markdown
     attributes:
-      value: "### 🖥️ Environment"
+      value: "### 2. Where does it fit? (catalogue filters)"
 
   - type: dropdown
     id: category
     attributes:
       label: Desktop Part
-      description: Which part of the desktop does this project cover? It drives the catalogue filter.
+      description: The part of the desktop it covers. A full setup is "Dotfiles & full rices"; a reading list or wiki is "Lists & guides".
       options:
         - Dotfiles & full rices
         - WM & compositors
@@ -93,7 +98,7 @@ body:
     id: wm
     attributes:
       label: Window Manager
-      description: The window manager, compositor or desktop environment it targets. Use "Any WM / DE" for generic tools and themes.
+      description: What it targets. Themes, icons, tools and lists that work everywhere use "Any WM / DE".
       options:
         - Hyprland
         - Sway
@@ -123,7 +128,7 @@ body:
     id: theme_style
     attributes:
       label: Theme Style
-      description: Dominant palette or look. Pick "Other" if none fits.
+      description: The dominant palette or look (powers "Browse by theme"). "Wallpaper-based" for pywal/matugen-style colors, "Other" if none fits.
       options:
         - Minimalist
         - Cyberpunk
@@ -157,7 +162,7 @@ body:
     id: distros
     attributes:
       label: Distributions
-      description: Distributions your setup has been tested on (up to 8).
+      description: Where you actually tested it (up to 8). Tick only "Any" for distro-independent themes, tools and lists.
       options:
         - label: Arch
         - label: EndeavourOS
@@ -179,35 +184,36 @@ body:
     id: tags
     attributes:
       label: Tags
-      description: Up to 10 keywords, separated by commas or spaces (lowercase, digits, hyphens). Name the components you use (`waybar`, `rofi`, `quickshell`…); don't repeat the WM, distro or theme style, they are already filters.
-      placeholder: waybar, rofi, auto-install
+      description: Up to 10 search keywords, separated by commas or spaces (lowercase, digits, hyphens). Name components and features (`waybar`, `rofi`, `auto-install`). Skip the WM, distro and theme style; they are already filters.
+      placeholder: waybar, rofi, quickshell, auto-install
 
   - type: markdown
     attributes:
-      value: "### 📸 Screenshots"
+      value: "### 3. Screenshots"
 
   - type: textarea
     id: screenshots
     attributes:
       label: Screenshots URLs
       description: |
-        Direct `https://` image links, one per line (1–8). Allowed hosts: `raw.githubusercontent.com`, `github.com/user-attachments`, `user-images.githubusercontent.com`, `i.imgur.com`, `i.redd.it`, `codeberg.org`, `gitlab.com`.
-        Clean 1080p / 1440p captures of your desktop, bar or fastfetch work best.
+        1–8 direct image links, one per line. The first one is the card thumbnail.
+        Tip: drag an image into any GitHub comment box and copy the `github.com/user-attachments/...` link it creates.
+        Other allowed hosts: `raw.githubusercontent.com`, `user-images.githubusercontent.com`, `i.imgur.com`, `i.redd.it`, `codeberg.org`, `gitlab.com`.
       placeholder: |
+        https://github.com/user-attachments/assets/a65d939e-8b2f-41a0-aebd-330573736b1a
         https://raw.githubusercontent.com/your-user/dots/v1.0.0/preview.png
-        https://i.imgur.com/abc123.png
     validations:
       required: true
 
   - type: markdown
     attributes:
-      value: "### 🔐 Source & Installation"
+      value: "### 4. Source"
 
   - type: input
     id: source_repo
     attributes:
       label: Source Repository
-      description: Public repository hosting your dotfiles (GitHub, GitLab or Codeberg).
+      description: The public repository (GitHub, GitLab or Codeberg).
       placeholder: https://github.com/your-user/dotfiles
     validations:
       required: true
@@ -216,39 +222,51 @@ body:
     id: source_ref
     attributes:
       label: Git Ref
-      description: A full 40-character commit SHA or a version tag. Branches like `main` are rejected to guarantee reproducible builds.
-      placeholder: v1.0.0
+      description: "The exact version people install: a tag or a full 40-character commit SHA (`git rev-parse HEAD`). Branch names like `main` are rejected: they change after review."
+      placeholder: v1.0.0  or  f35639dee902020dd6309cd167956f144c7db8d6
     validations:
       required: true
 
   - type: markdown
     attributes:
       value: |
-        #### 02. Installation & Deployment
-        One shell command per line. Lines starting with `#` are shown as comments. At least the **Dependencies** step is required.
+        ### 5. Install commands
+        Write the commands **exactly as you would type them**, one per line. Only **Dependencies** is required, except for a list or guide (Desktop Part "Lists & guides"): leave all three empty and its page links to your repository instead of an installer.
+        The site shows them as manual steps and builds a guided installer from them, which previews every change (`--dry-run`), keeps files the user already has unless they approve, backs up what it changes and can undo it (`--rollback`). Package commands are adapted to the user's distro.
+
+        | Do | Avoid |
+        |---|---|
+        | `sudo pacman -S --needed waybar kitty` (or apt/dnf) | `sudo bash install.sh` for the whole thing |
+        | `git clone --filter=blob:none <repo> ~/dots` then `git -C ~/dots checkout {{ref}}` | `git clone --depth 1` (can't pin the version) |
+        | `cp -r ~/dots/hypr ~/dots/waybar ~/.config/` (named folders) | `cp -r ~/dots/* ~/.config/` (overwrites everything) |
+        | `bash -c "$(curl -fsSL https://raw.githubusercontent.com/you/dots/{{ref}}/setup.sh)"` | `curl … \| bash` from a branch URL (rejected) |
+        | `# Log out and back in` (shown as a note) | Personal values like your hostname: write `<hostname>` |
+
+        `{{ref}}` is replaced with your Git Ref.
 
   - type: textarea
     id: install_deps
     attributes:
       label: "Install: Dependencies"
-      description: Required. Install packages or clone the repository. When cloning the source repo, use `--filter=blob:none` (never `--depth`) and follow it with `git -C <dir> checkout {{ref}}` (`{{ref}}` is replaced with your pinned Git Ref).
+      description: Required (leave empty only for "Lists & guides"). Install packages and/or clone the repository.
       render: bash
       placeholder: |
         sudo pacman -S --needed hyprland waybar kitty rofi-wayland
         git clone --filter=blob:none https://github.com/your-user/dotfiles ~/dotfiles
         git -C ~/dotfiles checkout {{ref}}
     validations:
-      required: true
+      # Not required by the form (it cannot depend on Desktop Part): scripts/issue-to-config.ts enforces it.
+      required: false
 
   - type: textarea
     id: install_dotfiles
     attributes:
       label: "Install: Deploy"
-      description: Optional. Copy configs, run the installer or apply the theme.
+      description: Optional. Copy the configs, apply the theme or run your own installer.
       render: bash
       placeholder: |
-        cd ~/dotfiles
-        ./install.sh
+        mkdir -p ~/.config
+        cp -r ~/dotfiles/hypr ~/dotfiles/waybar ~/dotfiles/kitty ~/.config/
 
   - type: textarea
     id: install_reload
@@ -262,19 +280,19 @@ body:
     id: script_url
     attributes:
       label: Install Script URL
-      description: Optional. HTTPS link to your `.sh` installer, pinned to a commit SHA or tag.
+      description: Optional, rarely needed. Only if your repository ships its own `.sh` installer and you want it listed separately. Must be a raw link pinned to a tag or commit.
       placeholder: https://raw.githubusercontent.com/your-user/dots/v1.0.0/install.sh
 
   - type: input
     id: script_sha256
     attributes:
       label: Script SHA-256
-      description: Optional. Leave empty and our bot will compute the checksum for you. ✨ (Get it locally with `sha256sum install.sh`.)
-      placeholder: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      description: Optional. Leave empty and the bot computes it from the pinned URL.
+      placeholder: leave empty
 
   - type: markdown
     attributes:
-      value: "### 🧩 Components (all optional)"
+      value: "### 6. Components (optional, shown in the spec table)"
 
   - type: input
     id: bar
@@ -307,19 +325,18 @@ body:
       description: Theme or color palette name.
       placeholder: Paper & Ink Monochrome
 
-
   - type: checkboxes
     id: checklist
     attributes:
       label: Submission Checklist
       options:
-        - label: My Git ref is a commit SHA or a tag, not a branch.
+        - label: My Git ref is a tag or a full commit SHA, not a branch.
           required: true
-        - label: My install commands work on a clean system for at least one listed distribution.
+        - label: I ran my install commands on a clean system (or a fresh user) for at least one listed distribution.
           required: true
-        - label: My screenshots are hosted on an allowed host.
+        - label: No command pipes a download into a shell unless the URL is pinned to a tag, commit or `{{ref}}`.
           required: true
-        - label: My install script (if any) contains no obfuscated code, unverified binaries or silent privilege escalation.
+        - label: My screenshots are direct image links on an allowed host.
           required: true
-        - label: I am the author of this setup, or I credit the original author and respect their license.
+        - label: I am the author of this project, or I credit the original author and respect their license.
           required: true

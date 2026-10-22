@@ -89,7 +89,7 @@ describe('install helpers (src/lib/install.ts)', () => {
         github: 'mallory',
       },
       install: {
-        ...baseConfig.install,
+        ...baseConfig.install!,
         steps: [
           {
             id: 'deps',
@@ -132,7 +132,7 @@ describe('git clone pinning validator rule', () => {
     const missingCheckout = {
       ...baseConfig,
       install: {
-        ...baseConfig.install,
+        ...baseConfig.install!,
         steps: [
           {
             id: 'deps' as const,
@@ -153,7 +153,7 @@ describe('git clone pinning validator rule', () => {
     const withDepth = {
       ...baseConfig,
       install: {
-        ...baseConfig.install,
+        ...baseConfig.install!,
         steps: [
           {
             id: 'deps' as const,
@@ -177,7 +177,7 @@ describe('git clone pinning validator rule', () => {
     const otherRepo = {
       ...baseConfig,
       install: {
-        ...baseConfig.install,
+        ...baseConfig.install!,
         steps: [
           {
             id: 'deps' as const,
@@ -251,7 +251,7 @@ describe('installImpact (page facts)', () => {
     const impact = installImpact({
       ...baseConfig,
       install: {
-        ...baseConfig.install,
+        ...baseConfig.install!,
         steps: [
           { id: 'deps', title: 'deps', commands: ['sudo pacman -S --needed waybar', 'yay -S walker  # AUR', 'git clone https://github.com/alice/dots ~/dots', 'git -C ~/dots checkout {{ref}}'] },
           { id: 'dotfiles', title: 'files', commands: ['cp -r ~/dots/hypr ~/.config/', 'sudo make install', './setup.sh'] },

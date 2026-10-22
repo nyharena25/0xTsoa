@@ -133,6 +133,10 @@ export async function convertIssueToConfig(
   )
     .map(([id, title, raw]) => ({ id, title, commands: parseCommands(raw || '') }))
     .filter((step) => step.commands.length > 0);
+  // The form cannot make a field conditionally required, so the bot enforces it.
+  if (steps.length === 0 && category !== 'resource') {
+    throw new Error('"Install: Dependencies" is required (it may be empty only when Desktop Part is "Lists & guides").');
+  }
 
   const bar = fields['Status Bar'] || undefined;
   const terminal = fields['Terminal'] || undefined;
@@ -171,10 +175,11 @@ export async function convertIssueToConfig(
       ref: sourceRef,
       readme: 'README.md',
     },
-    install: {
+    // Reading lists without steps get no install block: their page links to the repo instead.
+    install: steps.length > 0 || scriptUrl ? {
       script: scriptUrl ? { url: scriptUrl, sha256: PLACEHOLDER_SHA256, shell: 'bash' } : undefined,
       steps,
-    },
+    } : undefined,
     example: false,
   };
 
@@ -201,7 +206,7 @@ export async function convertIssueToConfig(
         throw new Error(`Script SHA-256 mismatch: expected ${expected}, got ${computedSha256}`);
       }
     }
-    config.install.script = { url: scriptUrl, sha256: computedSha256, shell: 'bash' };
+    config.install!.script = { url: scriptUrl, sha256: computedSha256, shell: 'bash' };
     console.log(`Verified SHA-256: ${computedSha256}`);
   }
 

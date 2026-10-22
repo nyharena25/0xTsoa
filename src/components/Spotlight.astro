@@ -2,7 +2,7 @@
 import CopyButton from './CopyButton.astro';
 import { useTranslations, type Locale } from '../lib/i18n';
 import { getVotesForConfig, getDiscussionUrlForConfig } from '../lib/votes';
-import { WM_LABELS, DISTRO_LABELS, type ConfigData } from '../lib/schema';
+import { WM_LABELS, DISTRO_LABELS, hasInstallSteps, type ConfigData } from '../lib/schema';
 import { verifiedScriptCommand, downloadInstallCommand } from '../lib/install';
 import { withBase } from '../../site.config';
 
@@ -28,9 +28,13 @@ const serializedSetups = configs.map((c, idx) => {
   const specPath = withBase(`/configs/${c.id}/`);
 
   // Download only: the user reads the script before running it (no pipe into a shell).
-  const installCmd = c.data.install.script
-    ? verifiedScriptCommand(c.data.install.script)
-    : downloadInstallCommand(c.id);
+  // Reading lists have no installer: show the repo at the pinned ref instead.
+  const readOnly = !hasInstallSteps(c.data);
+  const installCmd = readOnly
+    ? `${c.data.source.repo.replace(/\.git$/, '')}/tree/${c.data.source.ref}`
+    : c.data.install?.script
+      ? verifiedScriptCommand(c.data.install.script)
+      : downloadInstallCommand(c.id);
 
   const screenshots = c.data.screenshots && c.data.screenshots.length > 0
     ? c.data.screenshots.map((s, sIdx) => ({
@@ -56,6 +60,8 @@ const serializedSetups = configs.map((c, idx) => {
     bar: c.data.specs.bar || null,
     theme: c.data.specs.theme || null,
     cmd: installCmd,
+    readOnly,
+    cmdLabel: readOnly ? t('spotlight.readOnline') : t('spotlight.deployCmd'),
     votesCount: votes,
     votesFormatted: `${votes.toLocaleString()} sign-offs`,
     discussionUrl,
@@ -234,7 +240,7 @@ const defaultSetup = serializedSetups[0];
         <!-- 1-Line Deployment Command Card -->
         <div class="flex flex-col gap-2">
           <span id="spotlight-cmd-label" class="font-mono text-xs text-zinc-600 font-medium">
-            {t('spotlight.deployCmd')}
+            {defaultSetup?.cmdLabel}
           </span>
           <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-3 font-mono text-xs shadow-inner">
             <code aria-labelledby="spotlight-cmd-label" class="text-zinc-200 truncate select-all flex-1" id="spotlight-cmd">
@@ -242,7 +248,7 @@ const defaultSetup = serializedSetups[0];
             </code>
             <CopyButton text={defaultSetup?.cmd || ''} id="spotlight-copy-btn" tone="dark" />
           </div>
-          <span class="font-mono text-[11px] text-zinc-500">
+          <span id="spotlight-cmd-hint" class:list={['font-mono text-[11px] text-zinc-500', defaultSetup?.readOnly && 'hidden']}>
             Then verify it, preview with <code class="text-zinc-800">bash install.sh --dry-run</code> (changes nothing), and install. Existing files are kept and backed up; see Full Spec for every step.
           </span>
         </div>
@@ -310,7 +316,7 @@ const defaultSetup = serializedSetups[0];
   // A bundled script ('self' under the CSP); define:vars produced an inline script the CSP blocked.
   interface SpotlightSetup {
     index: number; name: string; kicker: string; desc: string; distro: string; wm: string;
-    bar: string | null; theme: string | null; cmd: string; votesFormatted: string;
+    bar: string | null; theme: string | null; cmd: string; readOnly: boolean; cmdLabel: string; votesFormatted: string;
     discussionUrl: string; repoUrl: string; specUrl: string;
     screenshots: { url: string; alt: string; caption: string }[];
   }
@@ -475,6 +481,10 @@ const defaultSetup = serializedSetups[0];
 
     const cmd = document.getElementById('spotlight-cmd');
     if (cmd) cmd.textContent = s.cmd;
+
+    const cmdLabel = document.getElementById('spotlight-cmd-label');
+    if (cmdLabel) cmdLabel.textContent = s.cmdLabel;
+    document.getElementById('spotlight-cmd-hint')?.classList.toggle('hidden', s.readOnly);
 
     const copyBtn = document.getElementById('spotlight-copy-btn');
     if (copyBtn) copyBtn.setAttribute('data-copy-text', s.cmd);

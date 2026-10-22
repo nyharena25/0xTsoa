@@ -39,6 +39,9 @@ https://github.com/test-user/dots
 
 ### Git Ref
 v1.0.0
+
+### Install: Dependencies
+sudo pacman -S --needed hyprland kitty
 `;
 
   it('parses markdown sections accurately', () => {
@@ -125,8 +128,7 @@ git -C ~/dots checkout {{ref}}
 
   it('rejects a submission without install steps', async () => {
     const noInstall = githubRendered.replace(/### Install: Dependencies[\s\S]*$/, '');
-    const { config } = await convertIssueToConfig('test-user', noInstall);
-    expect(configSchema.safeParse(config).success).toBe(false);
+    await expect(convertIssueToConfig('test-user', noInstall)).rejects.toThrow(/Install: Dependencies.*required/);
   });
 
   it('keeps only checked checkboxes', () => {
@@ -243,13 +245,24 @@ zsh
     expect(config.wm).toBe('any');
     expect(config.category).toBe('bar');
     expect(config.themeStyle).toBe('rose-pine');
-    expect(config.install.steps).toEqual([
+    expect(config.install?.steps).toEqual([
       { id: 'deps', title: 'Install dependencies', commands: ['sudo pacman -S --needed waybar', '# Other distros: see the README'] },
       { id: 'reload', title: 'Reload', commands: ['killall -SIGUSR2 waybar'] },
     ]);
     expect(config.distros).toEqual(['arch', 'opensuse']);
     expect(config.specs).toMatchObject({ shell: 'zsh' });
     expect(config.lang).toBe('en');
+    const parsed = configSchema.safeParse(config);
+    expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
+  });
+
+  it('accepts a "Lists & guides" entry without install steps and leaves install out', async () => {
+    const readingList = englishRendered
+      .replace('Bars & panels', 'Lists & guides')
+      .replace(/### Install: Dependencies[\s\S]*?(?=### Install Script URL)/, '');
+    const { config } = await convertIssueToConfig('test-user', readingList);
+    expect(config.category).toBe('resource');
+    expect(config.install).toBeUndefined();
     const parsed = configSchema.safeParse(config);
     expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
   });
@@ -298,7 +311,7 @@ zsh
       .replace(/### Script SHA-256\n\n_No response_/, `### Script SHA-256\n\n${realHash}`);
 
     const { config } = await convertIssueToConfig('test-user', issueWithHash);
-    expect(config.install.script?.sha256).toBe(realHash.toLowerCase());
+    expect(config.install?.script?.sha256).toBe(realHash.toLowerCase());
   });
 
   it('rejects a non-allowlisted or http:// script URL before any fetch', async () => {

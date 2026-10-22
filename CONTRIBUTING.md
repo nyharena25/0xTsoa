@@ -33,7 +33,7 @@ The fastest way to add a project is through `.github/ISSUE_TEMPLATE/new-config.y
 - **Identity**: Project Name (`3` to `80` chars), URL Slug (`3` to `48` lowercase characters, digits, and hyphens), Short Summary (`10` to `200` chars), optional Description (up to `2000` chars), and SPDX License (defaults to `MIT` if left empty).
 - **Environment**: Desktop Part (`category`), Window Manager (`wm`), Theme Style (`themeStyle`), Display Server (`wayland`, `x11`, or `both`), tested Distributions (`distros`, up to 8), and optional Tags (up to 10).
 - **Screenshots**: 1 to 8 direct `https://` image URLs (one per line) hosted on an allowed domain.
-- **Source and Installation**: Source repository URL (`github.com`, `gitlab.com`, or `codeberg.org`), a Git ref (40-character commit SHA or version tag), required `Install: Dependencies` shell commands, optional `Install: Deploy` and `Install: Reload` commands, and an optional pinned `.sh` script URL and SHA-256 hash.
+- **Source and Installation**: Source repository URL (`github.com`, `gitlab.com`, or `codeberg.org`), a Git ref (40-character commit SHA or version tag), `Install: Dependencies` shell commands (required, except for "Lists & guides" entries), optional `Install: Deploy` and `Install: Reload` commands, and an optional pinned `.sh` script URL and SHA-256 hash.
 - **Components (Optional)**: Status Bar, Terminal, Launcher, Shell, and Theme names.
 
 ### How `issue-to-pr.yml` Turns Your Issue into a Pull Request
@@ -85,7 +85,7 @@ Every configuration file lives at `configs/<author.github>/<slug>.json`.
 | `specs` | `object` | Optional | `{}` | Optional component strings (`bar`, `terminal`, `launcher`, `notifications`, `theme`, `shell`, `editor`) |
 | `screenshots` | `object[]` | **Required** | None | `1` to `8` screenshot objects (`url`, `alt`, optional `caption`) |
 | `source` | `object` | **Required** | None | Upstream repository pointer (`repo`, `ref`, optional `readme`) |
-| `install` | `object` | **Required** | None | Installation instructions (`steps`, optional `script`, optional `packages`) |
+| `install` | `object` | **Required** (optional if `category` is `"resource"`) | None | Installation instructions (`steps`, optional `script`, optional `packages`). Lists & guides leave it out: their page links to the repo at `source.ref` instead of an installer |
 | `keybindings` | `object[]` | Optional | `[]` | Up to `30` shortcut objects (`keys`, `action`, optional `effect`) |
 | `review` | `object` | Optional | None | Maintainer install review metadata (`installReviewed`, optional `reviewedBy`, optional `reviewedAt`) |
 | `example` | `boolean` | Optional | `false` | Marks synthetic example entries (`false` for all real community submissions) |
@@ -109,7 +109,7 @@ Every configuration file lives at `configs/<author.github>/<slug>.json`.
 | `source.repo` | `string` | **Required** | None | `https://` repository URL on `github.com`, `gitlab.com`, or `codeberg.org` |
 | `source.ref` | `string` | **Required** | None | 40-char lowercase hex commit SHA (`^[0-9a-f]{40}$`, immutable — earns **Source pinned**) or version tag (`v1.0.0`, `release-1`, mutable). Moving branches (`main`, `master`, `dev`, `develop`, `HEAD`, `latest`, `trunk`) are forbidden |
 | `source.readme` | `string` | Optional | `"README.md"` | Path to markdown README matching `^[\w./-]+\.(md\|markdown)$` |
-| `install.steps` | `object[]` | **Required** | None | `1` to `3` step objects; each `id` may appear only once. If any command runs `git clone` of `source.repo`, it must not use `--depth` and a later command must contain `checkout {{ref}}` |
+| `install.steps` | `object[]` | **Required** | None | `1` to `3` step objects (may be empty only for `"resource"`); each `id` may appear only once. If any command runs `git clone` of `source.repo`, it must not use `--depth` and a later command must contain `checkout {{ref}}` |
 | `install.steps[].id` | `string` | **Required** | None | Enum: `"deps"` (install packages or clone), `"dotfiles"` (deploy config or theme), `"reload"` (apply or restart) |
 | `install.steps[].title` | `string` | **Required** | None | Step heading (`minLength: 3`, `maxLength: 80`) |
 | `install.steps[].commands` | `string[]` | **Required** | None | `1` to `30` shell commands (`1` to `500` chars each; `#` lines render as comments; `{{ref}}` is replaced with `source.ref`, e.g. `git -C <dir> checkout {{ref}}`) |
@@ -124,99 +124,39 @@ Every configuration file lives at `configs/<author.github>/<slug>.json`.
 | `review.reviewedBy` | `string` | Optional | None | GitHub handle of the reviewer |
 | `review.reviewedAt` | `string` | Optional | None | Review date (`YYYY-MM-DD`) |
 
-### Reference JSON Example (`schema/example.config.json`)
+### Starting a JSON file by hand
+
+Copy [`schema/minimal.config.json`](schema/minimal.config.json) (only the required fields) to `configs/<your-github>/<slug>.json` and edit it. Keep the `$schema` line: VS Code and other editors then autocomplete every field, list the allowed values and show what each field means.
+For every optional field (description, specs, keybindings, several steps), see [`schema/example.config.json`](schema/example.config.json). Both files are checked in CI, so they always validate.
 
 ```json
 {
   "$schema": "../../schema/config.schema.json",
   "name": "My Clean Setup",
-  "author": {
-    "name": "My Name",
-    "github": "my-handle"
-  },
-  "lang": "en",
-  "summary": "Minimal Hyprland desktop with Waybar and Kitty on Arch Linux.",
-  "description": "Optional long description: layout philosophy, workflow, ergonomics tips.",
+  "author": { "name": "My Name", "github": "my-handle" },
+  "summary": "Minimal Hyprland desktop with Waybar and Kitty.",
   "license": "MIT",
-  "version": "v1.0.0",
   "updatedAt": "2026-10-15",
-  "distros": [
-    "arch"
-  ],
+  "distros": ["arch"],
   "category": "dotfiles",
   "wm": "hyprland",
-  "themeStyle": "monochrome",
   "displayServer": "wayland",
-  "tags": [
-    "waybar",
-    "kitty"
-  ],
-  "specs": {
-    "bar": "Waybar",
-    "terminal": "Kitty",
-    "launcher": "Rofi",
-    "notifications": "Dunst",
-    "theme": "Paper Monochrome",
-    "shell": "zsh",
-    "editor": "Neovim"
-  },
   "screenshots": [
-    {
-      "url": "https://raw.githubusercontent.com/my-handle/dots/v1.0.0/preview.png",
-      "alt": "Screenshot of my desktop",
-      "caption": "01_DESKTOP.RAW"
-    }
+    { "url": "https://raw.githubusercontent.com/my-handle/dots/v1.0.0/preview.png", "alt": "My Hyprland desktop" }
   ],
-  "source": {
-    "repo": "https://github.com/my-handle/dots",
-    "ref": "v1.0.0",
-    "readme": "README.md"
-  },
+  "source": { "repo": "https://github.com/my-handle/dots", "ref": "v1.0.0" },
   "install": {
-    "script": {
-      "url": "https://raw.githubusercontent.com/my-handle/dots/v1.0.0/install.sh",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "shell": "bash"
-    },
     "steps": [
       {
         "id": "deps",
-        "title": "Install dependencies",
-        "commands": [
-          "sudo pacman -S --needed hyprland waybar kitty rofi-wayland dunst"
-        ]
-      },
-      {
-        "id": "dotfiles",
-        "title": "Deploy dotfiles",
+        "title": "Clone and install",
         "commands": [
           "git clone --filter=blob:none https://github.com/my-handle/dots ~/dots",
-          "git -C ~/dots checkout {{ref}}",
-          "cp -r ~/dots/.config/* ~/.config/"
-        ]
-      },
-      {
-        "id": "reload",
-        "title": "Reload Hyprland",
-        "commands": [
-          "hyprctl reload"
+          "git -C ~/dots checkout {{ref}}"
         ]
       }
-    ],
-    "packages": []
-  },
-  "keybindings": [
-    {
-      "keys": "SUPER + Return",
-      "action": "exec, kitty",
-      "effect": "Open terminal"
-    },
-    {
-      "keys": "SUPER + Q",
-      "action": "killactive",
-      "effect": "Close window"
-    }
-  ]
+    ]
+  }
 }
 ```
 
@@ -239,7 +179,7 @@ All configurations are checked by `scripts/validate-configs.ts` and `src/lib/sch
 - A command that downloads a script and runs it (`curl … | bash`, `bash -c "$(curl …)"`, `bash <(curl …)`, wget equivalents) must use a raw file URL pinned to a commit SHA, a version tag or `{{ref}}`. Unpinned remote code is rejected.
 
 #### How the site turns steps into an installer
-Every config gets a generated `configs/<author>/<slug>/install.sh` (`buildInstallScript()` in `src/lib/install.ts` + the fixed runtime `src/lib/installer-runtime.sh`). Write plain commands; the installer wraps them:
+Every config with steps gets a generated `configs/<author>/<slug>/install.sh` (`buildInstallScript()` in `src/lib/install.ts` + the fixed runtime `src/lib/installer-runtime.sh`). Write plain commands; the installer wraps them:
 - `sudo pacman -S`, `sudo apt/dnf/zypper install` and `yay/paru -S` become distro-aware package installs.
 - `git clone`, `cp` and `echo "…" >> file` are planned, conflict-checked and backed up: existing files that differ are kept unless the user approves, and `--rollback` restores them.
 - `./install.sh`, `bash setup.sh`, `make install` are treated as upstream installers: the usual desktop config folders are backed up before they run.
@@ -350,7 +290,7 @@ Every configuration pull request is reviewed against `.github/PULL_REQUEST_TEMPL
 - [ ] The file lives at `configs/<github-user>/<slug>.json` and `author.github` matches the folder name.
 - [ ] `category` names the desktop part (`dotfiles`, `bar`, `launcher`, `icons`, `gtk-theme`, etc.), and `wm` is `any` if the project is not tied to one window manager.
 - [ ] `tags` list components and features only (no WM, distro, display server, or theme-style duplicates).
-- [ ] `install.steps` has at least a `deps` step, and any `git clone` of `source.repo` is followed by `checkout {{ref}}`.
+- [ ] `install.steps` has at least a `deps` step (Lists & guides may leave `install` out), and any `git clone` of `source.repo` is followed by `checkout {{ref}}`.
 - [ ] `source.ref` is a full 40-character commit SHA (recommended, immutable) or a version tag, never a branch name.
 - [ ] Screenshots come from an allowed host (`raw.githubusercontent.com`, `github.com`, `user-images.githubusercontent.com`, `private-user-images.githubusercontent.com`, `i.imgur.com`, `i.redd.it`, `codeberg.org`, `gitlab.com`).
 - [ ] Any `.sh` install script is pinned to a commit SHA or tag and includes its 64-character `sha256` checksum.
