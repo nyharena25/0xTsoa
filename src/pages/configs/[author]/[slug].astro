@@ -8,7 +8,7 @@ import AssuranceBadges from '../../../components/AssuranceBadges.astro';
 import { getCollection } from 'astro:content';
 import { getRenderedReadme, extractScreenshotsFromReadme } from '../../../lib/readme';
 import { rawToBlobUrl, blobUrl, isAllowedImageUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
-import { buildInstallScript, renderCommand, verifiedScriptCommand, webInstallCommands } from '../../../lib/install';
+import { buildInstallScript, renderCommand, verifiedScriptCommand, downloadInstallCommand, installScriptPath } from '../../../lib/install';
 import { useTranslations } from '../../../lib/i18n';
 import { withBase } from '../../../../site.config';
 
@@ -208,7 +208,8 @@ const setupJsonLd = [
 const scriptBlobUrl = data.install.script ? rawToBlobUrl(data.install.script.url) : '';
 const verifiedScriptCmd = data.install.script ? verifiedScriptCommand(data.install.script) : null;
 const installScriptContent = buildInstallScript(data, entry.id);
-const webInstall = webInstallCommands(entry.id, data);
+const downloadCmd = downloadInstallCommand(entry.id);
+const scriptHref = withBase(installScriptPath(entry.id));
 const renderedSteps = data.install.steps.map((step) => ({
   ...step,
   commands: step.commands.map((cmd) => renderCommand(cmd, data)),
@@ -325,44 +326,66 @@ const renderedSteps = data.install.steps.map((step) => ({
       </div>
 
       <div class="flex flex-col gap-3 w-full min-w-0">
-        <!-- One-line install: works on Arch, Debian/Ubuntu, Fedora, openSUSE, Void, Alpine, Gentoo -->
-        <div class="flex flex-col gap-2">
-          <span id="install-oneliner-label" class="font-mono text-xs text-zinc-600 font-medium">
-            Install in one line (detects your distro and package manager, asks before changing anything):
-          </span>
-          <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
-            <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
-              <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
-              <code aria-labelledby="install-oneliner-label" class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">{webInstall.quick}</code>
-            </div>
-            <div class="shrink-0">
-              <CopyButton text={webInstall.quick} class="bg-zinc-800! text-zinc-100! border-zinc-700! hover:bg-zinc-700!" />
-            </div>
-          </div>
-          <details class="font-mono text-xs text-zinc-600">
-            <summary class="cursor-pointer select-none hover:text-zinc-900 py-1">Verified variant (checks the SHA-256 before running)</summary>
-            <div class="mt-2 border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 shadow-inner w-full max-w-full overflow-hidden">
-              <code class="text-zinc-200 select-all whitespace-nowrap overflow-x-auto min-w-0 flex-1 text-[11px] sm:text-xs py-0.5">{webInstall.verified}</code>
-              <CopyButton text={webInstall.verified} class="bg-zinc-800! text-zinc-100! border-zinc-700! hover:bg-zinc-700!" />
-            </div>
-          </details>
+        <!-- 1. Manual steps first: users see every command before anything runs -->
+        <div class="flex flex-col gap-1.5">
+          <span class="font-mono text-xs font-bold text-zinc-900">Option A: run each step yourself</span>
+          <span class="font-mono text-[11px] text-zinc-500">The exact upstream commands, pinned to the reviewed commit. Package commands are written for Arch; other distros, see the upstream README.</span>
+          <Accordion steps={renderedSteps} data={data} locale={locale} />
         </div>
 
-        <!-- Action Toolbar -->
-        <div class="border border-zinc-200 rounded-xl bg-zinc-50 p-3 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5">
-          <button
-            type="button"
-            id="btn-download-sh"
-            data-filename={`${entry.id.replace('/', '-')}-install.sh`}
-            data-script={installScriptContent}
-            class="min-h-[44px] inline-flex items-center justify-center gap-2 border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-800 px-4 py-2 rounded-lg font-mono text-xs font-semibold shadow-2xs transition-colors cursor-pointer flex-1 sm:flex-initial"
-          >
-            <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-            </svg>
-            <span class="truncate">Download script (.sh)</span>
-          </button>
-          <span class="font-mono text-[11px] text-zinc-500">Then: <code class="text-zinc-800">bash {`${entry.id.replace('/', '-')}-install.sh`}</code></span>
+        <!-- 2. Generated installer: download, read, then run. Never piped into a shell. -->
+        <div class="flex flex-col gap-2 border border-zinc-200 rounded-xl bg-zinc-50 p-3.5">
+          <span class="font-mono text-xs font-bold text-zinc-900">Option B: generated installer (any distro)</span>
+          <span class="font-mono text-[11px] text-zinc-600 leading-relaxed">
+            The same steps as a script: uses your distro's package manager, skips what is already installed, and asks before changing anything.
+            Download it, read it, then run it. Don't pipe it into a shell.
+          </span>
+            <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
+              <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
+                <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
+                <code class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">{downloadCmd}</code>
+                <span class="text-zinc-500 select-none shrink-0"># 1. download</span>
+              </div>
+              <div class="shrink-0"><CopyButton text={downloadCmd} tone="dark" /></div>
+            </div>
+            <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
+              <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
+                <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
+                <code class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">less install.sh</code>
+                <span class="text-zinc-500 select-none shrink-0"># 2. read it</span>
+              </div>
+              <div class="shrink-0"><CopyButton text="less install.sh" tone="dark" /></div>
+            </div>
+            <div class="border border-zinc-800 bg-zinc-900 text-zinc-100 p-2.5 rounded-lg flex items-center justify-between gap-2.5 font-mono text-xs shadow-inner w-full max-w-full overflow-hidden">
+              <div class="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto py-0.5">
+                <span class="text-emerald-400 font-bold select-none shrink-0">$</span>
+                <code class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">bash install.sh</code>
+                <span class="text-zinc-500 select-none shrink-0"># 3. run it</span>
+              </div>
+              <div class="shrink-0"><CopyButton text="bash install.sh" tone="dark" /></div>
+            </div>
+          <div class="flex flex-wrap items-center gap-2.5 pt-1">
+            <a
+              href={scriptHref}
+              target="_blank"
+              rel="noopener"
+              class="min-h-[44px] inline-flex items-center justify-center gap-2 border border-zinc-300 bg-white hover:bg-zinc-100 text-zinc-800 px-4 py-2 rounded-lg font-mono text-xs font-semibold shadow-2xs transition-colors"
+            >
+              View script in browser
+            </a>
+            <button
+              type="button"
+              id="btn-download-sh"
+              data-filename="install.sh"
+              data-script={installScriptContent}
+              class="min-h-[44px] inline-flex items-center justify-center gap-2 border border-zinc-300 bg-white hover:bg-zinc-100 text-zinc-800 px-4 py-2 rounded-lg font-mono text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+            >
+              <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+              <span>Download install.sh</span>
+            </button>
+          </div>
         </div>
 
         <!-- Security Notice & Hash Verification -->
@@ -392,7 +415,7 @@ const renderedSteps = data.install.steps.map((step) => ({
               <code class="text-zinc-200 select-all whitespace-nowrap font-mono text-[11px] sm:text-xs">{verifiedScriptCmd}</code>
             </div>
             <div class="shrink-0">
-              <CopyButton text={verifiedScriptCmd} class="bg-zinc-800 text-zinc-200 border-zinc-700 hover:bg-zinc-700 hover:text-white" />
+              <CopyButton text={verifiedScriptCmd} tone="dark" />
             </div>
           </div>
         )}
@@ -425,10 +448,6 @@ const renderedSteps = data.install.steps.map((step) => ({
         </div>
       )}
 
-      <!-- Deployment Accordion Steps -->
-      <div class="pt-2">
-        <Accordion steps={renderedSteps} data={data} locale={locale} />
-      </div>
     </section>
 
     <!-- SCREENSHOT GALLERY -->

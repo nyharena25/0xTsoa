@@ -3,7 +3,7 @@ import CopyButton from './CopyButton.astro';
 import { useTranslations, type Locale } from '../lib/i18n';
 import { getVotesForConfig, getDiscussionUrlForConfig } from '../lib/votes';
 import { WM_LABELS, DISTRO_LABELS, type ConfigData } from '../lib/schema';
-import { verifiedScriptCommand, webInstallCommands } from '../lib/install';
+import { verifiedScriptCommand, downloadInstallCommand } from '../lib/install';
 import { withBase } from '../../site.config';
 
 interface SpotlightItem {
@@ -27,10 +27,10 @@ const serializedSetups = configs.map((c, idx) => {
   const wmLabel = WM_LABELS[c.data.wm] || c.data.wm;
   const specPath = withBase(`/configs/${c.id}/`);
 
-  // Full multi-distro installer served by the site, not just the first raw step.
+  // Download only: the user reads the script before running it (no pipe into a shell).
   const installCmd = c.data.install.script
     ? verifiedScriptCommand(c.data.install.script)
-    : webInstallCommands(c.id, c.data).quick;
+    : downloadInstallCommand(c.id);
 
   const screenshots = c.data.screenshots && c.data.screenshots.length > 0
     ? c.data.screenshots.map((s, sIdx) => ({
@@ -240,8 +240,11 @@ const defaultSetup = serializedSetups[0];
             <code aria-labelledby="spotlight-cmd-label" class="text-zinc-200 truncate select-all flex-1" id="spotlight-cmd">
               {defaultSetup?.cmd}
             </code>
-            <CopyButton text={defaultSetup?.cmd || ''} id="spotlight-copy-btn" class="bg-zinc-800! text-zinc-100! border-zinc-700! hover:bg-zinc-700!" />
+            <CopyButton text={defaultSetup?.cmd || ''} id="spotlight-copy-btn" tone="dark" />
           </div>
+          <span class="font-mono text-[11px] text-zinc-500">
+            Then read it (<code class="text-zinc-800">less install.sh</code>) and run <code class="text-zinc-800">bash install.sh</code>, or follow the manual steps in Full Spec.
+          </span>
         </div>
 
         <!-- Action CTAs -->

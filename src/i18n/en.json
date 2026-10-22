@@ -29,7 +29,7 @@
     "bar": "Status Bar",
     "theme": "Theme",
     "deployOneLine": "Pinned Install Command:",
-    "deployCmd": "Pinned Install Command:",
+    "deployCmd": "Download the installer:",
     "githubRepo": "Source Code",
     "sourceCode": "Source Code",
     "fullSpec": "Full Spec",

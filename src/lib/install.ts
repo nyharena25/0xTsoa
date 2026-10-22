@@ -7,7 +7,6 @@ import {
   type ConfigData,
 } from './schema';
 
-import { createHash } from 'node:crypto';
 import { SITE_URL, withBase } from '../../site.config';
 
 export { normalizeRepoUrl, validateCloneSteps, type CloneValidationResult };
@@ -94,18 +93,11 @@ export function installScriptUrl(id: string): string {
 }
 
 /**
- * Commands shown on the site: a short one-liner, and the same script pinned to its
- * build-time SHA-256 so a tampered download refuses to run.
+ * Download-only command shown on the site. Users read the file before running it:
+ * never pipe it into a shell, which hides the code and can run a truncated download.
  */
-export function webInstallCommands(id: string, data: ConfigData): { quick: string; verified: string } {
-  const url = installScriptUrl(id);
-  const sha256 = createHash('sha256').update(buildInstallScript(data, id)).digest('hex');
-  return { quick: oneLineInstall(url), verified: verifiedScriptCommand({ url, sha256 }) };
-}
-
-/** One-liner that runs the generated installer; process substitution keeps stdin on the terminal for prompts. */
-export function oneLineInstall(scriptUrl: string): string {
-  return `bash <(curl -fsSL ${shQuote(scriptUrl)})`;
+export function downloadInstallCommand(id: string): string {
+  return `curl -fsSLo install.sh ${shQuote(installScriptUrl(id))}`;
 }
 
 // Shared helpers prepended to every generated script. Kept free of command
