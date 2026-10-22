@@ -3,12 +3,17 @@
   "type": "object",
   "properties": {
     "$schema": {
+      "description": "Editor help. Keep \"../../schema/config.schema.json\".",
       "type": "string"
     },
     "name": {
       "type": "string",
       "minLength": 3,
-      "maxLength": 80
+      "maxLength": 80,
+      "description": "Display name of the project (3–80 chars).",
+      "examples": [
+        "Hyprland Paper Minimal"
+      ]
     },
     "author": {
       "type": "object",
@@ -16,20 +21,24 @@
         "name": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 60
+          "maxLength": 60,
+          "description": "Name shown on the page."
         },
         "github": {
           "type": "string",
-          "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$"
+          "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$",
+          "description": "GitHub username of the author. Must match the folder name: configs/<github>/<slug>.json."
         }
       },
       "required": [
         "name",
         "github"
-      ]
+      ],
+      "description": "Who made the setup (credit the original author if it is not you)."
     },
     "lang": {
       "default": "en",
+      "description": "Language of summary and description. Default: en.",
       "type": "string",
       "enum": [
         "fr",
@@ -39,23 +48,42 @@
     "summary": {
       "type": "string",
       "minLength": 10,
-      "maxLength": 200
+      "maxLength": 200,
+      "description": "One sentence shown on cards and search results (10–200 chars).",
+      "examples": [
+        "Blazing-fast Wayland desktop with Waybar and Kitty."
+      ]
     },
     "description": {
+      "description": "Optional longer text: layout, workflow, what makes it special (max 2000 chars). Also searched.",
       "type": "string",
       "maxLength": 2000
     },
     "license": {
       "type": "string",
-      "pattern": "^[A-Za-z0-9.+-]+( (AND|OR|WITH) [A-Za-z0-9.+-]+)*$"
+      "pattern": "^[A-Za-z0-9.+-]+( (AND|OR|WITH) [A-Za-z0-9.+-]+)*$",
+      "description": "SPDX license identifier of the upstream project.",
+      "examples": [
+        "MIT",
+        "GPL-3.0-only",
+        "CC0-1.0"
+      ]
     },
     "version": {
+      "description": "Optional version label shown on the page.",
+      "examples": [
+        "v1.0.0"
+      ],
       "type": "string",
       "maxLength": 40
     },
     "updatedAt": {
       "type": "string",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Date of the pinned source.ref, as YYYY-MM-DD. Drives the \"newest\" sort.",
+      "examples": [
+        "2026-10-22"
+      ]
     },
     "distros": {
       "minItems": 1,
@@ -78,10 +106,12 @@
           "alpine",
           "any"
         ]
-      }
+      },
+      "description": "Distributions it was tested on (1–8). Use [\"any\"] for distro-independent themes and tools. Choices: arch = Arch Linux, endeavouros = EndeavourOS, manjaro = Manjaro, fedora = Fedora, nixos = NixOS, debian = Debian, ubuntu = Ubuntu, mint = Linux Mint, void = Void Linux, opensuse = openSUSE, gentoo = Gentoo, alpine = Alpine, any = Any distro."
     },
     "category": {
       "default": "dotfiles",
+      "description": "Which part of the desktop it covers (main catalogue filter): dotfiles = Dotfiles & full rices, wm = WM & compositors, bar = Bars & panels, widgets = Widgets & shells, launcher = Launchers & menus, notifications = Notifications, dock = Docks, icons = Icon themes, cursors = Cursor themes, gtk-theme = GTK & shell themes, colorscheme = Color schemes & generators, login = Login & greeters, lockscreen = Lock screens, boot = Boot (GRUB / Plymouth), extension = DE extensions, tool = Tools & utilities, resource = Lists & guides.",
       "type": "string",
       "enum": [
         "dotfiles",
@@ -127,10 +157,12 @@
         "cosmic",
         "any",
         "other"
-      ]
+      ],
+      "description": "Window manager / compositor / DE it targets. Use \"any\" if it is not tied to one. Choices: hyprland = Hyprland, sway = Sway, river = River, niri = niri, wayfire = Wayfire, labwc = labwc, i3 = i3, bspwm = bspwm, awesome = AwesomeWM, qtile = Qtile, xmonad = XMonad, dwm = dwm, herbstluftwm = herbstluftwm, openbox = Openbox, gnome = GNOME, kde = KDE Plasma, xfce = Xfce, cinnamon = Cinnamon, cosmic = COSMIC, any = Any WM / DE, other = Other."
     },
     "themeStyle": {
       "default": "minimalist",
+      "description": "Dominant palette or look (\"Browse by theme\" filter): minimalist = Minimalist, cyberpunk = Cyberpunk, nord = Nord, gruvbox = Gruvbox, dracula = Dracula, tokyo-night = Tokyo Night, catppuccin = Catppuccin, solarized = Solarized, monochrome = Monochrome, rose-pine = Rosé Pine, material = Material, macos = macOS-like, dynamic = Wallpaper-based, other = Other.",
       "type": "string",
       "enum": [
         "minimalist",
@@ -155,10 +187,19 @@
         "wayland",
         "x11",
         "both"
-      ]
+      ],
+      "description": "Display server it runs on."
     },
     "tags": {
       "default": [],
+      "description": "Up to 10 search keywords: components and features (waybar, rofi, auto-install). Do not repeat the WM, distro, display server or theme style: they are already filters.",
+      "examples": [
+        [
+          "waybar",
+          "rofi",
+          "auto-install"
+        ]
+      ],
       "maxItems": 10,
       "type": "array",
       "items": {
@@ -168,6 +209,14 @@
     },
     "specs": {
       "default": {},
+      "description": "Optional component names shown in the spec table (all optional, free text).",
+      "examples": [
+        {
+          "bar": "Waybar",
+          "terminal": "Kitty",
+          "launcher": "Rofi"
+        }
+      ],
       "type": "object",
       "properties": {
         "bar": {
@@ -211,14 +260,22 @@
             "type": "string",
             "minLength": 1,
             "pattern": "^(?:\\.?/|https://(?:raw\\.githubusercontent\\.com|user-images\\.githubusercontent\\.com|private-user-images\\.githubusercontent\\.com|github\\.com|i\\.imgur\\.com|i\\.redd\\.it|codeberg\\.org|gitlab\\.com)/)",
-            "description": "Local path (/...) or https URL on: raw.githubusercontent.com, user-images.githubusercontent.com, private-user-images.githubusercontent.com, github.com, i.imgur.com, i.redd.it, codeberg.org, gitlab.com"
+            "description": "Direct image link (https) on: raw.githubusercontent.com, user-images.githubusercontent.com, private-user-images.githubusercontent.com, github.com, i.imgur.com, i.redd.it, codeberg.org, gitlab.com. A clean 1080p/1440p capture works best.",
+            "examples": [
+              "https://raw.githubusercontent.com/my-handle/dots/v1.0.0/preview.png"
+            ]
           },
           "alt": {
             "type": "string",
             "minLength": 5,
-            "maxLength": 200
+            "maxLength": 200,
+            "description": "What the image shows, for screen readers (5–200 chars).",
+            "examples": [
+              "Hyprland desktop with Waybar and two Kitty windows"
+            ]
           },
           "caption": {
+            "description": "Optional short caption shown under the image.",
             "type": "string",
             "maxLength": 60
           }
@@ -227,7 +284,8 @@
           "url",
           "alt"
         ]
-      }
+      },
+      "description": "Screenshots, 1–8. The first one is the card thumbnail."
     },
     "source": {
       "type": "object",
@@ -236,15 +294,23 @@
           "type": "string",
           "format": "uri",
           "pattern": "^https://(?:github\\.com|gitlab\\.com|codeberg\\.org)/[^/]+/[^/]+",
-          "description": "Repository on github.com, gitlab.com, codeberg.org"
+          "description": "Public repository on github.com, gitlab.com, codeberg.org.",
+          "examples": [
+            "https://github.com/my-handle/dots"
+          ]
         },
         "ref": {
           "type": "string",
           "pattern": "^(?:[0-9a-f]{40}|(v?\\d+(\\.\\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+))$",
-          "description": "Full 40-char commit SHA or version tag (never a branch)"
+          "description": "Exact version users install: a full 40-char commit SHA or a version tag, never a branch. Get a SHA with: git rev-parse HEAD",
+          "examples": [
+            "v1.0.0",
+            "f35639dee902020dd6309cd167956f144c7db8d6"
+          ]
         },
         "readme": {
           "default": "README.md",
+          "description": "README path in the repo, rendered on the page. Default: README.md.",
           "type": "string",
           "pattern": "^[\\w./-]+\\.(md|markdown)$"
         }
@@ -252,26 +318,34 @@
       "required": [
         "repo",
         "ref"
-      ]
+      ],
+      "description": "Where the code lives and which exact version is listed."
     },
     "install": {
+      "description": "How to install it (section 02 of the page). Required, except for \"resource\" (Lists & guides) entries, which are read online.",
       "type": "object",
       "properties": {
         "script": {
+          "description": "Optional: only if the upstream project ships its own installer script. Most entries leave this out and use steps.",
           "type": "object",
           "properties": {
             "url": {
               "type": "string",
               "format": "uri",
               "pattern": "^https://(?:raw\\.githubusercontent\\.com/[^/]+/[^/]+/(?:refs/tags/)?(?:[0-9a-f]{40}|(v?\\d+(\\.\\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+))/|github\\.com/[^/]+/[^/]+/raw/(?:[0-9a-f]{40}|(v?\\d+(\\.\\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+))/|gitlab\\.com/.+/-/raw/(?:[0-9a-f]{40}|(v?\\d+(\\.\\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+))/|codeberg\\.org/[^/]+/[^/]+/raw/(?:commit|tag)/(?:[0-9a-f]{40}|(v?\\d+(\\.\\d+)*([-+._][0-9A-Za-z.-]+)?|release-[0-9A-Za-z.-]+))/).+",
-              "description": "Raw file URL pinned to a full commit SHA or a version tag"
+              "description": "Optional upstream install script: raw file URL pinned to a full commit SHA or a version tag (never a branch).",
+              "examples": [
+                "https://raw.githubusercontent.com/my-handle/dots/v1.0.0/install.sh"
+              ]
             },
             "sha256": {
               "type": "string",
-              "pattern": "^[0-9a-f]{64}$"
+              "pattern": "^[0-9a-f]{64}$",
+              "description": "SHA-256 of that file: sha256sum install.sh"
             },
             "shell": {
               "default": "bash",
+              "description": "Shell the script needs. Default: bash.",
               "type": "string",
               "enum": [
                 "sh",
@@ -285,7 +359,6 @@
           ]
         },
         "steps": {
-          "minItems": 1,
           "maxItems": 3,
           "type": "array",
           "items": {
@@ -303,7 +376,11 @@
               "title": {
                 "type": "string",
                 "minLength": 3,
-                "maxLength": 80
+                "maxLength": 80,
+                "description": "Step heading shown on the page.",
+                "examples": [
+                  "Install dependencies"
+                ]
               },
               "commands": {
                 "minItems": 1,
@@ -312,8 +389,10 @@
                 "items": {
                   "type": "string",
                   "minLength": 1,
-                  "maxLength": 500
-                }
+                  "maxLength": 500,
+                  "description": "One shell command, written as you would type it (no sudo bash, no curl | bash from an unpinned URL). Lines starting with # are shown as notes; {{ref}} is replaced with source.ref."
+                },
+                "description": "1–30 shell commands, run in order."
               }
             },
             "required": [
@@ -321,10 +400,12 @@
               "title",
               "commands"
             ]
-          }
+          },
+          "description": "1–3 steps (deps, dotfiles, reload), shown as manual steps and turned into the guided installer. Write plain commands: package installs, git clone + git -C <dir> checkout {{ref}}, cp into specific folders. The installer adds the plan, backups and rollback."
         },
         "packages": {
           "default": [],
+          "description": "Optional download links (AUR, Flatpak, .deb…) shown as alternatives.",
           "maxItems": 6,
           "type": "array",
           "items": {
@@ -361,6 +442,16 @@
     },
     "keybindings": {
       "default": [],
+      "description": "Optional keyboard shortcuts table.",
+      "examples": [
+        [
+          {
+            "keys": "SUPER + Return",
+            "action": "exec, kitty",
+            "effect": "Open terminal"
+          }
+        ]
+      ],
       "maxItems": 30,
       "type": "array",
       "items": {
@@ -386,6 +477,7 @@
       }
     },
     "review": {
+      "description": "Set by maintainers after reviewing the install steps. Leave out.",
       "type": "object",
       "properties": {
         "installReviewed": {
@@ -404,6 +496,7 @@
     },
     "example": {
       "default": false,
+      "description": "Internal: marks demo entries. Leave out.",
       "type": "boolean"
     }
   },
@@ -417,10 +510,24 @@
     "wm",
     "displayServer",
     "screenshots",
-    "source",
-    "install"
+    "source"
   ],
   "additionalProperties": false,
+  "if": {
+    "properties": {
+      "category": {
+        "const": "resource"
+      }
+    },
+    "required": [
+      "category"
+    ]
+  },
+  "else": {
+    "required": [
+      "install"
+    ]
+  },
   "$id": "https://github.com/nyharena25/0xTsoa/blob/main/schema/config.schema.json",
   "title": "0xTsoa configuration",
   "description": "A Linux desktop configuration entry: configs/<author.github>/<slug>.json"

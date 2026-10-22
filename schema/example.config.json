@@ -6,22 +6,17 @@
     "github": "my-handle"
   },
   "lang": "en",
-  "summary": "Minimal Hyprland desktop with Waybar and Kitty on Arch Linux.",
+  "summary": "Minimal Hyprland desktop with Waybar and Kitty, tuned for a laptop.",
   "description": "Optional long description: layout philosophy, workflow, ergonomics tips.",
   "license": "MIT",
   "version": "v1.0.0",
   "updatedAt": "2026-10-15",
-  "distros": [
-    "arch"
-  ],
+  "distros": ["arch", "fedora"],
   "category": "dotfiles",
   "wm": "hyprland",
   "themeStyle": "monochrome",
   "displayServer": "wayland",
-  "tags": [
-    "hyprland",
-    "arch"
-  ],
+  "tags": ["waybar", "kitty", "rofi", "laptop"],
   "specs": {
     "bar": "Waybar",
     "terminal": "Kitty",
@@ -34,7 +29,7 @@
   "screenshots": [
     {
       "url": "https://raw.githubusercontent.com/my-handle/dots/v1.0.0/preview.png",
-      "alt": "Screenshot of my desktop",
+      "alt": "Hyprland desktop with Waybar and two Kitty windows",
       "caption": "01_DESKTOP.RAW"
     }
   ],
@@ -44,26 +39,22 @@
     "readme": "README.md"
   },
   "install": {
-    "script": {
-      "url": "https://raw.githubusercontent.com/my-handle/dots/v1.0.0/install.sh",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "shell": "bash"
-    },
     "steps": [
       {
         "id": "deps",
         "title": "Install dependencies",
         "commands": [
-          "sudo pacman -S --needed hyprland waybar kitty rofi-wayland dunst"
+          "sudo pacman -S --needed hyprland waybar kitty rofi-wayland dunst",
+          "git clone --filter=blob:none https://github.com/my-handle/dots ~/dots",
+          "git -C ~/dots checkout {{ref}}"
         ]
       },
       {
         "id": "dotfiles",
         "title": "Deploy dotfiles",
         "commands": [
-          "git clone --filter=blob:none https://github.com/my-handle/dots ~/dots",
-          "git -C ~/dots checkout {{ref}}",
-          "cp -r ~/dots/.config/* ~/.config/"
+          "mkdir -p ~/.config",
+          "cp -r ~/dots/hypr ~/dots/waybar ~/dots/kitty ~/.config/"
         ]
       },
       {
@@ -73,8 +64,7 @@
           "hyprctl reload"
         ]
       }
-    ],
-    "packages": []
+    ]
   },
   "keybindings": [
     {

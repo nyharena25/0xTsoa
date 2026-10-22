@@ -1,0 +1,28 @@
+{
+  "$schema": "../../schema/config.schema.json",
+  "name": "My Clean Setup",
+  "author": { "name": "My Name", "github": "my-handle" },
+  "summary": "Minimal Hyprland desktop with Waybar and Kitty.",
+  "license": "MIT",
+  "updatedAt": "2026-10-15",
+  "distros": ["arch"],
+  "category": "dotfiles",
+  "wm": "hyprland",
+  "displayServer": "wayland",
+  "screenshots": [
+    { "url": "https://raw.githubusercontent.com/my-handle/dots/v1.0.0/preview.png", "alt": "My Hyprland desktop" }
+  ],
+  "source": { "repo": "https://github.com/my-handle/dots", "ref": "v1.0.0" },
+  "install": {
+    "steps": [
+      {
+        "id": "deps",
+        "title": "Clone and install",
+        "commands": [
+          "git clone --filter=blob:none https://github.com/my-handle/dots ~/dots",
+          "git -C ~/dots checkout {{ref}}"
+        ]
+      }
+    ]
+  }
+}

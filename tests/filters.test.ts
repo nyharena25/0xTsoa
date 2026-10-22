@@ -156,3 +156,33 @@ describe('Catalogue Filter & Query State Logic', () => {
     expect(parsedMulti.wm).toEqual(['hyprland', 'sway']);
   });
 });
+
+describe('Catalogue search & strict facets', () => {
+  const universal: CatalogueItem = {
+    ...mockItems[0],
+    id: 'org/rose-pine-gtk',
+    name: 'Rosé Pine GTK',
+    summary: 'GTK theme.',
+    description: 'Works under Hyprland too.',
+    distros: ['any'],
+    wm: 'any',
+    themeStyle: 'rose-pine',
+    tags: [],
+  };
+  const items = [...mockItems, universal];
+
+  it('matches every word in any order, ignoring accents and dashes', () => {
+    const ids = (query: string) => filterConfigs(items, { query }).map((m) => m.id);
+    expect(ids('arch hyprland')).toEqual(ids('hyprland arch'));
+    expect(ids('hyprland arch')).toContain('user1/hypr-setup');
+    expect(ids('rose pine')).toEqual(['org/rose-pine-gtk']);
+    expect(ids('Rosé-Pine')).toEqual(['org/rose-pine-gtk']);
+    expect(ids('rose pine hyprland')).toEqual(['org/rose-pine-gtk']); // description is searched
+    expect(ids('rose sway')).toEqual([]);
+  });
+
+  it('distro filter is exact, so "any" entries only show when "any" is ticked', () => {
+    expect(filterConfigs(items, { distro: 'fedora' }).map((m) => m.id)).toEqual(['user2/sway-setup']);
+    expect(filterConfigs(items, { distro: ['fedora', 'any'] }).map((m) => m.id)).toContain('org/rose-pine-gtk');
+  });
+});

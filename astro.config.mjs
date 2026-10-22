@@ -32,7 +32,7 @@ export default defineConfig({
   // /contribuer/ is a legacy redirect page, keep it out of the index.
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/contribuer'),
+      filter: (page) => !page.includes('/contribuer') && !page.endsWith('.sh'),
       serialize(item) {
         const lastmod = configLastMod.get(item.url);
         if (lastmod) {
@@ -53,10 +53,11 @@ export default defineConfig({
       directives: [
         "default-src 'self'",
         "img-src 'self' https: data:",
+        // Vite inlines small woff2 subsets as data: URIs.
+        "font-src 'self' data:",
         "connect-src 'self' https://*.google-analytics.com https://www.googletagmanager.com",
         "object-src 'none'",
         "base-uri 'self'",
-        "frame-ancestors 'none'",
         "form-action 'self'",
       ],
       styleDirective: {

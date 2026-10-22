@@ -134,6 +134,9 @@ export function extractRawRef(url: string): string | null {
 
 export const SOURCE_HOSTS = ['github.com', 'gitlab.com', 'codeberg.org'] as const;
 
+/** "key = Label, key = Label" for enum descriptions, so editor hover help matches the site's labels. */
+const choices = (labels: Record<string, string>) => Object.entries(labels).map(([k, v]) => `${k} = ${v}`).join(', ');
+
 /*
  * JSON Schema mirrors of the refinements below. Zod drops `.refine()` when exporting,
  * so these patterns are attached via `.meta()` and land in schema/config.schema.json
@@ -172,7 +175,11 @@ const imageUrl = z
   .refine(isAllowedImageUrl, {
     message: `Image must be a local path (/...) or from allowed hosts: ${ALLOWED_IMAGE_HOSTS.join(', ')}`,
   })
-  .meta({ pattern: IMAGE_URL_PATTERN, description: `Local path (/...) or https URL on: ${ALLOWED_IMAGE_HOSTS.join(', ')}` });
+  .meta({
+    pattern: IMAGE_URL_PATTERN,
+    description: `Direct image link (https) on: ${ALLOWED_IMAGE_HOSTS.join(', ')}. A clean 1080p/1440p capture works best.`,
+    examples: ['https://raw.githubusercontent.com/my-handle/dots/v1.0.0/preview.png'],
+  });
 
 const pinnedRawUrl = https.refine(
   (v) => {
@@ -180,30 +187,44 @@ const pinnedRawUrl = https.refine(
     return ref !== null && isPinnedRef(ref);
   },
   { message: 'Script URL must be a raw file URL pinned to a full commit SHA or a version tag (no branch names)' },
-).meta({ pattern: PINNED_RAW_URL_PATTERN, description: 'Raw file URL pinned to a full commit SHA or a version tag' });
+).meta({
+  pattern: PINNED_RAW_URL_PATTERN,
+  description: 'Optional upstream install script: raw file URL pinned to a full commit SHA or a version tag (never a branch).',
+  examples: ['https://raw.githubusercontent.com/my-handle/dots/v1.0.0/install.sh'],
+});
 
-const command = z.string().min(1).max(500);
+const command = z.string().min(1).max(500).meta({
+  description: 'One shell command, written as you would type it (no sudo bash, no curl | bash from an unpinned URL). Lines starting with # are shown as notes; {{ref}} is replaced with source.ref.',
+});
 
 export const configSchema = z
   .object({
-    $schema: z.string().optional(),
-    name: z.string().min(3).max(80),
+    $schema: z.string().optional().meta({ description: 'Editor help. Keep "../../schema/config.schema.json".' }),
+    name: z.string().min(3).max(80).meta({ description: 'Display name of the project (3–80 chars).', examples: ['Hyprland Paper Minimal'] }),
     author: z.object({
-      name: z.string().min(1).max(60),
-      github: z.string().regex(/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/, 'Invalid GitHub username'),
+      name: z.string().min(1).max(60).meta({ description: 'Name shown on the page.' }),
+      github: z.string().regex(/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/, 'Invalid GitHub username').meta({
+        description: 'GitHub username of the author. Must match the folder name: configs/<github>/<slug>.json.',
+      }),
+    }).meta({ description: 'Who made the setup (credit the original author if it is not you).' }),
+    lang: z.enum(['fr', 'en']).default('en').meta({ description: 'Language of summary and description. Default: en.' }),
+    summary: z.string().min(10).max(200).meta({ description: 'One sentence shown on cards and search results (10–200 chars).', examples: ['Blazing-fast Wayland desktop with Waybar and Kitty.'] }),
+    description: z.string().max(2000).optional().meta({ description: 'Optional longer text: layout, workflow, what makes it special (max 2000 chars). Also searched.' }),
+    license: z.string().regex(/^[A-Za-z0-9.+-]+( (AND|OR|WITH) [A-Za-z0-9.+-]+)*$/, 'Use an SPDX identifier, e.g. MIT, GPL-3.0-only').meta({
+      description: 'SPDX license identifier of the upstream project.',
+      examples: ['MIT', 'GPL-3.0-only', 'CC0-1.0'],
     }),
-    lang: z.enum(['fr', 'en']).default('en'),
-    summary: z.string().min(10).max(200),
-    description: z.string().max(2000).optional(),
-    license: z.string().regex(/^[A-Za-z0-9.+-]+( (AND|OR|WITH) [A-Za-z0-9.+-]+)*$/, 'Use an SPDX identifier, e.g. MIT, GPL-3.0-only'),
-    version: z.string().max(40).optional(),
-    updatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD'),
-    distros: z.array(z.enum(DISTROS)).min(1).max(8),
-    category: z.enum(CATEGORIES).default('dotfiles'),
-    wm: z.enum(WMS),
-    themeStyle: z.enum(THEME_STYLES).default('minimalist'),
-    displayServer: z.enum(['wayland', 'x11', 'both']),
-    tags: z.array(z.string().regex(/^[a-z0-9][a-z0-9-]{0,29}$/, 'Tags: lowercase, digits, dashes')).max(10).default([]),
+    version: z.string().max(40).optional().meta({ description: 'Optional version label shown on the page.', examples: ['v1.0.0'] }),
+    updatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD').meta({ description: 'Date of the pinned source.ref, as YYYY-MM-DD. Drives the "newest" sort.', examples: ['2026-10-22'] }),
+    distros: z.array(z.enum(DISTROS)).min(1).max(8).meta({ description: `Distributions it was tested on (1–8). Use ["any"] for distro-independent themes and tools. Choices: ${choices(DISTRO_LABELS)}.` }),
+    category: z.enum(CATEGORIES).default('dotfiles').meta({ description: `Which part of the desktop it covers (main catalogue filter): ${choices(CATEGORY_LABELS)}.` }),
+    wm: z.enum(WMS).meta({ description: `Window manager / compositor / DE it targets. Use "any" if it is not tied to one. Choices: ${choices(WM_LABELS)}.` }),
+    themeStyle: z.enum(THEME_STYLES).default('minimalist').meta({ description: `Dominant palette or look ("Browse by theme" filter): ${choices(STYLE_LABELS)}.` }),
+    displayServer: z.enum(['wayland', 'x11', 'both']).meta({ description: 'Display server it runs on.' }),
+    tags: z.array(z.string().regex(/^[a-z0-9][a-z0-9-]{0,29}$/, 'Tags: lowercase, digits, dashes')).max(10).default([]).meta({
+      description: 'Up to 10 search keywords: components and features (waybar, rofi, auto-install). Do not repeat the WM, distro, display server or theme style: they are already filters.',
+      examples: [['waybar', 'rofi', 'auto-install']],
+    }),
     specs: z
       .object({
         bar: z.string().max(60).optional(),
@@ -214,74 +235,93 @@ export const configSchema = z
         shell: z.string().max(60).optional(),
         editor: z.string().max(60).optional(),
       })
-      .default({}),
+      .default({})
+      .meta({ description: 'Optional component names shown in the spec table (all optional, free text).', examples: [{ bar: 'Waybar', terminal: 'Kitty', launcher: 'Rofi' }] }),
     screenshots: z
       .array(
         z.object({
           url: imageUrl,
-          alt: z.string().min(5).max(200),
-          caption: z.string().max(60).optional(),
+          alt: z.string().min(5).max(200).meta({ description: 'What the image shows, for screen readers (5–200 chars).', examples: ['Hyprland desktop with Waybar and two Kitty windows'] }),
+          caption: z.string().max(60).optional().meta({ description: 'Optional short caption shown under the image.' }),
         }),
       )
       .min(1)
-      .max(8),
+      .max(8)
+      .meta({ description: 'Screenshots, 1–8. The first one is the card thumbnail.' }),
     source: z.object({
       repo: https.refine((v) => {
         const u = safeUrl(v);
         return !!u && (SOURCE_HOSTS as readonly string[]).includes(u.hostname) && u.pathname.split('/').filter(Boolean).length >= 2;
       }, { message: `Source repo must be on ${SOURCE_HOSTS.join(', ')}` })
-        .meta({ pattern: SOURCE_REPO_PATTERN, description: `Repository on ${SOURCE_HOSTS.join(', ')}` }),
+        .meta({ pattern: SOURCE_REPO_PATTERN, description: `Public repository on ${SOURCE_HOSTS.join(', ')}.`, examples: ['https://github.com/my-handle/dots'] }),
       ref: z.string().refine(isPinnedRef, { message: 'source.ref must be a full commit SHA or a version tag' })
-        .meta({ pattern: PINNED_REF_PATTERN, description: 'Full 40-char commit SHA or version tag (never a branch)' }),
+        .meta({
+          pattern: PINNED_REF_PATTERN,
+          description: 'Exact version users install: a full 40-char commit SHA or a version tag, never a branch. Get a SHA with: git rev-parse HEAD',
+          examples: ['v1.0.0', 'f35639dee902020dd6309cd167956f144c7db8d6'],
+        }),
       readme: z
         .string()
         .regex(/^[\w./-]+\.(md|markdown)$/i)
         .refine((v) => !v.includes('..'), { message: 'source.readme must not contain ..' })
-        .default('README.md'),
-    }),
+        .default('README.md')
+        .meta({ description: 'README path in the repo, rendered on the page. Default: README.md.' }),
+    }).meta({ description: 'Where the code lives and which exact version is listed.' }),
     install: z
       .object({
         script: z
           .object({
             url: pinnedRawUrl,
-            sha256: z.string().regex(/^[0-9a-f]{64}$/, 'sha256 must be 64 lowercase hex chars'),
-            shell: z.enum(['sh', 'bash']).default('bash'),
+            sha256: z.string().regex(/^[0-9a-f]{64}$/, 'sha256 must be 64 lowercase hex chars').meta({ description: 'SHA-256 of that file: sha256sum install.sh' }),
+            shell: z.enum(['sh', 'bash']).default('bash').meta({ description: 'Shell the script needs. Default: bash.' }),
           })
-          .optional(),
-        // "02. Installation & Deployment" on the detail page: at least the `deps` step is mandatory.
+          .optional()
+          .meta({ description: 'Optional: only if the upstream project ships its own installer script. Most entries leave this out and use steps.' }),
+        // "02. Installation & Deployment" on the detail page. At least one step unless category is resource (enforced below).
         steps: z
           .array(
             z.object({
               id: z.enum(['deps', 'dotfiles', 'reload']).meta({
                 description: 'deps = install packages / clone, dotfiles = deploy config or theme, reload = apply or restart',
               }),
-              title: z.string().min(3).max(80),
-              commands: z.array(command).min(1).max(30),
+              title: z.string().min(3).max(80).meta({ description: 'Step heading shown on the page.', examples: ['Install dependencies'] }),
+              commands: z.array(command).min(1).max(30).meta({ description: '1–30 shell commands, run in order.' }),
             }),
           )
-          .min(1, 'Provide at least one install step (deps), shown under "02. Installation & Deployment"')
           .max(3)
-          .refine((steps) => new Set(steps.map((s) => s.id)).size === steps.length, { message: 'Each step id may appear only once' }),
+          .refine((steps) => new Set(steps.map((s) => s.id)).size === steps.length, { message: 'Each step id may appear only once' })
+          .meta({
+            description:
+              '1–3 steps (deps, dotfiles, reload), shown as manual steps and turned into the guided installer. Write plain commands: package installs, git clone + git -C <dir> checkout {{ref}}, cp into specific folders. The installer adds the plan, backups and rollback.',
+          }),
         packages: z
           .array(z.object({ type: z.enum(['tar.gz', 'zip', 'deb', 'rpm', 'aur', 'nix', 'flatpak']), url: https }))
           .max(6)
-          .default([]),
-      }),
+          .default([])
+          .meta({ description: 'Optional download links (AUR, Flatpak, .deb…) shown as alternatives.' }),
+      })
+      .optional()
+      .meta({ description: 'How to install it (section 02 of the page). Required, except for "resource" (Lists & guides) entries, which are read online.' }),
     keybindings: z
       .array(z.object({ keys: z.string().max(40), action: z.string().max(80), effect: z.string().max(120).optional() }))
       .max(30)
-      .default([]),
+      .default([])
+      .meta({ description: 'Optional keyboard shortcuts table.', examples: [[{ keys: 'SUPER + Return', action: 'exec, kitty', effect: 'Open terminal' }]] }),
     review: z
       .object({
         installReviewed: z.boolean().default(false),
         reviewedBy: z.string().regex(/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/, 'Invalid GitHub username').optional(),
         reviewedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD').optional(),
       })
-      .optional(),
-    example: z.boolean().default(false),
+      .optional()
+      .meta({ description: 'Set by maintainers after reviewing the install steps. Leave out.' }),
+    example: z.boolean().default(false).meta({ description: 'Internal: marks demo entries. Leave out.' }),
   })
   .strict()
   .superRefine((data, ctx) => {
+    if (data.category !== 'resource' && !hasInstallSteps(data)) {
+      ctx.addIssue({ code: 'custom', path: ['install', 'steps'], message: NO_STEPS_MESSAGE });
+    }
     const { errors } = validateCloneSteps(data);
     for (const err of errors) {
       ctx.addIssue({
@@ -290,12 +330,21 @@ export const configSchema = z
         message: err,
       });
     }
-  });
+  })
+  // JSON Schema mirror of the install rule above (category defaults to dotfiles, so a missing category needs install).
+  .meta({ if: { properties: { category: { const: 'resource' } }, required: ['category'] }, else: { required: ['install'] } });
 
 // Astro's content sync calls `schema.extend({ $schema: ... })`, which Zod 4 forbids on refined objects with existing keys unless `safeExtend` is used.
 configSchema.extend = configSchema.safeExtend.bind(configSchema) as typeof configSchema.extend;
 
 export type ConfigData = z.output<typeof configSchema>;
+
+const NO_STEPS_MESSAGE = 'Provide at least one install step (deps), shown under "02. Installation & Deployment". Only "resource" (Lists & guides) entries may leave install out.';
+
+/** Entries without steps (reading lists) get a "Read online" block instead of the installer. */
+export function hasInstallSteps(data: { install?: { steps: unknown[] } }): boolean {
+  return (data.install?.steps.length ?? 0) > 0;
+}
 export type ConfigInput = z.input<typeof configSchema>;
 
 export interface CloneValidationResult {
@@ -309,24 +358,39 @@ export function normalizeRepoUrl(url: string): string {
   return stripTrailingSlashes(stripTrailingSlashes(unquoted).replace(/\.git$/, ''));
 }
 
+/** `curl … | sh`, `bash -c "$(curl …)"`, `bash <(curl …)` and the wget equivalents. */
+const REMOTE_EXEC_RE = /(?:curl|wget)\b[^|]*\|\s*(?:sudo\s+)?(?:ba|z)?sh\b|(?:ba|z)?sh\s+(?:-c\s+["']?\$\(|<\()\s*(?:curl|wget)\b/;
+
 /**
  * Validate `git clone` commands in `install.steps`:
+ * - Commands that download a script and run it must use a pinned raw URL.
  * - Any `git clone` using `--depth` is an error (shallow clones cannot check out an arbitrary SHA).
  * - Any `git clone` of `source.repo` must be followed by a later command containing `checkout {{ref}}`.
  * - Clones of other repositories produce a warning, not an error.
  */
 export function validateCloneSteps(data: {
   source: { repo: string };
-  install: { steps: { commands: string[] }[] };
+  install?: { steps: { commands: string[] }[] };
 }): CloneValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
   const normalizedSourceRepo = normalizeRepoUrl(data.source.repo);
-  const allCommands = data.install.steps.flatMap((s) => s.commands);
+  const allCommands = (data.install?.steps ?? []).flatMap((s) => s.commands);
 
   for (let i = 0; i < allCommands.length; i++) {
     const cmd = allCommands[i];
     if (cmd.trim().startsWith('#')) continue;
+
+    // Remote code run straight from a URL must be pinned, or what users run can change after review.
+    if (REMOTE_EXEC_RE.test(cmd)) {
+      for (const url of cmd.match(/https?:\/\/[^\s"')]+/g) ?? []) {
+        const ref = extractRawRef(url);
+        if (!url.includes('{{ref}}') && !(ref && isPinnedRef(ref))) {
+          errors.push(`remote script must be a raw file URL pinned to a commit SHA, a version tag or {{ref}}: ${url}`);
+        }
+      }
+    }
+
     if (!/\bgit\s+clone\b/.test(cmd)) continue;
 
     if (/(?:^|\s)--depth(?:=|\s|$)/.test(cmd)) {

@@ -89,6 +89,27 @@ describe('Config Schema & Validation Rules', () => {
     expect(configSchema.safeParse({ ...base, install: { steps: [step] } }).success).toBe(true);
   });
 
+  it('lets only "resource" (Lists & guides) entries leave install out', () => {
+    const list = {
+      name: 'Awesome Reading List',
+      author: { name: 'dave', github: 'dave' },
+      summary: 'A curated list of desktop links.',
+      license: 'CC0-1.0',
+      updatedAt: '2026-10-22',
+      distros: ['any'],
+      category: 'resource',
+      wm: 'any',
+      displayServer: 'both',
+      screenshots: [{ url: '/screenshots/fallback-terminal.svg', alt: 'Preview capture' }],
+      source: { repo: 'https://github.com/dave/awesome', ref: 'v1.0.0' },
+    };
+    expect(configSchema.safeParse(list).success).toBe(true);
+    expect(configSchema.safeParse({ ...list, install: { steps: [] } }).success).toBe(true);
+    const issues = configSchema.safeParse({ ...list, category: 'tool' }).error?.issues ?? [];
+    expect(issues.map((i) => i.path.join('.'))).toEqual(['install.steps']);
+    expect(configSchema.safeParse({ ...list, category: undefined }).success).toBe(false);
+  });
+
   it('rejects unallowed image hostnames', () => {
     const invalid = {
       name: 'Invalid Host Setup',
@@ -232,10 +253,14 @@ describe('Published JSON Schema & example', () => {
     expect(fs.readFileSync(SCHEMA_PATH, 'utf-8')).toBe(serialize(buildJsonSchema()));
   });
 
-  it('the example shown on /contribute is a valid config', async () => {
-    const example = (await import('../schema/example.config.json')).default;
+  it.each(['example', 'minimal'])('schema/%s.config.json is a valid config that follows the tag rules', async (name) => {
+    const fs = await import('node:fs');
+    const example = JSON.parse(fs.readFileSync(`schema/${name}.config.json`, 'utf-8'));
     const parsed = configSchema.safeParse(example);
     expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true);
+    // Examples are copied by new contributors: they must not teach tags that duplicate filters.
+    const filters = [parsed.data!.wm, parsed.data!.themeStyle, parsed.data!.displayServer, ...parsed.data!.distros];
+    expect(parsed.data!.tags.filter((t) => filters.includes(t as never))).toEqual([]);
   });
 });
 

@@ -38,14 +38,16 @@ export const GET: APIRoute = async () => {
         repo: data.source.repo,
         ref: data.source.ref,
       },
-      install: {
-        steps: data.install.steps.map((step) => ({
-          id: step.id,
-          title: step.title,
-          commands: step.commands.map((cmd) => renderCommand(cmd, data)),
-        })),
-        ...(data.install.script ? { script: data.install.script } : {}),
-      },
+      ...(data.install ? {
+        install: {
+          steps: data.install.steps.map((step) => ({
+            id: step.id,
+            title: step.title,
+            commands: step.commands.map((cmd) => renderCommand(cmd, data)),
+          })),
+          ...(data.install.script ? { script: data.install.script } : {}),
+        },
+      } : {}),
       thumbUrl: primaryShot?.url || '',
       thumbAlt: primaryShot?.alt || data.name,
       version: data.version,

@@ -7,6 +7,7 @@ export interface CatalogueItem {
     github: string;
   };
   summary: string;
+  description?: string;
   category: string;
   distros: string[];
   wm: string;
@@ -68,6 +69,37 @@ export interface FilterState {
   page?: number;
 }
 
+/** Lowercase, strip accents, and fold `-`, `_`, `/`, `.` into spaces: "Rosé-Pine" -> "rose pine". */
+export function normalizeSearchText(s: string): string {
+  return s
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[-_/.,:;()[\]]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function searchHaystack(item: CatalogueItem): string {
+  return normalizeSearchText(
+    [
+      item.name,
+      item.id,
+      item.author.name,
+      item.author.github,
+      item.summary,
+      item.description ?? '',
+      item.category,
+      item.wm,
+      item.themeStyle ?? '',
+      item.displayServer,
+      ...item.distros,
+      ...item.tags,
+      ...Object.values(item.specs).filter((v): v is string => typeof v === 'string'),
+    ].join(' '),
+  );
+}
+
 function normalizeFacetValues(val?: string | string[]): string[] {
   if (!val) return [];
   const list = Array.isArray(val) ? val : [val];
@@ -96,13 +128,10 @@ export function filterConfigs(items: CatalogueItem[], filters: FilterState): Cat
     );
   }
 
+  // Exact match only, so result counts equal the sidebar facet counts; tick "any" for universal entries.
   const distros = normalizeFacetValues(filters.distro).map((d) => d.toLowerCase());
   if (distros.length > 0) {
-    result = result.filter(
-      (item) =>
-        item.distros.includes('any') ||
-        item.distros.some((d) => distros.includes(d.toLowerCase())),
-    );
+    result = result.filter((item) => item.distros.some((d) => distros.includes(d.toLowerCase())));
   }
 
   if (filters.tag) {
@@ -115,25 +144,13 @@ export function filterConfigs(items: CatalogueItem[], filters: FilterState): Cat
     result = result.filter((item) => favSet.has(item.id));
   }
 
-  if (filters.query && filters.query.trim().length > 0) {
-    const q = filters.query.toLowerCase().trim();
-    result = result.filter(
-      (item) =>
-        item.name.toLowerCase().includes(q) ||
-        item.id.toLowerCase().includes(q) ||
-        item.author.name.toLowerCase().includes(q) ||
-        item.author.github.toLowerCase().includes(q) ||
-        item.summary.toLowerCase().includes(q) ||
-        item.category.toLowerCase().includes(q) ||
-        item.wm.toLowerCase().includes(q) ||
-        (item.themeStyle && item.themeStyle.toLowerCase().includes(q)) ||
-        item.tags.some((t) => t.toLowerCase().includes(q)) ||
-        (item.specs.terminal && item.specs.terminal.toLowerCase().includes(q)) ||
-        (item.specs.bar && item.specs.bar.toLowerCase().includes(q)) ||
-        (item.specs.launcher && item.specs.launcher.toLowerCase().includes(q)) ||
-        (item.specs.theme && item.specs.theme.toLowerCase().includes(q)) ||
-        (item.specs.shell && item.specs.shell.toLowerCase().includes(q)),
-    );
+  const terms = normalizeSearchText(filters.query ?? '').split(' ').filter(Boolean);
+  if (terms.length > 0) {
+    // Every word must appear somewhere, in any order ("hyprland catppuccin" == "catppuccin hyprland").
+    result = result.filter((item) => {
+      const haystack = searchHaystack(item);
+      return terms.every((t) => haystack.includes(t));
+    });
   }
 
   const date = (item: CatalogueItem) => new Date(item.updatedAt).getTime();

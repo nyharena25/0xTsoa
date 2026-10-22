@@ -30,17 +30,5 @@
     "repo": "https://github.com/avtzis/awesome-linux-ricing",
     "ref": "0aedb7900e16d4626833c5cf90823ea275bd09cc",
     "readme": "README.md"
-  },
-  "install": {
-    "steps": [
-      {
-        "id": "deps",
-        "title": "Read online or clone for offline browsing",
-        "commands": [
-          "git clone --filter=blob:none https://github.com/avtzis/awesome-linux-ricing",
-          "git -C awesome-linux-ricing checkout {{ref}}"
-        ]
-      }
-    ]
   }
 }
