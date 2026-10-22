@@ -504,7 +504,7 @@ oxt_main() {
   # Under sudo, files land in /root or end up owned by root and break the desktop.
   [ "$EUID" -ne 0 ] || die "Run as your normal user, not with sudo or as root. It asks for sudo itself where a step needs it. Nothing was changed."
   HOME="${HOME%/}"
-  [ -n "$HOME" ] && [ -d "$HOME" ] || die "HOME is not set to a folder."
+  if [ -z "$HOME" ] || [ ! -d "$HOME" ]; then die "HOME is not set to a folder."; fi
   OXT_WORKDIR="${OXTSOA_DIR:-$HOME/.cache/0xtsoa}/$OXT_SLUG"
   OXT_BACKUPS="${XDG_STATE_HOME:-$HOME/.local/state}/0xtsoa/backups/$OXT_SLUG"
 
