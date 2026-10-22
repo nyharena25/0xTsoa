@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/quickshell-mirror/quickshell",
-    "ref": "2b4501a282689792b62e94f3fb30d8f512324fe6",
+    "ref": "9b0f339b19057f4731bf3b48293307d7ef241671",
     "readme": "README.md"
   },
   "install": {
@@ -42,6 +42,5 @@
         ]
       }
     ]
-  },
-  "version": "v0.3.2"
+  }
 }

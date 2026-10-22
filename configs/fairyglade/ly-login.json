@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/fairyglade/ly",
-    "ref": "4e0f23f08406f20b95146de6ce2e876918d7903d",
+    "ref": "3ab7f6d967e11f25cf046cf232479df83fe73f4e",
     "readme": "readme.md"
   },
   "install": {
@@ -49,6 +49,5 @@
         ]
       }
     ]
-  },
-  "version": "v1.5.0"
+  }
 }
