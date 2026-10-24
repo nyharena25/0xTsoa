@@ -7,6 +7,7 @@ import {
   validateCloneSteps,
   translateCommand,
   installImpact,
+  installDifficulty,
   attestationVerifyCommand,
   ATTEST_WORKFLOW,
 } from '../src/lib/install';
@@ -262,6 +263,51 @@ describe('installImpact (page facts)', () => {
     expect(impact.aurPackages).toEqual(['walker']);
     expect(impact.userPaths).toEqual(['~/dots', '~/.config/']);
     expect(impact.upstreamCommands).toEqual(['sudo make install', './setup.sh']);
+  });
+});
+
+describe('installDifficulty', () => {
+  const withSteps = (...commands: string[][]): ConfigData => ({
+    ...baseConfig,
+    install: {
+      ...baseConfig.install!,
+      steps: commands.map((c, i) => ({ id: (['deps', 'dotfiles', 'reload'] as const)[i], title: 'step', commands: c })),
+    },
+  });
+  const clone = ['git clone https://github.com/alice/dots ~/dots', 'git -C ~/dots checkout {{ref}}'];
+
+  it('is manual when the steps only fetch the source and point to the upstream guide', () => {
+    expect(installDifficulty(baseConfig)).toBe('manual');
+    expect(installDifficulty(withSteps([...clone, 'cd ~/dots'], ['xdg-open https://github.com/alice/dots#readme']))).toBe('manual');
+  });
+
+  it('is easy when it only copies files into the home folder', () => {
+    expect(installDifficulty(withSteps(clone, ['cp -r ~/dots/hypr ~/.config/']))).toBe('easy');
+    expect(installDifficulty(withSteps(clone, ['echo "source ~/dots/theme.conf" >> ~/.config/hypr/hyprland.conf']))).toBe('easy');
+  });
+
+  it('is moderate with distro packages or lasting commands rollback does not undo', () => {
+    expect(installDifficulty(withSteps(['sudo pacman -S --needed waybar', ...clone], ['cp -r ~/dots/waybar ~/.config/']))).toBe('moderate');
+    expect(installDifficulty(withSteps(clone, ["gsettings set org.gnome.desktop.interface gtk-theme 'Nordic'"]))).toBe('moderate');
+  });
+
+  it('is advanced with AUR packages, an upstream installer, other sudo changes or install.script', () => {
+    expect(installDifficulty(withSteps(['yay -S walker', ...clone]))).toBe('advanced');
+    expect(installDifficulty(withSteps(clone, ['cd ~/dots && ./setup.sh']))).toBe('advanced');
+    expect(installDifficulty(withSteps(clone, ['sudo cp -r ~/dots/theme /usr/share/themes/']))).toBe('advanced');
+    expect(
+      installDifficulty({
+        ...baseConfig,
+        install: {
+          ...baseConfig.install!,
+          script: { url: 'https://raw.githubusercontent.com/alice/dots/v1.0.0/install.sh', sha256: 'a'.repeat(64), shell: 'bash' },
+        },
+      }),
+    ).toBe('advanced');
+  });
+
+  it('is null for entries without install steps (Lists & guides)', () => {
+    expect(installDifficulty({ ...baseConfig, category: 'resource', install: undefined })).toBeNull();
   });
 });
 

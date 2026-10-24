@@ -4,6 +4,7 @@ import {
   versionTagAtRef,
   buildCompareUrl,
   formatSyncSummary,
+  repoStatsFromApi,
 } from '../scripts/sync-upstream';
 
 describe('latestVersionTag', () => {
@@ -97,5 +98,27 @@ describe('buildCompareUrl and formatSyncSummary', () => {
     expect(md).toContain('(tag `v1.4.0`)');
     expect(md).toContain(`https://codeberg.org/zeta/dots/compare/${oldRef}...${newRef}`);
     expect(md.indexOf('alpha/bar')).toBeLessThan(md.indexOf('zeta/dots'));
+  });
+});
+
+describe('repoStatsFromApi', () => {
+  it('reads GitHub stars, archived flag and last push day', () => {
+    expect(repoStatsFromApi({ stargazers_count: 120, archived: true, pushed_at: '2026-03-01T09:12:44Z', updated_at: '2026-10-01T00:00:00Z' }))
+      .toEqual({ stars: 120, archived: true, pushedAt: '2026-03-01' });
+  });
+
+  it('reads GitLab and Codeberg field names', () => {
+    expect(repoStatsFromApi({ star_count: 7, archived: false, last_activity_at: '2026-09-30T23:59:59.000Z' }))
+      .toEqual({ stars: 7, archived: false, pushedAt: '2026-09-30' });
+    expect(repoStatsFromApi({ stars_count: 3, archived: false, updated_at: '2025-12-24T10:00:00+01:00' }))
+      .toEqual({ stars: 3, archived: false, pushedAt: '2025-12-24' });
+  });
+
+  it('keeps zero stars and skips missing or malformed fields', () => {
+    expect(repoStatsFromApi({ stargazers_count: 0, pushed_at: 'yesterday' })).toEqual({ stars: 0 });
+  });
+
+  it('returns undefined without a star count (error bodies, rate limits)', () => {
+    expect(repoStatsFromApi({ message: 'API rate limit exceeded' })).toBeUndefined();
   });
 });

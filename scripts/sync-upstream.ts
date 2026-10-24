@@ -3,7 +3,7 @@
  *  - source.ref  -> latest commit on the default branch (still a pinned 40-char SHA)
  *  - updatedAt   -> never modified (preserves curation/submission date for "Newest" sort)
  *  - version     -> version-like tag whose peeled commit equals source.ref, or removed otherwise
- *  - stars       -> src/generated/repo-stats.json (powers the "Most popular" sort)
+ *  - stars, archived, pushedAt -> src/generated/repo-stats.json ("Most popular" sort, maintenance status)
  *  - summary     -> sync-summary.md with old -> new ref compare links for the sync PR
  * Screenshot URLs stay pinned to their own commits, so they keep working after a bump.
  * Runs nightly in .github/workflows/sync-upstream.yml and opens/updates a PR; set GITHUB_TOKEN to avoid API rate limits.
@@ -13,6 +13,7 @@ import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { stripLeadingSlashes, stripTrailingSlashes } from '../src/lib/strings';
+import type { RepoStats } from '../src/lib/stats';
 
 const run = promisify(execFile);
 const CONFIGS_DIR = path.resolve(process.cwd(), 'configs');
@@ -139,7 +140,23 @@ async function git(...args: string[]): Promise<string> {
   return stdout;
 }
 
-async function fetchStars(repoUrl: string): Promise<number | undefined> {
+/**
+ * Stars, archived flag and last push date (YYYY-MM-DD) from a forge's repository API response.
+ * GitHub: stargazers_count / pushed_at; GitLab: star_count / last_activity_at;
+ * Codeberg (Gitea): stars_count / updated_at. Returns undefined when the star count is missing.
+ */
+export function repoStatsFromApi(body: Record<string, unknown>): RepoStats | undefined {
+  const stars = [body.stargazers_count, body.stars_count, body.star_count].find((v) => typeof v === 'number');
+  if (stars === undefined) return undefined;
+  const stats: RepoStats = { stars: stars as number };
+  if (typeof body.archived === 'boolean') stats.archived = body.archived;
+  const pushed = [body.pushed_at, body.last_activity_at, body.updated_at].find((v) => typeof v === 'string');
+  // Day precision, so same-day pushes do not churn the nightly sync PR.
+  if (typeof pushed === 'string' && /^\d{4}-\d{2}-\d{2}/.test(pushed)) stats.pushedAt = pushed.slice(0, 10);
+  return stats;
+}
+
+async function fetchRepoStats(repoUrl: string): Promise<RepoStats | undefined> {
   const u = new URL(repoUrl);
   const [owner, repo] = u.pathname.split('/').filter(Boolean);
   const api =
@@ -155,8 +172,7 @@ async function fetchStars(repoUrl: string): Promise<number | undefined> {
   try {
     const res = await fetch(api, { headers, signal: AbortSignal.timeout(15_000) });
     if (!res.ok) return undefined;
-    const body = (await res.json()) as Record<string, number>;
-    return body.stargazers_count ?? body.stars_count ?? body.star_count;
+    return repoStatsFromApi((await res.json()) as Record<string, unknown>);
   } catch {
     return undefined;
   }
@@ -180,7 +196,7 @@ async function main() {
           .map((f) => path.join(CONFIGS_DIR, a, f))
       : [],
   );
-  const stats: Record<string, { stars: number }> = fs.existsSync(STATS_PATH)
+  const stats: Record<string, RepoStats> = fs.existsSync(STATS_PATH)
     ? JSON.parse(fs.readFileSync(STATS_PATH, 'utf-8'))
     : {};
   const changes: SyncChange[] = [];
@@ -211,15 +227,16 @@ async function main() {
     } catch (err) {
       console.warn(`⚠ ${id}: ${(err as Error).message.split('\n')[0]}`);
     }
-    const stars = await fetchStars(repo);
-    if (stars !== undefined) stats[id] = { stars };
+    // On API failure, the previous night's entry is kept.
+    const repoStats = await fetchRepoStats(repo);
+    if (repoStats) stats[id] = repoStats;
   });
 
   const sorted = Object.fromEntries(Object.entries(stats).sort(([a], [b]) => a.localeCompare(b)));
   fs.writeFileSync(STATS_PATH, JSON.stringify(sorted, null, 2) + '\n');
   fs.writeFileSync(SUMMARY_PATH, formatSyncSummary(changes), 'utf-8');
   console.log(
-    `✓ ${files.length} configs checked, ${changes.length} moved to a newer upstream commit, ${Object.keys(sorted).length} star counts.`,
+    `✓ ${files.length} configs checked, ${changes.length} moved to a newer upstream commit, ${Object.keys(sorted).length} repo stats.`,
   );
 }
 

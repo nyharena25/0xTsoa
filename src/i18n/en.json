@@ -109,7 +109,8 @@
     "checksum": "SHA-256 Digest:",
     "copyDoc": "Copy doc",
     "rawDoc": "Raw source",
-    "fullscreen": "Fullscreen view"
+    "fullscreen": "Fullscreen view",
+    "sectionRelated": "Related setups"
   },
   "contribute": {
     "metaTitle": "Submit a Linux Desktop Config or Dotfiles Setup",

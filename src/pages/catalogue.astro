@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import ConfigCard from '../components/ConfigCard.astro';
 import FilterSidebar from '../components/FilterSidebar.astro';
+import TopicLinks from '../components/TopicLinks.astro';
 import { getCollection } from 'astro:content';
 import { getVotesForConfig } from '../lib/votes';
 import { useTranslations } from '../lib/i18n';
@@ -64,6 +65,11 @@ const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
         <span>{t('catalogue.totalRecords')} <strong class="text-zinc-900">{allConfigs.length}</strong> {t('catalogue.interfacesIndexed')}</span>
       </div>
     </div>
+
+    <nav aria-label="Topic guides" class="flex flex-col sm:flex-row sm:items-center gap-2 font-mono text-xs">
+      <span class="text-zinc-500 uppercase tracking-wider text-[11px] shrink-0">Compare by topic:</span>
+      <TopicLinks />
+    </nav>
 
     <!-- Mobile Filter Toggle Button -->
     <div class="lg:hidden flex items-center justify-between gap-3">

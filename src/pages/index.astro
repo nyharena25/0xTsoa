@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Spotlight from '../components/Spotlight.astro';
 import Manifesto from '../components/Manifesto.astro';
+import TopicLinks from '../components/TopicLinks.astro';
 import { getCollection } from 'astro:content';
 import { getTop5Configs } from '../lib/votes';
 import { useTranslations } from '../lib/i18n';
@@ -103,35 +104,19 @@ const homeJsonLd = {
     <Hero />
     <Spotlight configs={spotlightConfigs} />
 
-    <!-- Quick Explorer Bar -->
-    <section class="bg-white border border-zinc-200 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <div class="flex items-center gap-2.5">
-        <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
-        <span class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900">
-          Quick Explore by Style & WM:
-        </span>
-      </div>
-      <div class="flex flex-wrap items-center gap-2">
-        <a href={withBase('/catalogue/?wm=hyprland')} class="tag-pill">
-          Hyprland
-        </a>
-        <a href={withBase('/catalogue/?wm=sway')} class="tag-pill">
-          Sway
-        </a>
-        <a href={withBase('/catalogue/?style=cyberpunk')} class="tag-pill">
-          Cyberpunk
-        </a>
-        <a href={withBase('/catalogue/?style=minimalist')} class="tag-pill">
-          Minimalist
-        </a>
-        <a href={withBase('/catalogue/?style=nord')} class="tag-pill">
-          Nord
-        </a>
+    <!-- Browse by topic: the published topic pages -->
+    <section class="bg-white border border-zinc-200 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-3" aria-labelledby="browse-topics-title">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 id="browse-topics-title" class="flex items-center gap-2.5 font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 m-0">
+          <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+          Browse by topic
+        </h2>
         <a href={withBase('/catalogue/')} class="btn-solid text-xs py-1 px-3">
           <span>View all</span>
           <span>&rarr;</span>
         </a>
       </div>
+      <TopicLinks />
     </section>
 
     <Manifesto />

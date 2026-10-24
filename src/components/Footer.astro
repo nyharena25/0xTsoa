@@ -2,6 +2,7 @@
 import { useTranslations } from '../lib/i18n';
 import { withBase, REPO_URL } from '../../site.config';
 import BdBrickLogo from './BdBrickLogo.astro';
+import TopicLinks from './TopicLinks.astro';
 
 interface Props {
   locale?: string;
@@ -15,6 +16,10 @@ const aboutPath = withBase('/about/');
 ---
 
 <footer class="w-full bg-white border-t border-zinc-200 mt-16">
+  <nav aria-label="Topics" class="max-w-7xl mx-auto px-4 lg:px-8 pt-6 flex flex-col sm:flex-row sm:items-center gap-2 font-mono text-xs">
+    <span class="text-zinc-400 uppercase tracking-wider text-[11px] shrink-0">Topics</span>
+    <TopicLinks variant="inline" />
+  </nav>
   <div class="max-w-7xl mx-auto px-4 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-zinc-600">
     <div class="flex items-center gap-2.5 tracking-tight">
       <BdBrickLogo size="xs" class="text-zinc-900" />

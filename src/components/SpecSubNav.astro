@@ -8,13 +8,16 @@ interface Props {
   /** Sections actually rendered on the page, already numbered (e.g. "03. Screenshot Gallery"). */
   sections: { id: string; title: string }[];
   locale?: string;
+  /** Where "back" goes: the entry's topic page, or the catalogue. */
+  parent?: { label: string; href: string };
 }
 
-const { configId, name, sections } = Astro.props;
+const { configId, name, sections, parent } = Astro.props;
 
 const votes = getVotesForConfig(configId);
 const discussionUrl = getDiscussionUrlForConfig(configId);
-const cataloguePath = withBase('/catalogue/');
+const backHref = parent?.href ?? withBase('/catalogue/');
+const backLabel = parent?.label ?? 'Catalogue';
 ---
 
 <div class="sticky top-16 z-40 bg-white/95 backdrop-blur-md border-b border-zinc-200 py-2.5 shadow-xs">
@@ -23,15 +26,15 @@ const cataloguePath = withBase('/catalogue/');
     <div class="flex items-center justify-between gap-2 text-xs font-mono">
       <div class="flex items-center gap-1.5 min-w-0">
         <a
-          href={cataloguePath}
+          href={backHref}
           class="inline-flex items-center gap-1 text-zinc-600 hover:text-zinc-900 font-medium transition-colors shrink-0"
-          title="Back to catalogue"
+          title={`Back to ${backLabel}`}
         >
           <span>&larr;</span>
-          <span class="hidden sm:inline">Catalogue</span>
+          <span class="hidden sm:inline">{backLabel}</span>
         </a>
         <span class="text-zinc-300">/</span>
-        <h1 class="text-zinc-900 font-bold truncate text-xs font-mono m-0" data-page-title="true">{name}</h1>
+        <span class="text-zinc-900 font-bold truncate text-xs font-mono">{name}</span>
       </div>
 
       <div class="flex items-center gap-1.5 shrink-0">

@@ -510,3 +510,58 @@ export function sanitizeAndRewriteHtml(
     },
   });
 }
+
+const VOID_TAGS = new Set(['area', 'br', 'col', 'embed', 'hr', 'img', 'input', 'source', 'track', 'wbr']);
+const TAG_RE = /<\/?([a-zA-Z][\w-]*)(?:[^>"']|"[^"]*"|'[^']*')*?(\/?)>/g;
+
+/** Top-level elements of sanitized HTML (whitespace between them dropped). */
+export function topLevelBlocks(html: string): string[] {
+  const blocks: string[] = [];
+  const pushText = (text: string) => {
+    if (text.trim()) blocks.push(text.trim());
+  };
+  let depth = 0;
+  let start = 0;
+  let cursor = 0;
+  for (const m of html.matchAll(TAG_RE)) {
+    const [tag, rawName, selfClosing] = m;
+    const index = m.index ?? 0;
+    if (depth === 0) {
+      pushText(html.slice(cursor, index)); // loose text between top-level elements
+      start = index;
+    }
+    if (tag.startsWith('</')) depth = Math.max(0, depth - 1);
+    else if (!VOID_TAGS.has(rawName.toLowerCase()) && !selfClosing) depth++;
+    if (depth === 0) {
+      cursor = index + tag.length;
+      blocks.push(html.slice(start, cursor));
+    }
+  }
+  pushText(html.slice(cursor));
+  return blocks;
+}
+
+function wordCount(html: string): number {
+  return html.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
+}
+
+/**
+ * The opening of a README: whole top-level blocks up to about `maxWords` words, stopping at the
+ * next heading once there is enough to read. The full text stays on the forge, linked from the page,
+ * so the page keeps its own content instead of copying the upstream README.
+ */
+export function readmeExcerpt(html: string, maxWords = 220): { html: string; truncated: boolean } {
+  const blocks = topLevelBlocks(html);
+  const kept: string[] = [];
+  let words = 0;
+  for (const block of blocks) {
+    const n = wordCount(block);
+    const isHeading = /^<h[1-6]\b/i.test(block);
+    if (kept.length > 0 && ((isHeading && words >= maxWords / 2) || words + n > maxWords)) break;
+    kept.push(block);
+    words += n;
+  }
+  // A trailing heading with nothing under it reads as a cut-off.
+  while (kept.length > 1 && /^<h[1-6]\b/i.test(kept[kept.length - 1])) kept.pop();
+  return { html: kept.join('\n'), truncated: kept.length < blocks.length };
+}

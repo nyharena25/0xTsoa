@@ -1,0 +1,125 @@
+---
+// The facts a visitor needs before installing, all derived from the reviewed config and the
+// nightly upstream sync: nothing here is written by hand, so it cannot drift from the installer.
+import { WM_LABELS, DISTRO_LABELS, type ConfigData } from '../lib/schema';
+import { DIFFICULTY_INFO, type InstallDifficulty, type InstallImpact } from '../lib/install';
+import { MAINTENANCE_INFO, type MaintenanceStatus, type RepoStats } from '../lib/stats';
+
+interface Props {
+  data: ConfigData;
+  difficulty: InstallDifficulty | null;
+  impact: InstallImpact;
+  maintenance: MaintenanceStatus | null;
+  repoStats?: RepoStats;
+  commitUrl: string;
+}
+
+const { data, difficulty, impact, maintenance, repoStats, commitUrl } = Astro.props;
+
+const DIFFICULTY = DIFFICULTY_INFO;
+const MAINTENANCE = MAINTENANCE_INFO;
+
+const formatDate = (d: string) =>
+  new Date(`${d}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+
+const pushedAt = repoStats?.pushedAt ? formatDate(repoStats.pushedAt) : null;
+const maintenanceText =
+  maintenance === 'active'
+    ? `Upstream updated ${pushedAt}.`
+    : maintenance === 'quiet'
+      ? `No upstream update since ${pushedAt}. Finished themes often stay quiet; check open issues if something breaks.`
+      : maintenance === 'archived'
+        ? 'The upstream repository is read-only: it may still work, but bugs will not be fixed.'
+        : null;
+
+const packages = [...impact.packages, ...impact.aurPackages];
+const changes: string[] = [];
+if (difficulty === null) changes.push('Nothing: it is a reading list.');
+else if (difficulty === 'manual') changes.push('Nothing is installed for you; the clone stays in its own folder.');
+else {
+  if (packages.length) {
+    const shown = packages.slice(0, 4).join(', ') + (packages.length > 4 ? ` +${packages.length - 4} more` : '');
+    changes.push(`${packages.length} package${packages.length === 1 ? '' : 's'}: ${shown}${impact.aurPackages.length ? ' (AUR included)' : ''}`);
+  }
+  if (impact.userPaths.length) changes.push(`Writes to ${impact.userPaths.slice(0, 3).join(', ')}${impact.userPaths.length > 3 ? '…' : ''}`);
+  if (impact.systemCommands.length) changes.push(`Uses sudo outside package installs (${impact.systemCommands.length} step${impact.systemCommands.length === 1 ? '' : 's'})`);
+  if (impact.upstreamCommands.length) changes.push("Runs the project's own installer");
+  if (impact.execCommands.length) changes.push(`Changes settings (${impact.execCommands.length} command${impact.execCommands.length === 1 ? '' : 's'})`);
+}
+
+const undo =
+  difficulty === null
+    ? null
+    : difficulty === 'manual'
+      ? 'Delete the cloned folder. Anything you set up afterwards follows the upstream guide.'
+      : impact.upstreamCommands.length
+        ? "Home files are backed up first and restored with --rollback; the project's own installer is not undone."
+        : packages.length || impact.systemCommands.length || impact.execCommands.length
+          ? 'File changes: bash install.sh --rollback. Packages and settings stay.'
+          : 'bash install.sh --rollback restores every file it changed.';
+
+const wm = data.wm === 'any' ? 'Any window manager or desktop' : WM_LABELS[data.wm];
+const server = data.displayServer === 'both' ? 'Wayland & X11' : data.displayServer === 'wayland' ? 'Wayland' : 'X11';
+const distros = data.distros.map((d) => DISTRO_LABELS[d]).join(', ');
+const versionLabel = data.version ?? data.source.ref.slice(0, 12);
+---
+
+<section aria-labelledby="at-a-glance-title" class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-6 w-full min-w-0">
+  <h2 id="at-a-glance-title" class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider mb-3">At a glance</h2>
+  <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 font-mono text-[11px]">
+    {difficulty && (
+      <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
+        <dt class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">Difficulty</dt>
+        <dd class="flex flex-col gap-1">
+          <span class="inline-flex items-center gap-1.5 text-zinc-900 font-bold text-xs">
+            <span class={`w-2 h-2 rounded-full inline-block ${DIFFICULTY[difficulty].dot}`} aria-hidden="true"></span>
+            {DIFFICULTY[difficulty].label}
+          </span>
+          <span class="text-zinc-600 leading-relaxed">{DIFFICULTY[difficulty].text}</span>
+        </dd>
+      </div>
+    )}
+
+    <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
+      <dt class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">What it changes</dt>
+      <dd>
+        <ul class="flex flex-col gap-0.5 text-zinc-700 leading-relaxed break-words">
+          {changes.map((c) => <li>{c}</li>)}
+        </ul>
+      </dd>
+    </div>
+
+    {undo && (
+      <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
+        <dt class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">How to undo it</dt>
+        <dd class="text-zinc-700 leading-relaxed">{undo}</dd>
+      </div>
+    )}
+
+    {maintenance && maintenanceText && (
+      <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
+        <dt class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">Maintenance</dt>
+        <dd class="flex flex-col gap-1">
+          <span class="inline-flex items-center gap-1.5 text-zinc-900 font-bold text-xs">
+            <span class={`w-2 h-2 rounded-full inline-block ${MAINTENANCE[maintenance].dot}`} aria-hidden="true"></span>
+            {MAINTENANCE[maintenance].label}
+          </span>
+          <span class="text-zinc-600 leading-relaxed">{maintenanceText}</span>
+        </dd>
+      </div>
+    )}
+
+    <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
+      <dt class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">Pinned version</dt>
+      <dd class="text-zinc-700 leading-relaxed">
+        <a href={commitUrl} target="_blank" rel="noopener noreferrer" class="underline text-zinc-900 font-semibold">{versionLabel}</a>
+        <span>, dated {formatDate(data.updatedAt)}. Installs exactly this version, never a moving branch.</span>
+      </dd>
+    </div>
+
+    <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
+      <dt class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">Works with</dt>
+      <dd class="text-zinc-700 leading-relaxed">{wm} ({server}) on {distros}.</dd>
+    </div>
+  </dl>
+</section>

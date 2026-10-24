@@ -6,10 +6,16 @@ import Accordion from '../../../components/Accordion.astro';
 import CommandLine from '../../../components/CommandLine.astro';
 import ScreenshotGallery from '../../../components/ScreenshotGallery.astro';
 import AssuranceBadges from '../../../components/AssuranceBadges.astro';
+import AtAGlance from '../../../components/AtAGlance.astro';
+import RelatedSetups from '../../../components/RelatedSetups.astro';
 import { getCollection } from 'astro:content';
-import { getRenderedReadme, extractScreenshotsFromReadme } from '../../../lib/readme';
+import { getRenderedReadme, extractScreenshotsFromReadme, readmeExcerpt } from '../../../lib/readme';
 import { rawToBlobUrl, blobUrl, hasInstallSteps, isAllowedImageUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
-import { buildInstallScript, renderCommand, verifiedScriptCommand, downloadInstallCommand, installScriptPath, installImpact, attestationVerifyCommand, UPSTREAM_BACKUP_PATHS } from '../../../lib/install';
+import { buildInstallScript, renderCommand, verifiedScriptCommand, downloadInstallCommand, installScriptPath, installImpact, installDifficulty, attestationVerifyCommand, UPSTREAM_BACKUP_PATHS } from '../../../lib/install';
+import { configSeoTitle, configSeoDescription } from '../../../lib/seo';
+import { getStarsForConfig, getRepoStats, maintenanceForConfig } from '../../../lib/stats';
+import { relatedConfigs, maintainedAlternatives } from '../../../lib/related';
+import { liveTopics, primaryTopic, topicForFacet } from '../../../lib/topics';
 import { useTranslations } from '../../../lib/i18n';
 import { withBase, REPO_URL } from '../../../../site.config';
 
@@ -38,6 +44,8 @@ const readmeHtml = rawReadmeHtml.replace(
     `<${slash}h${Math.min(6, Math.max(3, Number(level) + 1))}${attrs}>`,
 );
 
+const readme = readmeExcerpt(readmeHtml);
+const forgeName = ({ 'github.com': 'GitHub', 'gitlab.com': 'GitLab', 'codeberg.org': 'Codeberg' } as Record<string, string>)[new URL(data.source.repo).hostname] ?? 'the forge';
 const readmeScreenshots = extractScreenshotsFromReadme(readmeHtml).filter((s) => isAllowedImageUrl(s.url));
 const existingShotUrls = new Set(data.screenshots.map((s) => s.url));
 const mergedScreenshots = [...data.screenshots];
@@ -52,6 +60,22 @@ for (const shot of readmeScreenshots) {
   }
 }
 
+const allConfigs = await getCollection('configs');
+const maintenance = maintenanceForConfig(entry.id, data.tags);
+const relatedOptions = { stars: getStarsForConfig, status: (id: string, d: typeof data) => maintenanceForConfig(id, d.tags) };
+const related = relatedConfigs({ id: entry.id, data }, allConfigs, relatedOptions);
+// Topic pages this entry belongs to: the breadcrumb parent and the header's category / WM links.
+const topics = liveTopics(allConfigs).map((t) => t.topic);
+const parentTopic = primaryTopic(data, topics);
+const categoryTopic = topicForFacet(topics, { kind: 'category', value: data.category });
+const wmTopic = topicForFacet(topics, { kind: 'wm', value: data.wm });
+const categoryHref = withBase(categoryTopic ? `/${categoryTopic.slug}/` : `/catalogue/?category=${data.category}`);
+const wmHref = withBase(wmTopic ? `/${wmTopic.slug}/` : `/catalogue/?wm=${data.wm}`);
+const parent = parentTopic
+  ? { label: parentTopic.label, href: withBase(`/${parentTopic.slug}/`) }
+  : { label: 'Catalogue', href: withBase('/catalogue/') };
+const alternatives = maintenance === 'archived' ? maintainedAlternatives({ id: entry.id, data }, allConfigs, relatedOptions) : [];
+
 // Sections exist only when upstream has the content; numbering and the sticky nav follow.
 const realScreenshots = mergedScreenshots.filter((s) => !s.url.endsWith('/screenshots/fallback-terminal.svg'));
 const sections = (
@@ -61,80 +85,19 @@ const sections = (
     realScreenshots.length > 0 && ['screenshots', t('spec.sectionScreenshots')],
     !readmeMissing && ['readme', t('spec.sectionReadme')],
     data.keybindings.length > 0 && ['keybindings', t('spec.keybindings')],
+    related.length > 0 && ['related', t('spec.sectionRelated')],
   ].filter(Boolean) as [string, string][]
 ).map(([id, label], i) => ({ id, title: `${String(i + 1).padStart(2, '0')}. ${label}` }));
 const sectionTitle = Object.fromEntries(sections.map((s) => [s.id, s.title]));
 
 const distroLabels = data.distros.map((d) => DISTRO_LABELS[d] || d).join(', ');
-const primaryDistro = DISTRO_LABELS[data.distros[0]] || data.distros[0];
 const wmLabel = WM_LABELS[data.wm] || data.wm;
 
-// SEO Title: "{name} by @{github} · {WM} on {Distro}", kept under ~60 chars (drop distro if it doesn't fit)
-const fullTitle = `${data.name} by @${data.author.github} · ${wmLabel} on ${primaryDistro}`;
-const noDistroTitle = `${data.name} by @${data.author.github} · ${wmLabel}`;
-const shortTitle = `${data.name} · ${wmLabel}`;
-const seoTitle =
-  fullTitle.length <= 60
-    ? fullTitle
-    : noDistroTitle.length <= 60
-      ? noDistroTitle
-      : shortTitle.slice(0, 60);
-
-// SEO Description: built from real fields (summary + WM + displayServer + key specs), 140–160 chars
-const serverLabel =
-  data.displayServer === 'both'
-    ? 'Wayland/X11'
-    : data.displayServer === 'wayland'
-      ? 'Wayland'
-      : 'X11';
-
-function buildSetupDescription(): string {
-  const baseSummary = data.summary.trim().replace(/\.+$/, '');
-  const cleanSpec = (val?: string) => val?.replace(/\s*\([^)]*\)/g, '').trim();
-  const specFragments: string[] = [
-    `${wmLabel} (${serverLabel}) on ${distroLabels}`,
-    ...(data.specs.bar ? [`Bar: ${data.specs.bar}`, `Bar: ${cleanSpec(data.specs.bar)}`] : []),
-    ...(data.specs.terminal ? [`Terminal: ${data.specs.terminal}`, `Terminal: ${cleanSpec(data.specs.terminal)}`] : []),
-    ...(data.specs.launcher ? [`Launcher: ${data.specs.launcher}`, `Launcher: ${cleanSpec(data.specs.launcher)}`] : []),
-    ...(data.specs.theme ? [`Theme: ${data.specs.theme}`, `Theme: ${cleanSpec(data.specs.theme)}`] : []),
-    ...(data.specs.shell ? [`Shell: ${data.specs.shell}`] : []),
-    ...(data.specs.editor ? [`Editor: ${data.specs.editor}`] : []),
-    `License: ${data.license}`,
-    `Source: ${data.source.repo.replace(/^https?:\/\//, '')}`,
-  ];
-
-  const usedPrefixes = new Set<string>();
-  let desc = `${baseSummary}.`;
-  for (const frag of specFragments) {
-    const prefix = frag.split(':')[0];
-    if (usedPrefixes.has(prefix)) continue;
-    const cleanFrag = frag.replace(/\.+$/, '');
-    const candidate = `${desc} ${cleanFrag}.`;
-    if (candidate.length <= 160) {
-      desc = candidate;
-      usedPrefixes.add(prefix);
-    } else if (desc.length < 140) {
-      const budget = 159 - desc.length - 1;
-      if (budget >= 12) {
-        const trimmed = cleanFrag
-          .slice(0, budget)
-          .replace(/\s*\([^)]*$/, '')
-          .replace(/[,;:\s/]+\S*$/, '')
-          .trim();
-        if (trimmed && !trimmed.includes('(') && desc.length + 1 + trimmed.length + 1 >= 140) {
-          desc = `${desc} ${trimmed}.`;
-          usedPrefixes.add(prefix);
-        }
-      }
-    }
-  }
-  if (desc.length > 160) {
-    desc = `${desc.slice(0, 157).replace(/\s+\S*$/, '')}...`;
-  }
-  return desc;
-}
-
-const seoDescription = buildSetupDescription();
+// Every fact on the page (title, description, At a glance, trust panel) comes from the same classification the installer uses.
+const impact = installImpact(data);
+const difficulty = installDifficulty(data);
+const seoTitle = configSeoTitle(data);
+const seoDescription = configSeoDescription(data, difficulty, impact);
 
 const primaryShot = data.screenshots[0];
 const ogImageUrl = primaryShot?.url;
@@ -195,8 +158,8 @@ const setupJsonLd = [
       {
         '@type': 'ListItem',
         position: 2,
-        name: 'Catalogue',
-        item: new URL(withBase('/catalogue/'), Astro.site).href,
+        name: parent.label,
+        item: new URL(parent.href, Astro.site).href,
       },
       {
         '@type': 'ListItem',
@@ -213,8 +176,6 @@ const verifiedScriptCmd = install?.script ? verifiedScriptCommand(install.script
 const installScriptContent = install ? buildInstallScript(data, entry.id) : '';
 const downloadCmd = downloadInstallCommand(entry.id);
 const scriptHref = withBase(installScriptPath(entry.id));
-// Every fact in the trust panel comes from the same classification the installer uses.
-const impact = installImpact(data);
 const verifyCmd = attestationVerifyCommand();
 const repoUrl = data.source.repo.replace(/\.git$/, '');
 const commitUrl = `${repoUrl}/tree/${data.source.ref}`;
@@ -251,12 +212,47 @@ const renderedSteps = (install?.steps ?? []).map((step) => ({
   updatedAt={data.updatedAt}
   jsonLd={setupJsonLd}
 >
-  <SpecSubNav configId={entry.id} name={data.name} sections={sections} locale={locale} />
+  <SpecSubNav configId={entry.id} name={data.name} sections={sections} locale={locale} parent={parent} />
 
   <div class="max-w-7xl mx-auto px-4 lg:px-8 py-6 flex flex-col gap-6 w-full min-w-0" data-pagefind-body>
     <span class="hidden" data-pagefind-meta="wm">{data.wm}</span>
     <span class="hidden" data-pagefind-meta="author">{data.author.name}</span>
     <span class="hidden" data-pagefind-meta="distros">{data.distros.join(' ')}</span>
+
+    <!-- PAGE HEADER: the one H1, then what it is in plain words -->
+    <header class="flex flex-col gap-2.5 w-full min-w-0 pt-1">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-zinc-500 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+        <a href={categoryHref} class="underline hover:text-zinc-900">{CATEGORY_LABELS[data.category]}</a>
+        {data.wm !== 'any' && <><span aria-hidden="true">·</span><a href={wmHref} class="underline hover:text-zinc-900">{wmLabel}</a></>}
+        <span aria-hidden="true">·</span>
+        <span>by <a href={`https://github.com/${data.author.github}`} target="_blank" rel="noopener noreferrer" class="underline hover:text-zinc-900 normal-case">@{data.author.github}</a></span>
+      </p>
+      <h1 class="font-display text-2xl sm:text-4xl font-bold text-zinc-900 tracking-tight break-words m-0" data-page-title="true">{data.name}</h1>
+      <p class="font-sans text-base sm:text-lg text-zinc-700 leading-relaxed max-w-3xl m-0">{data.summary}</p>
+      {data.description && <p class="font-sans text-sm sm:text-base text-zinc-600 leading-relaxed max-w-3xl m-0">{data.description}</p>}
+    </header>
+
+    {maintenance === 'archived' && (
+      <aside class="border border-amber-200 bg-amber-50/70 rounded-xl p-3.5 font-mono text-[11px] text-amber-950 leading-relaxed flex flex-col gap-1.5" aria-label="Upstream archived">
+        <span class="font-bold text-xs">Upstream archived</span>
+        <span>The author has made the repository read-only. It may still work, but bugs will not be fixed and new {data.wm === 'any' ? 'desktop' : wmLabel} releases may break it.</span>
+        {alternatives.length > 0 && (
+          <span>
+            Maintained alternatives:{' '}
+            {alternatives.map((a, i) => <>{i > 0 && ', '}<a href={withBase(`/configs/${a.id}/`)} class="underline font-semibold">{a.data.name}</a></>)}
+          </span>
+        )}
+      </aside>
+    )}
+
+    <AtAGlance
+      data={data}
+      difficulty={difficulty}
+      impact={impact}
+      maintenance={maintenance}
+      repoStats={getRepoStats(entry.id)}
+      commitUrl={commitUrl}
+    />
 
     <!-- SPECIFICATION OVERVIEW -->
     <section class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-7 w-full min-w-0" id="overview">
@@ -290,7 +286,7 @@ const renderedSteps = (install?.steps ?? []).map((step) => ({
 
           <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-zinc-50/70 min-w-0 break-words gap-1 md:gap-0">
             <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Desktop Part</dt>
-            <dd class="md:col-span-9 text-zinc-900 font-medium min-w-0 break-words"><a class="underline" href={withBase(`/catalogue/?category=${data.category}`)}>{CATEGORY_LABELS[data.category]}</a></dd>
+            <dd class="md:col-span-9 text-zinc-900 font-medium min-w-0 break-words"><a class="underline" href={categoryHref}>{CATEGORY_LABELS[data.category]}</a></dd>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-white min-w-0 break-words gap-1 md:gap-0">
@@ -326,12 +322,6 @@ const renderedSteps = (install?.steps ?? []).map((step) => ({
           </div>
           )}
 
-          {data.description && (
-            <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-white min-w-0 break-words">
-              <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Full Description</dt>
-              <dd class="md:col-span-9 text-zinc-700 font-sans leading-relaxed text-sm min-w-0 break-words">{data.description}</dd>
-            </div>
-          )}
         </dl>
       </div>
     </section>
@@ -583,13 +573,22 @@ const renderedSteps = (install?.steps ?? []).map((step) => ({
 
         <!-- Official GitHub Markdown Body -->
         <div class="p-5 sm:p-8 md:p-10 bg-white w-full max-w-full overflow-x-auto">
-          <article class="markdown-body" set:html={readmeHtml} />
+          <article class="markdown-body" set:html={readme.html} />
         </div>
+        {readme.truncated && (
+          <div class="border-t border-[#d0d7de] bg-[#f6f8fa] px-4 py-3 flex flex-wrap items-center justify-between gap-2 font-mono text-xs">
+            <span class="text-zinc-600">This is the opening of the README. The full guide lives in the repository.</span>
+            <a href={blobUrl(data.source)} target="_blank" rel="noopener noreferrer" class="btn-solid text-xs py-1.5 px-3">
+              <span>Continue reading on {forgeName}</span>
+              <span>&rarr;</span>
+            </a>
+          </div>
+        )}
       </div>
 
       <div class="border-t border-zinc-100 pt-3 flex items-center justify-between font-mono text-xs text-zinc-400">
-        <span>GitHub Flavored Markdown (github-markdown-css)</span>
-        <span>README snapshot at {data.source.ref.slice(0, 10)}</span>
+        <span>{readme.truncated ? 'Excerpt of the upstream README' : 'Upstream README'}</span>
+        <span>at {data.source.ref.slice(0, 10)}</span>
       </div>
     </section>
     )}
@@ -654,6 +653,8 @@ const renderedSteps = (install?.steps ?? []).map((step) => ({
         </div>
       </section>
     )}
+
+    {related.length > 0 && <RelatedSetups entries={related} title={sectionTitle.related} />}
   </div>
 
   <script>

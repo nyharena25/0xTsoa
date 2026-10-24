@@ -186,6 +186,38 @@ export function installImpact(data: ConfigData): InstallImpact {
   return impact;
 }
 
+export type InstallDifficulty = 'manual' | 'easy' | 'moderate' | 'advanced';
+
+/**
+ * How much of the system an install touches, from the same classification as the installer:
+ * manual: the steps only fetch the source; the setup itself follows the upstream guide by hand;
+ * easy: copies files into your home folder, all undone by --rollback;
+ * moderate: also distro packages, or lasting commands --rollback does not undo (gsettings set…);
+ * advanced: AUR packages, the project's own installer (or install.script), or other sudo changes.
+ * null for entries without install steps (Lists & guides).
+ */
+export function installDifficulty(data: ConfigData): InstallDifficulty | null {
+  const steps = data.install?.steps ?? [];
+  if (!steps.length) return null;
+  const impact = installImpact(data);
+  if (data.install?.script || impact.aurPackages.length || impact.upstreamCommands.length || impact.systemCommands.length) {
+    return 'advanced';
+  }
+  if (impact.packages.length || impact.execCommands.length) return 'moderate';
+  const deploys = steps.some((step) =>
+    step.commands.some((cmd) => classifyCommand(cmd, data).some((a) => a.kind === 'copy' || a.kind === 'append')),
+  );
+  return deploys ? 'easy' : 'manual';
+}
+
+/** How each difficulty is shown on config and topic pages. */
+export const DIFFICULTY_INFO: Record<InstallDifficulty, { label: string; dot: string; text: string }> = {
+  manual: { label: 'Manual setup', dot: 'bg-zinc-400', text: 'The steps fetch the pinned source; you set it up by hand from the upstream guide.' },
+  easy: { label: 'Easy', dot: 'bg-emerald-600', text: 'Copies files into your home folder, nothing else.' },
+  moderate: { label: 'Moderate', dot: 'bg-amber-500', text: 'Installs packages from your distro or changes desktop settings, as well as files.' },
+  advanced: { label: 'Advanced', dot: 'bg-rose-600', text: "Uses the AUR, sudo or the project's own installer. Read the steps before running them." },
+};
+
 /** Public URL of the generated installer for a config id (`author/slug`). */
 export function installScriptPath(id: string): string {
   return `/configs/${id}/install.sh`;
