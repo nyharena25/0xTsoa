@@ -2,12 +2,13 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { useTranslations } from '../lib/i18n';
-import { withBase, GA_MEASUREMENT_ID } from '../../site.config';
+import { withBase, GA_MEASUREMENT_ID, SITE_URL } from '../../site.config';
 import '../styles/global.css';
 
 interface Props {
   title?: string;
   description?: string;
+  canonical?: string;
   locale?: string;
   pageLabel?: string;
   statusPrefix?: string;
@@ -24,6 +25,7 @@ interface Props {
 const {
   title,
   description,
+  canonical,
   pageLabel,
   statusPrefix: propPrefix,
   statusInitial: propInitial,
@@ -40,7 +42,8 @@ const t = useTranslations('en');
 const pageTitle = title ? `${title} — 0xTsoa` : t('site.title');
 const pageDesc = description || t('site.description');
 const currentPath = Astro.url.pathname;
-const canonicalUrl = new URL(currentPath, Astro.site).href;
+const siteOrigin = Astro.site ? Astro.site.href : SITE_URL;
+const canonicalUrl = canonical || new URL(currentPath, siteOrigin).href;
 
 const defaultOgImage = new URL(withBase('/og.png'), Astro.site).href;
 const isDefaultOgImage =
