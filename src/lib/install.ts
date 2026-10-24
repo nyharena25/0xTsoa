@@ -39,7 +39,8 @@ export function verifiedScriptCommand(script: {
 // `<theme>`, `<hostname>`… are placeholders the user must fill in; bash would parse them as redirections.
 const PLACEHOLDER_RE = /<[A-Za-z][\w-]*>/;
 // Upstream installers decide for themselves what they touch.
-const UPSTREAM_RE = /^(?:sudo\s+)?(?:\.\/\S+|(?:ba)?sh\s+(?!-c\b)\S+|make(?:\s.*)?|bash\s+-c\s+.*)$/;
+// Plain arguments are allowed ("./setup install", "bash install.sh --all"); shell syntax is not.
+const UPSTREAM_RE = /^(?:sudo\s+)?(?:\.\/\S+(?:\s+[\w.=-]+)*|(?:ba)?sh\s+(?!-c\b)\S+(?:\s+[\w.=-]+)*|make(?:\s.*)?|bash\s+-c\s+.*)$/;
 
 /**
  * Home-relative folders an upstream installer (`./setup.sh`, `make install`…) usually rewrites.

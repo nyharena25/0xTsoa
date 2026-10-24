@@ -7,7 +7,7 @@
   },
   "lang": "en",
   "summary": "Soothing pastel color themes (Mocha, Macchiato, Frappe, Latte) for Hyprland.",
-  "description": "The official Catppuccin color palette ported to Hyprland. Includes pre-configured color border variables, active window gradient rings, drop shadows, and matching styling across four pastel flavor tiers.",
+  "description": "The official Catppuccin port for Hyprland: color variables for the four flavors (Latte, Frappe, Macchiato, Mocha) that you load into your config and use for borders, shadows and other colors. Since Hyprland 0.55 the themes are Lua files; the older .conf version stays available on the v1.3 tag.",
   "license": "MIT",
   "version": "v2.0.0",
   "updatedAt": "2026-10-12",
@@ -64,14 +64,17 @@
       },
       {
         "id": "dotfiles",
-        "title": "Source theme in hyprland.conf",
+        "title": "Copy the Mocha theme into your Hyprland config",
         "commands": [
-          "echo \"source = ~/.config/hypr/catppuccin/themes/mocha.conf\" >> ~/.config/hypr/hyprland.conf"
+          "mkdir -p ~/.config/hypr/themes",
+          "cp ~/.config/hypr/catppuccin/themes/catppuccin-mocha.lua ~/.config/hypr/themes/",
+          "# Then load it in ~/.config/hypr/hyprland.lua with local colors = require('themes.catppuccin-mocha') and use colors.base, colors.mauve and the other values in your color settings.",
+          "# Other flavors: catppuccin-latte.lua, catppuccin-frappe.lua or catppuccin-macchiato.lua. On Hyprland older than 0.55 (hyprland.conf), use the v1.3 tag instead."
         ]
       },
       {
         "id": "reload",
-        "title": "Live reload Hyprland theme",
+        "title": "Reload Hyprland",
         "commands": [
           "hyprctl reload"
         ]

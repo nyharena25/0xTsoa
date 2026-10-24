@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Compact Hyprland rice with eww widgets and a warm, low-contrast palette.",
+  "description": "A Hyprland rice built on Artix Linux with Waybar, Dunst, Rofi, WezTerm, Zsh with Starship, Ranger and NvChad. The author only tested it on Arch-based systems under Wayland, and the README walks through installing each part with paru rather than providing an installer. The repository is archived.",
   "license": "NOASSERTION",
   "updatedAt": "2023-10-18",
   "distros": [

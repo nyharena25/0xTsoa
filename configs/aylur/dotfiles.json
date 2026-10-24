@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Personal Hyprland setup by the author of AGS, built around a custom GTK shell.",
+  "description": "Personal configuration from Aylur, the author of AGS (Aylur's GTK Shell). At this pinned version the README only points to Marble Shell, his desktop shell project, so read it to see what the repository contains before cloning.",
   "license": "NOASSERTION",
   "updatedAt": "2026-10-18",
   "distros": [

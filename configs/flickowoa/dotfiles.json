@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Aesthetic Hyprland rice with a retro palette, eww bar and custom sounds.",
+  "description": "A Hyprland rice split into a base config, which holds the keybindings and other non-visual settings, and themes you source on top of it, each kept in its own branch. Pick a theme from the README, install it, then uncomment its source line in hyprland.conf. The README asks you to back up your existing Hyprland config first.",
   "license": "NOASSERTION",
   "updatedAt": "2026-06-15",
   "distros": [

@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Fast wallpaper utility for Hyprland with IPC.",
+  "description": "Hyprland's official wallpaper utility. It sets a wallpaper per monitor, supports fill, tile, cover and contain modes and fractional scaling, and switches wallpapers instantly over IPC, which makes it easy to script. Packaged for Arch Linux and openSUSE.",
   "license": "BSD-3-Clause",
   "updatedAt": "2026-08-13",
   "distros": [

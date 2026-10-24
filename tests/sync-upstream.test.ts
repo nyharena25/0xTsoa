@@ -5,7 +5,10 @@ import {
   buildCompareUrl,
   formatSyncSummary,
   repoStatsFromApi,
+  parseTagCommits,
+  latestReleaseCommit,
 } from '../scripts/sync-upstream';
+import { installsReleasePackages } from '../src/lib/schema';
 
 describe('latestVersionTag', () => {
   it('picks the highest version numerically, not lexically', () => {
@@ -120,5 +123,50 @@ describe('repoStatsFromApi', () => {
 
   it('returns undefined without a star count (error bodies, rate limits)', () => {
     expect(repoStatsFromApi({ message: 'API rate limit exceeded' })).toBeUndefined();
+  });
+});
+
+describe('release tracking for packaged entries', () => {
+  const a = 'a'.repeat(40);
+  const b = 'b'.repeat(40);
+  const c = 'c'.repeat(40);
+  const tags = [`${a}\trefs/tags/v0.55.0`, `${b}\trefs/tags/v0.56.2`, `${c}\trefs/tags/v0.56.2^{}`, `${a}\trefs/tags/v0.57.0-rc1`, `${a}\trefs/tags/nightly`].join('\n');
+
+  it('maps tags to the commits they point to, peeling annotated tags', () => {
+    const commits = parseTagCommits(tags);
+    expect(commits.get('v0.55.0')).toBe(a);
+    expect(commits.get('v0.56.2')).toBe(c);
+  });
+
+  it('picks the newest release and its commit, skipping pre-releases', () => {
+    expect(latestReleaseCommit(tags)).toEqual({ tag: 'v0.56.2', sha: c });
+    expect(latestReleaseCommit(`${a}\trefs/tags/nightly`)).toBeUndefined();
+    expect(versionTagAtRef(tags, c)).toBe('v0.56.2');
+  });
+});
+
+describe('installsReleasePackages', () => {
+  const entry = (...commands: string[]) => ({
+    source: { repo: 'https://github.com/hyprwm/Hyprland' },
+    install: { steps: [{ commands }] },
+  });
+
+  it('is true for entries installed only from distro packages', () => {
+    expect(installsReleasePackages(entry('sudo pacman -S --needed hyprland kitty', 'cp /usr/share/hypr/hyprland.lua ~/.config/hypr/'))).toBe(true);
+    expect(installsReleasePackages(entry('sudo apt install waybar', '# Other distros: see the upstream README'))).toBe(true);
+  });
+
+  it('is false when the steps clone the source repository or run its script', () => {
+    expect(installsReleasePackages(entry('sudo pacman -S git', 'git clone https://github.com/hyprwm/Hyprland.git ~/h', 'git -C ~/h checkout {{ref}}'))).toBe(false);
+    expect(installsReleasePackages({ ...entry('sudo pacman -S foo'), install: { script: {}, steps: [{ commands: ['sudo pacman -S foo'] }] } })).toBe(false);
+  });
+
+  it('is false for -git packages, which build from the default branch', () => {
+    expect(installsReleasePackages(entry('yay -S ags-hyprpanel-git  # AUR'))).toBe(false);
+  });
+
+  it('is false without any package install', () => {
+    expect(installsReleasePackages(entry('cp a ~/b'))).toBe(false);
+    expect(installsReleasePackages({ source: { repo: 'https://github.com/a/b' } })).toBe(false);
   });
 });

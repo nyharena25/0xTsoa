@@ -247,6 +247,18 @@ describe('remote script pinning (schema)', () => {
   });
 });
 
+describe('upstream installers with arguments', () => {
+  it('classifies ./script and bash script with plain arguments as the project installer', () => {
+    expect(translateCommand('./setup install', baseConfig)).toBe("oxt_upstream './setup install'");
+    expect(translateCommand('bash install.sh --all', baseConfig)).toBe("oxt_upstream 'bash install.sh --all'");
+    expect(translateCommand('./setup.sh', baseConfig)).toBe("oxt_upstream './setup.sh'");
+  });
+
+  it('keeps shell syntax out of the upstream rule', () => {
+    expect(translateCommand('./setup install > log.txt', baseConfig)).not.toContain('oxt_upstream');
+  });
+});
+
 describe('installImpact (page facts)', () => {
   it('lists packages, home paths, sudo and upstream commands from the same classification', () => {
     const impact = installImpact({

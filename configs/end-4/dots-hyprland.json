@@ -7,7 +7,7 @@
   },
   "lang": "en",
   "summary": "Usability-first, fluid and hyper-customized Wayland desktop configuration with Quickshell.",
-  "description": "An advanced, highly interactive Linux desktop environment combining Hyprland and Quickshell. Features bespoke Material Design 3 inspired widgets, integrated quick settings, media controls, animated workspace switchers, and deep keyboard navigation workflows.",
+  "description": "The illogical-impulse desktop: Hyprland with a custom Quickshell interface that includes an overview of open windows with live previews, an AI sidebar (Gemini, Ollama and others), screen translation and Material colors taken from your wallpaper. It is mostly a graphical shell, not a system setup: it does not install graphics drivers or tune the system. Its installer shows every command before running it. Hyprland 0.55 changed the config format; if your distro does not ship it yet, the README points to an earlier release.",
   "license": "GPL-3.0-only",
   "updatedAt": "2026-10-10",
   "distros": [
@@ -81,7 +81,7 @@
         "title": "Deploy Quickshell & Hyprland configs",
         "commands": [
           "cd ~/.config/hypr/dots",
-          "./setup.sh"
+          "./setup install"
         ]
       },
       {

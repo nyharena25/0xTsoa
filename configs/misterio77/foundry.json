@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Flake-based NixOS and home-manager setup with Hyprland and generated colors.",
+  "description": "Misterio77's whole infrastructure as a Nix flake: NixOS and home-manager configurations for his desktop, laptop and servers, with a heavily configured Hyprland and a pure-Nix Material You color engine. It also sets up impermanence, encrypted Btrfs partitioning with disko, Secure Boot and sops-nix secrets, so it is a reference to learn from rather than something to switch to as it is; the author suggests his starter config for beginners.",
   "license": "MIT",
   "updatedAt": "2026-10-21",
   "distros": [

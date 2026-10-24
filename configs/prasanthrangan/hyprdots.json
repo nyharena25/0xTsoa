@@ -7,7 +7,7 @@
   },
   "lang": "en",
   "summary": "Aesthetic, dynamic and minimal dotfiles for Arch Linux Hyprland with dynamic theming.",
-  "description": "HyDE (Hyprdots Desktop Environment) provides a modular, fluid and heavily customized Arch Linux environment on Hyprland. Features custom dynamic theme switching across 15+ styles, Waybar integration, Kitty terminal styling, Rofi-wayland app launcher, Dunst notifications, and streamlined pacman/AUR package workflows.",
+  "description": "The original Hyprdots: an Arch Linux Hyprland desktop with Waybar, Rofi, Kitty, Dunst and a theme switcher. It is no longer maintained; development continues as HyDE, which has its own entry.",
   "license": "GPL-3.0-only",
   "updatedAt": "2026-10-12",
   "distros": [

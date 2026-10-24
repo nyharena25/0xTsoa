@@ -419,6 +419,90 @@ export function validateCloneSteps(data: {
   return { errors, warnings };
 }
 
+/**
+ * Paths inside source.repo that the install steps rely on ("themes/catppuccin-mocha.lua",
+ * "Scripts/install.sh"): any path under the clone folder of source.repo, plus `./script` and
+ * `bash file` run after `cd` into it. CI and the nightly sync check them against the pinned commit,
+ * so a step cannot point at a file the reviewed version does not have.
+ */
+export function repoPathsInSteps(data: { source: { repo: string }; install?: { steps: { commands: string[] }[] } }): string[] {
+  const repo = normalizeRepoUrl(data.source.repo);
+  const found = new Set<string>();
+  let dest: string | null = null;
+  // Where the shell is inside the clone ('' = its root), or null when outside it.
+  let cwd: string | null = null;
+
+  const unquote = (w: string) => w.replace(/^['"]+|['";]+$/g, '').replace(/\/+$/, '');
+  const inClone = (w: string): string | null => {
+    const token = unquote(w);
+    if (!dest) return null;
+    if (token === dest) return '';
+    return token.startsWith(`${dest}/`) ? token.slice(dest.length + 1) : null;
+  };
+
+  const commands = (data.install?.steps ?? []).flatMap((s) => s.commands).map((c) => c.trim());
+  for (const cmd of commands.filter((c) => c && !c.startsWith('#'))) {
+    for (const part of cmd.split(/\s*&&\s*/)) {
+      const words = part.split(/\s+/).filter(Boolean);
+      if (words[0] === 'sudo') words.shift();
+      if (words[0] === 'git' && words[1] === 'clone') {
+        const operands = words.slice(2).filter((w) => !w.startsWith('-'));
+        if (operands[0] && normalizeRepoUrl(operands[0]) === repo) {
+          dest = unquote(operands[1] ?? operands[0].split('/').pop()!.replace(/\.git$/, ''));
+          cwd = null;
+        }
+        continue;
+      }
+      if (words[0] === 'cd') {
+        cwd = words[1] ? inClone(words[1]) : null;
+        continue;
+      }
+      if (words[0] === 'git') continue; // git -C <clone> checkout …
+      words.forEach((w, k) => {
+        if (/[*?${}]/.test(w)) return; // globs, variables, brace expansion, {{ref}}
+        const rel = inClone(w);
+        if (rel) {
+          found.add(rel);
+          return;
+        }
+        if (cwd === null) return;
+        const local = w.startsWith('./') ? unquote(w.slice(2)) : k === 1 && /^(?:ba)?sh$/.test(words[0]) && !w.startsWith('-') ? unquote(w) : null;
+        if (local) found.add(cwd ? `${cwd}/${local}` : local);
+      });
+    }
+  }
+  return [...found];
+}
+
+const PACKAGE_INSTALL_RE =
+  /^(?:sudo\s+)?(?:pacman\s+-S\w*|apt(?:-get)?\s+install|dnf\s+install|zypper\s+install|(?:yay|paru)\s+-S\w*|flatpak\s+install)\s+(.*)$/;
+
+/**
+ * True when the steps install the project as released distro packages and never clone source.repo
+ * or fetch an install script: users get a packaged release, so the nightly sync pins the entry to
+ * the latest release tag instead of the default branch. Packages ending in -git are built from the
+ * branch, so entries using one keep following it.
+ */
+export function installsReleasePackages(data: {
+  source: { repo: string };
+  install?: { script?: unknown; steps: { commands: string[] }[] };
+}): boolean {
+  if (data.install?.script) return false;
+  const repo = normalizeRepoUrl(data.source.repo);
+  let packaged = false;
+  const commands = (data.install?.steps ?? []).flatMap((s) => s.commands).map((c) => c.trim());
+  for (const part of commands.filter((c) => c && !c.startsWith('#')).flatMap((c) => c.split(/\s*&&\s*/))) {
+    const clone = part.match(/\bgit\s+clone\b.*?((?:https?:\/\/|git@)\S+)/);
+    if (clone && normalizeRepoUrl(clone[1]) === repo) return false;
+    const pkg = PACKAGE_INSTALL_RE.exec(part);
+    if (!pkg) continue;
+    const names = pkg[1].replace(/\s+#.*$/, '').split(/\s+/).filter((w) => w && !w.startsWith('-'));
+    if (names.some((n) => n.endsWith('-git'))) return false;
+    packaged = true;
+  }
+  return packaged;
+}
+
 /** `configs/<author>/<slug>.json` → `<author>/<slug>` */
 export const SLUG_RE = /^[a-z0-9][a-z0-9-]{2,47}$/;
 export function idFromPath(path: string): { id: string; author: string; slug: string } | null {

@@ -11,9 +11,11 @@ import {
   readmeRawUrl,
   validateCloneSteps,
   normalizeRepoUrl,
+  repoPathsInSteps,
   type CloneValidationResult,
 } from '../src/lib/schema';
 import { fetchLimited, SCRIPT_HOSTS } from '../src/lib/fetch-limited';
+import { listRepoTree, missingRepoPaths } from './repo-tree';
 import { ALLOWED_IMAGE_HOSTS, BASE_PATH, REPO_NAME } from '../site.config';
 
 export { validateCloneSteps, normalizeRepoUrl, type CloneValidationResult };
@@ -324,6 +326,20 @@ async function main() {
       const readmeRes = await checkRemoteUrl(readmeUrl, SCRIPT_HOSTS, SCREENSHOT_MAX_BYTES);
       if (!readmeRes.ok) {
         console.warn(`  ⚠ Remote README not accessible (${readmeRes.status || readmeRes.error}): ${readmeUrl}`);
+      }
+
+      // Every repository path the install steps use must exist at the pinned version.
+      const repoPaths = repoPathsInSteps(data);
+      if (repoPaths.length > 0) {
+        try {
+          const missing = missingRepoPaths(repoPaths, await listRepoTree(data.source.repo, data.source.ref));
+          for (const p of missing) {
+            console.error(`  ✖ Install steps use ${p}, which does not exist in ${data.source.repo} at ${data.source.ref}`);
+            errors++;
+          }
+        } catch (err) {
+          console.warn(`  ⚠ Could not list the repository files at ${data.source.ref}: ${(err as Error).message.split('\n')[0]}`);
+        }
       }
     }
 

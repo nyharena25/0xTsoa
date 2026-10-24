@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Community list of Hyprland plugins, tools, bars and dotfiles.",
+  "description": "The community-maintained list of tools for Hyprland: language bindings for its IPC, config editors and language servers, plugins (touch gestures, extra tiling layouts, per-monitor workspaces), bars, widgets and more. A good place to look once you know which part of your setup you want to change.",
   "license": "CC0-1.0",
   "updatedAt": "2026-06-13",
   "distros": [

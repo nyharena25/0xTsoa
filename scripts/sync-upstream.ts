@@ -1,6 +1,9 @@
 /**
  * Keeps every config in step with its upstream repository:
- *  - source.ref  -> latest commit on the default branch (still a pinned 40-char SHA)
+ *  - source.ref  -> latest commit on the default branch (still a pinned 40-char SHA), unless that
+ *                   commit lacks a repository file the install steps use: then the ref is held back.
+ *                   Entries installed from released distro packages (installsReleasePackages) follow
+ *                   the commit of the latest release tag instead: that is the version users install.
  *  - updatedAt   -> never modified (preserves curation/submission date for "Newest" sort)
  *  - version     -> version-like tag whose peeled commit equals source.ref, or removed otherwise
  *  - stars, archived, pushedAt -> src/generated/repo-stats.json ("Most popular" sort, maintenance status)
@@ -14,12 +17,23 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { stripLeadingSlashes, stripTrailingSlashes } from '../src/lib/strings';
 import type { RepoStats } from '../src/lib/stats';
+import { repoPathsInSteps, installsReleasePackages } from '../src/lib/schema';
+import { listRepoTree, missingRepoPaths } from './repo-tree';
 
 const run = promisify(execFile);
 const CONFIGS_DIR = path.resolve(process.cwd(), 'configs');
 const STATS_PATH = path.resolve(process.cwd(), 'src/generated/repo-stats.json');
 const SUMMARY_PATH = path.resolve(process.cwd(), 'sync-summary.md');
 const VERSION_TAG = /^v?\d+(\.\d+)*$/;
+
+/** A config kept on its reviewed ref because the new upstream commit lacks files its install steps use. */
+export interface HeldBack {
+  id: string;
+  repo: string;
+  oldRef: string;
+  newRef: string;
+  missing: string[];
+}
 
 export interface SyncChange {
   id: string;
@@ -46,15 +60,8 @@ export function latestVersionTag(tags: string[]): string | undefined {
     .at(-1);
 }
 
-/**
- * Parses `git ls-remote --tags <repo>` output and returns the highest version-like tag
- * whose peeled commit (from `refs/tags/<tag>^{}`, or `refs/tags/<tag>` for lightweight tags)
- * equals `ref`. Returns `undefined` when no version tag points at `ref`.
- */
-export function versionTagAtRef(lsRemoteTagsOutput: string, ref: string): string | undefined {
-  const target = ref.trim().toLowerCase();
-  if (!target) return undefined;
-
+/** `git ls-remote --tags` output → tag name → commit it points to (annotated tags peeled). */
+export function parseTagCommits(lsRemoteTagsOutput: string): Map<string, string> {
   const tagCommit = new Map<string, { sha: string; peeled: boolean }>();
 
   for (const rawLine of lsRemoteTagsOutput.split('\n')) {
@@ -77,9 +84,30 @@ export function versionTagAtRef(lsRemoteTagsOutput: string, ref: string): string
     }
   }
 
+  return new Map([...tagCommit].map(([tag, info]) => [tag, info.sha]));
+}
+
+/** The newest version tag (pre-releases ignored) and its commit, or undefined without one. */
+export function latestReleaseCommit(lsRemoteTagsOutput: string): { tag: string; sha: string } | undefined {
+  const commits = parseTagCommits(lsRemoteTagsOutput);
+  const tag = latestVersionTag([...commits.keys()]);
+  return tag ? { tag, sha: commits.get(tag)! } : undefined;
+}
+
+/**
+ * Parses `git ls-remote --tags <repo>` output and returns the highest version-like tag
+ * whose peeled commit (from `refs/tags/<tag>^{}`, or `refs/tags/<tag>` for lightweight tags)
+ * equals `ref`. Returns `undefined` when no version tag points at `ref`.
+ */
+export function versionTagAtRef(lsRemoteTagsOutput: string, ref: string): string | undefined {
+  const target = ref.trim().toLowerCase();
+  if (!target) return undefined;
+
+  const tagCommit = parseTagCommits(lsRemoteTagsOutput);
+
   const matchingTags: string[] = [];
-  for (const [tagName, info] of tagCommit.entries()) {
-    if (info.sha === target) {
+  for (const [tagName, sha] of tagCommit.entries()) {
+    if (sha === target) {
       matchingTags.push(tagName);
     }
   }
@@ -99,13 +127,32 @@ export function buildCompareUrl(repoUrl: string, oldRef: string, newRef: string)
 }
 
 /** Formats the markdown body written to `sync-summary.md`. */
-export function formatSyncSummary(changes: SyncChange[]): string {
+function heldBackSection(heldBack: HeldBack[]): string[] {
+  if (heldBack.length === 0) return [];
+  const lines = [
+    '### Held back',
+    '',
+    'These configs stay on their reviewed ref: the newer upstream commit no longer has files their install steps use. Update the steps, then the next sync moves them.',
+    '',
+  ];
+  for (const item of [...heldBack].sort((a, b) => a.id.localeCompare(b.id))) {
+    const compareUrl = buildCompareUrl(item.repo, item.oldRef, item.newRef);
+    lines.push(
+      `- **${item.id}**: \`${item.newRef.slice(0, 7)}\` lacks ${item.missing.map((m) => `\`${m}\``).join(', ')} ([what changed](${compareUrl}))`,
+    );
+  }
+  lines.push('');
+  return lines;
+}
+
+export function formatSyncSummary(changes: SyncChange[], heldBack: HeldBack[] = []): string {
   if (changes.length === 0) {
     return [
       '## Upstream Repository Sync',
       '',
       'No upstream commit ref changes in this run (repository star counts / metadata refreshed).',
       '',
+      ...heldBackSection(heldBack),
     ].join('\n');
   }
 
@@ -113,7 +160,7 @@ export function formatSyncSummary(changes: SyncChange[]): string {
   const lines = [
     '## Upstream Repository Sync',
     '',
-    `Updated **${sorted.length}** configuration(s) to their latest upstream commit:`,
+    `Updated **${sorted.length}** configuration(s) to their latest upstream commit, or latest release for entries installed from distro packages:`,
     '',
   ];
 
@@ -127,7 +174,7 @@ export function formatSyncSummary(changes: SyncChange[]): string {
     );
   }
 
-  lines.push('');
+  lines.push('', ...heldBackSection(heldBack));
   return lines.join('\n');
 }
 
@@ -200,6 +247,7 @@ async function main() {
     ? JSON.parse(fs.readFileSync(STATS_PATH, 'utf-8'))
     : {};
   const changes: SyncChange[] = [];
+  const heldBack: HeldBack[] = [];
 
   await pool(files, 8, async (file) => {
     const id = path.relative(CONFIGS_DIR, file).replace(/\\/g, '/').replace(/\.json$/, '');
@@ -209,7 +257,19 @@ async function main() {
       const head = (await git('ls-remote', repo, 'HEAD')).split(/\s/)[0];
       const tagsOutput = await git('ls-remote', '--tags', repo);
       const oldRef: string = data.source.ref;
-      const newRef = /^[0-9a-f]{40}$/.test(head) ? head : oldRef;
+      // Packaged releases are what users install: pin those entries to the latest release, not the branch.
+      const release = installsReleasePackages(data) ? latestReleaseCommit(tagsOutput) : undefined;
+      let newRef = release ? release.sha : /^[0-9a-f]{40}$/.test(head) ? head : oldRef;
+      // Never move to a commit that lacks a file the reviewed install steps use.
+      const repoPaths = repoPathsInSteps(data);
+      if (newRef !== oldRef && repoPaths.length > 0) {
+        const missing = missingRepoPaths(repoPaths, await listRepoTree(repo, newRef));
+        if (missing.length > 0) {
+          heldBack.push({ id, repo, oldRef, newRef, missing });
+          console.warn(`⚠ ${id}: held at ${oldRef.slice(0, 7)}, ${newRef.slice(0, 7)} lacks ${missing.join(', ')}`);
+          newRef = oldRef;
+        }
+      }
       const version = versionTagAtRef(tagsOutput, newRef);
 
       let changed = false;
@@ -234,9 +294,9 @@ async function main() {
 
   const sorted = Object.fromEntries(Object.entries(stats).sort(([a], [b]) => a.localeCompare(b)));
   fs.writeFileSync(STATS_PATH, JSON.stringify(sorted, null, 2) + '\n');
-  fs.writeFileSync(SUMMARY_PATH, formatSyncSummary(changes), 'utf-8');
+  fs.writeFileSync(SUMMARY_PATH, formatSyncSummary(changes, heldBack), 'utf-8');
   console.log(
-    `✓ ${files.length} configs checked, ${changes.length} moved to a newer upstream commit, ${Object.keys(sorted).length} repo stats.`,
+    `✓ ${files.length} configs checked, ${changes.length} moved to a newer upstream commit, ${heldBack.length} held back, ${Object.keys(sorted).length} repo stats.`,
   );
 }
 
