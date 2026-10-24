@@ -4,24 +4,24 @@
 
 Created by Ny Harena RAVELOMANANTSOA ([GitHub](https://github.com/nyharena25) · [LinkedIn](https://www.linkedin.com/in/rnyharena-dev/)).
 
-0xTsoa (spoken alias: **ZeroTsoa**) is a static registry built with Astro 7 (`output: 'static'`), Tailwind CSS v4, Zod 4, and Pagefind, deployed on Vercel at https://0xtsoa.vercel.app. Every configuration is a standalone JSON file in Git (`configs/<author>/<slug>.json`), validated against a strict Zod/JSON Schema in CI and compiled into static HTML and JSON at build time.
+0xTsoa (spoken alias: **ZeroTsoa**) is a static registry built with Astro 7 (`output: 'static'`), Tailwind CSS v4, Zod 4, and Pagefind, deployed on Vercel at https://www.0xtsoa.dev. Every configuration is a standalone JSON file in Git (`configs/<author>/<slug>.json`), validated against a strict Zod/JSON Schema in CI and compiled into static HTML and JSON at build time.
 
 ## Pages
 
-- [Home](https://0xtsoa.vercel.app/): top-voted spotlight carousel, quick compositor/style links, and registry overview
-- [Catalogue](https://0xtsoa.vercel.app/catalogue/): full configuration index filterable by desktop part, compositor/WM, distribution and theme style (`?category=`, `?wm=`, `?style=`, `?distro=`, `?q=`), 10 per page (`?p=`), sorted by `?sort=new|old|votes|popular`
-- [Contribute](https://0xtsoa.vercel.app/contribute/): submission instructions for GitHub Issue Form and direct Pull Requests
-- [About](https://0xtsoa.vercel.app/about/): what 0xTsoa is, name origin, and creator profile (Ny Harena RAVELOMANANTSOA)
-- Configuration detail pages: `https://0xtsoa.vercel.app/configs/<author>/<slug>/` (specifications table, assurance badges, step-by-step install commands and downloadable `.sh` script, optional SHA-256 script digest, screenshot gallery, rendered upstream README snapshot, and keybindings)
+- [Home](https://www.0xtsoa.dev/): top-voted spotlight carousel, quick compositor/style links, and registry overview
+- [Catalogue](https://www.0xtsoa.dev/catalogue/): full configuration index filterable by desktop part, compositor/WM, distribution and theme style (`?category=`, `?wm=`, `?style=`, `?distro=`, `?q=`), 10 per page (`?p=`), sorted by `?sort=new|old|votes|popular`
+- [Contribute](https://www.0xtsoa.dev/contribute/): submission instructions for GitHub Issue Form and direct Pull Requests
+- [About](https://www.0xtsoa.dev/about/): what 0xTsoa is, name origin, and creator profile (Ny Harena RAVELOMANANTSOA)
+- Configuration detail pages: `https://www.0xtsoa.dev/configs/<author>/<slug>/` (specifications table, assurance badges, step-by-step install commands and downloadable `.sh` script, optional SHA-256 script digest, screenshot gallery, rendered upstream README snapshot, and keybindings)
 
 ## Machine-Readable Data
 
-- [index.json](https://0xtsoa.vercel.app/index.json): full registry exported as a JSON array of `CatalogueItem` objects
-- [Sitemap](https://0xtsoa.vercel.app/sitemap-index.xml): XML sitemap index covering all public pages and `/configs/<author>/<slug>/` routes
+- [index.json](https://www.0xtsoa.dev/index.json): full registry exported as a JSON array of `CatalogueItem` objects
+- [Sitemap](https://www.0xtsoa.dev/sitemap-index.xml): XML sitemap index covering all public pages and `/configs/<author>/<slug>/` routes
 
 ### `index.json` Entry Field Reference
 
-Each item in `https://0xtsoa.vercel.app/index.json` contains:
+Each item in `https://www.0xtsoa.dev/index.json` contains:
 
 - `id` (`string`): `<author>/<slug>` identifier matching `/configs/<author>/<slug>/`
 - `name` (`string`): setup title (`3–80` chars)
