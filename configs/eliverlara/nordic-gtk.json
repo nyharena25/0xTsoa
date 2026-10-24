@@ -9,7 +9,6 @@
   "summary": "Dark, cold GTK and GNOME desktop theme created using the arctic Nord palette.",
   "description": "Nordic is an arctic, north-bluish clean theme created for GTK, GNOME Shell, XFCE, and modern desktop environments. Reduces eye strain with calibrated contrast, soft borders, and minimalist window headers.",
   "license": "GPL-3.0-only",
-  "version": "v2.2.0",
   "updatedAt": "2026-10-11",
   "distros": [
     "arch",

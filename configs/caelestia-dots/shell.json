@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/caelestia-dots/shell",
-    "ref": "d6cc0d5d901f20856058d62267c6c307cfc1e3fd",
+    "ref": "2e1c51fa76d94457624b642c678218970aa2517a",
     "readme": "README.md"
   },
   "install": {
@@ -51,6 +51,5 @@
         ]
       }
     ]
-  },
-  "version": "v2.5.0"
+  }
 }

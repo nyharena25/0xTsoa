@@ -35,7 +35,7 @@
   ],
   "source": {
     "repo": "https://github.com/SylEleuth/gruvbox-plus-icon-pack",
-    "ref": "788efb291c0feb216c48d74d2da5bdf199cd5481",
+    "ref": "ef45da0103a7b9f9486ffee2edab71dba5134f86",
     "readme": "README.md"
   },
   "install": {
@@ -49,6 +49,5 @@
         ]
       }
     ]
-  },
-  "version": "v6.6.0"
+  }
 }

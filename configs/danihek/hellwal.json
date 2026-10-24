@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/danihek/hellwal",
-    "ref": "ccd87f113080f11279e9d89a1fc3a097a8475899",
+    "ref": "97f033ad58c35b31bb2964e9ae55ac6f38527e69",
     "readme": "README.md"
   },
   "install": {
@@ -43,5 +43,5 @@
       }
     ]
   },
-  "version": "1.0.8"
+  "version": "v1.0.9"
 }

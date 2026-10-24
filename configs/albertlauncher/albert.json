@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/albertlauncher/albert",
-    "ref": "24f4f16e6f8fdd63d5b024ce165a63d004babd47",
+    "ref": "8af94b812e6ab406ca15a0c893c477b8b02d1e1d",
     "readme": "README.md"
   },
   "install": {
@@ -42,6 +42,5 @@
         ]
       }
     ]
-  },
-  "version": "v35.1.0"
+  }
 }

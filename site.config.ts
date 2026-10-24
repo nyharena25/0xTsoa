@@ -1,6 +1,6 @@
 /**
  * Central site configuration.
- * Canonical production deployment lives on Vercel (https://0xtsoa.vercel.app at root path "").
+ * Canonical production deployment lives on Vercel (https://www.0xtsoa.dev at root path "").
  * Every value can be overridden through environment variables.
  */
 const env = (typeof process !== 'undefined' ? process.env : {}) as Record<string, string | undefined>;
@@ -15,7 +15,7 @@ export const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
 
 /**
  * Base path resolution:
- * - Default: "" (root deployment on https://0xtsoa.vercel.app/ and local dev)
+ * - Default: "" (root deployment on https://www.0xtsoa.dev/ and local dev)
  * - Explicit override via BASE_PATH env var takes precedence.
  */
 function resolveBasePath(): string {
@@ -30,12 +30,12 @@ export const BASE_PATH = resolveBasePath();
 
 /**
  * Public site origin:
- * - Default: https://0xtsoa.vercel.app regardless of CI environment
+ * - Default: https://www.0xtsoa.dev regardless of CI environment
  * - Explicit override via SITE_URL env var takes precedence.
  */
 function resolveSiteUrl(): string {
   if (env.SITE_URL) return env.SITE_URL.replace(/\/$/, '');
-  return 'https://0xtsoa.vercel.app';
+  return 'https://www.0xtsoa.dev';
 }
 
 export const SITE_URL = resolveSiteUrl();

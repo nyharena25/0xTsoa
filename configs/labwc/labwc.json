@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/labwc/labwc",
-    "ref": "6ab9d3fe464b31eed25fe2126d6b0dfb6cd0bff4",
+    "ref": "1e0396c7d9bea6030207ffca090c3ed6c3c9f18b",
     "readme": "README.md"
   },
   "install": {
@@ -43,6 +43,5 @@
         ]
       }
     ]
-  },
-  "version": "0.20.2"
+  }
 }

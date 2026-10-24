@@ -1,13 +1,13 @@
 <div align="center">
 
-  <a href="https://0xtsoa.vercel.app">
+  <a href="https://www.0xtsoa.dev">
     <img src=".github/assets/logo.png" alt="0xTsoa Linux Registry Logo" width="480" />
   </a>
 
   <h3>LINUX DESKTOP ARCHITECTURE MADE SIMPLE.</h3>
 
   <p>
-    <a href="https://0xtsoa.vercel.app">
+    <a href="https://www.0xtsoa.dev">
       <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=16&duration=2800&pause=1000&color=86DBCE&background=1E202B00&center=true&vCenter=true&width=480&lines=Zero+database;Wayland+and+X11;Reproducible+desktops;Schema+validated" alt="Typing animation cycling: Zero database, Wayland and X11, Reproducible desktops, Schema validated" />
     </a>
   </p>
@@ -17,8 +17,8 @@
   </p>
 
   <p>
-    <a href="https://0xtsoa.vercel.app">
-      <img src="https://img.shields.io/badge/LIVE_PLATFORM-0xtsoa.vercel.app-86dbce?style=for-the-badge&logo=vercel&logoColor=D9E0EE&labelColor=1E202B" alt="Live Platform: 0xtsoa.vercel.app" />
+    <a href="https://www.0xtsoa.dev">
+      <img src="https://img.shields.io/badge/LIVE_PLATFORM-0xtsoa.dev-86dbce?style=for-the-badge&logo=vercel&logoColor=D9E0EE&labelColor=1E202B" alt="Live Platform: 0xtsoa.dev" />
     </a>
     <a href="https://github.com/nyharena25/0xTsoa/actions/workflows/validate.yml">
       <img src="https://img.shields.io/github/actions/workflow/status/nyharena25/0xTsoa/validate.yml?branch=main&style=for-the-badge&label=CI%20VALIDATION&color=8ad7eb&logo=githubactions&logoColor=D9E0EE&labelColor=1E202B" alt="CI Validation Status" />
@@ -26,8 +26,8 @@
     <a href="https://github.com/nyharena25/0xTsoa/stargazers">
       <img src="https://img.shields.io/github/stars/nyharena25/0xTsoa?label=STARS&style=for-the-badge&logo=github&color=86dbd7&logoColor=D9E0EE&labelColor=1E202B" alt="GitHub Stars" />
     </a>
-    <a href="https://0xtsoa.vercel.app/index.json">
-      <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2F0xtsoa.vercel.app%2Findex.json&query=%24.length&label=CONFIGS%20INDEXED&style=for-the-badge&color=86dbce&logo=linux&logoColor=D9E0EE&labelColor=1E202B" alt="Configs Indexed" />
+    <a href="https://www.0xtsoa.dev/index.json">
+      <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fwww.0xtsoa.dev%2Findex.json&query=%24.length&label=CONFIGS%20INDEXED&style=for-the-badge&color=86dbce&logo=linux&logoColor=D9E0EE&labelColor=1E202B" alt="Configs Indexed" />
     </a>
     <a href="./LICENSE">
       <img src="https://img.shields.io/badge/LICENSE-MIT_%2F_CC_BY_4.0-8ad7eb?style=for-the-badge&logo=opensourceinitiative&logoColor=D9E0EE&labelColor=1E202B" alt="License: MIT and CC BY 4.0" />
@@ -35,8 +35,8 @@
   </p>
 
   <p>
-    <a href="https://0xtsoa.vercel.app/"><b>Explore Platform</b></a> ·
-    <a href="https://0xtsoa.vercel.app/catalogue/"><b>Browse Catalogue</b></a> ·
+    <a href="https://www.0xtsoa.dev/"><b>Explore Platform</b></a> ·
+    <a href="https://www.0xtsoa.dev/catalogue/"><b>Browse Catalogue</b></a> ·
     <a href="#what-is-0xtsoa"><b>What is 0xTsoa</b></a> ·
     <a href="#key-highlights"><b>Key Highlights</b></a> ·
     <a href="#visual-showcase"><b>Visual Showcase</b></a> ·
@@ -64,7 +64,7 @@
 
 0xTsoa (pronounced ZeroTsoa) is an open-source registry of Linux desktop configurations. It indexes complete dotfile setups alongside individual desktop components: window managers, compositors, status bars, widget engines, application launchers, notification daemons, docks, icon and cursor packs, GTK themes, color scheme generators, display managers, lock screens, boot themes, desktop extensions, ricing tools, and curated guides.
 
-Every entry is a human-readable JSON file in `configs/<author>/<slug>.json`, validated against a strict Zod schema and referencing an upstream commit SHA or version tag. At build time, Astro compiles the registry into a static website, [0xtsoa.vercel.app](https://0xtsoa.vercel.app): no database, no backend, just Git.
+Every entry is a human-readable JSON file in `configs/<author>/<slug>.json`, validated against a strict Zod schema and referencing an upstream commit SHA or version tag. At build time, Astro compiles the registry into a static website, [0xtsoa.dev](https://www.0xtsoa.dev): no database, no backend, just Git.
 
 Each configuration page brings together everything needed to inspect and reproduce a desktop:
 

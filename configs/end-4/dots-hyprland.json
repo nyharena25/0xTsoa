@@ -9,7 +9,6 @@
   "summary": "Usability-first, fluid and hyper-customized Wayland desktop configuration with Quickshell.",
   "description": "An advanced, highly interactive Linux desktop environment combining Hyprland and Quickshell. Features bespoke Material Design 3 inspired widgets, integrated quick settings, media controls, animated workspace switchers, and deep keyboard navigation workflows.",
   "license": "GPL-3.0-only",
-  "version": "2026.05.11",
   "updatedAt": "2026-10-10",
   "distros": [
     "arch",
