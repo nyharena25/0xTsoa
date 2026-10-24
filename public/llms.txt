@@ -14,24 +14,24 @@ Created by Ny Harena RAVELOMANANTSOA ([GitHub](https://github.com/nyharena25) ·
 - [About](https://www.0xtsoa.dev/about/): what 0xTsoa is, name origin, and creator profile (Ny Harena RAVELOMANANTSOA)
 - Configuration detail pages: `https://www.0xtsoa.dev/configs/<author>/<slug>/` (specifications table, assurance badges, step-by-step install commands and downloadable `.sh` script, optional SHA-256 script digest, screenshot gallery, rendered upstream README snapshot, and keybindings)
 
-## Topic Pages
+## Docs (topic guides)
 
-Each compares every entry of one window manager, desktop part or palette (works with, install difficulty, what it changes, upstream maintenance, stars), with an introduction, tips and FAQ. A topic is published once it has at least 5 entries.
+[Docs index](https://www.0xtsoa.dev/docs/). Each guide compares every entry of one window manager, desktop part or palette (works with, install difficulty, what it changes, upstream maintenance, stars), with an introduction, tips and FAQ. A topic is published once it has at least 5 entries.
 
-- [Hyprland dotfiles and setups](https://www.0xtsoa.dev/hyprland/)
-- [Linux dotfiles and full rices](https://www.0xtsoa.dev/dotfiles/)
-- [Color schemes and wallpaper color generators](https://www.0xtsoa.dev/color-schemes/)
-- [GTK themes](https://www.0xtsoa.dev/gtk-themes/)
-- [Icon themes](https://www.0xtsoa.dev/icon-themes/)
-- [App launchers](https://www.0xtsoa.dev/launchers/)
-- [Status bars and panels](https://www.0xtsoa.dev/bars/)
-- [GNOME extensions and themes](https://www.0xtsoa.dev/gnome/)
-- [Catppuccin ports](https://www.0xtsoa.dev/catppuccin/)
-- [Login screens: SDDM themes and greeters](https://www.0xtsoa.dev/login-managers/)
-- [KDE Plasma extensions and KWin scripts](https://www.0xtsoa.dev/kde-plasma/)
-- [Notification daemons](https://www.0xtsoa.dev/notification-daemons/)
-- [AwesomeWM rices](https://www.0xtsoa.dev/awesomewm/)
-- [Cursor themes](https://www.0xtsoa.dev/cursor-themes/)
+- [Hyprland dotfiles and setups](https://www.0xtsoa.dev/docs/hyprland/)
+- [Linux dotfiles and full rices](https://www.0xtsoa.dev/docs/dotfiles/)
+- [Color schemes and wallpaper color generators](https://www.0xtsoa.dev/docs/color-schemes/)
+- [GTK themes](https://www.0xtsoa.dev/docs/gtk-themes/)
+- [Icon themes](https://www.0xtsoa.dev/docs/icon-themes/)
+- [App launchers](https://www.0xtsoa.dev/docs/launchers/)
+- [Status bars and panels](https://www.0xtsoa.dev/docs/bars/)
+- [GNOME extensions and themes](https://www.0xtsoa.dev/docs/gnome/)
+- [Catppuccin ports](https://www.0xtsoa.dev/docs/catppuccin/)
+- [Login screens: SDDM themes and greeters](https://www.0xtsoa.dev/docs/login-managers/)
+- [KDE Plasma extensions and KWin scripts](https://www.0xtsoa.dev/docs/kde-plasma/)
+- [Notification daemons](https://www.0xtsoa.dev/docs/notification-daemons/)
+- [AwesomeWM rices](https://www.0xtsoa.dev/docs/awesomewm/)
+- [Cursor themes](https://www.0xtsoa.dev/docs/cursor-themes/)
 
 ## Machine-Readable Data
 

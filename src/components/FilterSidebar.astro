@@ -1,6 +1,7 @@
 ---
 import { useTranslations, type Locale } from '../lib/i18n';
-import { ALLOWED_IMAGE_HOSTS } from '../../site.config';
+import { withBase } from '../../site.config';
+import TopicLinks from './TopicLinks.astro';
 import { WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORIES, CATEGORY_LABELS } from '../lib/schema';
 
 interface FacetCounts {
@@ -244,24 +245,11 @@ const restDistros = allDistros.slice(8);
     </div>
   </div>
 
-  <!-- Registry Facts card -->
-  <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-4 font-mono text-xs shadow-xs">
-    <div class="font-bold uppercase tracking-wider text-[11px] text-zinc-700 mb-2.5 border-b border-zinc-200 pb-1.5">
-      {t('catalogue.registryFactsTitle')}
-    </div>
-    <div class="space-y-1.5 text-zinc-500">
-      <div class="flex justify-between items-center">
-        <span>Source ref:</span>
-        <span class="font-bold text-zinc-900">Commit SHA or tag</span>
-      </div>
-      <div class="flex justify-between items-center">
-        <span>Image hosts:</span>
-        <span class="font-bold text-zinc-900">{ALLOWED_IMAGE_HOSTS.length} allowlisted hosts</span>
-      </div>
-      <div class="flex justify-between items-center">
-        <span>License:</span>
-        <span class="font-bold text-zinc-900">Code MIT · Entries CC BY 4.0</span>
-      </div>
-    </div>
-  </div>
+  <!-- Guides: the Docs pages for the same facets -->
+  <nav aria-label="Guides" class="bg-white border border-zinc-200 rounded-xl p-5 shadow-xs font-mono text-xs flex flex-col gap-3">
+    <h2 class="font-bold uppercase tracking-wider text-zinc-900 m-0">Guides</h2>
+    <p class="font-sans text-xs text-zinc-600 leading-relaxed m-0">Each guide compares every entry for one topic: difficulty, what it changes, how to undo it.</p>
+    <TopicLinks variant="inline" />
+    <a href={withBase('/docs/')} class="font-semibold text-zinc-900 underline">All guides &rarr;</a>
+  </nav>
 </aside>

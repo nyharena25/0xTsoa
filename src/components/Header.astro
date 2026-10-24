@@ -13,6 +13,7 @@ interface Props {
 }
 
 const {
+  currentPath,
   pageLabel,
   statusPrefix = '[STATUS: ',
   statusInitial = 'EXIT 1',
@@ -24,6 +25,8 @@ const t = useTranslations('en');
 const homePath = withBase('/');
 const cataloguePath = withBase('/catalogue/');
 const contributePath = withBase('/contribute/');
+const docsPath = withBase('/docs/');
+const inDocs = (currentPath ?? '').startsWith(docsPath);
 const statusBadgeMinCh = Math.max(statusInitial.length, statusFinal.length) + statusPrefix.length + 6;
 const finalStatusText = `${statusPrefix}${statusFinal}]`;
 ---
@@ -100,6 +103,14 @@ const finalStatusText = `${statusPrefix}${statusFinal}]`;
         class="hidden lg:inline-flex items-center px-3 py-1.5 rounded-md text-xs font-mono font-medium text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
       >
         {t('nav.exploreAll')}
+      </a>
+
+      <a
+        href={docsPath}
+        aria-current={inDocs ? 'page' : undefined}
+        class={`hidden lg:inline-flex items-center px-3 py-1.5 rounded-md text-xs font-mono font-medium hover:text-zinc-900 hover:bg-zinc-100 transition-colors ${inDocs ? 'text-zinc-900 bg-zinc-100' : 'text-zinc-700'}`}
+      >
+        {t('nav.docs')}
       </a>
 
       <a
@@ -183,6 +194,13 @@ const finalStatusText = `${statusPrefix}${statusFinal}]`;
         class="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-800 hover:bg-zinc-100 font-medium transition-colors"
       >
         <span>{t('nav.exploreAll')}</span>
+      </a>
+      <a
+        href={docsPath}
+        aria-current={inDocs ? 'page' : undefined}
+        class="min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-800 hover:bg-zinc-100 font-medium transition-colors"
+      >
+        <span>{t('nav.docs')}</span>
       </a>
       <a
         href={contributePath}

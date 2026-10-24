@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
-import { TOPICS, MIN_TOPIC_ENTRIES, liveTopics, primaryTopic, topicDescription, topicForFacet } from '../src/lib/topics';
+import { TOPICS, TOPIC_GROUPS, MIN_TOPIC_ENTRIES, liveTopics, primaryTopic, topicDescription, topicForFacet, topicPath } from '../src/lib/topics';
 import { TITLE_MAX, DESCRIPTION_MAX } from '../src/lib/seo';
 import { configSchema, type ConfigData } from '../src/lib/schema';
 
@@ -18,11 +18,17 @@ const registry = fs
 const find = (id: string) => registry.find((e) => e.id === id)!.data;
 
 describe('topic definitions', () => {
-  it('have unique slugs that do not collide with existing routes', () => {
+  it('have unique slugs that do not collide with other docs pages', () => {
     const slugs = TOPICS.map((t) => t.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
-    const routes = fs.readdirSync(path.resolve('src/pages')).map((f) => f.replace(/\.(astro|ts)$/, ''));
+    const routes = fs.readdirSync(path.resolve('src/pages/docs')).map((f) => f.replace(/\.(astro|ts)$/, ''));
     for (const slug of slugs) expect(routes, slug).not.toContain(slug);
+    expect(topicPath('hyprland')).toBe('/docs/hyprland/');
+  });
+
+  it('are each listed in exactly one Docs index group', () => {
+    const grouped = TOPIC_GROUPS.flatMap((g) => g.slugs);
+    expect([...grouped].sort()).toEqual(TOPICS.map((t) => t.slug).sort());
   });
 
   it('fit search result limits, with the largest possible entry count', () => {

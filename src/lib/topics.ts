@@ -1,5 +1,5 @@
 /**
- * Topic pages (/hyprland/, /gtk-themes/…): one per window manager, desktop part or palette that
+ * Topic guides in the Docs section (/docs/hyprland/, /docs/gtk-themes/…): one per window manager, desktop part or palette that
  * people search for. Each groups the registry entries of one catalogue facet, with a hand-written
  * introduction, tips and FAQ. A topic is only published with MIN_TOPIC_ENTRIES entries or more,
  * so the site never ships a thin page; below that it stays a catalogue filter.
@@ -464,6 +464,18 @@ export const TOPICS: Topic[] = [
       },
     ],
   },
+];
+
+/** Topic pages live in the Docs section. */
+export function topicPath(slug: string): string {
+  return `/docs/${slug}/`;
+}
+
+/** How the Docs index groups the guides. Every topic slug appears once. */
+export const TOPIC_GROUPS: { title: string; slugs: string[] }[] = [
+  { title: 'Desktops and full setups', slugs: ['dotfiles', 'hyprland', 'gnome', 'kde-plasma', 'awesomewm'] },
+  { title: 'Desktop parts', slugs: ['bars', 'launchers', 'notification-daemons', 'login-managers'] },
+  { title: 'Themes and colors', slugs: ['gtk-themes', 'icon-themes', 'cursor-themes', 'color-schemes', 'catppuccin'] },
 ];
 
 export function topicMatches(topic: Topic, data: ConfigData): boolean {

@@ -13,7 +13,8 @@
     "about": "About",
     "cookieSettings": "Cookie settings",
     "specification": "Specification",
-    "github": "GitHub"
+    "github": "GitHub",
+    "docs": "Docs"
   },
   "hero": {
     "badge": "OPEN DOTFILES REGISTRY • WAYLAND & X11",
@@ -78,7 +79,7 @@
     "distroSection": "Target Distributions",
     "favoritesOnly": "Favorites only",
     "searchLabel": "Search",
-    "searchPlaceholder": "grep -i setup...",
+    "searchPlaceholder": "Search by name, component or tag (waybar, rofi…)",
     "sortBy": "Sort by:",
     "sortVotes": "Most approved",
     "sortNew": "Newest",

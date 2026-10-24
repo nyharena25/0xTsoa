@@ -11,52 +11,59 @@ interface Props {
 const t = useTranslations('en');
 
 const homePath = withBase('/');
-const contributePath = withBase('/contribute/');
-const aboutPath = withBase('/about/');
+const heading = 'font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-900 m-0 mb-3';
+const link = 'inline-block py-1 text-zinc-600 hover:text-zinc-900 transition-colors';
 ---
 
 <footer class="w-full bg-white border-t border-zinc-200 mt-16">
-  <nav aria-label="Topics" class="max-w-7xl mx-auto px-4 lg:px-8 pt-6 flex flex-col sm:flex-row sm:items-center gap-2 font-mono text-xs">
-    <span class="text-zinc-400 uppercase tracking-wider text-[11px] shrink-0">Topics</span>
-    <TopicLinks variant="inline" />
-  </nav>
-  <div class="max-w-7xl mx-auto px-4 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-zinc-600">
-    <div class="flex items-center gap-2.5 tracking-tight">
-      <BdBrickLogo size="xs" class="text-zinc-900" />
-      <span class="text-zinc-300">/</span>
-      <span class="text-zinc-500">Open Linux Architecture Registry</span>
+  <div class="max-w-7xl mx-auto px-4 lg:px-8 py-10 grid grid-cols-2 md:grid-cols-12 gap-x-6 gap-y-8 font-mono text-xs">
+    <div class="col-span-2 md:col-span-4 flex flex-col gap-3">
+      <a href={homePath} class="inline-flex items-center gap-2.5 text-zinc-900 no-underline w-fit" aria-label="0xTsoa home">
+        <BdBrickLogo size="xs" class="text-zinc-900" />
+      </a>
+      <p class="font-sans text-sm text-zinc-600 leading-relaxed m-0 max-w-sm">
+        An open, community-maintained registry of Linux desktop setups. Every entry is pinned to an exact version and installs with a preview and a rollback.
+      </p>
+      <a href={withBase('/contribute/')} class="btn-solid text-xs py-1.5 px-3 w-fit">
+        <span>Submit a setup</span>
+        <span>&rarr;</span>
+      </a>
     </div>
 
-    <div class="flex flex-wrap items-center gap-4">
-      <a href={`${homePath}#section-manifesto`} class="text-zinc-600 hover:text-zinc-900 transition-colors">
-        {t('nav.manifesto')}
-      </a>
-      <a href={aboutPath} class="text-zinc-600 hover:text-zinc-900 transition-colors">
-        {t('nav.about')}
-      </a>
-      <a href={contributePath} class="text-zinc-600 hover:text-zinc-900 transition-colors">
-        {t('nav.contribute')}
-      </a>
-      <a href={REPO_URL} target="_blank" rel="noopener noreferrer" class="text-zinc-600 hover:text-zinc-900 transition-colors">
-        {t('nav.github')}
-      </a>
-      <button
-        type="button"
-        id="btn-cookie-settings"
-        class="text-zinc-600 hover:text-zinc-900 transition-colors cursor-pointer bg-transparent border-0 p-0 font-mono text-xs"
-      >
-        {t('nav.cookieSettings')}
-      </button>
+    <nav aria-labelledby="footer-explore" class="md:col-span-2">
+      <h2 id="footer-explore" class={heading}>Explore</h2>
+      <ul class="flex flex-col">
+        <li><a href={withBase('/catalogue/')} class={link}>Catalogue</a></li>
+        <li><a href={withBase('/docs/')} class={link}>{t('nav.docs')}</a></li>
+        <li><a href={withBase('/contribute/')} class={link}>{t('nav.contribute')}</a></li>
+        <li><a href={`${homePath}#section-manifesto`} class={link}>{t('nav.manifesto')}</a></li>
+      </ul>
+    </nav>
 
-      <div class="flex items-center gap-2 ml-1">
-        <div class="border border-zinc-200 bg-zinc-50 px-2 py-0.5 rounded text-[11px] text-zinc-600 font-medium">
-          Status: <span class="text-emerald-700 font-semibold">100% Static</span>
-        </div>
+    <nav aria-labelledby="footer-guides" class="col-span-2 md:col-span-4 order-last md:order-none">
+      <h2 id="footer-guides" class={heading}>Guides</h2>
+      <TopicLinks variant="columns" />
+    </nav>
 
-        <div class="border border-zinc-200 bg-zinc-50 px-2 py-0.5 rounded text-[11px] text-zinc-600 font-medium">
-          License: <span class="text-zinc-800 font-semibold">Code MIT · Entries CC BY 4.0</span>
-        </div>
-      </div>
+    <nav aria-labelledby="footer-project" class="md:col-span-2">
+      <h2 id="footer-project" class={heading}>Project</h2>
+      <ul class="flex flex-col">
+        <li><a href={withBase('/about/')} class={link}>{t('nav.about')}</a></li>
+        <li><a href={REPO_URL} target="_blank" rel="noopener noreferrer" class={link}>{t('nav.github')}</a></li>
+        <li><a href={withBase('/llms.txt')} class={link}>llms.txt</a></li>
+        <li>
+          <button type="button" id="btn-cookie-settings" class={`${link} cursor-pointer bg-transparent border-0 p-0 font-mono text-xs text-left`}>
+            {t('nav.cookieSettings')}
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="border-t border-zinc-100">
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 font-mono text-[11px] text-zinc-500">
+      <span>Code MIT · Entries CC BY 4.0</span>
+      <span>Static site, no database: every entry is a file in Git</span>
     </div>
   </div>
 </footer>

@@ -15,7 +15,7 @@ import { buildInstallScript, renderCommand, verifiedScriptCommand, downloadInsta
 import { configSeoTitle, configSeoDescription } from '../../../lib/seo';
 import { getStarsForConfig, getRepoStats, maintenanceForConfig } from '../../../lib/stats';
 import { relatedConfigs, maintainedAlternatives } from '../../../lib/related';
-import { liveTopics, primaryTopic, topicForFacet } from '../../../lib/topics';
+import { liveTopics, primaryTopic, topicForFacet, topicPath } from '../../../lib/topics';
 import { useTranslations } from '../../../lib/i18n';
 import { withBase, REPO_URL } from '../../../../site.config';
 
@@ -69,10 +69,10 @@ const topics = liveTopics(allConfigs).map((t) => t.topic);
 const parentTopic = primaryTopic(data, topics);
 const categoryTopic = topicForFacet(topics, { kind: 'category', value: data.category });
 const wmTopic = topicForFacet(topics, { kind: 'wm', value: data.wm });
-const categoryHref = withBase(categoryTopic ? `/${categoryTopic.slug}/` : `/catalogue/?category=${data.category}`);
-const wmHref = withBase(wmTopic ? `/${wmTopic.slug}/` : `/catalogue/?wm=${data.wm}`);
+const categoryHref = withBase(categoryTopic ? topicPath(categoryTopic.slug) : `/catalogue/?category=${data.category}`);
+const wmHref = withBase(wmTopic ? topicPath(wmTopic.slug) : `/catalogue/?wm=${data.wm}`);
 const parent = parentTopic
-  ? { label: parentTopic.label, href: withBase(`/${parentTopic.slug}/`) }
+  ? { label: parentTopic.label, href: withBase(topicPath(parentTopic.slug)) }
   : { label: 'Catalogue', href: withBase('/catalogue/') };
 const alternatives = maintenance === 'archived' ? maintainedAlternatives({ id: entry.id, data }, allConfigs, relatedOptions) : [];
 
