@@ -41,6 +41,16 @@ function resolveSiteUrl(): string {
 export const SITE_URL = resolveSiteUrl();
 
 /**
+ * Former hosts that must answer with a permanent redirect to the same path on SITE_URL.
+ * Checked after every production deploy (scripts/check-live.ts). Override with a comma-separated
+ * REDIRECT_HOSTS env var, or set it to "" when there are none.
+ */
+export const REDIRECT_HOSTS = (env.REDIRECT_HOSTS ?? '0xtsoa.dev,0xtsoa.vercel.app')
+  .split(',')
+  .map((h) => h.trim())
+  .filter(Boolean);
+
+/**
  * Returns an internal path with BASE_PATH safely prefixed.
  * Prevents double-slashes or protocol-relative URLs (`//`).
  *

@@ -24,7 +24,8 @@
     "vote-issues": "tsx scripts/ensure-vote-issues.ts",
     "ingest": "tsx scripts/ingest-configs.ts",
     "issue-to-config": "tsx scripts/issue-to-config.ts",
-    "indexnow": "node scripts/indexnow.mjs"
+    "indexnow": "tsx scripts/indexnow.ts",
+    "check-live": "tsx scripts/check-live.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

@@ -144,7 +144,7 @@ After each deploy that touches URLs:
 2. Check that `https://www.0xtsoa.dev/` has `<link rel="canonical" href="https://www.0xtsoa.dev/">`, and that `robots.txt` and `sitemap-index.xml` only list `https://www.0xtsoa.dev/` URLs.
 3. Check that `/`, `/catalogue/`, one `/configs/<author>/<slug>/` page and `/sitemap-index.xml` on `0xtsoa.vercel.app` and on `0xtsoa.dev` each reach the matching `www.0xtsoa.dev` URL in a single 308 redirect.
 4. **Google Search Console:** verify `0xtsoa.dev` as a **Domain** property (DNS TXT record; it covers `www`) and submit `https://www.0xtsoa.dev/sitemap-index.xml`. In the old `0xtsoa.vercel.app` property, run **Settings → Change of address** once the redirect is a 308. Keep the old property.
-5. **Bing Webmaster Tools:** in the `www.0xtsoa.dev` site, remove any sitemap that lists `0xtsoa.vercel.app` URLs, submit `https://www.0xtsoa.dev/sitemap-index.xml`, run `npm run indexnow`, then use **URL Inspection → Request indexing** on the home page and the catalogue.
+5. **Bing Webmaster Tools:** in the `www.0xtsoa.dev` site, remove any sitemap that lists `0xtsoa.vercel.app` URLs, submit `https://www.0xtsoa.dev/sitemap-index.xml`, run `npm run indexnow` once (later deploys submit their changed pages automatically through `check-live.yml`), then use **URL Inspection → Request indexing** on the home page and the catalogue.
 
 ---
 

@@ -220,7 +220,7 @@ Every `screenshots[].url` must either be a local file inside `public/` (starting
 
 0xTsoa uses GitHub Issues as a zero-database voting backend (`src/lib/votes.ts`, `scripts/ensure-vote-issues.ts`, and `scripts/fetch-votes.ts`):
 
-1. **One Vote Issue per Configuration**: During the nightly refresh or on push to `main` (`deploy.yml`), `npm run vote-issues` checks every `configs/<author>/<slug>.json` against open and closed issues labeled `vote`. If an entry lacks an issue titled `[0xTsoa] <author>/<slug>`, the script creates it automatically.
+1. **One Vote Issue per Configuration**: During the nightly refresh or on push to `main` (`deploy.yml`), `npm run vote-issues` checks every `configs/<author>/<slug>.json` against open and closed issues labeled `vote`. If an entry lacks an issue titled `[0xTsoa] <author>/<slug>`, the script creates it and closes it right away: closed issues still take reactions, and the repository's open issues stay for real reports.
 2. **+1 Reaction Counting**: Community members click the **Sign-Off** button on any configuration card or detail page, which takes them to that entry's `[0xTsoa] <author>/<slug>` issue. Reacting to the issue body with `+1` (thumbs up) counts as one vote per GitHub user.
 3. **Build-Time Snapshot (`src/generated/votes.json`)**: Before every build (`prebuild`), `scripts/fetch-votes.ts` queries the GitHub Issues API (working with or without `GITHUB_TOKEN`), counts `+1` reactions per configuration, and writes `src/generated/votes.json`.
 4. **Catalogue Ranking**: By default (`sort=votes`), the catalogue sorts entries by vote count descending, breaking ties by upstream repository star count (`src/generated/repo-stats.json`).

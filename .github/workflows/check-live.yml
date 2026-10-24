@@ -1,0 +1,60 @@
+name: Live Site Check
+
+# After every production deploy (Vercel reports each one to GitHub as a deployment) and nightly:
+# checks that canonical tags, robots.txt, sitemaps and old-domain redirects agree
+# (scripts/check-live.ts), then submits the pages changed since the previous production deploy
+# to IndexNow (scripts/indexnow.ts). A failed run emails the repository owner.
+# GitHub only runs deployment_status workflows from the default branch, so this file must be on main.
+on:
+  deployment_status:
+  schedule:
+    - cron: '47 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: read
+
+concurrency:
+  group: live-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    # Finished production deploys only; Vercel previews are skipped.
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the deployed commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.event.deployment.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Check canonicals, sitemaps and redirects
+        run: npm run check-live
+
+      # Only after a deploy, and only once the live check passed, so engines get the right URLs.
+      - name: Submit changed pages to IndexNow
+        if: github.event_name == 'deployment_status'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          DEPLOY_ID: ${{ github.event.deployment.id }}
+          CREATED_AT: ${{ github.event.deployment.created_at }}
+        run: |
+          prev=$(gh api "repos/$REPO/deployments?environment=Production&per_page=30" \
+            --jq "[.[] | select(.id != $DEPLOY_ID and .created_at < \"$CREATED_AT\")][0].sha // empty")
+          echo "Previous production deploy: ${prev:-none}"
+          npm run indexnow -- --changed-since "${prev:-none}"

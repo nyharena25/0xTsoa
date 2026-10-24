@@ -3,7 +3,11 @@ import path from 'node:path';
 import { REPO_OWNER, REPO_NAME, VOTE_LABEL, voteIssueTitle, SITE_URL, withBase } from '../site.config';
 import { listVoteIssues } from '../src/lib/votes';
 
-/** Ensures every configs/<author>/<slug>.json has one open GitHub issue that collects its votes. */
+/**
+ * Ensures every configs/<author>/<slug>.json has one GitHub issue that collects its votes.
+ * New vote issues are closed right after creation, so the repository's open issues stay for real
+ * reports. Closed issues still take 👍 reactions, and votes are read from open and closed issues alike.
+ */
 async function main() {
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
@@ -57,7 +61,22 @@ async function main() {
       headers,
       body: JSON.stringify({ title: voteIssueTitle(id), body, labels: [VOTE_LABEL] }),
     });
-    console.log(res.ok ? `✓ Vote issue created for ${id}` : `✖ Failed for ${id}: ${res.status} ${await res.text()}`);
+    if (!res.ok) {
+      console.log(`✖ Failed for ${id}: ${res.status} ${await res.text()}`);
+      continue;
+    }
+    // Closed, never locked: locking would stop non-collaborators from reacting.
+    const { number } = (await res.json()) as { number: number };
+    const closeRes = await fetch(`${api}/issues/${number}`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ state: 'closed', state_reason: 'completed' }),
+    });
+    console.log(
+      closeRes.ok
+        ? `✓ Vote issue #${number} created (closed) for ${id}`
+        : `⚠ Vote issue #${number} created for ${id} but left open: ${closeRes.status} ${await closeRes.text()}`,
+    );
   }
 }
 

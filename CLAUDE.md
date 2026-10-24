@@ -22,6 +22,8 @@ npm run check          # typecheck + tests
 npm run build          # prebuild (fetch votes) → astro build → pagefind --site dist
 npm run build:site     # astro build only (no vote fetch, no search index)
 npm run preview        # serve dist/ (also the "preview" entry in .claude/launch.json)
+npm run check-live     # check the deployed site: self-canonicals, sitemap hosts, 308s from REDIRECT_HOSTS
+npm run indexnow -- --changed-since <sha> --dry-run   # list the URLs IndexNow would get (omit --dry-run to send)
 ```
 
 CI (`.github/workflows/validate.yml`) runs typecheck, `validate -- --scripts`, network validation of changed configs, tests, a full build, and ShellCheck:
@@ -48,12 +50,13 @@ Key schema invariants (also covered by `tests/schema.test.ts`):
 
 **Build-time data.** `src/lib/readme.ts` fetches each upstream README at build time, renders it with marked, sanitizes it with sanitize-html and rewrites relative links. Responses are cached in `node_modules/.cache/0xtsoa-readme`. `src/lib/fetch-limited.ts` provides size- and time-limited fetches with host allowlists. `scripts/fetch-votes.ts` (the `prebuild` step) writes `src/generated/votes.json` (gitignored). `src/generated/repo-stats.json` (star counts) is committed and updated by the sync bot. Catalogue sorting and filtering live in `src/lib/filters.ts`. `featured.json` pins entries for the home page.
 
-**Votes.** Each config has one GitHub issue titled `[0xTsoa] <author>/<slug>` with the `vote` label (`scripts/ensure-vote-issues.ts`, run by `deploy.yml`). Votes are 👍 reactions on that issue, counted by `src/lib/votes.ts`.
+**Votes.** Each config has one GitHub issue titled `[0xTsoa] <author>/<slug>` with the `vote` label (`scripts/ensure-vote-issues.ts`, run by `deploy.yml`). New vote issues are closed right after creation (never locked) so open issues stay for real reports. Votes are 👍 reactions on that issue, counted by `src/lib/votes.ts`.
 
 **Automation** (`.github/workflows/`):
 - `issue-to-pr.yml` turns a `new-config` issue form into a PR on `config/issue-<n>` through `scripts/issue-to-config.ts`.
 - `sync-upstream.yml` runs every night. It bumps `source.ref` to the upstream HEAD SHA and leaves `updatedAt` untouched. It sets `version` only when a version tag points at that commit, and opens a PR on `bot/upstream-sync`.
 - `deploy.yml` runs on push to main and every night. It ensures the vote issues exist and triggers the Vercel deploy hook.
+- `check-live.yml` runs after every successful Vercel production deploy (`deployment_status`, so it must live on main) and nightly. It runs `check-live`, then submits pages changed since the previous production deploy to IndexNow.
 - `release.yml` publishes a registry snapshot when a `registry-*` tag is pushed.
 
 **Site config.** `site.config.ts` holds repo owner/name, `SITE_URL`, `BASE_PATH` and the image hosts, all overridable via env. Build internal links with `withBase()` and don't hardcode paths. The site sets a strict CSP in `astro.config.mjs`, so new inline scripts or external origins must be allowed there. UI strings live in `src/i18n/en.json`.
