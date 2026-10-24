@@ -9,7 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const SITE_URL = (process.env.SITE_URL || 'https://0xtsoa.vercel.app').replace(/\/$/, '');
+const SITE_URL = (process.env.SITE_URL || 'https://www.0xtsoa.dev').replace(/\/$/, '');
 const INDEXNOW_KEY = process.env.INDEXNOW_KEY || '4f8b2e9a1c7d6035e8a4b2c9d1f7063a';
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 
