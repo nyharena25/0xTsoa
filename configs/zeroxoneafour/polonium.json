@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/zeroxoneafour/polonium",
-    "ref": "227967ed448205d42b5e63e4cc4b868d72606467",
+    "ref": "cc08350138a2b191428121076ea2c2291e2c59d3",
     "readme": "readme.md"
   },
   "install": {
@@ -50,5 +50,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v1.2.2"
 }

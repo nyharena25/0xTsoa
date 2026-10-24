@@ -37,7 +37,7 @@
   ],
   "source": {
     "repo": "https://github.com/nwg-piotr/nwg-panel",
-    "ref": "117a2fe7045da2200d43c12546fb3b2146804b75",
+    "ref": "7105ae8891dc562289092599ed30c9bfac39eaf3",
     "readme": "README.md"
   },
   "install": {
@@ -51,6 +51,5 @@
         ]
       }
     ]
-  },
-  "version": "v0.12.3"
+  }
 }

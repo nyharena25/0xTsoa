@@ -32,7 +32,7 @@
   ],
   "source": {
     "repo": "https://github.com/mylinuxforwork/dotfiles",
-    "ref": "42ca2080e99b0e8557e68c780c3dd5a7757bd197",
+    "ref": "d766383cc36092017940fdb9053f39ea4c7dfb21",
     "readme": "README.md"
   },
   "install": {
