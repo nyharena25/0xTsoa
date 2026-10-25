@@ -659,7 +659,7 @@ const renderedSteps = (install?.steps ?? []).map((step) => ({
 
     {related.length > 0 && <RelatedSetups entries={related} title={sectionTitle.related} />}
 
-    <AuthorBox id={entry.id} name={data.name} github={data.author.github} verified={data.author.verified} title={sectionTitle.author} />
+    <AuthorBox id={entry.id} name={data.name} github={data.author.github} repo={data.source.repo} verified={data.author.verified} title={sectionTitle.author} />
 
     <SubmitCta heading="Have a setup like this one?" context={{ category: data.category, wm: data.wm }} />
   </div>

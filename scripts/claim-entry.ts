@@ -12,6 +12,7 @@ import path from 'node:path';
 import { configSchema, type ConfigData } from '../src/lib/schema';
 import { parseIssueBody } from './issue-to-config';
 import { stripTrailingSlashes } from '../src/lib/strings';
+import { checkOwnership, githubOwner, publicMemberFromEnv, type PublicMemberCheck } from './ownership';
 
 const ENTRY_RE = /^([A-Za-z0-9](?:[A-Za-z0-9-]{0,38}))\/([a-z0-9][a-z0-9-]{2,47})$/;
 const RESULT_FILE = 'claim-result.json';
@@ -26,12 +27,6 @@ export function parseClaimEntry(body: string): string {
   return id;
 }
 
-/** Owner of a github.com repository URL, or null for other forges. */
-export function githubOwner(repoUrl: string): string | null {
-  const m = /^https:\/\/github\.com\/([A-Za-z0-9-]+)\/[^/]+?\/?$/.exec(repoUrl);
-  return m ? m[1] : null;
-}
-
 export type ClaimDecision =
   | { status: 'verified'; reason: string }
   | { status: 'already'; reason: string }
@@ -40,25 +35,16 @@ export type ClaimDecision =
 export async function decideClaim(
   data: ConfigData,
   opener: string,
-  isPublicMember: (org: string, user: string) => Promise<boolean>,
+  isPublicMember: PublicMemberCheck,
 ): Promise<ClaimDecision> {
   if (data.author.verified) {
     return { status: 'already', reason: `This entry was already verified by @${data.author.verified.by} on ${data.author.verified.at}.` };
   }
+  const ownership = await checkOwnership(data.source.repo, opener, isPublicMember);
+  if (ownership.owns) return { status: 'verified', reason: ownership.reason };
   const owner = githubOwner(data.source.repo);
-  if (!owner) {
-    return { status: 'manual', reason: `The repository is not on GitHub (${data.source.repo}), so ownership cannot be checked automatically.` };
-  }
-  if (owner.toLowerCase() === opener.toLowerCase()) {
-    return { status: 'verified', reason: `@${opener} owns ${data.source.repo}.` };
-  }
-  if (await isPublicMember(owner, opener)) {
-    return { status: 'verified', reason: `@${opener} is a public member of the ${owner} organization, which owns ${data.source.repo}.` };
-  }
-  return {
-    status: 'manual',
-    reason: `@${opener} does not own ${data.source.repo} and is not a public member of ${owner}. If you maintain it, make your membership of ${owner} public and ask for a re-run, or wait for a maintainer.`,
-  };
+  const hint = owner ? ` If you maintain it, make your membership of ${owner} public and ask for a re-run, or wait for a maintainer.` : '';
+  return { status: 'manual', reason: ownership.reason + hint };
 }
 
 /** Adds `author.verified` to the raw file text, keeping every other field and its order. */
@@ -66,22 +52,6 @@ export function applyClaim(rawJson: string, verified: Verified): string {
   const data = JSON.parse(rawJson);
   data.author = { ...data.author, verified };
   return JSON.stringify(data, null, 2) + '\n';
-}
-
-/** GET /orgs/{org}/public_members/{user}: 204 = public member, 404 = not one (or not an org). */
-export async function githubPublicMember(org: string, user: string, token?: string): Promise<boolean> {
-  const res = await fetch(`https://api.github.com/orgs/${encodeURIComponent(org)}/public_members/${encodeURIComponent(user)}`, {
-    headers: {
-      Accept: 'application/vnd.github+json',
-      'User-Agent': '0xTsoa-Claims/1.0',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    redirect: 'manual',
-    signal: AbortSignal.timeout(10000),
-  });
-  if (res.status === 204) return true;
-  if (res.status === 404 || res.status === 302) return false;
-  throw new Error(`GitHub API returned ${res.status} ${res.statusText} for the ${org} membership check`);
 }
 
 export interface ClaimResult {
@@ -121,7 +91,7 @@ async function main() {
 
     const raw = fs.readFileSync(file, 'utf-8');
     const data = configSchema.parse(JSON.parse(raw));
-    const decision = await decideClaim(data, opener, (org, user) => githubPublicMember(org, user, process.env.GITHUB_TOKEN));
+    const decision = await decideClaim(data, opener, publicMemberFromEnv);
     if (decision.status !== 'verified') {
       writeResult({ status: decision.status, entry, path: relPath, message: decision.reason });
       console.log(`${decision.status}: ${decision.reason}`);

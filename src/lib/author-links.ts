@@ -6,6 +6,12 @@ export function configPageUrl(id: string): string {
   return `${SITE_URL}${pagePath}`;
 }
 
+/** Owner of a github.com repository URL, or null for other forges: the account claims and requests are checked against. */
+export function githubOwner(repoUrl: string): string | null {
+  const m = /^https:\/\/github\.com\/([A-Za-z0-9-]+)\/[^/]+?\/?$/.exec(repoUrl);
+  return m ? m[1] : null;
+}
+
 export const BADGE_URL = `${SITE_URL}${withBase('/badge.svg')}`;
 
 /** README snippet offered to the author: the "indexed on 0xTsoa" badge linking to their entry. */

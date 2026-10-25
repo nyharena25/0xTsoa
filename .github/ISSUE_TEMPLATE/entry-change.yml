@@ -1,7 +1,7 @@
 # Linked from the "Is this your project?" box on every config page (src/components/AuthorBox.astro),
 # which prefills `title` and the `entry` field: keep the `entry` id as is.
 name: ✏️ Change or remove a listed entry
-description: Ask for an edit to an entry already in the registry, or for its removal. Authors get priority.
+description: Ask for an edit to an entry already in the registry, or for its removal. Requests from the repository owner are verified automatically.
 title: "[Entry]: "
 labels: ["entry-change"]
 body:
@@ -9,7 +9,7 @@ body:
     attributes:
       value: |
         Use this form to correct an entry (description, screenshots, tags, install steps, pinned version) or to have it taken down.
-        **If you are the author** and want your project removed, say so below: the entry is removed, no questions asked. Open the issue from the GitHub account that owns the repository so it can be checked.
+        **A bot checks who you are**: it compares the GitHub account that opens this issue with the owner of the entry's repository (or the organization that owns it, if your membership is public). When the owner asks for a removal, the entry is removed. A request from anyone else is read as a suggestion or a report, and the entry stays until a maintainer checks it.
 
   - type: input
     id: entry

@@ -42,7 +42,10 @@ jobs:
         continue-on-error: true
         env:
           ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
-        run: npm run issue-to-config -- temp_issue_body.md "$ISSUE_AUTHOR"
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # The entry is credited to the repository owner; it is verified only when the opener is that owner.
+        run: npm run issue-to-config -- temp_issue_body.md "$ISSUE_AUTHOR" "$ISSUE_NUMBER"
 
       - name: Read conversion result and clean temporary files
         id: result
@@ -71,6 +74,9 @@ jobs:
             core.setOutput('status', result.status || 'error');
             core.setOutput('mode', result.mode || 'create');
             core.setOutput('path', result.path || '');
+            core.setOutput('author', result.author || '');
+            core.setOutput('verified', result.verified ? 'yes' : 'no');
+            core.setOutput('ownership', result.ownership || '');
 
             if (result.status !== 'ok') {
               const bullets = (Array.isArray(result.errors) && result.errors.length > 0
@@ -115,7 +121,9 @@ jobs:
           body: |
             This Pull Request was automatically generated from issue #${{ github.event.issue.number }}.
 
-            - **Author:** @${{ github.event.issue.user.login }}
+            - **Submitted by:** @${{ github.event.issue.user.login }}
+            - **Credited to:** @${{ steps.result.outputs.author }} (the repository owner)
+            - **Verified by author:** ${{ steps.result.outputs.verified }} (${{ steps.result.outputs.ownership }})
             - **Action:** `${{ steps.result.outputs.mode }}`
             - **File:** `${{ steps.result.outputs.path }}`
             - **Source Issue:** #${{ github.event.issue.number }}

@@ -68,55 +68,92 @@ const aboutJsonLd = {
       </p>
     </div>
 
-    <!-- What is 0xTsoa & Why the Name -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- What is 0xTsoa -->
-      <section class="bg-white border border-zinc-200 rounded-xl p-6 shadow-xs flex flex-col gap-4">
-        <div class="flex items-center justify-between border-b border-zinc-100 pb-3">
-          <h2 class="font-mono text-xs sm:text-sm font-bold uppercase text-zinc-900 tracking-wide">
-            01 // What is 0xTsoa
-          </h2>
-          <span class="bg-zinc-900 text-white font-mono text-[10px] px-2 py-0.5 rounded font-medium">REGISTRY</span>
+    <!-- What it is -->
+    <section class="bg-white border border-zinc-200 rounded-xl p-6 shadow-xs flex flex-col gap-4">
+        <div class="border-b border-zinc-100 pb-3 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+          <h2 class="font-mono text-xs sm:text-sm font-bold uppercase text-zinc-900 tracking-wide">01 // What is 0xTsoa</h2>
         </div>
+      <p class="font-sans text-sm text-zinc-700 leading-relaxed">
+        <strong>0xTsoa</strong> (pronounced <strong>ZeroTsoa</strong>) is an open registry of Linux desktop setups: complete dotfiles, window managers,
+        bars, launchers, GTK, icon and cursor themes, color schemes and tools, for Wayland and X11. Each page shows what installing an entry changes on
+        your system and how to undo it, so you can try a setup without losing your own.
+      </p>
+      <p class="font-sans text-sm text-zinc-600 leading-relaxed">
+        New to customizing Linux? Start with <a href={withBase('/docs/')} class="underline text-zinc-900 font-semibold">the guides</a>, or browse
+        <a href={withBase('/catalogue/')} class="underline text-zinc-900 font-semibold">the catalogue</a>.
+      </p>
+    </section>
 
-        <p class="font-sans text-sm text-zinc-700 leading-relaxed">
-          <strong>0xTsoa</strong> (pronounced <strong>ZeroTsoa</strong>) is a static, zero-database community registry indexing reproducible Linux desktop configurations across Wayland compositors (Hyprland, Niri, Sway, River) and X11 window managers (i3, bspwm, AwesomeWM, dwm).
-        </p>
-
-        <p class="font-sans text-sm text-zinc-600 leading-relaxed">
-          Every setup in the registry is stored as a schema-validated JSON specification in Git (<code>configs/&lt;author&gt;/&lt;slug&gt;.json</code>), referencing an upstream commit SHA or version tag, with optional SHA-256 checksum verification when an external installation script is provided.
-        </p>
-      </section>
-
-      <!-- Why the Name -->
-      <section class="bg-white border border-zinc-200 rounded-xl p-6 shadow-xs flex flex-col gap-4">
-        <div class="flex items-center justify-between border-b border-zinc-100 pb-3">
-          <h2 class="font-mono text-xs sm:text-sm font-bold uppercase text-zinc-900 tracking-wide">
-            02 // Name Origin
-          </h2>
-          <span class="bg-zinc-100 text-zinc-700 border border-zinc-200 font-mono text-[10px] px-2 py-0.5 rounded font-medium">ETYMOLOGY</span>
+    <!-- How it works -->
+    <section class="bg-white border border-zinc-200 rounded-xl p-6 shadow-xs flex flex-col gap-4">
+        <div class="border-b border-zinc-100 pb-3 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+          <h2 class="font-mono text-xs sm:text-sm font-bold uppercase text-zinc-900 tracking-wide">02 // How it works</h2>
         </div>
+      <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 font-sans text-sm text-zinc-700 leading-relaxed">
+        <li class="border border-zinc-200 rounded-lg p-4 flex flex-col gap-1">
+          <strong class="font-mono text-xs uppercase tracking-wide text-zinc-900">Reviewed files in Git</strong>
+          Every entry is a JSON file in the public repository, validated against one schema and reviewed in a pull request. There is no database and no account to create.
+        </li>
+        <li class="border border-zinc-200 rounded-lg p-4 flex flex-col gap-1">
+          <strong class="font-mono text-xs uppercase tracking-wide text-zinc-900">Pinned versions, synced nightly</strong>
+          Entries point to an exact commit or release tag. A nightly bot moves them to newer upstream versions, and holds one back when a file its install steps use is gone.
+        </li>
+        <li class="border border-zinc-200 rounded-lg p-4 flex flex-col gap-1">
+          <strong class="font-mono text-xs uppercase tracking-wide text-zinc-900">An installer with a way back</strong>
+          Each entry gets a generated <code>install.sh</code> that previews its plan (<code>--dry-run</code>), keeps your files unless you approve, backs up what it changes and restores it with <code>--rollback</code>. GitHub signs every installer the site serves.
+        </li>
+        <li class="border border-zinc-200 rounded-lg p-4 flex flex-col gap-1">
+          <strong class="font-mono text-xs uppercase tracking-wide text-zinc-900">Safe install steps</strong>
+          An <a href={`${REPO_URL}/blob/dev/docs/INSTALL-STANDARD.md`} target="_blank" rel="noopener noreferrer" class="underline text-zinc-900">install-step standard</a> rejects downloads piped into a shell, deleted files, root shells and bootloader changes before an entry is accepted.
+        </li>
+        <li class="border border-zinc-200 rounded-lg p-4 flex flex-col gap-1 md:col-span-2">
+          <strong class="font-mono text-xs uppercase tracking-wide text-zinc-900">Credited to the real author</strong>
+          Entries are credited to the owner of the repository, never to whoever submitted them. Owners can claim their entry to show &ldquo;Verified by author&rdquo;, and every claim, edit or removal request is checked against the GitHub account that sends it.
+        </li>
+      </ul>
+    </section>
 
-        <p class="font-sans text-sm text-zinc-700 leading-relaxed">
-          The name <strong>0xTsoa</strong> combines the hexadecimal literal prefix <code>0x</code> with <strong>Tsoa</strong>, taken from the end of the creator&apos;s Malagasy family name, <strong>RAVELOMANANTSOA</strong>.
-        </p>
-
-        <div class="bg-zinc-50 border border-zinc-200/70 rounded-lg p-3.5 font-mono text-xs text-zinc-700 space-y-1.5">
-          <div><span class="text-zinc-500">Written:</span> <strong class="text-zinc-900">0xTsoa</strong></div>
-          <div><span class="text-zinc-500">Spoken:</span> <strong class="text-zinc-900">&ldquo;ZeroTsoa&rdquo;</strong></div>
-          <div><span class="text-zinc-500">Origin:</span> <code class="text-zinc-900">0x</code> (hex prefix) + <code class="text-zinc-900">Tsoa</code> (from RAVELOMANAN<u>TSOA</u>)</div>
+    <!-- Get involved -->
+    <section class="bg-white border border-zinc-200 rounded-xl p-6 shadow-xs flex flex-col gap-4">
+        <div class="border-b border-zinc-100 pb-3 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+          <h2 class="font-mono text-xs sm:text-sm font-bold uppercase text-zinc-900 tracking-wide">03 // Get involved</h2>
         </div>
-      </section>
-    </div>
+      <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+        <li><a href={withBase('/contribute/')} class="flex items-center justify-between gap-3 p-3.5 rounded-lg border border-zinc-200 bg-zinc-50/60 hover:bg-zinc-100 text-zinc-900 no-underline transition-colors"><span class="font-semibold">Submit your setup</span><span class="text-zinc-500">one form, no Git &rarr;</span></a></li>
+        <li><a href={`${REPO_URL}/issues/new?template=claim-entry.yml`} target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-3 p-3.5 rounded-lg border border-zinc-200 bg-zinc-50/60 hover:bg-zinc-100 text-zinc-900 no-underline transition-colors"><span class="font-semibold">Claim your entry</span><span class="text-zinc-500">repository owners ↗</span></a></li>
+        <li><a href={`${REPO_URL}/issues/new?template=entry-change.yml`} target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-3 p-3.5 rounded-lg border border-zinc-200 bg-zinc-50/60 hover:bg-zinc-100 text-zinc-900 no-underline transition-colors"><span class="font-semibold">Fix or remove an entry</span><span class="text-zinc-500">change form ↗</span></a></li>
+        <li><a href={REPO_URL} target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-3 p-3.5 rounded-lg border border-zinc-200 bg-zinc-50/60 hover:bg-zinc-100 text-zinc-900 no-underline transition-colors"><span class="font-semibold">Source code</span><span class="text-zinc-500">github.com/nyharena25/0xTsoa ↗</span></a></li>
+      </ul>
+      <p class="font-sans text-sm text-zinc-600 leading-relaxed">
+        Upvote the setups that work for you with 👍 on their GitHub page: the catalogue ranks by those votes. Code is MIT, entries are CC BY 4.0.
+      </p>
+    </section>
 
-    <!-- Creator Section -->
+    <!-- Name -->
+    <section class="bg-white border border-zinc-200 rounded-xl p-6 shadow-xs flex flex-col gap-4">
+        <div class="border-b border-zinc-100 pb-3 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+          <h2 class="font-mono text-xs sm:text-sm font-bold uppercase text-zinc-900 tracking-wide">04 // Name origin</h2>
+        </div>
+      <p class="font-sans text-sm text-zinc-700 leading-relaxed">
+        The name <strong>0xTsoa</strong> combines the hexadecimal prefix <code>0x</code> with <strong>Tsoa</strong>, the end of the creator&apos;s Malagasy family name, <strong>RAVELOMANANTSOA</strong>.
+      </p>
+      <div class="bg-zinc-50 border border-zinc-200/70 rounded-lg p-3.5 font-mono text-xs text-zinc-700 space-y-1.5">
+        <div><span class="text-zinc-500">Written:</span> <strong class="text-zinc-900">0xTsoa</strong></div>
+        <div><span class="text-zinc-500">Spoken:</span> <strong class="text-zinc-900">&ldquo;ZeroTsoa&rdquo;</strong></div>
+        <div><span class="text-zinc-500">Origin:</span> <code class="text-zinc-900">0x</code> (hex prefix) + <code class="text-zinc-900">Tsoa</code> (from RAVELOMANAN<u>TSOA</u>)</div>
+      </div>
+    </section>
+
+    <!-- Creator -->
     <section class="bg-white border border-zinc-200 rounded-xl p-6 sm:p-7 shadow-xs flex flex-col gap-5" id="creator">
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 pb-3">
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
-          <h2 class="font-mono text-xs sm:text-sm font-bold uppercase text-zinc-900 tracking-wide">
-            03 // Creator &amp; Maintainer
-          </h2>
+          <h2 class="font-mono text-xs sm:text-sm font-bold uppercase text-zinc-900 tracking-wide">05 // Creator &amp; maintainer</h2>
         </div>
         <span class="font-mono text-xs text-zinc-500">Madagascar (MG)</span>
       </div>
@@ -124,50 +161,23 @@ const aboutJsonLd = {
       <div class="border border-zinc-200 rounded-lg overflow-hidden bg-white font-mono text-xs">
         <dl class="divide-y divide-zinc-100">
           <div class="grid grid-cols-1 md:grid-cols-12 p-3.5 bg-zinc-50/70 gap-1 md:gap-0">
-            <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px]">Full Name</dt>
+            <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px]">Name</dt>
             <dd class="md:col-span-9 text-zinc-900 font-sans font-semibold text-sm">Ny Harena RAVELOMANANTSOA</dd>
           </div>
-
           <div class="grid grid-cols-1 md:grid-cols-12 p-3.5 bg-white gap-1 md:gap-0">
             <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px]">Role</dt>
-            <dd class="md:col-span-9 text-zinc-800 font-sans text-sm">Software Developer &amp; Creator of 0xTsoa</dd>
+            <dd class="md:col-span-9 text-zinc-800 font-sans text-sm">Software developer, creator and maintainer of 0xTsoa</dd>
           </div>
-
           <div class="grid grid-cols-1 md:grid-cols-12 p-3.5 bg-zinc-50/70 gap-1 md:gap-0">
-            <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px]">Nationality</dt>
-            <dd class="md:col-span-9 text-zinc-800 font-sans text-sm">Malagasy (Madagascar)</dd>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-12 p-3.5 bg-white gap-1 md:gap-0">
             <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px]">GitHub</dt>
-            <dd class="md:col-span-9">
-              <a
-                href="https://github.com/nyharena25"
-                target="_blank"
-                rel="me noopener noreferrer"
-                class="underline text-zinc-900 hover:text-zinc-600 font-semibold"
-              >
-                github.com/nyharena25 ↗
-              </a>
-            </dd>
+            <dd class="md:col-span-9"><a href="https://github.com/nyharena25" target="_blank" rel="me noopener noreferrer" class="underline text-zinc-900 hover:text-zinc-600 font-semibold">github.com/nyharena25 ↗</a></dd>
           </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-12 p-3.5 bg-zinc-50/70 gap-1 md:gap-0">
-            <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px]">LinkedIn</dt>
-            <dd class="md:col-span-9">
-              <a
-                href="https://www.linkedin.com/in/rnyharena-dev/"
-                target="_blank"
-                rel="me noopener noreferrer"
-                class="underline text-zinc-900 hover:text-zinc-600 font-semibold"
-              >
-                linkedin.com/in/rnyharena-dev ↗
-              </a>
-            </dd>
-          </div>
-
           <div class="grid grid-cols-1 md:grid-cols-12 p-3.5 bg-white gap-1 md:gap-0">
-            <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px]">Contact Email</dt>
+            <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px]">LinkedIn</dt>
+            <dd class="md:col-span-9"><a href="https://www.linkedin.com/in/rnyharena-dev/" target="_blank" rel="me noopener noreferrer" class="underline text-zinc-900 hover:text-zinc-600 font-semibold">linkedin.com/in/rnyharena-dev ↗</a></dd>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-12 p-3.5 bg-zinc-50/70 gap-1 md:gap-0">
+            <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px]">Email</dt>
             <dd class="md:col-span-9 flex flex-wrap items-center gap-2 text-zinc-800">
               <code id="obfuscated-email" data-u="rnyharena25" data-d="gmail" data-t="com" class="bg-zinc-100 border border-zinc-200 px-2 py-0.5 rounded text-xs">
                 rnyharena25 [at] gmail [dot] com
@@ -183,61 +193,6 @@ const aboutJsonLd = {
           </div>
         </dl>
       </div>
-    </section>
-
-    <!-- Official Links & Profiles -->
-    <section class="bg-white border border-zinc-200 rounded-xl p-6 shadow-xs flex flex-col gap-4">
-      <div class="border-b border-zinc-100 pb-3 flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
-        <h2 class="font-mono text-xs sm:text-sm font-bold uppercase text-zinc-900 tracking-wide">
-          04 // Official Links &amp; Profiles
-        </h2>
-      </div>
-
-      <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
-        <li>
-          <a
-            href={siteRootUrl}
-            class="flex items-center justify-between p-3.5 rounded-lg border border-zinc-200 bg-zinc-50/60 hover:bg-zinc-100 text-zinc-900 no-underline transition-colors"
-          >
-            <span class="font-semibold">Web Registry (0xTsoa)</span>
-            <span class="text-zinc-500">0xtsoa.dev &rarr;</span>
-          </a>
-        </li>
-        <li>
-          <a
-            href={REPO_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex items-center justify-between p-3.5 rounded-lg border border-zinc-200 bg-zinc-50/60 hover:bg-zinc-100 text-zinc-900 no-underline transition-colors"
-          >
-            <span class="font-semibold">Source Repository</span>
-            <span class="text-zinc-500">github.com/nyharena25/0xTsoa ↗</span>
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://github.com/nyharena25"
-            target="_blank"
-            rel="me noopener noreferrer"
-            class="flex items-center justify-between p-3.5 rounded-lg border border-zinc-200 bg-zinc-50/60 hover:bg-zinc-100 text-zinc-900 no-underline transition-colors"
-          >
-            <span class="font-semibold">Creator GitHub (@nyharena25)</span>
-            <span class="text-zinc-500">github.com/nyharena25 ↗</span>
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://www.linkedin.com/in/rnyharena-dev/"
-            target="_blank"
-            rel="me noopener noreferrer"
-            class="flex items-center justify-between p-3.5 rounded-lg border border-zinc-200 bg-zinc-50/60 hover:bg-zinc-100 text-zinc-900 no-underline transition-colors"
-          >
-            <span class="font-semibold">Creator LinkedIn</span>
-            <span class="text-zinc-500">linkedin.com/in/rnyharena-dev ↗</span>
-          </a>
-        </li>
-      </ul>
     </section>
 
     <!-- Privacy & Analytics Note -->

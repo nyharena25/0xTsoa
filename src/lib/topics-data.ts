@@ -11,9 +11,9 @@ export const TOPICS: Topic[] = [
     label: 'Hyprland',
     facet: { kind: 'wm', value: 'hyprland' },
     updated: '2026-10-25',
-    title: 'Best Hyprland Dotfiles in {year}, Compared',
-    h1: 'The best Hyprland dotfiles in {year}, compared',
-    description: '{n} Hyprland dotfiles and tools compared: picks by need, what each install changes, how to undo it, and which projects are no longer maintained.',
+    title: 'Best Hyprland Dotfiles and Rices in {year}',
+    h1: 'The best Hyprland dotfiles and rices in {year}',
+    description: '{n} Hyprland dotfiles, rices and tools: picks by need, what each install changes, how to undo it, and which projects are no longer maintained.',
     intro: [
       'Hyprland is a dynamic tiling Wayland compositor known for its animations and for how far it can be customized. Out of the box it gives you windows and a config file, nothing else: the bar, launcher, widgets, wallpaper and colors come from the setup you put on top. That is why most people start from someone else’s dotfiles.',
       'The setups below range from complete desktops with their own installer and settings app, to small personal rices you copy by hand. They differ a lot in what they do to your system. Several replace your existing ~/.config folders, install dozens of packages and run their own install script, so the "What it changes" and "Difficulty" columns matter more than the screenshot.',
@@ -82,8 +82,8 @@ export const TOPICS: Topic[] = [
     label: 'Dotfiles',
     facet: { kind: 'category', value: 'dotfiles' },
     updated: '2026-10-25',
-    title: 'Linux Dotfiles & Rices, Compared',
-    h1: 'Linux dotfiles and full rices, compared',
+    title: 'Best Linux Dotfiles and Rices in {year}',
+    h1: 'The best Linux dotfiles and full rices in {year}',
     description: '{n} complete Linux desktop setups for Hyprland, AwesomeWM, bspwm, dwm and more, with what each install changes and how to undo it.',
     intro: [
       'Dotfiles are the configuration files in your home folder, most of them hidden (their names start with a dot) or kept in ~/.config. Sharing them is how the Linux community passes on a whole desktop: the window manager, bar, launcher, terminal, colors and keybindings that make up a "rice".',
@@ -147,7 +147,7 @@ export const TOPICS: Topic[] = [
     facet: { kind: 'category', value: 'gtk-theme' },
     updated: '2026-10-25',
     title: 'GTK Themes for Linux: Previews & Safe Install',
-    h1: 'GTK themes for Linux, compared',
+    h1: 'GTK themes for Linux: previews and safe installs',
     description: '{n} GTK themes with previews: Orchis, WhiteSur, Colloid, Catppuccin, Dracula and more, with GTK4 support, maintenance and what each install changes.',
     intro: [
       'GTK themes restyle the windows, buttons and menus of GTK applications: most of the apps on GNOME, Xfce, Cinnamon and tiling window managers. A theme installed in your home folder (~/.themes or ~/.local/share/themes) only affects your user and can be removed by deleting its folder; a system-wide install in /usr/share/themes needs sudo.',
@@ -179,7 +179,7 @@ export const TOPICS: Topic[] = [
     facet: { kind: 'category', value: 'icons' },
     updated: '2026-10-25',
     title: 'Linux Icon Themes: Previews & Safe Install',
-    h1: 'Linux icon themes, compared',
+    h1: 'Linux icon themes: previews and safe installs',
     description: '{n} Linux icon themes with previews: Papirus, Tela, WhiteSur, Colloid, Candy and more, compared by maintenance and what each install changes.',
     intro: [
       'An icon theme replaces the application, folder and status icons across your desktop. What matters most is coverage: a theme with icons for few apps falls back to another theme for the rest, which mixes styles. Large themes such as Papirus cover thousands of applications; smaller ones focus on a look.',
@@ -211,7 +211,7 @@ export const TOPICS: Topic[] = [
     facet: { kind: 'category', value: 'launcher' },
     updated: '2026-10-25',
     title: 'App Launchers for Linux: rofi, fuzzel & More',
-    h1: 'Linux app launchers, compared',
+    h1: 'Linux app launchers: rofi, fuzzel and more',
     description: '{n} application launchers for Linux: rofi, fuzzel, tofi, Walker, Anyrun, Ulauncher and more, compared by Wayland or X11 support and maintenance.',
     intro: [
       'On a tiling window manager, the launcher is how you open everything: a keyboard shortcut brings up a search box, you type a few letters, and the app starts. Launchers fall into two families. dmenu-style menus like rofi, fuzzel, tofi and bemenu are minimal, fast and scriptable, and are also used for power menus and clipboard pickers. Spotlight-style launchers like Ulauncher, Albert, Cerebro, Walker and Anyrun add plugins for calculations, web search and more.',
@@ -243,7 +243,7 @@ export const TOPICS: Topic[] = [
     facet: { kind: 'category', value: 'bar' },
     updated: '2026-10-25',
     title: 'Linux Status Bars: Waybar, Polybar & Alternatives',
-    h1: 'Linux status bars and panels, compared',
+    h1: 'Linux status bars and panels: Waybar, Polybar and more',
     description: '{n} status bars and panels for Linux: Waybar, Polybar, HyprPanel, Ironbar, tint2 and more, compared by Wayland or X11 support and maintenance.',
     intro: [
       'Tiling window managers do not come with a panel, so you add a status bar: workspaces, clock, battery, network, audio and a tray. Waybar is the usual choice on Wayland compositors such as Hyprland and Sway; Polybar plays the same role on X11 window managers like i3 and bspwm.',
@@ -274,8 +274,8 @@ export const TOPICS: Topic[] = [
     label: 'GNOME',
     facet: { kind: 'wm', value: 'gnome' },
     updated: '2026-10-25',
-    title: 'GNOME Extensions & Themes, Compared',
-    h1: 'GNOME extensions and themes, compared',
+    title: 'Best GNOME Extensions and Themes in {year}',
+    h1: 'The best GNOME extensions and themes in {year}',
     description: '{n} GNOME Shell extensions and themes: tiling, blur, taskbar, live wallpapers and more, with GNOME version notes, maintenance and install impact.',
     intro: [
       'GNOME is customized mostly through Shell extensions: small add-ons that run inside GNOME Shell. They can add tiling (Tiling Shell, PaperWM), merge the dash and top bar into a taskbar (Dash to Panel), blur the panel and overview (Blur my Shell), play video wallpapers (Hanabi) or animate windows (Burn My Windows). Extension Manager lets you browse and install them in a native app.',
@@ -371,7 +371,7 @@ export const TOPICS: Topic[] = [
     facet: { kind: 'wm', value: 'kde' },
     updated: '2026-10-25',
     title: 'KDE Plasma Extensions & KWin Scripts',
-    h1: 'KDE Plasma extensions and KWin scripts, compared',
+    h1: 'KDE Plasma extensions and KWin scripts',
     description: '{n} KDE Plasma add-ons: tiling KWin scripts, rounded corners, panel styling and a HUD, with Plasma 6 support, maintenance and install impact.',
     intro: [
       'KDE Plasma is customizable through its settings, and further through add-ons: KWin scripts that change how windows behave, KWin effects, and Plasma widgets. The entries here add automatic tiling (Krohnkite, Polonium, Bismuth), round window corners, restyle panels and bring a Unity-style menu search.',
@@ -402,8 +402,8 @@ export const TOPICS: Topic[] = [
     label: 'Notifications',
     facet: { kind: 'category', value: 'notifications' },
     updated: '2026-10-25',
-    title: 'Linux Notification Daemons Compared',
-    h1: 'Linux notification daemons, compared',
+    title: 'Linux Notification Daemons: dunst, mako & More',
+    h1: 'Linux notification daemons: dunst, mako and more',
     description: '{n} Linux notification daemons: dunst, mako, fnott, SwayNotificationCenter and more, compared by Wayland or X11 support and maintenance.',
     intro: [
       'GNOME and KDE show notifications themselves, but a standalone window manager needs a notification daemon: the program that receives messages from apps and draws the pop-ups. Only one daemon can own the notification service at a time, so installing a second one usually means stopping the first.',
@@ -434,8 +434,8 @@ export const TOPICS: Topic[] = [
     label: 'AwesomeWM',
     facet: { kind: 'wm', value: 'awesome' },
     updated: '2026-10-25',
-    title: 'AwesomeWM Dotfiles & Rices, Compared',
-    h1: 'AwesomeWM dotfiles and rices, compared',
+    title: 'Best AwesomeWM Dotfiles and Rices in {year}',
+    h1: 'The best AwesomeWM dotfiles and rices in {year}',
     description: '{n} AwesomeWM rices with Lua widgets, dashboards and custom palettes, compared by install impact, maintenance and what you need to run them.',
     intro: [
       'AwesomeWM is an X11 window manager configured entirely in Lua. Its config can build anything from a bar to a full dashboard, which is why AwesomeWM rices are among the most polished on r/unixporn: the widgets are written by hand rather than assembled from separate programs.',
@@ -467,7 +467,7 @@ export const TOPICS: Topic[] = [
     facet: { kind: 'category', value: 'cursors' },
     updated: '2026-10-25',
     title: 'Linux Cursor Themes: Previews & Safe Install',
-    h1: 'Linux cursor themes, compared',
+    h1: 'Linux cursor themes: previews and safe installs',
     description: '{n} Linux cursor themes: Bibata, Catppuccin, macOS, Google and Vimix cursors, compared by maintenance and what each install changes.',
     intro: [
       'A cursor theme is a small change that shows everywhere. Cursor themes install like icon themes, into ~/.local/share/icons or /usr/share/icons, and each comes in sizes and often in color variants.',

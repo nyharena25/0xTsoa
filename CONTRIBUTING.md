@@ -18,7 +18,7 @@ You can contribute to 0xTsoa in several ways:
 2. **Submit a Setup via Direct Pull Request**: Fork the repository, add or update `configs/<author>/<slug>.json`, validate locally with `npm run validate`, and open a pull request.
 3. **Upvote Setups**: Click **Upvote on GitHub** on a config page (or the ▲ link on a catalogue card), then react with 👍 on the first post of that setup's `[0xTsoa] <author>/<slug>` vote issue to endorse setups that work cleanly.
 4. **Claim Your Entry**: If a listed project is yours, open the [Claim your entry](https://github.com/nyharena25/0xTsoa/issues/new?template=claim-entry.yml) form (`claim` label) from the account that owns the GitHub repository, or from a public member of the organization that owns it. `claim-to-pr.yml` runs `scripts/claim-entry.ts`, which checks that and opens a pull request setting `author.verified`; the page then shows "Verified by author". GitLab and Codeberg repositories, and accounts that fail the check, are labelled `needs-review` for a maintainer. Never add `author.verified` by hand.
-5. **Correct or Remove a Listed Entry**: Use the [Change or remove a listed entry](https://github.com/nyharena25/0xTsoa/issues/new?template=entry-change.yml) issue form (`entry-change` label), also linked from the "For the author" box at the bottom of every config page. A removal requested by the repository owner is always granted.
+5. **Correct or Remove a Listed Entry**: Use the [Change or remove a listed entry](https://github.com/nyharena25/0xTsoa/issues/new?template=entry-change.yml) issue form (`entry-change` label), also linked from the "For the author" box at the bottom of every config page. `entry-change.yml` checks the account that opened it against the repository owner and labels the issue `owner-verified` or `needs-review`. A removal requested by the owner is always granted; one from anyone else is read as a report.
 6. **Improve the Platform Code**: Fix bugs, improve accessibility, refine the Astro components in `src/`, or expand the Vitest test suite in `tests/`.
 
 <picture>
@@ -33,21 +33,22 @@ The fastest way to add a project is through `.github/ISSUE_TEMPLATE/new-config.y
 
 ### What You Provide in the Form
 - **Identity**: Project Name (`3` to `80` chars), URL Slug (`3` to `48` lowercase characters, digits, and hyphens), Short Summary (`10` to `200` chars), optional Description (up to `2000` chars), and SPDX License (defaults to `MIT` if left empty).
-- **Environment**: Desktop Part (`category`), Window Manager (`wm`), Theme Style (`themeStyle`), Display Server (`wayland`, `x11`, or `both`), tested Distributions (`distros`, up to 8), and optional Tags (up to 10).
+- **Environment**: Desktop Part (`category`), Window Manager (`wm`), Theme Style (`themeStyle`), Display Server (Wayland, X11, or Wayland & X11), tested Distributions (`distros`, up to 8), and optional Tags (up to 10). The options use the same names as the site (`CATEGORY_LABELS`, `WM_LABELS`, `STYLE_LABELS`, `DISTRO_LABELS`); `tests/issue-forms.test.ts` keeps the form, the bot and the schema in sync.
 - **Screenshots**: 1 to 8 direct `https://` image URLs (one per line) hosted on an allowed domain.
-- **Source and Installation**: Source repository URL (`github.com`, `gitlab.com`, or `codeberg.org`), a Git ref (40-character commit SHA or version tag), `Install: Dependencies` shell commands (required, except for "Lists & guides" entries), optional `Install: Deploy` and `Install: Reload` commands, and an optional pinned `.sh` script URL and SHA-256 hash.
-- **Components (Optional)**: Status Bar, Terminal, Launcher, Shell, and Theme names.
+- **Source and Installation**: Source repository URL (`github.com`, `gitlab.com`, or `codeberg.org`), a Git ref (40-character commit SHA or version tag), an optional README path, `Install: Dependencies` shell commands (required, except for "Lists & guides" entries), optional `Install: Deploy` and `Install: Reload` commands, and an optional pinned `.sh` script URL and SHA-256 hash.
+- **Components (Optional)**: Status Bar, Terminal, Launcher, Notifications, Shell, Editor, and Theme names, plus Keyboard Shortcuts (`keys | what it does`, one per line).
 
 ### How `issue-to-pr.yml` Turns Your Issue into a Pull Request
 When you open an issue with the `new-config` label (or when a maintainer adds the `regenerate` label after you edit the issue), `.github/workflows/issue-to-pr.yml` runs automatically:
 
 1. **Safe Input Handling**: The workflow writes `github.event.issue.body` to `temp_issue_body.md` via an environment variable (`ISSUE_BODY`) so untrusted markdown is never interpolated into a shell command.
-2. **Conversion (`scripts/issue-to-config.ts`)**: The script runs `npm run issue-to-config -- temp_issue_body.md "$ISSUE_AUTHOR"` and writes `issue-to-config-result.json` (`{ status, mode, path, errors }`):
+2. **Conversion (`scripts/issue-to-config.ts`)**: The script runs `npm run issue-to-config -- temp_issue_body.md "$ISSUE_AUTHOR" "$ISSUE_NUMBER"` and writes `issue-to-config-result.json` (`{ status, mode, path, errors, author, verified, ownership }`):
    - Parses all `### <Heading>` sections from the issue body.
-   - Maps dropdown labels back to schema enum keys (`CATEGORY_LABELS`, `WM_LABELS`, `STYLE_LABELS`).
-   - Credits the GitHub user who opened the issue as both `author.name` and `author.github`.
+   - Maps dropdown and checkbox labels back to schema enum keys (`CATEGORY_LABELS`, `WM_LABELS`, `STYLE_LABELS`, `DISTRO_LABELS`).
+   - Credits the **owner of the GitHub repository** as `author.name` and `author.github`, never the person who opened the issue (`scripts/ownership.ts`). When the opener is that owner, or a public member of the organization that owns it, the entry gets `author.verified` straight away. For GitLab and Codeberg repositories the opener is credited, unverified, and checked in review.
+   - Refuses to replace an entry that already exists unless the opener owns the repository: anyone else uses the change form.
    - If you supplied an `Install Script URL` without a 64-character `Script SHA-256`, the script downloads the remote `.sh` file (up to 1 MiB) and calculates its SHA-256 digest automatically.
-   - Validates the generated object against `configSchema` (`src/lib/schema.ts`) and writes `configs/<issue-author>/<slug>.json`.
+   - Validates the generated object against `configSchema` (`src/lib/schema.ts`) and writes `configs/<owner>/<slug>.json`.
 3. **Error Reporting or Pull Request Creation**:
    - If `status` is `error`, the workflow posts the validation error list as a comment on your issue and asks you to edit the issue so a maintainer can re-run it with the `regenerate` label.
    - If `status` is `ok`, the workflow runs `npm run validate`, opens or updates branch `config/issue-<number>` via `peter-evans/create-pull-request` (using `secrets.BOT_TOKEN` so `validate.yml` runs on the bot PR), and comments on the issue with the PR link.

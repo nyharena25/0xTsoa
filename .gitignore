@@ -20,6 +20,7 @@ Thumbs.db
 temp_issue_body.md
 issue-to-config-result.json
 claim-result.json
+entry-change-result.json
 
 # Outreach drafts (npm run outreach): never committed
 outreach/

@@ -77,7 +77,7 @@ describe('primaryTopic', () => {
 describe('topic text and dates', () => {
   it('fills {year} and keeps titles within limits for any four-digit year', () => {
     const hyprland = TOPICS.find((t) => t.slug === 'hyprland')!;
-    expect(topicText(hyprland.title, 2026)).toBe('Best Hyprland Dotfiles in 2026, Compared');
+    expect(topicText(hyprland.title, 2026)).toBe('Best Hyprland Dotfiles and Rices in 2026');
     for (const t of TOPICS) expect(topicText(t.title, 2099).length, t.slug).toBeLessThanOrEqual(TITLE_MAX);
   });
 

@@ -1,6 +1,6 @@
 ---
 import CopyButton from './CopyButton.astro';
-import { badgeMarkdown, entryChangeUrl, claimEntryUrl, claimIssueUrl } from '../lib/author-links';
+import { badgeMarkdown, entryChangeUrl, claimEntryUrl, claimIssueUrl, githubOwner } from '../lib/author-links';
 import type { ConfigData } from '../lib/schema';
 import { withBase } from '../../site.config';
 
@@ -9,13 +9,17 @@ interface Props {
   name: string;
   /** The listed author's GitHub username (`author.github`). */
   github: string;
+  /** `source.repo`: claims and requests are checked against its owner. */
+  repo: string;
   /** Set once the author claimed the entry (scripts/claim-entry.ts). */
   verified?: ConfigData['author']['verified'];
   /** Numbered section title, e.g. "07. For the author". */
   title: string;
 }
 
-const { id, name, github, verified, title } = Astro.props;
+const { id, name, github, repo, verified, title } = Astro.props;
+// The account that counts as the author: the repository owner on GitHub, else the credited author.
+const owner = githubOwner(repo);
 const snippet = badgeMarkdown(id);
 const claimedOn = verified
   ? new Date(`${verified.at}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
@@ -36,7 +40,7 @@ const claimedOn = verified
     </p>
   ) : (
     <p class="font-mono text-[11px] sm:text-xs text-zinc-600 leading-relaxed">
-      Are you <strong class="text-zinc-900">@{github}</strong>? {name} is listed from your public repository, credited to you.
+      Are you <strong class="text-zinc-900">@{owner ?? github}</strong>? {name} is listed from your public repository, credited to you.
       Claim it to mark it "Verified by author", and add this badge to your README so readers can find the preview, backups and rollback this page gives them:
     </p>
   )}
@@ -63,6 +67,8 @@ const claimedOn = verified
     </a>
   </div>
   <p class="font-mono text-[10px] text-zinc-500 leading-relaxed">
-    Each opens a short GitHub issue. A claim or a removal asked from the account that owns the repository is checked and done without questions.
+    {owner
+      ? <>Each opens a short GitHub issue. A bot compares the GitHub account that opens it with the repository owner: only <strong class="text-zinc-700">@{owner}</strong> (or its public members, when the owner is an organization) can claim the entry or have it removed. Requests from anyone else are read as suggestions.</>
+      : <>Each opens a short GitHub issue. This repository is not on GitHub, so a maintainer checks that a claim or removal really comes from its author before acting on it.</>}
   </p>
 </section>

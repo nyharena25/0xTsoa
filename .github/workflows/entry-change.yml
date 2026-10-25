@@ -1,0 +1,69 @@
+name: Check Entry Change Request
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-owner:
+    if: >-
+      contains(github.event.issue.labels.*.name, 'entry-change') &&
+      (github.event.action == 'opened' || (github.event.action == 'labeled' && github.event.label.name == 'regenerate'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: dev
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      # Untrusted input goes through env vars, never inlined into the script (shell injection).
+      - name: Save issue body
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: printf '%s\n' "$ISSUE_BODY" > temp_issue_body.md
+
+      # The opener's login is authenticated by GitHub: it is what the ownership check compares.
+      - name: Check who sent the request
+        env:
+          ISSUE_OPENER: ${{ github.event.issue.user.login }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run entry-change -- temp_issue_body.md "$ISSUE_OPENER"
+
+      - name: Label and comment
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const fs = require('node:fs');
+            let result = { status: 'error', message: '✖ The request could not be checked.' };
+            try {
+              result = JSON.parse(fs.readFileSync('entry-change-result.json', 'utf8'));
+            } catch (err) {
+              result.message = `✖ The request could not be checked: ${err.message}`;
+            }
+            const labels = result.status === 'owner' ? ['owner-verified'] : ['needs-review'];
+            await github.rest.issues.addLabels({ owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number, labels });
+            await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number, body: result.message });
+
+      - name: Remove regenerate label
+        if: always() && (github.event.label.name == 'regenerate' || contains(github.event.issue.labels.*.name, 'regenerate'))
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({ owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number, name: 'regenerate' });
+            } catch (err) {
+              if (err.status !== 404) throw err;
+            }

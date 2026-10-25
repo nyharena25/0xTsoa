@@ -25,6 +25,7 @@
     "ingest": "tsx scripts/ingest-configs.ts",
     "issue-to-config": "tsx scripts/issue-to-config.ts",
     "claim-entry": "tsx scripts/claim-entry.ts",
+    "entry-change": "tsx scripts/entry-change.ts",
     "outreach": "tsx scripts/outreach.ts",
     "indexnow": "tsx scripts/indexnow.ts",
     "check-live": "tsx scripts/check-live.ts"

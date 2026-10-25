@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import { describe, it, expect, vi } from 'vitest';
 import { configSchema } from '../src/lib/schema';
-import { parseClaimEntry, githubOwner, decideClaim, applyClaim } from '../scripts/claim-entry';
+import { parseClaimEntry, decideClaim, applyClaim } from '../scripts/claim-entry';
+import { githubOwner } from '../scripts/ownership';
 
 const raw = fs.readFileSync('configs/catppuccin/hyprland-theme.json', 'utf-8');
 const base = configSchema.parse(JSON.parse(raw));

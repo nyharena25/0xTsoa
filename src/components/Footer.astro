@@ -50,7 +50,6 @@ const link = 'inline-block py-1 text-zinc-600 hover:text-zinc-900 transition-col
       <ul class="flex flex-col">
         <li><a href={withBase('/about/')} class={link}>{t('nav.about')}</a></li>
         <li><a href={REPO_URL} target="_blank" rel="noopener noreferrer" class={link}>{t('nav.github')}</a></li>
-        <li><a href={withBase('/llms.txt')} class={link}>llms.txt</a></li>
         <li>
           <button type="button" id="btn-cookie-settings" class={`${link} cursor-pointer bg-transparent border-0 p-0 font-mono text-xs text-left`}>
             {t('nav.cookieSettings')}

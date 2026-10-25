@@ -9,7 +9,7 @@ import path from 'node:path';
 import { configSchema, idFromPath, type ConfigData } from '../src/lib/schema';
 import { getStarsForConfig, maintenanceForConfig, type MaintenanceStatus } from '../src/lib/stats';
 import { badgeMarkdown, claimEntryUrl, configPageUrl, entryChangeUrl } from '../src/lib/author-links';
-import { githubOwner } from './claim-entry';
+import { githubOwner } from './ownership';
 import { stripTrailingSlashes } from '../src/lib/strings';
 import { mapPool } from './pool';
 
