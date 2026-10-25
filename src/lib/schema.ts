@@ -193,6 +193,8 @@ const pinnedRawUrl = https.refine(
   examples: ['https://raw.githubusercontent.com/my-handle/dots/v1.0.0/install.sh'],
 });
 
+const githubUser = z.string().regex(/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/, 'Invalid GitHub username');
+
 const command = z.string().min(1).max(500).meta({
   description:
     'One shell command, written as you would type it. Follow docs/INSTALL-STANDARD.md: pinned clones and downloads, nothing piped into a shell, no deleting, root shells, bootloader or security changes. Lines starting with # are shown as notes for the reader (use them for interactive or per-distro steps); {{ref}} is replaced with source.ref.',
@@ -204,8 +206,15 @@ export const configSchema = z
     name: z.string().min(3).max(80).meta({ description: 'Display name of the project (3–80 chars).', examples: ['Hyprland Paper Minimal'] }),
     author: z.object({
       name: z.string().min(1).max(60).meta({ description: 'Name shown on the page.' }),
-      github: z.string().regex(/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/, 'Invalid GitHub username').meta({
+      github: githubUser.meta({
         description: 'GitHub username of the author. Must match the folder name: configs/<github>/<slug>.json.',
+      }),
+      verified: z.object({
+        by: githubUser.meta({ description: 'GitHub account that claimed the entry: the repository owner or a public member of the owning organization.' }),
+        at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD').meta({ description: 'Date of the claim, as YYYY-MM-DD.' }),
+        issue: z.number().int().positive().meta({ description: 'Number of the claim issue in this repository.' }),
+      }).optional().meta({
+        description: 'Set by the claim bot (scripts/claim-entry.ts) once the author confirms the entry. Do not add it by hand.',
       }),
     }).meta({ description: 'Who made the setup (credit the original author if it is not you).' }),
     lang: z.enum(['fr', 'en']).default('en').meta({ description: 'Language of summary and description. Default: en.' }),

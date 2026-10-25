@@ -1,8 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { getDiscussionUrlForConfig, getVotesForConfig, getTop5Configs, votesFromIssues } from '../src/lib/votes';
+import { getDiscussionUrlForConfig, getVotesForConfig, getTop5Configs, votesFromIssues, upvoteLabel } from '../src/lib/votes';
 import { REPO_URL } from '../site.config';
 
-describe('Votes & sign-off URL resolver', () => {
+describe('Votes & upvote URL resolver', () => {
+  it('labels counts as upvotes, singular for one', () => {
+    expect(upvoteLabel(0)).toBe('0 upvotes');
+    expect(upvoteLabel(1)).toBe('1 upvote');
+    expect(upvoteLabel(1234)).toBe('1,234 upvotes');
+  });
+
   it('falls back to an exact-title search on vote issues for configs not synced yet', () => {
     const url = getDiscussionUrlForConfig('custom/setup-abc');
     expect(url).not.toContain('/discussions');

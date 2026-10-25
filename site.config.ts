@@ -68,7 +68,7 @@ export function withBase(path: string = '/'): string {
   return `${cleanBase}${cleanPath}`;
 }
 
-/** One GitHub issue per config, carrying this label, collects the votes (👍 = sign-off). */
+/** One GitHub issue per config, carrying this label, collects the votes (👍 = one upvote). */
 export const VOTE_LABEL = 'vote';
 export const voteIssueTitle = (id: string) => `[0xTsoa] ${id}`;
 

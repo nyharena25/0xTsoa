@@ -33,7 +33,12 @@ export function getVotesForConfig(configId: string): number {
   return map[configId]?.votes ?? 0;
 }
 
-/** Where the ✓ Sign-Off button points: the config's vote issue. */
+/** "1 upvote" / "12 upvotes": the count as shown on cards, the spotlight and the config page. */
+export function upvoteLabel(votes: number): string {
+  return `${votes.toLocaleString('en')} upvote${votes === 1 ? '' : 's'}`;
+}
+
+/** Where the "Upvote on GitHub" links point: the config's vote issue. */
 export function getDiscussionUrlForConfig(configId: string): string {
   const url = getVotesMap()[configId]?.discussionUrl;
   if (url) return url;

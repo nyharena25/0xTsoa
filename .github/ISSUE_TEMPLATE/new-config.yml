@@ -108,14 +108,14 @@ body:
         - labwc
         - i3
         - bspwm
-        - Awesome
+        - AwesomeWM
         - Qtile
         - XMonad
         - dwm
         - herbstluftwm
         - Openbox
         - GNOME
-        - KDE
+        - KDE Plasma
         - Xfce
         - Cinnamon
         - COSMIC

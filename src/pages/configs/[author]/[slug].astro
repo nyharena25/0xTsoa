@@ -8,6 +8,8 @@ import ScreenshotGallery from '../../../components/ScreenshotGallery.astro';
 import AssuranceBadges from '../../../components/AssuranceBadges.astro';
 import AtAGlance from '../../../components/AtAGlance.astro';
 import RelatedSetups from '../../../components/RelatedSetups.astro';
+import AuthorBox from '../../../components/AuthorBox.astro';
+import SubmitCta from '../../../components/SubmitCta.astro';
 import { getCollection } from 'astro:content';
 import { getRenderedReadme, extractScreenshotsFromReadme, readmeExcerpt } from '../../../lib/readme';
 import { rawToBlobUrl, blobUrl, hasInstallSteps, isAllowedImageUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
@@ -86,6 +88,7 @@ const sections = (
     !readmeMissing && ['readme', t('spec.sectionReadme')],
     data.keybindings.length > 0 && ['keybindings', t('spec.keybindings')],
     related.length > 0 && ['related', t('spec.sectionRelated')],
+    ['author', t('spec.sectionAuthor')],
   ].filter(Boolean) as [string, string][]
 ).map(([id, label], i) => ({ id, title: `${String(i + 1).padStart(2, '0')}. ${label}` }));
 const sectionTitle = Object.fromEntries(sections.map((s) => [s.id, s.title]));
@@ -655,6 +658,10 @@ const renderedSteps = (install?.steps ?? []).map((step) => ({
     )}
 
     {related.length > 0 && <RelatedSetups entries={related} title={sectionTitle.related} />}
+
+    <AuthorBox id={entry.id} name={data.name} github={data.author.github} verified={data.author.verified} title={sectionTitle.author} />
+
+    <SubmitCta heading="Have a setup like this one?" context={{ category: data.category, wm: data.wm }} />
   </div>
 
   <script>

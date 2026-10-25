@@ -1,0 +1,150 @@
+name: Verify Author Claim
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  claim-to-pr:
+    if: >-
+      contains(github.event.issue.labels.*.name, 'claim') &&
+      (github.event.action == 'opened' || (github.event.action == 'labeled' && github.event.label.name == 'regenerate'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          ref: dev
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      # Untrusted input goes through env vars, never inlined into the script (shell injection).
+      - name: Save issue body
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: printf '%s\n' "$ISSUE_BODY" > temp_issue_body.md
+
+      # The opener's login is authenticated by GitHub: it is the proof of ownership the script checks.
+      - name: Check the claim
+        continue-on-error: true
+        env:
+          ISSUE_OPENER: ${{ github.event.issue.user.login }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run claim-entry -- temp_issue_body.md "$ISSUE_OPENER" "$ISSUE_NUMBER"
+
+      - name: Read claim result and clean temporary files
+        id: result
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const fs = require('node:fs');
+            fs.rmSync('temp_issue_body.md', { force: true });
+
+            let result = { status: 'error', entry: '', path: '', message: 'claim-entry did not produce claim-result.json' };
+            if (fs.existsSync('claim-result.json')) {
+              try {
+                result = JSON.parse(fs.readFileSync('claim-result.json', 'utf8'));
+              } catch (err) {
+                result.message = `Failed to parse claim-result.json: ${err.message}`;
+              }
+              fs.rmSync('claim-result.json', { force: true });
+            }
+
+            core.setOutput('status', result.status);
+            core.setOutput('entry', result.entry);
+            core.setOutput('path', result.path);
+            core.setOutput('message', result.message);
+            if (result.status === 'ok') return;
+
+            const bodies = {
+              already: `✓ ${result.message} Nothing to do.`,
+              manual: `A maintainer will review this claim by hand: ${result.message}`,
+              error: `✖ The claim could not be processed: ${result.message}\n\nEdit the issue to fix it, then a maintainer will re-run it by adding the \`regenerate\` label.`,
+            };
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: bodies[result.status] ?? bodies.error,
+            });
+            if (result.status === 'manual') {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['needs-review'],
+              });
+            }
+            if (result.status === 'error') core.setFailed('Claim failed; posted the reason to the issue.');
+
+      - name: Run Schema Validation
+        if: steps.result.outputs.status == 'ok'
+        run: npm run validate
+
+      - name: Create Pull Request
+        id: cpr
+        if: steps.result.outputs.status == 'ok'
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          base: dev
+          add-paths: ${{ steps.result.outputs.path }}
+          commit-message: "fix(config): mark ${{ steps.result.outputs.entry }} as verified by its author (#${{ github.event.issue.number }})"
+          title: "[Claim] ${{ steps.result.outputs.entry }} verified by @${{ github.event.issue.user.login }} (#${{ github.event.issue.number }})"
+          body: |
+            This Pull Request was automatically generated from claim issue #${{ github.event.issue.number }}.
+
+            - **Entry:** `${{ steps.result.outputs.entry }}`
+            - **Claimed by:** @${{ github.event.issue.user.login }}
+            - **Check:** ${{ steps.result.outputs.message }}
+            - **File:** `${{ steps.result.outputs.path }}`
+
+            Merging it shows "Verified by author" on the entry's page.
+          branch: "claim/issue-${{ github.event.issue.number }}"
+          labels: "automated-pr, claim"
+
+      - name: Comment on Issue
+        if: steps.result.outputs.status == 'ok'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          CHECK: ${{ steps.result.outputs.message }}
+        with:
+          script: |
+            const linkSuffix = process.env.PR_URL ? `: ${process.env.PR_URL}` : '.';
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `✓ Claim verified (${process.env.CHECK}) and a Pull Request was opened${linkSuffix}\n\nOnce it is merged, your entry shows "Verified by author". To correct anything on it, use the change form: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/issues/new?template=entry-change.yml`,
+            });
+
+      - name: Remove regenerate label
+        if: always() && (github.event.label.name == 'regenerate' || contains(github.event.issue.labels.*.name, 'regenerate'))
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                name: 'regenerate',
+              });
+            } catch (err) {
+              if (err.status !== 404) throw err;
+            }

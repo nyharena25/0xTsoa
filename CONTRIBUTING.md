@@ -16,8 +16,10 @@ You can contribute to 0xTsoa in several ways:
 
 1. **Submit a Desktop Setup or Component (No Git Required)**: Fill out the [Submit a Linux Desktop Project](https://github.com/nyharena25/0xTsoa/issues/new?template=new-config.yml) issue form (`new-config` label). Our GitHub Actions bot converts your form into a validated JSON file and opens a pull request automatically.
 2. **Submit a Setup via Direct Pull Request**: Fork the repository, add or update `configs/<author>/<slug>.json`, validate locally with `npm run validate`, and open a pull request.
-3. **Vote and Sign Off on Setups**: Visit any setup's `[0xTsoa] <author>/<slug>` vote issue and add a `+1` reaction to endorse setups that work cleanly.
-4. **Improve the Platform Code**: Fix bugs, improve accessibility, refine the Astro components in `src/`, or expand the Vitest test suite in `tests/`.
+3. **Upvote Setups**: Click **Upvote on GitHub** on a config page (or the ▲ link on a catalogue card), then react with 👍 on the first post of that setup's `[0xTsoa] <author>/<slug>` vote issue to endorse setups that work cleanly.
+4. **Claim Your Entry**: If a listed project is yours, open the [Claim your entry](https://github.com/nyharena25/0xTsoa/issues/new?template=claim-entry.yml) form (`claim` label) from the account that owns the GitHub repository, or from a public member of the organization that owns it. `claim-to-pr.yml` runs `scripts/claim-entry.ts`, which checks that and opens a pull request setting `author.verified`; the page then shows "Verified by author". GitLab and Codeberg repositories, and accounts that fail the check, are labelled `needs-review` for a maintainer. Never add `author.verified` by hand.
+5. **Correct or Remove a Listed Entry**: Use the [Change or remove a listed entry](https://github.com/nyharena25/0xTsoa/issues/new?template=entry-change.yml) issue form (`entry-change` label), also linked from the "For the author" box at the bottom of every config page. A removal requested by the repository owner is always granted.
+6. **Improve the Platform Code**: Fix bugs, improve accessibility, refine the Astro components in `src/`, or expand the Vitest test suite in `tests/`.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/section-divider-dark.svg">
@@ -218,12 +220,12 @@ Every `screenshots[].url` must either be a local file inside `public/` (starting
   <img src=".github/assets/section-divider.svg" alt="Animated section divider" width="100%" height="12" />
 </picture>
 
-## <picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/icons/check-circle-dark.svg"><img src=".github/assets/icons/check-circle.svg" width="20" height="20" align="top" alt="Voting System icon"></picture> Community Voting and Sign-Off System
+## <picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/icons/check-circle-dark.svg"><img src=".github/assets/icons/check-circle.svg" width="20" height="20" align="top" alt="Voting System icon"></picture> Community Voting System
 
 0xTsoa uses GitHub Issues as a zero-database voting backend (`src/lib/votes.ts`, `scripts/ensure-vote-issues.ts`, and `scripts/fetch-votes.ts`):
 
 1. **One Vote Issue per Configuration**: During the nightly refresh or on push to `main` (`deploy.yml`), `npm run vote-issues` checks every `configs/<author>/<slug>.json` against open and closed issues labeled `vote`. If an entry lacks an issue titled `[0xTsoa] <author>/<slug>`, the script creates it and closes it right away: closed issues still take reactions, and the repository's open issues stay for real reports.
-2. **+1 Reaction Counting**: Community members click the **Sign-Off** button on any configuration card or detail page, which takes them to that entry's `[0xTsoa] <author>/<slug>` issue. Reacting to the issue body with `+1` (thumbs up) counts as one vote per GitHub user.
+2. **+1 Reaction Counting**: Community members click **Upvote on GitHub** on a config page, or the ▲ upvote link on a catalogue card, which takes them to that entry's `[0xTsoa] <author>/<slug>` issue. Reacting to the issue body with `+1` (thumbs up) counts as one vote per GitHub user.
 3. **Build-Time Snapshot (`src/generated/votes.json`)**: Before every build (`prebuild`), `scripts/fetch-votes.ts` queries the GitHub Issues API (working with or without `GITHUB_TOKEN`), counts `+1` reactions per configuration, and writes `src/generated/votes.json`.
 4. **Catalogue Ranking**: By default (`sort=votes`), the catalogue sorts entries by vote count descending, breaking ties by upstream repository star count (`src/generated/repo-stats.json`).
 

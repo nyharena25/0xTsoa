@@ -37,7 +37,7 @@ Each item in `https://www.0xtsoa.dev/index.json` contains:
 - `thumbAlt` (`string`): accessible description for the primary screenshot
 - `version` (`string`, optional): configuration version string
 - `updatedAt` (`string`): last modification date (`YYYY-MM-DD`)
-- `votes` (`number`): community sign-off count snapshotted at build time
+- `votes` (`number`): community upvote count (👍 reactions on the entry's GitHub vote issue) snapshotted at build time
 
 ## Submission & Community Vote Flow
 

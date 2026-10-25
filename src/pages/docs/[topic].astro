@@ -3,6 +3,7 @@
 // with the hand-written introduction, tips and FAQ from src/lib/topics.ts.
 import Base from '../../layouts/Base.astro';
 import CompareTable from '../../components/docs/CompareTable.astro';
+import SubmitCta from '../../components/SubmitCta.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { liveTopics, topicDescription, topicPath, topicText, topicModified, choosePicks, retiredEntries, type Topic } from '../../lib/topics';
 import { installDifficulty, DIFFICULTY_INFO } from '../../lib/install';
@@ -199,9 +200,8 @@ const jsonLd = [
           <li><a href={withBase(topicPath(t.slug))} class="tag-pill">{t.label} <span class="text-zinc-400">({count})</span></a></li>
         ))}
       </ul>
-      <p class="font-sans text-sm text-zinc-600 m-0">
-        Missing a setup you use? <a href={withBase('/contribute/')} class="underline text-zinc-900 font-semibold">Submit it</a>: the form opens a pull request for you, and every entry is reviewed and pinned like the ones above.
-      </p>
     </section>
+
+    <SubmitCta heading="Missing one you use? Add it to this list." context={{ [topic.facet.kind]: topic.facet.value }} />
   </div>
 </Base>

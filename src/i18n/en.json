@@ -35,9 +35,7 @@
     "githubRepo": "Source Code",
     "sourceCode": "Source Code",
     "fullSpec": "Full Spec",
-    "communitySignOff": "Community Sign-Off:",
-    "approved": "Approve this setup",
-    "signOffNotice": "Votes counted from +1 reactions on each setup's GitHub vote issue.",
+    "communityVotes": "Community upvotes:",
     "tabPreview": "Preview",
     "tabConsole": "Specs",
     "copy": "Copy",
@@ -81,7 +79,7 @@
     "searchLabel": "Search",
     "searchPlaceholder": "Search by name, component or tag (waybar, rofi…)",
     "sortBy": "Sort by:",
-    "sortVotes": "Most approved",
+    "sortVotes": "Most upvoted",
     "sortNew": "Newest",
     "sortOld": "Oldest",
     "sortPopular": "Most popular (★ stars)",
@@ -111,7 +109,13 @@
     "copyDoc": "Copy doc",
     "rawDoc": "Raw source",
     "fullscreen": "Fullscreen view",
-    "sectionRelated": "Related setups"
+    "sectionRelated": "Related setups",
+    "sectionAuthor": "For the author"
+  },
+  "vote": {
+    "button": "Upvote on GitHub",
+    "short": "Upvote",
+    "hint": "Click 👍 on the first post · counts update daily"
   },
   "contribute": {
     "metaTitle": "Submit a Linux Desktop Config or Dotfiles Setup",

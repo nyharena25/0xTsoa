@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import ConfigCard from '../components/ConfigCard.astro';
 import FilterSidebar from '../components/FilterSidebar.astro';
+import SubmitCta from '../components/SubmitCta.astro';
 import { getCollection } from 'astro:content';
 import { getVotesForConfig } from '../lib/votes';
 import { useTranslations } from '../lib/i18n';
@@ -32,7 +33,7 @@ for (const c of allConfigs) {
   }
 }
 
-// Same order as the client-side default sort ("Most approved", stars break ties).
+// Same order as the client-side default sort ("Most upvoted", stars break ties).
 const sortedConfigs = allConfigs
   .slice()
   .sort((a, b) => getVotesForConfig(b.id) - getVotesForConfig(a.id) || getStarsForConfig(b.id) - getStarsForConfig(a.id));
@@ -210,6 +211,8 @@ const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
             {t('catalogue.reset')}
           </button>
         </div>
+
+        <SubmitCta heading="Missing a setup you use?" />
       </main>
     </div>
   </div>

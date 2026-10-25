@@ -1,7 +1,8 @@
 ---
 // One catalogue result: preview, name and summary first, then the facts that decide a click
 // (difficulty, maintenance, stars). Trust details and repository links live on the config page.
-import { getVotesForConfig } from '../lib/votes';
+import { getVotesForConfig, getDiscussionUrlForConfig, upvoteLabel } from '../lib/votes';
+import { useTranslations } from '../lib/i18n';
 import { getStarsForConfig, maintenanceForConfig, MAINTENANCE_INFO } from '../lib/stats';
 import { installDifficulty, DIFFICULTY_INFO } from '../lib/install';
 import { type ConfigData, WM_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../lib/schema';
@@ -13,9 +14,11 @@ interface Props {
   locale?: string;
 }
 
-const { id, data } = Astro.props;
+const { id, data, locale } = Astro.props;
+const t = useTranslations(locale);
 
 const votes = getVotesForConfig(id);
+const voteUrl = getDiscussionUrlForConfig(id);
 const stars = getStarsForConfig(id);
 const difficulty = installDifficulty(data);
 const maintenance = maintenanceForConfig(id, data.tags);
@@ -72,8 +75,18 @@ const chip = 'px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-100 
           </li>
         )}
         {stars > 0 && <li><span aria-hidden="true">★</span> {stars.toLocaleString('en')}<span class="sr-only"> GitHub stars</span></li>}
-        {votes > 0 && <li><span aria-hidden="true">▲</span> {votes.toLocaleString('en')} sign-off{votes === 1 ? '' : 's'}</li>}
-        <li>by @{data.author.github}</li>
+        <li>
+          <a
+            href={voteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1 hover:text-zinc-900 hover:underline"
+            title={`${t('vote.button')}: ${t('vote.hint')}`}
+          >
+            <span aria-hidden="true">▲</span> {votes > 0 ? upvoteLabel(votes) : t('vote.short')}
+          </a>
+        </li>
+        <li>by @{data.author.github}{data.author.verified && <span class="text-emerald-700 font-semibold" title="Verified by author"> ✓<span class="sr-only"> verified by author</span></span>}</li>
         <li>{updated}</li>
       </ul>
 

@@ -1,7 +1,7 @@
 ---
 import CopyButton from './CopyButton.astro';
 import { useTranslations, type Locale } from '../lib/i18n';
-import { getVotesForConfig, getDiscussionUrlForConfig } from '../lib/votes';
+import { getVotesForConfig, getDiscussionUrlForConfig, upvoteLabel } from '../lib/votes';
 import { WM_LABELS, DISTRO_LABELS, hasInstallSteps, type ConfigData } from '../lib/schema';
 import { verifiedScriptCommand, downloadInstallCommand } from '../lib/install';
 import { withBase } from '../../site.config';
@@ -63,7 +63,7 @@ const serializedSetups = configs.map((c, idx) => {
     readOnly,
     cmdLabel: readOnly ? t('spotlight.readOnline') : t('spotlight.deployCmd'),
     votesCount: votes,
-    votesFormatted: `${votes.toLocaleString()} sign-offs`,
+    votesFormatted: upvoteLabel(votes),
     discussionUrl,
     repoUrl: c.data.source.repo,
     specUrl: specPath,
@@ -279,11 +279,11 @@ const defaultSetup = serializedSetups[0];
         </div>
       </div>
 
-      <!-- Community Sign-Off Section -->
+      <!-- Community upvotes -->
       <div class="pt-4 border-t border-zinc-200 flex flex-col gap-2">
         <div class="flex items-center justify-between">
           <span class="font-mono text-xs font-bold text-zinc-700">
-            {t('spotlight.communitySignOff')}
+            {t('spotlight.communityVotes')}
           </span>
           <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-zinc-100 text-zinc-900 border border-zinc-200" id="spotlight-vote-pill">
             ▲ {defaultSetup?.votesFormatted}
@@ -297,12 +297,12 @@ const defaultSetup = serializedSetups[0];
           rel="noopener noreferrer"
           class="w-full min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-zinc-900 text-white font-mono text-xs font-semibold hover:bg-zinc-800 transition-colors shadow-xs"
         >
-          <span>✓</span>
-          <span>{t('spotlight.approved')}</span>
+          <span aria-hidden="true">👍</span>
+          <span>{t('vote.button')}</span>
         </a>
 
         <span class="font-mono text-[10px] text-zinc-400 text-center tracking-tight">
-          {t('spotlight.signOffNotice')}
+          {t('vote.hint')}
         </span>
       </div>
     </div>

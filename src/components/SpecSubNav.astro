@@ -1,5 +1,6 @@
 ---
-import { getVotesForConfig, getDiscussionUrlForConfig } from '../lib/votes';
+import { getVotesForConfig, getDiscussionUrlForConfig, upvoteLabel } from '../lib/votes';
+import { useTranslations } from '../lib/i18n';
 import { withBase } from '../../site.config';
 
 interface Props {
@@ -12,7 +13,8 @@ interface Props {
   parent?: { label: string; href: string };
 }
 
-const { configId, name, sections, parent } = Astro.props;
+const { configId, name, sections, parent, locale } = Astro.props;
+const t = useTranslations(locale);
 
 const votes = getVotesForConfig(configId);
 const discussionUrl = getDiscussionUrlForConfig(configId);
@@ -38,8 +40,9 @@ const backLabel = parent?.label ?? 'Catalogue';
       </div>
 
       <div class="flex items-center gap-1.5 shrink-0">
-        <span class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-md font-mono text-xs font-bold bg-zinc-100 text-zinc-900 border border-zinc-200">
-          ▲ {votes.toLocaleString()}
+        <span class="hidden lg:inline text-[10px] text-zinc-500">{t('vote.hint')}</span>
+        <span class="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-md font-mono text-xs font-bold bg-zinc-100 text-zinc-900 border border-zinc-200" title={upvoteLabel(votes)}>
+          <span aria-hidden="true">▲</span> {votes.toLocaleString('en')}<span class="sr-only"> {votes === 1 ? 'upvote' : 'upvotes'}</span>
         </span>
 
         <a
@@ -47,10 +50,10 @@ const backLabel = parent?.label ?? 'Catalogue';
           target="_blank"
           rel="noopener noreferrer"
           class="btn-solid text-xs py-1 px-2 sm:px-2.5"
-          title="Sign off: react with +1 on this config's GitHub vote issue"
+          title={`${t('vote.button')}: ${t('vote.hint')}`}
         >
-          <span>✓</span>
-          <span class="hidden sm:inline">Sign-Off</span>
+          <span aria-hidden="true">👍</span>
+          <span class="sr-only sm:not-sr-only">{t('vote.button')}</span>
         </a>
       </div>
     </div>

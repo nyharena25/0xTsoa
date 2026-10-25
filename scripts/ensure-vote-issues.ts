@@ -44,7 +44,7 @@ async function main() {
   const labelRes = await fetch(`${api}/labels`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ name: VOTE_LABEL, color: '18181b', description: 'Community sign-off for a configuration' }),
+    body: JSON.stringify({ name: VOTE_LABEL, color: '18181b', description: 'Community upvotes for a configuration' }),
   });
   if (!labelRes.ok && labelRes.status !== 422) throw new Error(`Cannot create label: ${labelRes.status}`);
 
@@ -52,9 +52,9 @@ async function main() {
     const configPath = withBase(`/configs/${id}/`);
     const configUrl = `${SITE_URL}${configPath}`;
     const body =
-      `### Community sign-off for \`${id}\`\n\n` +
+      `### Upvotes for \`${id}\`\n\n` +
       `- 📋 **Config page:** ${configUrl}\n` +
-      `- ✓ **To sign off:** react to this message with 👍 (+1).\n\n` +
+      `- 👍 **To upvote:** react to this message with 👍 (+1).\n\n` +
       `Votes are counted at every site rebuild. Please keep comments on-topic (feedback about this setup).`;
     const res = await fetch(`${api}/issues`, {
       method: 'POST',

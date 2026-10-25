@@ -4,6 +4,7 @@
 import { WM_LABELS, DISTRO_LABELS, type ConfigData } from '../lib/schema';
 import { DIFFICULTY_INFO, describeImpact, type InstallDifficulty, type InstallImpact } from '../lib/install';
 import { MAINTENANCE_INFO, type MaintenanceStatus, type RepoStats } from '../lib/stats';
+import { claimIssueUrl } from '../lib/author-links';
 
 interface Props {
   data: ConfigData;
@@ -94,6 +95,21 @@ const versionLabel = data.version ?? data.source.ref.slice(0, 12);
         <span>, dated {formatDate(data.updatedAt)}. Installs exactly this version, never a moving branch.</span>
       </dd>
     </div>
+
+    {data.author.verified && (
+      <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
+        <dt class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">Author</dt>
+        <dd class="flex flex-col gap-1">
+          <span class="inline-flex items-center gap-1.5 text-zinc-900 font-bold text-xs">
+            <span class="text-emerald-600" aria-hidden="true">✓</span> Verified by author
+          </span>
+          <span class="text-zinc-600 leading-relaxed">
+            @{data.author.verified.by} confirmed this entry on {formatDate(data.author.verified.at)}{' '}
+            (<a href={claimIssueUrl(data.author.verified.issue)} target="_blank" rel="noopener noreferrer" class="underline text-zinc-900">#{data.author.verified.issue}</a>).
+          </span>
+        </dd>
+      </div>
+    )}
 
     <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
       <dt class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">Works with</dt>

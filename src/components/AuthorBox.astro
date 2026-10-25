@@ -1,0 +1,68 @@
+---
+import CopyButton from './CopyButton.astro';
+import { badgeMarkdown, entryChangeUrl, claimEntryUrl, claimIssueUrl } from '../lib/author-links';
+import type { ConfigData } from '../lib/schema';
+import { withBase } from '../../site.config';
+
+interface Props {
+  id: string;
+  name: string;
+  /** The listed author's GitHub username (`author.github`). */
+  github: string;
+  /** Set once the author claimed the entry (scripts/claim-entry.ts). */
+  verified?: ConfigData['author']['verified'];
+  /** Numbered section title, e.g. "07. For the author". */
+  title: string;
+}
+
+const { id, name, github, verified, title } = Astro.props;
+const snippet = badgeMarkdown(id);
+const claimedOn = verified
+  ? new Date(`${verified.at}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
+  : null;
+---
+
+<section class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-7 flex flex-col gap-4 w-full min-w-0 overflow-hidden" id="author">
+  <div class="border-b border-zinc-200 pb-3 flex items-center gap-2.5">
+    <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+    <h2 class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider">{title}</h2>
+  </div>
+
+  {verified ? (
+    <p class="font-mono text-[11px] sm:text-xs text-zinc-600 leading-relaxed">
+      <span class="text-emerald-700 font-bold">✓ Verified by author:</span> <strong class="text-zinc-900">@{verified.by}</strong> confirmed this entry on {claimedOn}{' '}
+      (<a href={claimIssueUrl(verified.issue)} target="_blank" rel="noopener noreferrer" class="underline text-zinc-900">#{verified.issue}</a>).
+      Add this badge to your README so readers can find the preview, backups and rollback this page gives them:
+    </p>
+  ) : (
+    <p class="font-mono text-[11px] sm:text-xs text-zinc-600 leading-relaxed">
+      Are you <strong class="text-zinc-900">@{github}</strong>? {name} is listed from your public repository, credited to you.
+      Claim it to mark it "Verified by author", and add this badge to your README so readers can find the preview, backups and rollback this page gives them:
+    </p>
+  )}
+
+  <div class="flex flex-col gap-2.5 min-w-0">
+    <img src={withBase('/badge.svg')} alt="Indexed on 0xTsoa" width="154" height="20" loading="lazy" decoding="async" class="h-5 w-auto self-start" />
+    <div class="flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded-lg p-2 sm:p-2.5 min-w-0">
+      <code class="flex-1 min-w-0 overflow-x-auto whitespace-nowrap font-mono text-[11px] sm:text-xs text-zinc-800 select-all scrollbar-none">{snippet}</code>
+      <CopyButton text={snippet} label="Copy Markdown" />
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-2.5">
+    {!verified && (
+      <a href={claimEntryUrl(id)} target="_blank" rel="noopener noreferrer" class="btn-solid text-xs min-h-[44px] justify-center">
+        Claim this entry
+      </a>
+    )}
+    <a href={entryChangeUrl(id, 'edit')} target="_blank" rel="noopener noreferrer" class="btn-outline text-xs min-h-[44px] justify-center">
+      Suggest an edit
+    </a>
+    <a href={entryChangeUrl(id, 'remove')} target="_blank" rel="noopener noreferrer" class="btn-outline text-xs min-h-[44px] justify-center">
+      Request removal
+    </a>
+  </div>
+  <p class="font-mono text-[10px] text-zinc-500 leading-relaxed">
+    Each opens a short GitHub issue. A claim or a removal asked from the account that owns the repository is checked and done without questions.
+  </p>
+</section>

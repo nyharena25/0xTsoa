@@ -71,7 +71,7 @@ Each configuration page brings together everything needed to inspect and reprodu
 - **Overview**: purpose, supported distributions, display server, window manager, key components, and assurance badges (**Schema validated**, **Source pinned**, **Script hash-checked**, **Install reviewed**).
 - **Installation**: step-by-step commands that check out `{{ref}}`, plus a downloadable script.
 - **Screenshots and documentation**: a gallery and the upstream README rendered at `source.ref`.
-- **Keyboard shortcuts** and a **community sign-off** counter backed by a GitHub issue.
+- **Keyboard shortcuts** and a **community upvote** counter backed by a GitHub issue.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/section-divider-dark.svg">
@@ -84,7 +84,7 @@ Each configuration page brings together everything needed to inspect and reprodu
 
 - <picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/icons/server-dark.svg"><img src=".github/assets/icons/server.svg" width="20" height="20" align="top" alt="Serverless icon"></picture> **100% Static and Zero-Database**: No database or backend session servers. Every desktop environment specification lives in an audit-ready, typed JSON file inside `configs/<author>/<slug>.json`.
 - <picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/icons/shield-check-dark.svg"><img src=".github/assets/icons/shield-check.svg" width="20" height="20" align="top" alt="Security verification icon"></picture> **Three Separate Levels of Assurance**: Every entry is **Schema validated** (Zod schema, allowlisted screenshot hosts, and `{{ref}}` checkout in `git clone` steps). Entries using a 40-character commit SHA in `source.ref` are **Source pinned** (unlike Git tags, which can be moved upstream). Entries with an optional `install.script` are **Script hash-checked** (SHA-256 digest and 1 MiB limit checked in CI), and entries with `review.installReviewed` show who manually reviewed the install steps.
-- <picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/icons/check-circle-dark.svg"><img src=".github/assets/icons/check-circle.svg" width="20" height="20" align="top" alt="Voting engine icon"></picture> **GitHub Issues Sign-Off Engine**: Each configuration has a dedicated GitHub issue labeled `vote` (`[0xTsoa] <author>/<slug>`). `+1` reactions (one per GitHub user) are tallied at build time into `src/generated/votes.json` and drive the Top 5 Spotlight.
+- <picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/icons/check-circle-dark.svg"><img src=".github/assets/icons/check-circle.svg" width="20" height="20" align="top" alt="Voting engine icon"></picture> **GitHub Issues Upvote Engine**: Each configuration has a dedicated GitHub issue labeled `vote` (`[0xTsoa] <author>/<slug>`). `+1` reactions (one per GitHub user) are tallied at build time into `src/generated/votes.json` and drive the Top 5 Spotlight.
 - <picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/icons/refresh-cw-dark.svg"><img src=".github/assets/icons/refresh-cw.svg" width="20" height="20" align="top" alt="Synchronizer icon"></picture> **Sanitized README Snapshot & Nightly Upstream Sync**: Fetches and sanitizes upstream README files at `source.ref`, translates volatile `private-user-images.githubusercontent.com` links into permanent `github.com/user-attachments/assets/<uuid>` URLs, resolves relative paths, and opens a nightly pull request (`bot/upstream-sync`) when upstream refs advance while updating `src/generated/repo-stats.json`.
 - <picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/icons/palette-dark.svg"><img src=".github/assets/icons/palette.svg" width="20" height="20" align="top" alt="Design system icon"></picture> **Neo-Brutalist Paper and Ink Design**: High-contrast, WCAG AAA accessible interface built with *Space Grotesk*, *Geist Variable*, *JetBrains Mono Variable*, and custom *BD Brick* typography.
 - <picture><source media="(prefers-color-scheme: dark)" srcset=".github/assets/icons/search-dark.svg"><img src=".github/assets/icons/search.svg" width="20" height="20" align="top" alt="Search engine icon"></picture> **Instant Client Filtering and Offline Search**: Multi-facet filtering across 17 desktop categories, 21 window managers, 14 aesthetic styles, and 13 distributions, paired with Pagefind static full-text search and a public `/index.json` catalogue endpoint.
@@ -113,7 +113,7 @@ Each configuration page brings together everything needed to inspect and reprodu
 <br/><br/>
 
 ### 03. Configuration Overview
-<p>Purpose, compatibility, desktop part, window manager, theme and key components of a setup, with its community sign-off counter.</p>
+<p>Purpose, compatibility, desktop part, window manager, theme and key components of a setup, with its community upvote counter.</p>
 <img src=".github/assets/screenshots/03-overview.png" alt="0xTsoa configuration overview page" width="100%" />
 
 <br/><br/>
@@ -292,7 +292,7 @@ Join the 0xTsoa community to share rices, request configurations, ask troublesho
 
 - **Documentation Wiki**: [github.com/nyharena25/0xTsoa/wiki](https://github.com/nyharena25/0xTsoa/wiki)
 - **GitHub Discussions**: [github.com/nyharena25/0xTsoa/discussions](https://github.com/nyharena25/0xTsoa/discussions)
-- **Community Sign-Off Issues**: [Vote Issues (`label:vote`)](https://github.com/nyharena25/0xTsoa/issues?q=is%3Aissue+label%3Avote)
+- **Community Upvote Issues**: [Vote Issues (`label:vote`)](https://github.com/nyharena25/0xTsoa/issues?q=is%3Aissue+label%3Avote)
 
 
 <picture>

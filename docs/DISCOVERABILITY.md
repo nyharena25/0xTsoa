@@ -116,7 +116,7 @@ Independent regional mentions build strong entity co-occurrence between **Ny Har
 
 ## 8. Backlinks from Featured Config Authors (`public/badge.svg`)
 
-When notifying maintainers that their dotfiles or desktop component is indexed on 0xTsoa, offer them this optional badge snippet for their repository `README.md`:
+Every config page ends with a "For the author" box (`src/components/AuthorBox.astro`) that shows this snippet already filled in for that entry, with a copy button and links to suggest an edit or request removal. When notifying maintainers that their dotfiles or desktop component is indexed on 0xTsoa, link them to their page, or give them the snippet for their repository `README.md`:
 
 ```markdown
 [![Indexed on 0xTsoa](https://www.0xtsoa.dev/badge.svg)](https://www.0xtsoa.dev/configs/<author>/<slug>/)

@@ -323,6 +323,14 @@ async function main() {
     outRelPath = path.relative(process.cwd(), outFile).replaceAll('\\', '/');
     mode = fs.existsSync(outFile) ? 'update' : 'create';
 
+    // A claim proves ownership of one repository: an update keeps it only while the entry points there.
+    if (mode === 'update') {
+      const previous = JSON.parse(fs.readFileSync(outFile, 'utf-8'));
+      if (previous.author?.verified && previous.source?.repo === parsed.data.source.repo) {
+        parsed.data.author.verified = previous.author.verified;
+      }
+    }
+
     fs.writeFileSync(outFile, JSON.stringify(parsed.data, null, 2), 'utf-8');
     writeResult({ status: 'ok', mode, path: outRelPath, errors: [] });
     console.log(`✓ Successfully ${mode === 'update' ? 'updated' : 'created'} configuration: ${outFile}`);
