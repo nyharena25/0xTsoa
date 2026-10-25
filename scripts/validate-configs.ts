@@ -16,6 +16,7 @@ import {
 } from '../src/lib/schema';
 import { fetchLimited, SCRIPT_HOSTS } from '../src/lib/fetch-limited';
 import { listRepoTree, missingRepoPaths } from './repo-tree';
+import { lintInstallSteps, formatLintIssue } from '../src/lib/install-lint';
 import { ALLOWED_IMAGE_HOSTS, BASE_PATH, REPO_NAME } from '../site.config';
 
 export { validateCloneSteps, normalizeRepoUrl, type CloneValidationResult };
@@ -201,6 +202,7 @@ async function main() {
   const allConfigFiles = collectAllConfigFiles(configsDir);
   let total = 0;
   let errors = 0;
+  let lintWarnings = 0;
 
   // Check duplicate IDs and case collisions across all configs/*/
   const collisions = detectIdCollisions(allConfigFiles);
@@ -263,6 +265,18 @@ async function main() {
     const cloneValidation = validateCloneSteps(data);
     for (const warn of cloneValidation.warnings) {
       console.warn(`  ⚠ ${warn}`);
+    }
+
+    // The install-step standard (docs/INSTALL-STANDARD.md). Warnings are printed in full for the
+    // entries a pull request changes (--only), and counted on full runs.
+    for (const issue of lintInstallSteps(data)) {
+      if (issue.severity === 'error') {
+        console.error(`  ✖ ${formatLintIssue(issue)}`);
+        errors++;
+      } else {
+        lintWarnings++;
+        if (flags.only.length > 0) console.warn(`  ⚠ ${formatLintIssue(issue)}`);
+      }
     }
 
     // Check image hosts or local files
@@ -350,6 +364,9 @@ async function main() {
 
   console.log(`\n----------------------------------------`);
   console.log(`Total configs checked: ${total}`);
+  if (lintWarnings > 0 && flags.only.length === 0) {
+    console.log(`${lintWarnings} install-step warning(s); run with --only <file> to see an entry's warnings.`);
+  }
   if (errors > 0) {
     console.error(`Found ${errors} error(s). Validation failed.`);
     process.exit(1);

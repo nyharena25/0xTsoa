@@ -57,7 +57,7 @@
         "id": "deps",
         "title": "Prerequisites & Base Dependencies",
         "commands": [
-          "sudo pacman -Syu --needed base-devel git",
+          "sudo pacman -S --needed base-devel git",
           "git clone --filter=blob:none https://github.com/prasanthrangan/hyprdots ~/HyDE",
           "git -C ~/HyDE checkout {{ref}}"
         ]

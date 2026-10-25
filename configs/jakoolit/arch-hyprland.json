@@ -74,7 +74,7 @@
         "id": "reload",
         "title": "Reboot into new desktop",
         "commands": [
-          "systemctl reboot"
+          "# Reboot to start the new desktop: systemctl reboot"
         ]
       }
     ]

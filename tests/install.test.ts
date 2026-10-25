@@ -265,6 +265,17 @@ describe('upstream installers with arguments', () => {
   });
 });
 
+describe('session reloads', () => {
+  it('are their own best-effort action, and not lasting changes', () => {
+    for (const cmd of ['swaymsg reload', 'hyprctl reload', 'i3-msg restart', 'bspc wm -r', 'awesome-client "awesome.restart()"', 'qdbus org.kde.KWin /KWin reconfigure']) {
+      expect(translateCommand(cmd, baseConfig), cmd).toMatch(/^oxt_reload /);
+    }
+    expect(translateCommand('sudo grub-mkconfig -o /boot/grub/grub.cfg', baseConfig)).toMatch(/^oxt_system /);
+    const impact = installImpact({ ...baseConfig, install: { ...baseConfig.install!, steps: [{ id: 'reload', title: 'reload', commands: ['swaymsg reload', 'niri validate'] }] } });
+    expect(impact.execCommands).toEqual([]);
+  });
+});
+
 describe('installImpact (page facts)', () => {
   it('lists packages, home paths, sudo and upstream commands from the same classification', () => {
     const impact = installImpact({

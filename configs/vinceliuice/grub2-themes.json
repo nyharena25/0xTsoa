@@ -54,9 +54,9 @@
       },
       {
         "id": "reload",
-        "title": "Regenerate the boot configuration",
+        "title": "Reboot to see the theme",
         "commands": [
-          "sudo grub-mkconfig -o /boot/grub/grub.cfg"
+          "# The upstream installer regenerates the GRUB config itself (update-grub, grub-mkconfig or grub2-mkconfig, depending on the distro). Reboot to see the theme."
         ]
       }
     ]

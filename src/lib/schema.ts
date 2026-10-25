@@ -194,7 +194,8 @@ const pinnedRawUrl = https.refine(
 });
 
 const command = z.string().min(1).max(500).meta({
-  description: 'One shell command, written as you would type it (no sudo bash, no curl | bash from an unpinned URL). Lines starting with # are shown as notes; {{ref}} is replaced with source.ref.',
+  description:
+    'One shell command, written as you would type it. Follow docs/INSTALL-STANDARD.md: pinned clones and downloads, nothing piped into a shell, no deleting, root shells, bootloader or security changes. Lines starting with # are shown as notes for the reader (use them for interactive or per-distro steps); {{ref}} is replaced with source.ref.',
 });
 
 export const configSchema = z

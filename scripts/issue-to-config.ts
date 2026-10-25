@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
+import { lintInstallSteps, formatLintIssue } from '../src/lib/install-lint';
 import { configSchema, type ConfigInput, CATEGORY_LABELS, STYLE_LABELS, WM_LABELS } from '../src/lib/schema';
 import { fetchLimited, SCRIPT_HOSTS } from '../src/lib/fetch-limited';
 
@@ -300,6 +301,17 @@ async function main() {
         console.error(`- ${line}`);
       }
       writeResult({ status: 'error', mode, path: outRelPath, errors });
+      process.exit(1);
+    }
+
+    // The install-step standard (docs/INSTALL-STANDARD.md): errors are sent back to the issue.
+    const lintErrors = lintInstallSteps(parsed.data)
+      .filter((issue) => issue.severity === 'error')
+      .map(formatLintIssue);
+    if (lintErrors.length > 0) {
+      console.error('Install steps break the install-step standard:');
+      for (const line of lintErrors) console.error(`- ${line}`);
+      writeResult({ status: 'error', mode, path: outRelPath, errors: lintErrors });
       process.exit(1);
     }
 

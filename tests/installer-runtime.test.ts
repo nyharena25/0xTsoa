@@ -257,6 +257,27 @@ describe('generated installer', () => {
     expect(back.out).toContain('packages added by this install: extra-pkg. Remove them with: sudo pacman -Rns extra-pkg');
   });
 
+  it('treats a session reload as best effort when no session is running (install from a TTY)', () => {
+    write(path.join(binDir, 'swaymsg'), '#!/bin/sh\necho "Unable to connect to the IPC socket" >&2\nexit 1\n');
+    fs.chmodSync(path.join(binDir, 'swaymsg'), 0o755);
+    generate(['swaymsg reload']);
+    expect(fs.readFileSync(script, 'utf8')).toContain("oxt_reload 'swaymsg reload'");
+    expect(run(['--dry-run']).out).toContain('[reload]    swaymsg reload  (only if that session is running now)');
+    const { code, out } = run(['--yes']);
+    expect(code, out).toBe(0);
+    expect(out).toContain('No running session answered');
+    expect(out).not.toContain('some steps failed');
+  });
+
+  it('reports a missing system file to copy and still does the remaining steps', () => {
+    generate(['cp /nonexistent-oxt/sway/config ~/.config/sway-config', 'printf "after\\n" > after.txt', 'cp after.txt ~/.config/after.txt']);
+    const { code, out } = run(['--yes']);
+    expect(code).toBe(1);
+    expect(out).toContain('Not copied: /nonexistent-oxt/sway/config does not exist');
+    expect(out).toContain('some steps failed');
+    expect(fs.readFileSync(path.join(home, '.config/after.txt'), 'utf8')).toBe('after\n');
+  });
+
   it('does not claim a pinned version for a package-only setup', () => {
     const data = config();
     data.install!.steps = [{ id: 'deps', title: 'Install', commands: ['sudo pacman -S --needed demo-pkg'] }];

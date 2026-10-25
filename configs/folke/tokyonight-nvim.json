@@ -52,7 +52,7 @@
         "id": "reload",
         "title": "Activate the colorscheme",
         "commands": [
-          "nvim +\"colorscheme tokyonight\""
+          "# Open Neovim and run :colorscheme tokyonight to try it; to keep it, add vim.cmd.colorscheme('tokyonight') to init.lua (or colorscheme tokyonight to init.vim)"
         ]
       }
     ]

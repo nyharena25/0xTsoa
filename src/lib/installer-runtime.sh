@@ -274,6 +274,20 @@ oxt_exec() {
   eval "$1"
 }
 
+# Ask the running session (compositor, window manager, KWin) to reload. Installs often run
+# from a TTY or another desktop, where there is nothing to reload: that is not a failure.
+oxt_reload() {
+  if [ "$OXT_PHASE" = plan ]; then
+    oxt_say '[reload]' "$1  (only if that session is running now)"
+    return 0
+  fi
+  printf '  $ %s\n' "$1"
+  if ! eval "$1" >/dev/null 2>&1; then
+    note "No running session answered. Log in to it, or reload it yourself, to see the changes."
+  fi
+  return 0
+}
+
 # A sudo command writing outside your home folder: not covered by --rollback.
 oxt_system() {
   if [ "$OXT_PHASE" = plan ]; then
@@ -412,7 +426,15 @@ oxt_copy() {
     fi
     if ! oxt_exists "$s"; then
       if [ "$OXT_PHASE" = plan ]; then
-        oxt_say '[copy]' "$s -> $dest (checked at install time, once the source is downloaded)"
+        oxt_say '[copy]' "$s -> $dest (checked at install time, once a package or download provides it)"
+        continue
+      fi
+      # A system file (/etc/..., /usr/share/...) comes from a package whose layout differs between
+      # distros: report it and go on. A file from the pinned download is checked by CI, so its
+      # absence means something is wrong: stop.
+      oxt_abs "$s"
+      if ! oxt_in_home && ! oxt_in_workdir; then
+        fail "Not copied: $s does not exist on $OXT_DISTRO. Copy a starting config to $dest yourself (see $OXT_REPO)."
         continue
       fi
       die "Source not found: $s"
@@ -655,7 +677,7 @@ oxt_main() {
     die "Some destinations already exist and belong to something else (see [conflict] above). Nothing was changed. Move them away, or rerun with --force to back them up and replace them."
   fi
   if [ "$OXT_C_UNAVAILABLE" -gt 0 ] && [ "$OXT_FORCE" != 1 ]; then
-    die "Some packages cannot be installed here (see [missing] above). Nothing was changed. Install them yourself, or rerun with --force to install the rest anyway."
+    die "Some packages cannot be installed here (see [missing] above). Nothing was changed. Install them as $OXT_REPO explains, or rerun with --force to install the rest anyway."
   fi
   oxt_confirm 'Apply this plan?' 'Nothing was changed.'
 

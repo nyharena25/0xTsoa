@@ -101,7 +101,8 @@ Every line of the plan starts with a label:
 | `[missing]` | Packages that cannot be installed on this system; the install stops before changing anything unless you pass `--force`. |
 | `[upstream]` | The project's own installer, with the folders backed up before it runs. |
 | `[system]` | A sudo change outside your home folder, not undone by a rollback. |
-| `[run]` | A command run as written, such as reloading your compositor or changing a setting. |
+| `[reload]` | Asks your running compositor or desktop to reload. Nothing happens if you install from a TTY or another desktop; log in to see the changes. |
+| `[run]` | A command run as written, such as changing a setting. |
 | `[manual]` | A step you do yourself. |
 
 The summary at the end counts them and says what a rollback will and will not undo. If the plan shows something you do not expect, stop there: nothing has changed yet.

@@ -9,17 +9,10 @@ import {
 
 import { SITE_URL, REPO_OWNER, REPO_NAME, withBase } from '../../site.config';
 import RUNTIME from './installer-runtime.sh?raw';
+import { stripNewlines, renderCommand, classifyCommand, type InstallAction } from './commands';
 
 export { normalizeRepoUrl, validateCloneSteps, type CloneValidationResult };
-
-function stripNewlines(s: string): string {
-  return s.replace(/[\r\n]+/g, ' ');
-}
-
-/** Replace `{{ref}}` tokens in an install command with `data.source.ref`. */
-export function renderCommand(cmd: string, data: Pick<ConfigData, 'source'>): string {
-  return cmd.replaceAll('{{ref}}', data.source.ref);
-}
+export { renderCommand, classifyCommand, type InstallAction };
 
 /** POSIX single-quote escaping: wraps in `'` and escapes internal `'` as `'\''`. */
 export function shQuote(s: string): string {
@@ -36,12 +29,6 @@ export function verifiedScriptCommand(script: {
   return `f=$(mktemp) && curl -fsSL ${shQuote(script.url)} -o "$f" && echo '${script.sha256}  '"$f" | sha256sum -c - && ${shell} "$f"`;
 }
 
-// `<theme>`, `<hostname>`… are placeholders the user must fill in; bash would parse them as redirections.
-const PLACEHOLDER_RE = /<[A-Za-z][\w-]*>/;
-// Upstream installers decide for themselves what they touch.
-// Plain arguments are allowed ("./setup install", "bash install.sh --all"); shell syntax is not.
-const UPSTREAM_RE = /^(?:sudo\s+)?(?:\.\/\S+(?:\s+[\w.=-]+)*|(?:ba)?sh\s+(?!-c\b)\S+(?:\s+[\w.=-]+)*|make(?:\s.*)?|bash\s+-c\s+.*)$/;
-
 /**
  * Home-relative folders an upstream installer (`./setup.sh`, `make install`…) usually rewrites.
  * The installer backs them up right before such a step; the page offers the same list for manual installs.
@@ -56,70 +43,6 @@ export const UPSTREAM_BACKUP_PATHS = [
   '.config/gtk-3.0', '.config/gtk-4.0', '.config/Kvantum', '.config/qt5ct', '.config/qt6ct',
   '.bashrc', '.zshrc', '.themes',
 ] as const;
-
-/** What one config command does, as seen by the installer and the page. */
-export type InstallAction =
-  | { kind: 'note'; text: string }
-  | { kind: 'package'; packages: string[]; aur: boolean }
-  | { kind: 'clone'; args: string; dest: string | null }
-  | { kind: 'copy'; args: string; dest: string }
-  | { kind: 'append'; line: string; file: string }
-  | { kind: 'upstream'; command: string }
-  | { kind: 'system'; command: string }
-  | { kind: 'exec'; command: string };
-
-function packageNames(rest: string): string[] {
-  return rest
-    .replace(/\s+#.*$/, '')
-    .split(/\s+/)
-    .filter((w) => w && !w.startsWith('-'));
-}
-
-/** Last non-option word of an argument string (cp/clone destination). */
-function lastOperand(args: string): string | null {
-  const words = args.split(/\s+/).filter((w) => w && !w.startsWith('-'));
-  return words.length > 1 ? words[words.length - 1] : null;
-}
-
-/** Classify one already-rendered, single command. */
-function classify(cmd: string): InstallAction | null {
-  if (!cmd) return null;
-  if (/^#\s*Other distros/i.test(cmd)) return null;
-  if (cmd.startsWith('#')) return { kind: 'note', text: cmd.replace(/^#\s*/, '') };
-  if (PLACEHOLDER_RE.test(cmd)) return { kind: 'note', text: `Run manually (fill in the <placeholder>): ${cmd}` };
-  const open = /^xdg-open\s+(\S+)/.exec(cmd);
-  if (open) return { kind: 'note', text: `Follow the upstream guide: ${open[1]}` };
-  if (/^(sudo\s+)?reboot\b/.test(cmd)) return { kind: 'note', text: 'Reboot to finish: sudo reboot' };
-
-  const pacman = /^sudo\s+pacman\s+-S\w*\s+(.*)$/.exec(cmd);
-  if (pacman) return { kind: 'package', packages: packageNames(pacman[1]), aur: false };
-  const native = /^sudo\s+(?:apt|apt-get|dnf|zypper)\s+install\s+(.*)$/.exec(cmd);
-  if (native) return { kind: 'package', packages: packageNames(native[1]), aur: false };
-  const aur = /^(?:yay|paru)\s+-S\w*\s+(.*)$/.exec(cmd);
-  if (aur) return { kind: 'package', packages: packageNames(aur[1]), aur: true };
-
-  const clone = /^git\s+clone\s+(.*)$/.exec(cmd);
-  if (clone) return { kind: 'clone', args: clone[1], dest: lastOperand(clone[1]) };
-  const copy = /^cp\s+(.*)$/.exec(cmd);
-  if (copy && lastOperand(copy[1])) return { kind: 'copy', args: copy[1], dest: lastOperand(copy[1])! };
-  const append = /^echo\s+("[^"]*"|'[^']*')\s+>>\s+(\S+)$/.exec(cmd);
-  if (append) return { kind: 'append', line: append[1], file: append[2] };
-
-  if (UPSTREAM_RE.test(cmd)) return { kind: 'upstream', command: cmd };
-  if (cmd.startsWith('sudo ')) return { kind: 'system', command: cmd };
-  return { kind: 'exec', command: cmd };
-}
-
-/**
- * Split a config command into single commands (`a && b` without quotes) and classify each.
- * Config commands are reviewed in the pull request; this only decides how the installer
- * wraps them (plan, backup, conflict check), never what they do.
- */
-export function classifyCommand(cmd: string, data: Pick<ConfigData, 'source'>): InstallAction[] {
-  const rendered = stripNewlines(renderCommand(cmd, data)).trim();
-  const parts = /["']/.test(rendered) ? [rendered] : rendered.split(/\s+&&\s+/);
-  return parts.map((p) => classify(p.trim())).filter((a): a is InstallAction => a !== null);
-}
 
 function actionToShell(a: InstallAction): string {
   switch (a.kind) {
@@ -138,6 +61,8 @@ function actionToShell(a: InstallAction): string {
       return `oxt_upstream ${shQuote(a.command)}`;
     case 'system':
       return `oxt_system ${shQuote(a.command)}`;
+    case 'reload':
+      return `oxt_reload ${shQuote(a.command)}`;
     case 'exec':
       return `oxt_exec ${shQuote(a.command)}`;
   }
@@ -164,6 +89,8 @@ function describeAction(a: InstallAction): string {
       return `Run the project's own installer: ${a.command}`;
     case 'system':
       return `Run with sudo: ${a.command}`;
+    case 'reload':
+      return `Reload the running session, if there is one: ${a.command}`;
     case 'exec':
       return `Run: ${a.command}`;
   }
@@ -202,9 +129,8 @@ export interface InstallImpact {
   manualNotes: string[];
 }
 
-// Commands that only move around, reload or read state: not worth listing as lasting changes.
-const NO_LASTING_EFFECT_RE =
-  /^(?:cd\b|mkdir\s+-p\b|git\s+-C\s+\S+\s+(?:checkout|fetch)\b|hyprctl\s+reload|swaymsg\s+reload|i3-msg\s+(?:reload|restart)|bspc\s+wm\s+-r|awesome-client\b|qdbus\b.*\breconfigure|gsettings\s+get\b|niri\s+msg\b)/;
+// Commands that only move around, check or read state: not worth listing as lasting changes.
+const NO_LASTING_EFFECT_RE = /^(?:cd\b|mkdir\s+-p\b|git\s+-C\s+\S+\s+(?:checkout|fetch)\b|gsettings\s+get\b|niri\s+validate\b)/;
 
 export function installImpact(data: ConfigData): InstallImpact {
   const impact: InstallImpact = { packages: [], aurPackages: [], userPaths: [], systemCommands: [], upstreamCommands: [], execCommands: [], manualNotes: [] };

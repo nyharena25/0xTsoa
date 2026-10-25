@@ -60,7 +60,7 @@
         "id": "reload",
         "title": "Regenerate the GRUB config",
         "commands": [
-          "sudo grub-mkconfig -o /boot/grub/grub.cfg"
+          "# Regenerate the GRUB config, then reboot: sudo grub-mkconfig -o /boot/grub/grub.cfg (Arch), sudo update-grub (Debian, Ubuntu, Mint), sudo grub2-mkconfig -o /boot/grub2/grub.cfg (Fedora, openSUSE)"
         ]
       }
     ]

@@ -37,6 +37,8 @@ const { changes, undo } = describeImpact(difficulty, impact);
 const wm = data.wm === 'any' ? 'Any window manager or desktop' : WM_LABELS[data.wm];
 const server = data.displayServer === 'both' ? 'Wayland & X11' : data.displayServer === 'wayland' ? 'Wayland' : 'X11';
 const distros = data.distros.map((d) => DISTRO_LABELS[d]).join(', ');
+// AUR packages install on Arch-based distros only, even when the project itself runs anywhere.
+const aurOnly = impact.aurPackages.length > 0 && data.distros.some((d) => !['arch', 'endeavouros', 'manjaro'].includes(d));
 const versionLabel = data.version ?? data.source.ref.slice(0, 12);
 ---
 
@@ -95,7 +97,10 @@ const versionLabel = data.version ?? data.source.ref.slice(0, 12);
 
     <div class="border border-zinc-200 rounded-xl p-3 flex flex-col gap-1 min-w-0">
       <dt class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">Works with</dt>
-      <dd class="text-zinc-700 leading-relaxed">{wm} ({server}) on {distros}.</dd>
+      <dd class="text-zinc-700 leading-relaxed">
+        {wm} ({server}) on {distros}.
+        {aurOnly && <span> The installer covers Arch-based distros (AUR packages); elsewhere, install it as the <a href={data.source.repo} target="_blank" rel="noopener noreferrer" class="underline text-zinc-900">upstream README</a> explains.</span>}
+      </dd>
     </div>
   </dl>
 </section>

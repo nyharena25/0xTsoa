@@ -176,14 +176,16 @@ All configurations are checked by `scripts/validate-configs.ts` and `src/lib/sch
 - Moving branch names (`main`, `master`, `dev`, `develop`, `HEAD`, `latest`, `trunk`) are explicitly blocked.
 - Because Git tags can be moved by upstream authors, **only a 40-character commit SHA is immutable** and earns the **Source pinned** assurance badge.
 - Any `install.steps` command that runs `git clone` of `source.repo` must not use `--depth`, and a subsequent command must contain `checkout {{ref}}` (enforced by `validateCloneSteps()` in `src/lib/schema.ts`).
-- A command that downloads a script and runs it (`curl … | bash`, `bash -c "$(curl …)"`, `bash <(curl …)`, wget equivalents) must use a raw file URL pinned to a commit SHA, a version tag or `{{ref}}`. Unpinned remote code is rejected.
+- A command that downloads a script and runs it (`curl … | bash`, `bash -c "$(curl …)"`, `bash <(curl …)`, wget equivalents) is rejected, even from a pinned URL: clone the repository at `{{ref}}` and run the script from the clone, or use `install.script` (pinned URL and SHA-256).
+- Every command follows the **[install-step standard](docs/INSTALL-STANDARD.md)**: pinned clones and downloads, no deletion or overwriting without a backup, no root shells, no bootloader or security changes, interactive and per-distro steps as `#` notes. `src/lib/install-lint.ts` checks it in CI (`npm run validate`) and in the issue bot.
 
 #### How the site turns steps into an installer
 Every config with steps gets a generated `configs/<author>/<slug>/install.sh` (`buildInstallScript()` in `src/lib/install.ts` + the fixed runtime `src/lib/installer-runtime.sh`). Write plain commands; the installer wraps them:
 - `sudo pacman -S`, `sudo apt/dnf/zypper install` and `yay/paru -S` become distro-aware package installs.
 - `git clone`, `cp` and `echo "…" >> file` are planned, conflict-checked and backed up: existing files that differ are kept unless the user approves, and `--rollback` restores them.
 - `./install.sh`, `bash setup.sh`, `make install` are treated as upstream installers: the usual desktop config folders are backed up before they run.
-- Other `sudo` commands are shown as system changes that `--rollback` does not undo. `# comments`, `<placeholders>`, `xdg-open` and `reboot` become printed notes.
+- Session reloads (`hyprctl reload`, `swaymsg reload`, `i3-msg restart`…) run only if that session is running, and never fail the install.
+- Other `sudo` commands are shown as system changes that `--rollback` does not undo. `# comments`, `<placeholders>`, `xdg-open`, `reboot` and logouts become printed notes.
 - Prefer copying into specific folders (`cp -r dots/hypr ~/.config/`) over whole-directory globs, so the plan can show exactly what changes.
 
 The behaviour is covered by `tests/installer-runtime.test.ts` (dry-run writes nothing, conflicts are kept, rollback restores) and every generated script is ShellChecked in CI. On pushes to `main`, `.github/workflows/attest-installers.yml` signs all installers with a GitHub build attestation (`gh attestation verify install.sh --repo <owner>/<repo> --signer-workflow <owner>/<repo>/.github/workflows/attest-installers.yml`, GitHub CLI 2.49+).

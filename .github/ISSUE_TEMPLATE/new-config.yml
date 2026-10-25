@@ -239,10 +239,11 @@ body:
         | `sudo pacman -S --needed waybar kitty` (or apt/dnf) | `sudo bash install.sh` for the whole thing |
         | `git clone --filter=blob:none <repo> ~/dots` then `git -C ~/dots checkout {{ref}}` | `git clone --depth 1` (can't pin the version) |
         | `cp -r ~/dots/hypr ~/dots/waybar ~/.config/` (named folders) | `cp -r ~/dots/* ~/.config/` (overwrites everything) |
-        | `bash -c "$(curl -fsSL https://raw.githubusercontent.com/you/dots/{{ref}}/setup.sh)"` | `curl … \| bash` from a branch URL (rejected) |
+        | `cd ~/dots` then `./setup.sh` (your installer, run from the pinned clone) | `curl … \| bash` or `bash -c "$(curl …)"`, even from a pinned URL (rejected) |
+        | `# Then run: sudo grub-mkconfig -o /boot/grub/grub.cfg` (a note, with the command for each distro) | Bootloader commands, deleting files, `pacman -Syu`, opening an editor (rejected) |
         | `# Log out and back in` (shown as a note) | Personal values like your hostname: write `<hostname>` |
 
-        `{{ref}}` is replaced with your Git Ref.
+        `{{ref}}` is replaced with your Git Ref. The full rules, with examples for themes, GRUB, login screens and distros, are in the [install-step standard](https://github.com/nyharena25/0xTsoa/blob/dev/docs/INSTALL-STANDARD.md). The bot checks them and replies here if a command has to change.
 
   - type: textarea
     id: install_deps
@@ -334,7 +335,7 @@ body:
           required: true
         - label: I ran my install commands on a clean system (or a fresh user) for at least one listed distribution.
           required: true
-        - label: No command pipes a download into a shell unless the URL is pinned to a tag, commit or `{{ref}}`.
+        - label: My commands follow the install-step standard (docs/INSTALL-STANDARD.md), so nothing is piped into a shell, deleted, or touching the bootloader.
           required: true
         - label: My screenshots are direct image links on an allowed host.
           required: true
