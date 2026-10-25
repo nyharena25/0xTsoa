@@ -5,7 +5,7 @@
  */
 import { z } from 'zod';
 import { ALLOWED_IMAGE_HOSTS } from '../../site.config';
-import { stripLeadingSlashes, stripTrailingSlashes } from './strings';
+import { splitOnAnd, stripLeadingChars, stripLeadingSlashes, stripShellComment, stripTrailingChars, stripTrailingSlashes } from './strings';
 
 export const WMS = [
   'hyprland', 'sway', 'river', 'niri', 'wayfire', 'labwc',
@@ -429,63 +429,108 @@ export function validateCloneSteps(data: {
   return { errors, warnings };
 }
 
+type StepsData = { source: { repo: string }; install?: { steps: { commands: string[] }[] } };
+
+/** The commands of every step, trimmed, without blank lines and `#` notes. */
+function activeCommands(data: StepsData): string[] {
+  return (data.install?.steps ?? [])
+    .flatMap((s) => s.commands)
+    .map((c) => c.trim())
+    .filter((c) => c && !c.startsWith('#'));
+}
+
+const unquoteWord = (w: string) => stripTrailingSlashes(stripTrailingChars(stripLeadingChars(w, `'"`), `'";`));
+
+/** Where the clone of source.repo is, and where the shell is inside it ('' = its root, null = outside). */
+interface CloneState {
+  dest: string | null;
+  cwd: string | null;
+}
+
+/** A word's path inside the clone ('' for the clone itself), or null when it is not in it. */
+function inClone(state: CloneState, w: string): string | null {
+  const token = unquoteWord(w);
+  if (!state.dest) return null;
+  if (token === state.dest) return '';
+  return token.startsWith(`${state.dest}/`) ? token.slice(state.dest.length + 1) : null;
+}
+
+/** A word run as a script from the shell's folder: `./script`, or the file of `bash file`. */
+function localScript(words: string[], k: number): string | null {
+  const w = words[k];
+  if (w.startsWith('./')) return unquoteWord(w.slice(2));
+  if (k === 1 && /^(?:ba)?sh$/.test(words[0]) && !w.startsWith('-')) return unquoteWord(w);
+  return null;
+}
+
+/** Adds the clone paths one command's words use. */
+function collectClonePaths(state: CloneState, words: string[], found: Set<string>): void {
+  words.forEach((w, k) => {
+    if (/[*?${}]/.test(w)) return; // globs, variables, brace expansion, {{ref}}
+    const rel = inClone(state, w);
+    if (rel) {
+      found.add(rel);
+      return;
+    }
+    if (state.cwd === null) return;
+    const local = localScript(words, k);
+    if (local) found.add(state.cwd ? `${state.cwd}/${local}` : local);
+  });
+}
+
+/** Follows one `&&` part: a clone of source.repo, a `cd`, or a command that may use clone paths. */
+function scanPart(part: string, repo: string, state: CloneState, found: Set<string>): void {
+  const words = part.split(/\s+/).filter(Boolean);
+  if (words[0] === 'sudo') words.shift();
+  if (words[0] === 'git' && words[1] === 'clone') {
+    const operands = words.slice(2).filter((w) => !w.startsWith('-'));
+    if (operands[0] && normalizeRepoUrl(operands[0]) === repo) {
+      state.dest = unquoteWord(operands[1] ?? operands[0].split('/').pop()!.replace(/\.git$/, ''));
+      state.cwd = null;
+    }
+    return;
+  }
+  if (words[0] === 'cd') {
+    state.cwd = words[1] ? inClone(state, words[1]) : null;
+    return;
+  }
+  if (words[0] === 'git') return; // git -C <clone> checkout …
+  collectClonePaths(state, words, found);
+}
+
 /**
  * Paths inside source.repo that the install steps rely on ("themes/catppuccin-mocha.lua",
  * "Scripts/install.sh"): any path under the clone folder of source.repo, plus `./script` and
  * `bash file` run after `cd` into it. CI and the nightly sync check them against the pinned commit,
  * so a step cannot point at a file the reviewed version does not have.
  */
-export function repoPathsInSteps(data: { source: { repo: string }; install?: { steps: { commands: string[] }[] } }): string[] {
+export function repoPathsInSteps(data: StepsData): string[] {
   const repo = normalizeRepoUrl(data.source.repo);
   const found = new Set<string>();
-  let dest: string | null = null;
-  // Where the shell is inside the clone ('' = its root), or null when outside it.
-  let cwd: string | null = null;
-
-  const unquote = (w: string) => w.replace(/^['"]+|['";]+$/g, '').replace(/\/+$/, '');
-  const inClone = (w: string): string | null => {
-    const token = unquote(w);
-    if (!dest) return null;
-    if (token === dest) return '';
-    return token.startsWith(`${dest}/`) ? token.slice(dest.length + 1) : null;
-  };
-
-  const commands = (data.install?.steps ?? []).flatMap((s) => s.commands).map((c) => c.trim());
-  for (const cmd of commands.filter((c) => c && !c.startsWith('#'))) {
-    for (const part of cmd.split(/\s*&&\s*/)) {
-      const words = part.split(/\s+/).filter(Boolean);
-      if (words[0] === 'sudo') words.shift();
-      if (words[0] === 'git' && words[1] === 'clone') {
-        const operands = words.slice(2).filter((w) => !w.startsWith('-'));
-        if (operands[0] && normalizeRepoUrl(operands[0]) === repo) {
-          dest = unquote(operands[1] ?? operands[0].split('/').pop()!.replace(/\.git$/, ''));
-          cwd = null;
-        }
-        continue;
-      }
-      if (words[0] === 'cd') {
-        cwd = words[1] ? inClone(words[1]) : null;
-        continue;
-      }
-      if (words[0] === 'git') continue; // git -C <clone> checkout …
-      words.forEach((w, k) => {
-        if (/[*?${}]/.test(w)) return; // globs, variables, brace expansion, {{ref}}
-        const rel = inClone(w);
-        if (rel) {
-          found.add(rel);
-          return;
-        }
-        if (cwd === null) return;
-        const local = w.startsWith('./') ? unquote(w.slice(2)) : k === 1 && /^(?:ba)?sh$/.test(words[0]) && !w.startsWith('-') ? unquote(w) : null;
-        if (local) found.add(cwd ? `${cwd}/${local}` : local);
-      });
-    }
-  }
+  const state: CloneState = { dest: null, cwd: null };
+  for (const part of activeCommands(data).flatMap((c) => splitOnAnd(c))) scanPart(part, repo, state, found);
   return [...found];
 }
 
-const PACKAGE_INSTALL_RE =
-  /^(?:sudo\s+)?(?:pacman\s+-S\w*|apt(?:-get)?\s+install|dnf\s+install|zypper\s+install|(?:yay|paru)\s+-S\w*|flatpak\s+install)\s+(.*)$/;
+/** Package install commands, without sudo: each prefix is followed by the package list. */
+const PACKAGE_INSTALL_PREFIXES = [
+  /^pacman\s+-S\w*\s+/,
+  /^apt(?:-get)?\s+install\s+/,
+  /^dnf\s+install\s+/,
+  /^zypper\s+install\s+/,
+  /^(?:yay|paru)\s+-S\w*\s+/,
+  /^flatpak\s+install\s+/,
+];
+
+/** The package list of a package install command (sudo allowed), or null for any other command. */
+function packageList(part: string): string | null {
+  const cmd = part.replace(/^sudo\s+/, '');
+  for (const re of PACKAGE_INSTALL_PREFIXES) {
+    const m = re.exec(cmd);
+    if (m) return cmd.slice(m[0].length) || null;
+  }
+  return null;
+}
 
 /**
  * True when the steps install the project as released distro packages and never clone source.repo
@@ -500,13 +545,12 @@ export function installsReleasePackages(data: {
   if (data.install?.script) return false;
   const repo = normalizeRepoUrl(data.source.repo);
   let packaged = false;
-  const commands = (data.install?.steps ?? []).flatMap((s) => s.commands).map((c) => c.trim());
-  for (const part of commands.filter((c) => c && !c.startsWith('#')).flatMap((c) => c.split(/\s*&&\s*/))) {
-    const clone = part.match(/\bgit\s+clone\b.*?((?:https?:\/\/|git@)\S+)/);
+  for (const part of activeCommands(data).flatMap((c) => splitOnAnd(c))) {
+    const clone = /\bgit\s+clone\b.*?((?:https?:\/\/|git@)\S+)/.exec(part);
     if (clone && normalizeRepoUrl(clone[1]) === repo) return false;
-    const pkg = PACKAGE_INSTALL_RE.exec(part);
-    if (!pkg) continue;
-    const names = pkg[1].replace(/\s+#.*$/, '').split(/\s+/).filter((w) => w && !w.startsWith('-'));
+    const list = packageList(part);
+    if (!list) continue;
+    const names = stripShellComment(list).split(/\s+/).filter((w) => w && !w.startsWith('-'));
     if (names.some((n) => n.endsWith('-git'))) return false;
     packaged = true;
   }

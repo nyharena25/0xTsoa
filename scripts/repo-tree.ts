@@ -8,11 +8,12 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { GIT } from './git-path';
 
 const run = promisify(execFile);
 
 async function git(args: string[], cwd: string): Promise<string> {
-  const { stdout } = await run('git', args, {
+  const { stdout } = await run(GIT, args, {
     cwd,
     env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
     timeout: 120_000,

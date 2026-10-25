@@ -17,8 +17,9 @@ const HEADERS = { 'User-Agent': '0xTsoa-LiveCheck/1.0 (+https://github.com/nyhar
 
 /** Value of `attr` in the first tag matching `tagPattern`, whatever the attribute order. */
 function attrOf(html: string, tagPattern: RegExp, attr: string): string | null {
-  for (const tag of html.match(tagPattern) ?? []) {
-    const m = tag.match(new RegExp(`\\s${attr}=["']([^"']*)["']`, 'i'));
+  const attrRe = new RegExp(String.raw`\s${attr}=["']([^"']*)["']`, 'i');
+  for (const [tag] of html.matchAll(tagPattern)) {
+    const m = attrRe.exec(tag);
     if (m) return m[1];
   }
   return null;
@@ -39,7 +40,7 @@ export function extractLocs(xml: string): string[] {
 export function extractSitemapLines(robots: string): string[] {
   return robots
     .split('\n')
-    .map((l) => l.match(/^\s*sitemap:\s*(\S+)/i)?.[1])
+    .map((l) => /^\s*sitemap:\s*(\S+)/i.exec(l)?.[1])
     .filter((v): v is string => Boolean(v));
 }
 
@@ -66,112 +67,135 @@ async function get(url: string): Promise<{ status: number; location: string | nu
   return { status: res.status, location: res.headers.get('location'), body };
 }
 
-/** Runs every check once and returns the failures (empty = healthy). */
-async function runChecks(siteUrl: string, redirectHosts: string[]): Promise<string[]> {
-  const failures: string[] = [];
-  const fail = (what: string, why: string) => {
-    failures.push(`${what}: ${why}`);
+type Response = Awaited<ReturnType<typeof get>>;
+
+/** Collects failures and prints each result as it is reported. */
+class Report {
+  readonly failures: string[] = [];
+  fail(what: string, why: string): void {
+    this.failures.push(`${what}: ${why}`);
     console.error(`  ✖ ${what}: ${why}`);
-  };
-  const ok = (what: string) => console.log(`  ✓ ${what}`);
-
-  /** A page must answer 200 itself and declare itself canonical. */
-  const checkPage = async (url: string) => {
-    const res = await get(url);
-    if (res.status !== 200) return fail(url, `expected 200, got ${res.status}${res.location ? ` → ${res.location}` : ''}`);
-    const canonical = extractCanonical(res.body);
-    if (canonical !== url) return fail(url, `canonical is ${canonical ?? '(missing)'}`);
-    const ogUrl = extractOgUrl(res.body);
-    if (ogUrl !== null && ogUrl !== url) return fail(url, `og:url is ${ogUrl}`);
-    ok(`${url} answers 200 and is its own canonical`);
-  };
-
-  const sitemapIndexUrl = `${siteUrl}/sitemap-index.xml`;
-
-  const robots = await get(`${siteUrl}/robots.txt`);
-  if (robots.status !== 200) {
-    fail('robots.txt', `expected 200, got ${robots.status}`);
-  } else {
-    const lines = extractSitemapLines(robots.body);
-    if (lines.length === 0) fail('robots.txt', 'no Sitemap: line');
-    else if (lines.some((l) => l !== sitemapIndexUrl)) fail('robots.txt', `Sitemap: ${lines.join(', ')} (expected ${sitemapIndexUrl})`);
-    else ok(`robots.txt points to ${sitemapIndexUrl}`);
   }
+  ok(what: string): void {
+    console.log(`  ✓ ${what}`);
+  }
+}
 
-  const pageUrls: string[] = [];
+function statusText(res: Response): string {
+  const target = res.location ? ` → ${res.location}` : '';
+  return `expected 200, got ${res.status}${target}`;
+}
+
+/** robots.txt must answer 200 and point to the sitemap index only. */
+async function checkRobots(report: Report, siteUrl: string, sitemapIndexUrl: string): Promise<void> {
+  const robots = await get(`${siteUrl}/robots.txt`);
+  if (robots.status !== 200) return report.fail('robots.txt', statusText(robots));
+  const lines = extractSitemapLines(robots.body);
+  if (lines.length === 0) report.fail('robots.txt', 'no Sitemap: line');
+  else if (lines.some((l) => l !== sitemapIndexUrl)) report.fail('robots.txt', `Sitemap: ${lines.join(', ')} (expected ${sitemapIndexUrl})`);
+  else report.ok(`robots.txt points to ${sitemapIndexUrl}`);
+}
+
+/** Every sitemap must list SITE_URL URLs only. Returns the page URLs they list. */
+async function checkSitemaps(report: Report, siteUrl: string, sitemapIndexUrl: string): Promise<string[]> {
   const index = await get(sitemapIndexUrl);
   if (index.status !== 200) {
-    fail('sitemap-index.xml', `expected 200, got ${index.status}`);
-  } else {
-    const children = extractLocs(index.body);
-    const badChildren = foreignUrls(children, siteUrl);
-    if (children.length === 0) fail('sitemap-index.xml', 'lists no sitemaps');
-    if (badChildren.length) fail('sitemap-index.xml', `lists other hosts: ${badChildren.slice(0, 3).join(', ')}`);
-    for (const child of children.filter((c) => !badChildren.includes(c))) {
-      const sm = await get(child);
-      if (sm.status !== 200) {
-        fail(child, `expected 200, got ${sm.status}`);
-        continue;
-      }
-      const locs = extractLocs(sm.body);
-      const bad = foreignUrls(locs, siteUrl);
-      if (bad.length) fail(child, `${bad.length} URL(s) on another host, e.g. ${bad[0]}`);
-      else ok(`${child}: ${locs.length} URLs, all on ${siteUrl}`);
-      pageUrls.push(...locs.filter((l) => !bad.includes(l)));
-    }
+    report.fail('sitemap-index.xml', statusText(index));
+    return [];
   }
+  const children = extractLocs(index.body);
+  const badChildren = foreignUrls(children, siteUrl);
+  if (children.length === 0) report.fail('sitemap-index.xml', 'lists no sitemaps');
+  if (badChildren.length) report.fail('sitemap-index.xml', `lists other hosts: ${badChildren.slice(0, 3).join(', ')}`);
+
+  const own = children.filter((c) => !badChildren.includes(c));
+  const sitemaps = await Promise.all(own.map(get));
+  const pageUrls: string[] = [];
+  sitemaps.forEach((sm, i) => {
+    if (sm.status !== 200) return report.fail(own[i], statusText(sm));
+    const locs = extractLocs(sm.body);
+    const bad = foreignUrls(locs, siteUrl);
+    if (bad.length) report.fail(own[i], `${bad.length} URL(s) on another host, e.g. ${bad[0]}`);
+    else report.ok(`${own[i]}: ${locs.length} URLs, all on ${siteUrl}`);
+    pageUrls.push(...locs.filter((l) => !bad.includes(l)));
+  });
+  return pageUrls;
+}
+
+/** A page must answer 200 itself and declare itself canonical. */
+function checkPage(report: Report, url: string, res: Response): void {
+  if (res.status !== 200) return report.fail(url, statusText(res));
+  const canonical = extractCanonical(res.body);
+  if (canonical !== url) return report.fail(url, `canonical is ${canonical ?? '(missing)'}`);
+  const ogUrl = extractOgUrl(res.body);
+  if (ogUrl !== null && ogUrl !== url) return report.fail(url, `og:url is ${ogUrl}`);
+  report.ok(`${url} answers 200 and is its own canonical`);
+}
+
+/** Each former host must send `paths` to the same path on SITE_URL in one permanent redirect. */
+async function checkRedirects(report: Report, siteUrl: string, redirectHosts: string[], paths: string[]): Promise<void> {
+  const checks = redirectHosts.flatMap((host) => paths.map((p) => ({ from: `https://${host}${p}`, expected: `${siteUrl}${p}` })));
+  const responses = await Promise.all(checks.map((c) => get(c.from)));
+  checks.forEach(({ from, expected }, i) => {
+    const res = responses[i];
+    const problem = redirectProblem(res.status, res.location, expected);
+    if (problem) report.fail(from, problem);
+    else report.ok(`${from} → ${res.location} (${res.status})`);
+  });
+}
+
+/** Runs every check once and returns the failures (empty = healthy). */
+async function runChecks(siteUrl: string, redirectHosts: string[]): Promise<string[]> {
+  const report = new Report();
+  const sitemapIndexUrl = `${siteUrl}/sitemap-index.xml`;
+  await checkRobots(report, siteUrl, sitemapIndexUrl);
+  const pageUrls = await checkSitemaps(report, siteUrl, sitemapIndexUrl);
 
   const configUrls = pageUrls.filter((u) => u.includes('/configs/'));
   // Spread the sample across the list, so a broken template anywhere in it shows up.
   const sample = Array.from({ length: Math.min(CONFIG_SAMPLE, configUrls.length) }, (_, i) =>
     configUrls[Math.floor((i * configUrls.length) / CONFIG_SAMPLE)],
   );
-  for (const url of [`${siteUrl}/`, `${siteUrl}/catalogue/`, ...sample]) await checkPage(url);
+  const pages = [`${siteUrl}/`, `${siteUrl}/catalogue/`, ...sample];
+  const responses = await Promise.all(pages.map(get));
+  pages.forEach((url, i) => checkPage(report, url, responses[i]));
 
   const redirectPaths = ['/', '/catalogue/', ...(sample[0] ? [new URL(sample[0]).pathname] : [])];
-  for (const host of redirectHosts) {
-    for (const p of redirectPaths) {
-      const from = `https://${host}${p}`;
-      const res = await get(from);
-      const problem = redirectProblem(res.status, res.location, `${siteUrl}${p}`);
-      if (problem) fail(from, problem);
-      else ok(`${from} → ${res.location} (${res.status})`);
-    }
-  }
-
-  return failures;
+  await checkRedirects(report, siteUrl, redirectHosts, redirectPaths);
+  return report.failures;
 }
 
-async function main() {
-  const siteUrl = SITE_URL.replace(/\/$/, '');
-  console.log(`Checking ${siteUrl} (redirect hosts: ${REDIRECT_HOSTS.join(', ') || 'none'})`);
-
-  for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
-    let failures: string[];
-    try {
-      failures = await runChecks(siteUrl, REDIRECT_HOSTS);
-    } catch (err) {
-      failures = [`network error: ${(err as Error).message}`];
-      console.error(`  ✖ ${failures[0]}`);
-    }
-    if (failures.length === 0) {
-      console.log('✓ Live site is consistent.');
-      return;
-    }
-    // Right after a deploy, the domains can take a few seconds to point at the new build.
-    if (attempt < ATTEMPTS) {
-      console.log(`${failures.length} problem(s); retrying in ${RETRY_DELAY_MS / 1000}s (attempt ${attempt + 1}/${ATTEMPTS})…`);
-      await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
-    } else {
-      console.error(`✖ ${failures.length} problem(s) on the live site.`);
-      process.exit(1);
-    }
+async function safeChecks(siteUrl: string): Promise<string[]> {
+  try {
+    return await runChecks(siteUrl, REDIRECT_HOSTS);
+  } catch (err) {
+    const failures = [`network error: ${(err as Error).message}`];
+    console.error(`  ✖ ${failures[0]}`);
+    return failures;
   }
+}
+
+/** Right after a deploy, the domains can take a few seconds to point at the new build: retry. */
+async function checkWithRetries(siteUrl: string, attempt = 1): Promise<boolean> {
+  const failures = await safeChecks(siteUrl);
+  if (failures.length === 0) return true;
+  if (attempt >= ATTEMPTS) {
+    console.error(`✖ ${failures.length} problem(s) on the live site.`);
+    return false;
+  }
+  console.log(`${failures.length} problem(s); retrying in ${RETRY_DELAY_MS / 1000}s (attempt ${attempt + 1}/${ATTEMPTS})…`);
+  await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+  return checkWithRetries(siteUrl, attempt + 1);
 }
 
 if (process.argv[1]?.endsWith('check-live.ts')) {
-  main().catch((err) => {
+  const siteUrl = SITE_URL.replace(/\/$/, '');
+  console.log(`Checking ${siteUrl} (redirect hosts: ${REDIRECT_HOSTS.join(', ') || 'none'})`);
+  try {
+    if (await checkWithRetries(siteUrl)) console.log('✓ Live site is consistent.');
+    else process.exit(1);
+  } catch (err) {
     console.error(err);
     process.exit(1);
-  });
+  }
 }

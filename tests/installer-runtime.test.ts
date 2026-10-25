@@ -185,8 +185,8 @@ describe('generated installer', () => {
   it('refuses to run as root (checked before anything else)', () => {
     const src = fs.readFileSync(script, 'utf8');
     const main = src.slice(src.indexOf('oxt_main() {'));
-    expect(main.indexOf('[ "$EUID" -ne 0 ] || die')).toBeGreaterThan(0);
-    expect(main.indexOf('[ "$EUID" -ne 0 ] || die')).toBeLessThan(main.indexOf('oxt_steps'));
+    expect(main.indexOf('[[ "$EUID" -ne 0 ]] || die')).toBeGreaterThan(0);
+    expect(main.indexOf('[[ "$EUID" -ne 0 ]] || die')).toBeLessThan(main.indexOf('oxt_steps'));
   });
 
   it('rollback refuses manifest paths outside HOME', () => {

@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { SITE_URL, withBase } from '../site.config';
+import { GIT } from './git-path';
 
 const INDEXNOW_KEY = process.env.INDEXNOW_KEY || '4f8b2e9a1c7d6035e8a4b2c9d1f7063a';
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
@@ -56,7 +57,7 @@ export function selectIndexNowUrls(
 
   const urls = new Set<string>();
   for (const c of changes) {
-    const m = c.path.match(CONFIG_FILE);
+    const m = CONFIG_FILE.exec(c.path);
     if (m) urls.add(pageUrl(`/configs/${m[1]}/${m[2]}/`));
   }
   const configCount = urls.size;
@@ -66,7 +67,7 @@ export function selectIndexNowUrls(
   }
   let guideCount = 0;
   for (const c of changes) {
-    const m = c.path.match(GUIDE_FILE);
+    const m = GUIDE_FILE.exec(c.path);
     if (m && !urls.has(pageUrl(`/docs/${m[1]}/`))) {
       urls.add(pageUrl(`/docs/${m[1]}/`));
       guideCount++;
@@ -74,10 +75,10 @@ export function selectIndexNowUrls(
   }
   if (guideCount > 0) urls.add(pageUrl('/docs/'));
 
-  const reasons = [
-    configCount > 0 ? `${configCount} config page(s) changed, plus home and catalogue` : urls.has(pageUrl('/catalogue/')) ? 'listing data changed' : '',
-    guideCount > 0 ? `${guideCount} guide(s) changed, plus the Docs index` : '',
-  ].filter(Boolean);
+  const reasons: string[] = [];
+  if (configCount > 0) reasons.push(`${configCount} config page(s) changed, plus home and catalogue`);
+  else if (urls.has(pageUrl('/catalogue/'))) reasons.push('listing data changed');
+  if (guideCount > 0) reasons.push(`${guideCount} guide(s) changed, plus the Docs index`);
   return { urls: [...urls], reason: reasons.join('; ') || 'no page changed' };
 }
 
@@ -103,12 +104,16 @@ async function loadSitemapUrls(site: string): Promise<string[]> {
 
   const index = await fetch(`${site}/sitemap-index.xml`, { signal: AbortSignal.timeout(15000) });
   if (!index.ok) throw new Error(`Failed to fetch ${site}/sitemap-index.xml: HTTP ${index.status}`);
-  const urls: string[] = [];
-  for (const child of extractLocUrls(await index.text())) {
-    const res = await fetch(child, { signal: AbortSignal.timeout(15000) });
-    if (!res.ok) throw new Error(`Failed to fetch ${child}: HTTP ${res.status}`);
-    urls.push(...extractLocUrls(await res.text()));
-  }
+  const children = extractLocUrls(await index.text());
+  const urls = (
+    await Promise.all(
+      children.map(async (child) => {
+        const res = await fetch(child, { signal: AbortSignal.timeout(15000) });
+        if (!res.ok) throw new Error(`Failed to fetch ${child}: HTTP ${res.status}`);
+        return extractLocUrls(await res.text());
+      }),
+    )
+  ).flat();
   console.log(`[IndexNow] Loaded ${urls.length} URLs from ${site}/sitemap-index.xml`);
   return urls;
 }
@@ -117,7 +122,7 @@ async function loadSitemapUrls(site: string): Promise<string[]> {
 function changedFiles(since: string): FileChange[] | null {
   if (!/^[0-9a-f]{7,40}$/i.test(since)) return null;
   try {
-    return parseNameStatus(execFileSync('git', ['diff', '--name-status', `${since}..HEAD`], { encoding: 'utf-8' }));
+    return parseNameStatus(execFileSync(GIT, ['diff', '--name-status', `${since}..HEAD`], { encoding: 'utf-8' }));
   } catch {
     return null;
   }
@@ -147,7 +152,8 @@ async function main() {
     return;
   }
   if (argv.includes('--dry-run')) {
-    console.log(`[IndexNow] Dry run, not submitted:\n${urlList.map((u) => `  ${u}`).join('\n')}`);
+    const list = urlList.map((u) => '  ' + u).join('\n');
+    console.log(`[IndexNow] Dry run, not submitted:\n${list}`);
     return;
   }
 
@@ -171,8 +177,10 @@ async function main() {
 }
 
 if (process.argv[1]?.endsWith('indexnow.ts')) {
-  main().catch((err) => {
+  try {
+    await main();
+  } catch (err) {
     console.error('[IndexNow] Error:', forLog(err instanceof Error ? err.message : err));
     process.exit(1);
-  });
+  }
 }

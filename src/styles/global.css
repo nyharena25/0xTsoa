@@ -450,6 +450,8 @@
   border-radius: 0.75rem;
   padding: 1rem;
   overflow-x: auto;
+  background: var(--color-zinc-900);
+  color: var(--color-zinc-100);
 }
 .guide-prose > blockquote {
   border-left: 3px solid var(--color-zinc-300);
@@ -469,7 +471,6 @@
   vertical-align: top;
 }
 .guide-prose > table th { background: var(--color-zinc-50); color: var(--color-zinc-900); }
-.guide-prose > pre { background: var(--color-zinc-900); color: var(--color-zinc-100); }
 .guide-prose > pre :is(.token.comment, .token.prolog) { color: var(--color-zinc-400); }
 .guide-prose > pre :is(.token.string, .token.attr-value) { color: var(--color-emerald-300); }
 .guide-prose > pre :is(.token.keyword, .token.builtin, .token.function) { color: var(--color-sky-300); }

@@ -4,11 +4,14 @@
  */
 import { WM_LABELS, DISTRO_LABELS, type ConfigData } from './schema';
 import type { InstallDifficulty, InstallImpact } from './install';
+import { dropLastWord, stripTrailingChars } from './strings';
 
 /** Base.astro appends " — 0xTsoa" (9 characters); Google shows about 60. */
 export const TITLE_SUFFIX = ' — 0xTsoa';
 export const TITLE_MAX = 60 - TITLE_SUFFIX.length;
 export const DESCRIPTION_MAX = 160;
+
+const SERVER_LABELS: Record<ConfigData['displayServer'], string> = { both: 'Wayland & X11', wayland: 'Wayland', x11: 'X11' };
 
 interface Noun {
   /** What people call it in searches. Empty: the project name says it already. */
@@ -64,11 +67,7 @@ function categoryNoun(data: ConfigData): Noun {
     case 'boot':
       return { noun: 'Boot Theme', present: ['grub', 'grub2', 'plymouth', 'boot'], themeSuffix: true };
     case 'extension':
-      return data.wm === 'gnome'
-        ? { noun: 'GNOME Extension', present: ['extension'], wmInNoun: true }
-        : data.wm === 'kde'
-          ? { noun: 'KDE Plasma Extension', present: ['extension'], wmInNoun: true }
-          : { noun: 'Desktop Extension', present: ['extension'] };
+      return EXTENSION_NOUNS[data.wm] ?? { noun: 'Desktop Extension', present: ['extension'] };
     case 'tool':
       return { noun: TOOL_NOUNS.find(([tag]) => data.tags.includes(tag))?.[1] ?? '', present: [] };
     case 'resource':
@@ -76,12 +75,18 @@ function categoryNoun(data: ConfigData): Noun {
   }
 }
 
+/** Extensions named after the desktop they extend. */
+const EXTENSION_NOUNS: Partial<Record<ConfigData['wm'], Noun>> = {
+  gnome: { noun: 'GNOME Extension', present: ['extension'], wmInNoun: true },
+  kde: { noun: 'KDE Plasma Extension', present: ['extension'], wmInNoun: true },
+};
+
 const DOT_WORDS = /\b(dotfiles|dots|rice|config)\b/i;
 
-const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 const has = (text: string, word: string) => text.toLowerCase().includes(word.toLowerCase());
 /** Whole word, singular or plural: "Catppuccin Cursors" has "cursor", "Waybar" has no "bar". */
-const hasWord = (text: string, word: string) => new RegExp(`(^|[^\\w-])${escapeRe(word)}s?($|[^\\w-])`, 'i').test(text);
+const hasWord = (text: string, word: string) => new RegExp(String.raw`(^|[^\w-])${escapeRe(word)}s?($|[^\w-])`, 'i').test(text);
 
 /** "Catppuccin GTK" + "GTK Theme" → "Catppuccin GTK Theme"; "Catppuccin Cursors" + "Cursor Theme" → unchanged. */
 export function withNoun(name: string, { noun, present, themeSuffix }: Noun): string {
@@ -98,36 +103,39 @@ export function withNoun(name: string, { noun, present, themeSuffix }: Noun): st
   return `${name} ${noun}`;
 }
 
+/** "Paper Dots" → "Paper Dots for Hyprland"; "Crystal" → "Crystal: AwesomeWM Dotfiles"… */
+function dotfilesBase(name: string, target: string): string {
+  const named = DOT_WORDS.test(name);
+  const mentionsTarget = has(name, target);
+  if (named) return mentionsTarget ? name : `${name} for ${target}`;
+  return mentionsTarget ? `${name} Dotfiles` : `${name}: ${target} Dotfiles`;
+}
+
+/** Title candidates for a full setup, longest first. */
+function dotfilesTitles(name: string, target: string, distro: string | null): string[] {
+  const base = dotfilesBase(name, target);
+  return distro && !has(base, distro) ? [`${base} on ${distro}`, base] : [base];
+}
+
+/** Title candidates for a desktop part (theme, bar, tool…), longest first. */
+function partTitles(data: ConfigData, wm: string | null): string[] {
+  const noun = categoryNoun(data);
+  const base = withNoun(data.name, noun);
+  if (wm && !noun.wmInNoun && !has(base, wm)) return [`${base} for ${wm}`, base];
+  if (!noun.noun && data.category === 'tool') return [`${base} for Linux`, base];
+  return [base];
+}
+
 /** Search title without the site suffix, at most TITLE_MAX characters. */
 export function configSeoTitle(data: ConfigData): string {
   const wm = data.wm === 'any' || data.wm === 'other' ? null : WM_LABELS[data.wm];
   const distro = data.distros[0] === 'any' ? null : DISTRO_LABELS[data.distros[0]];
-  const candidates: string[] = [];
-
-  if (data.category === 'dotfiles') {
-    const target = wm ?? 'Linux';
-    const named = DOT_WORDS.test(data.name);
-    const base = named && has(data.name, target)
-      ? data.name
-      : named
-        ? `${data.name} for ${target}`
-        : has(data.name, target)
-          ? `${data.name} Dotfiles`
-          : `${data.name}: ${target} Dotfiles`;
-    if (distro && !has(base, distro)) candidates.push(`${base} on ${distro}`);
-    candidates.push(base);
-  } else {
-    const noun = categoryNoun(data);
-    const base = withNoun(data.name, noun);
-    if (wm && !noun.wmInNoun && !has(base, wm)) candidates.push(`${base} for ${wm}`);
-    else if (!noun.noun && data.category === 'tool') candidates.push(`${base} for Linux`);
-    candidates.push(base);
-  }
+  const candidates = data.category === 'dotfiles' ? dotfilesTitles(data.name, wm ?? 'Linux', distro) : partTitles(data, wm);
   // One colon per title at most: "Crystal: AwesomeWM Dotfiles" gets no ": Preview & Install".
   if (data.category !== 'resource' && !candidates[0].includes(':')) candidates.unshift(`${candidates[0]}: Preview & Install`);
 
   const fit = candidates.find((c) => c.length <= TITLE_MAX);
-  return fit ?? data.name.slice(0, TITLE_MAX).replace(/\s+\S*$/, '');
+  return fit ?? dropLastWord(data.name.slice(0, TITLE_MAX));
 }
 
 function plural(n: number, word: string): string {
@@ -162,8 +170,8 @@ export function impactSentence(difficulty: InstallDifficulty | null, impact: Ins
 
 /** Meta description: what it is, what it works with, what installing it changes. At most 160 characters. */
 export function configSeoDescription(data: ConfigData, difficulty: InstallDifficulty | null, impact: InstallImpact): string {
-  const summary = `${data.summary.trim().replace(/\.+$/, '')}.`;
-  const server = data.displayServer === 'both' ? 'Wayland & X11' : data.displayServer === 'wayland' ? 'Wayland' : 'X11';
+  const summary = `${stripTrailingChars(data.summary.trim(), '.')}.`;
+  const server = SERVER_LABELS[data.displayServer];
   const distros = data.distros.includes('any') ? '' : ` on ${data.distros.slice(0, 2).map((d) => DISTRO_LABELS[d]).join(', ')}`;
   const works =
     data.wm === 'any' || data.wm === 'other'
@@ -175,5 +183,5 @@ export function configSeoDescription(data: ConfigData, difficulty: InstallDiffic
     const text = parts.join(' ');
     if (text.length <= DESCRIPTION_MAX) return text;
   }
-  return `${summary.slice(0, DESCRIPTION_MAX - 1).replace(/\s+\S*$/, '')}…`;
+  return `${dropLastWord(summary.slice(0, DESCRIPTION_MAX - 1))}…`;
 }

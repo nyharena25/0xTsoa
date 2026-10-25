@@ -10,6 +10,7 @@
  */
 import type { ConfigData } from './schema';
 import { classifyCommand } from './commands';
+import { splitOnAnd, stripTrailingSlashes } from './strings';
 
 export type LintSeverity = 'error' | 'warning';
 
@@ -23,7 +24,22 @@ export interface LintIssue {
 }
 
 /** A pinned Git reference: {{ref}}, a full commit SHA or a version tag. */
-const PIN_RE = /^(?:\{\{ref\}\}|[0-9a-f]{40}|v?\d+(?:\.\d+)+(?:[-+][\w.]+)?)$/;
+const isPin = (ref: string) => ref === '{{ref}}' || /^[0-9a-f]{40}$/.test(ref) || /^v?\d+(?:\.\d+)+(?:[-+][\w.]+)?$/.test(ref);
+/** Interpreters that run whatever is piped into them. */
+const PIPE_TARGETS = new Set(['sh', 'bash', 'zsh', 'dash', 'ksh', 'fish', 'python', 'python3', 'perl', 'ruby', 'node']);
+/** Bootloader and initramfs tools. */
+const BOOT_RES = [
+  /\bgrub2?-(?:mkconfig|install)\b|\bupdate-grub2?\b|\bgrubby\b/,
+  /\b(?:mkinitcpio|dracut|update-initramfs)\b/,
+  /\b(?:bootctl|efibootmgr|kernelstub)\b/,
+  /plymouth-set-default-theme\b.*\s-R\b/,
+];
+
+/** True when a download is piped straight into an interpreter (`curl … | sudo bash`). */
+function pipesDownloadIntoShell(cmd: string): boolean {
+  const m = /\b(?:curl|wget)\b[^|;]*\|\s*(?:sudo\s+)?([\w.]+)/.exec(cmd);
+  return m !== null && PIPE_TARGETS.has(m[1]);
+}
 const ARCH_FAMILY = new Set(['arch', 'endeavouros', 'manjaro']);
 const INTERACTIVE = new Set(['nvim', 'vim', 'vi', 'nano', 'emacs', 'micro', 'less', 'more', 'man', 'htop', 'btop', 'top', 'nmtui', 'ranger', 'lf', 'yazi', 'mc']);
 
@@ -40,7 +56,7 @@ export const RULES: Rule[] = [
     id: 'remote-exec',
     severity: 'error',
     test: (c) =>
-      /\b(?:curl|wget)\b[^|;]*\|\s*(?:sudo\s+)?(?:(?:ba|z|da|k|fi)?sh|python3?|perl|ruby|node)\b/.test(c) ||
+      pipesDownloadIntoShell(c) ||
       /(?:\$\(|<\(|`)\s*(?:curl|wget)\b/.test(c),
     message:
       'Runs downloaded code without checking it. Use install.script (pinned URL and sha256), or clone the repository at {{ref}} and run the script from the clone.',
@@ -50,7 +66,7 @@ export const RULES: Rule[] = [
     severity: 'error',
     test: (c) =>
       /\b(?:curl|wget)\b/.test(c) &&
-      (c.match(/https?:\/\/\S+/g) ?? []).some((u) => !/\{\{ref\}\}|[0-9a-f]{40}|\/releases\/download\/|\/v?\d+\.\d+[\w.-]*\//.test(u)),
+      (c.match(/https?:\/\/\S+/g) ?? []).some((u) => !/\{\{ref\}\}|[0-9a-f]{40}|\/releases\/download\/|\/v?\d+\.\d[\w.-]*\//.test(u)),
     message: 'Downloads from a URL that can change. Pin it to {{ref}}, a commit SHA or a release tag.',
   },
   {
@@ -72,7 +88,7 @@ export const RULES: Rule[] = [
   {
     id: 'root-shell',
     severity: 'error',
-    test: (c) => /\bsudo\s+(?:-\w*[siE]\w*\b|su\b|(?:ba|z)?sh\b)/.test(c) || /^su\b/.test(c),
+    test: (c) => /\bsudo\s+(?:-[^\WsiE]*[siE]|su\b|(?:ba|z)?sh\b)/.test(c) || /^su\b/.test(c),
     message: 'Opens a root shell or keeps the user environment under sudo. Use sudo on the single command that needs it.',
   },
   {
@@ -99,7 +115,7 @@ export const RULES: Rule[] = [
   {
     id: 'boot-config',
     severity: 'error',
-    test: (c) => /\b(?:grub2?-mkconfig|update-grub2?|grub2?-install|grubby|mkinitcpio|dracut|update-initramfs|bootctl|efibootmgr|kernelstub)\b|plymouth-set-default-theme\b.*\s-R\b/.test(c),
+    test: (c) => BOOT_RES.some((re) => re.test(c)),
     message:
       'Changes the bootloader or initramfs, which differs between distros and can leave a system unbootable. Write it as a # note with the command for each distro.',
   },
@@ -157,9 +173,9 @@ export const RULES: Rule[] = [
 
 /** `git clone [options] URL [dest]` → the destination folder and an optional --branch pin. */
 function parseClone(cmd: string): { dest: string; branch?: string } | null {
-  const m = /\bgit\s+clone\s+(.*)$/.exec(cmd);
+  const m = /\bgit\s+clone\s+(\S.*)$/.exec(cmd);
   if (!m) return null;
-  const words = m[1].replace(/\s*&&.*$/, '').split(/\s+/).filter(Boolean);
+  const words = splitOnAnd(m[1])[0].split(/\s+/).filter(Boolean);
   let branch: string | undefined;
   const operands: string[] = [];
   for (let i = 0; i < words.length; i++) {
@@ -168,65 +184,79 @@ function parseClone(cmd: string): { dest: string; branch?: string } | null {
     else if (!words[i].startsWith('-')) operands.push(words[i]);
   }
   if (!operands[0]) return null;
-  const dest = operands[1] ?? operands[0].replace(/\/+$/, '').split('/').pop()!.replace(/\.git$/, '');
-  return { dest: dest.replace(/\/+$/, ''), branch };
+  const dest = operands[1] ?? stripTrailingSlashes(operands[0]).split('/').pop()!.replace(/\.git$/, '');
+  return { dest: stripTrailingSlashes(dest), branch };
+}
+
+interface Line {
+  step: string;
+  command: string;
+}
+
+const issue = (rule: string, severity: LintSeverity, { step, command }: Line, message: string): LintIssue => ({ rule, severity, step, command, message });
+
+/** A clone is pinned by a tag in --branch, or by a later `git -C <dest> checkout <pin>`. */
+function clonePinned(clone: { dest: string; branch?: string }, later: Line[]): boolean {
+  if (clone.branch && isPin(clone.branch)) return true;
+  return later.some(({ command }) => {
+    const m = /\bgit\s+-C\s+(\S+)\s+checkout\s+(\S+)/.exec(command);
+    return m !== null && stripTrailingSlashes(m[1]) === clone.dest && isPin(m[2]);
+  });
+}
+
+/** The single-command rules, and pinning for every clone (not only source.repo, see validateCloneSteps). */
+function commandIssues(lines: Line[], data: ConfigData): LintIssue[] {
+  const issues: LintIssue[] = [];
+  lines.forEach((line, i) => {
+    const { command } = line;
+    if (!command || command.startsWith('#')) return;
+    // A command with a <placeholder> becomes a note in the installer, so only the reader runs it.
+    if (classifyCommand(command, data).every((a) => a.kind === 'note')) return;
+    for (const rule of RULES) if (rule.test(command)) issues.push(issue(rule.id, rule.severity, line, rule.message));
+    const clone = parseClone(command);
+    if (clone && !clonePinned(clone, lines.slice(i))) {
+      issues.push(issue('unpinned-clone', 'error', line, `Clones a moving branch. Follow it with git -C ${clone.dest} checkout <commit SHA, tag or {{ref}}>.`));
+    }
+  });
+  return issues;
+}
+
+/** Warnings about what the classified actions do: AUR packages, system changes, upstream installers. */
+function actionIssues(lines: Line[], data: ConfigData): LintIssue[] {
+  const issues: LintIssue[] = [];
+  const actions = lines.flatMap((line) => classifyCommand(line.command, data).map((a) => ({ line, a })));
+  const aur = actions.filter(({ a }) => a.kind === 'package' && a.aur);
+  if (aur.length && data.distros.some((d) => !ARCH_FAMILY.has(d))) {
+    issues.push(
+      issue(
+        'aur-other-distros',
+        'warning',
+        aur[0].line,
+        'AUR packages only install on Arch-based distros. On the other distros listed, the installer stops before changing anything and the page points to the upstream instructions.',
+      ),
+    );
+  }
+  for (const { line, a } of aur) {
+    if (a.kind === 'package' && a.packages.some((p) => p.endsWith('-git'))) {
+      issues.push(issue('aur-git', 'warning', line, 'A -git package builds the latest development commit at install time, not source.ref. Prefer the release package when there is one.'));
+    }
+  }
+  for (const { line, a } of actions) {
+    if (a.kind === 'system') {
+      issues.push(issue('system-change', 'warning', line, 'Changes files outside the home folder, which --rollback does not undo. Prefer a user folder (~/.local/share/themes, ~/.icons, ~/.local/share/fonts) when the project supports one.'));
+    }
+    if (a.kind === 'upstream') {
+      issues.push(issue('upstream-installer', 'warning', line, "Runs the project's own installer, which decides what it changes. Say in the description what it touches (shell, display manager, bootloader, other configs)."));
+    }
+  }
+  return issues;
 }
 
 /** Every install-step problem in one entry, errors first. */
 export function lintInstallSteps(data: ConfigData): LintIssue[] {
-  const issues: LintIssue[] = [];
   const lines = (data.install?.steps ?? []).flatMap((step) => step.commands.map((command) => ({ step: step.id, command: command.trim() })));
-  const add = (rule: string, severity: LintSeverity, step: string, command: string, message: string) =>
-    issues.push({ rule, severity, step, command, message });
-
-  for (const [i, { step, command }] of lines.entries()) {
-    if (!command || command.startsWith('#')) continue;
-    // A command with a <placeholder> becomes a note in the installer, so only the reader runs it.
-    if (classifyCommand(command, data).every((a) => a.kind === 'note')) continue;
-
-    for (const rule of RULES) if (rule.test(command)) add(rule.id, rule.severity, step, command, rule.message);
-
-    // Every clone, not only source.repo (validateCloneSteps), must be pinned: to a tag with
-    // --branch, or by a later `git -C <dest> checkout <pin>`.
-    const clone = parseClone(command);
-    if (clone && !(clone.branch && PIN_RE.test(clone.branch))) {
-      const pinned = lines.slice(i).some(({ command: later }) => {
-        const m = /\bgit\s+-C\s+(\S+)\s+checkout\s+(\S+)/.exec(later);
-        return m !== null && m[1].replace(/\/+$/, '') === clone.dest && PIN_RE.test(m[2]);
-      });
-      if (!pinned) {
-        add('unpinned-clone', 'error', step, command, `Clones a moving branch. Follow it with git -C ${clone.dest} checkout <commit SHA, tag or {{ref}}>.`);
-      }
-    }
-  }
-
-  const actions = lines.flatMap(({ step, command }) => classifyCommand(command, data).map((a) => ({ step, command, a })));
-  const aur = actions.filter(({ a }) => a.kind === 'package' && a.aur);
-  if (aur.length && data.distros.some((d) => !ARCH_FAMILY.has(d))) {
-    add(
-      'aur-other-distros',
-      'warning',
-      aur[0].step,
-      aur[0].command,
-      'AUR packages only install on Arch-based distros. On the other distros listed, the installer stops before changing anything and the page points to the upstream instructions.',
-    );
-  }
-  for (const { step, command, a } of aur) {
-    if (a.kind === 'package' && a.packages.some((p) => p.endsWith('-git'))) {
-      add('aur-git', 'warning', step, command, 'A -git package builds the latest development commit at install time, not source.ref. Prefer the release package when there is one.');
-    }
-  }
-  for (const { step, command, a } of actions) {
-    if (a.kind === 'system') {
-      add('system-change', 'warning', step, command, 'Changes files outside the home folder, which --rollback does not undo. Prefer a user folder (~/.local/share/themes, ~/.icons, ~/.local/share/fonts) when the project supports one.');
-    }
-    if (a.kind === 'upstream') {
-      add('upstream-installer', 'warning', step, command, "Runs the project's own installer, which decides what it changes. Say in the description what it touches (shell, display manager, bootloader, other configs).");
-    }
-  }
-
   const order = { error: 0, warning: 1 };
-  return issues.sort((x, y) => order[x.severity] - order[y.severity]);
+  return [...commandIssues(lines, data), ...actionIssues(lines, data)].toSorted((x, y) => order[x.severity] - order[y.severity]);
 }
 
 /** One readable line per issue, for CI logs and the issue bot. */

@@ -4,7 +4,7 @@ import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import { readmeRawUrl, type ConfigData } from './schema';
 import { fetchLimited } from './fetch-limited';
-import { stripTrailingSlashes } from './strings';
+import { replaceTags, stripTrailingSlashes } from './strings';
 
 const CACHE_DIR = path.resolve(process.cwd(), 'node_modules/.cache/0xtsoa-readme');
 const README_MAX_BYTES = 2 * 1024 * 1024;
@@ -512,7 +512,35 @@ export function sanitizeAndRewriteHtml(
 }
 
 const VOID_TAGS = new Set(['area', 'br', 'col', 'embed', 'hr', 'img', 'input', 'source', 'track', 'wbr']);
-const TAG_RE = /<\/?([a-zA-Z][\w-]*)(?:[^>"']|"[^"]*"|'[^']*')*?(\/?)>/g;
+
+/**
+ * The tags of sanitized HTML in order, scanned by hand in linear time (quoted attribute values may
+ * hold `>`). An unterminated tag ends the scan: the rest is text.
+ */
+function* scanTags(html: string): Generator<{ index: number; end: number; name: string; closing: boolean; selfClosing: boolean }> {
+  for (let i = html.indexOf('<'); i !== -1; ) {
+    const closing = html[i + 1] === '/';
+    const nameStart = closing ? i + 2 : i + 1;
+    let j = nameStart;
+    if (!/[a-zA-Z]/.test(html[j] ?? '')) {
+      i = html.indexOf('<', i + 1);
+      continue;
+    }
+    while (j < html.length && /[\w-]/.test(html[j])) j++;
+    const name = html.slice(nameStart, j);
+    let quote = '';
+    for (; j < html.length; j++) {
+      const c = html[j];
+      if (quote) {
+        if (c === quote) quote = '';
+      } else if (c === '"' || c === "'") quote = c;
+      else if (c === '>') break;
+    }
+    if (j >= html.length) return;
+    yield { index: i, end: j + 1, name, closing, selfClosing: html[j - 1] === '/' };
+    i = html.indexOf('<', j + 1);
+  }
+}
 
 /** Top-level elements of sanitized HTML (whitespace between them dropped). */
 export function topLevelBlocks(html: string): string[] {
@@ -523,17 +551,15 @@ export function topLevelBlocks(html: string): string[] {
   let depth = 0;
   let start = 0;
   let cursor = 0;
-  for (const m of html.matchAll(TAG_RE)) {
-    const [tag, rawName, selfClosing] = m;
-    const index = m.index ?? 0;
+  for (const { index, end, name, closing, selfClosing } of scanTags(html)) {
     if (depth === 0) {
       pushText(html.slice(cursor, index)); // loose text between top-level elements
       start = index;
     }
-    if (tag.startsWith('</')) depth = Math.max(0, depth - 1);
-    else if (!VOID_TAGS.has(rawName.toLowerCase()) && !selfClosing) depth++;
+    if (closing) depth = Math.max(0, depth - 1);
+    else if (!VOID_TAGS.has(name.toLowerCase()) && !selfClosing) depth++;
     if (depth === 0) {
-      cursor = index + tag.length;
+      cursor = end;
       blocks.push(html.slice(start, cursor));
     }
   }
@@ -542,7 +568,7 @@ export function topLevelBlocks(html: string): string[] {
 }
 
 function wordCount(html: string): number {
-  return html.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
+  return replaceTags(html, ' ').split(/\s+/).filter(Boolean).length;
 }
 
 /**
@@ -562,6 +588,6 @@ export function readmeExcerpt(html: string, maxWords = 220): { html: string; tru
     words += n;
   }
   // A trailing heading with nothing under it reads as a cut-off.
-  while (kept.length > 1 && /^<h[1-6]\b/i.test(kept[kept.length - 1])) kept.pop();
+  while (kept.length > 1 && /^<h[1-6]\b/i.test(kept.at(-1)!)) kept.pop();
   return { html: kept.join('\n'), truncated: kept.length < blocks.length };
 }

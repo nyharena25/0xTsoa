@@ -10,6 +10,8 @@ import { configSchema, idFromPath, type ConfigData } from '../src/lib/schema';
 import { getStarsForConfig, maintenanceForConfig, type MaintenanceStatus } from '../src/lib/stats';
 import { badgeMarkdown, claimEntryUrl, configPageUrl, entryChangeUrl } from '../src/lib/author-links';
 import { githubOwner } from './claim-entry';
+import { stripTrailingSlashes } from '../src/lib/strings';
+import { mapPool } from './pool';
 
 const FALLBACK_SCREENSHOT = '/screenshots/fallback-terminal.svg';
 /** From this many stars, a project's issue tracker is for bugs: these authors go last, flagged. */
@@ -71,7 +73,8 @@ export function toEntry(id: string, data: ConfigData, stars: number, maintenance
   };
 }
 
-const MAINTENANCE_RANK = (m: MaintenanceStatus | null) => (m === 'active' ? 0 : m === null ? 1 : m === 'quiet' ? 2 : 3);
+const MAINTENANCE_ORDER: Record<MaintenanceStatus | 'unknown', number> = { active: 0, unknown: 1, quiet: 2, archived: 3 };
+const MAINTENANCE_RANK = (m: MaintenanceStatus | null) => MAINTENANCE_ORDER[m ?? 'unknown'];
 
 /** Groups entries by author, drops the ones not worth a message, and orders the rest. */
 export function planOutreach(entries: OutreachEntry[], sent: Set<string> = new Set()): OutreachPlan {
@@ -107,7 +110,7 @@ export function planOutreach(entries: OutreachEntry[], sent: Set<string> = new S
 /** "A", "A and B", "A, B and C", or past `max` names "A, B, C and 4 more". */
 export function joinNames(names: string[], max = 3): string {
   if (names.length > max) return `${names.slice(0, max).join(', ')} and ${names.length - max} more`;
-  return names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+  return names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
 }
 
 /** GitHub rejects longer new-issue URLs; past this, the message is copied by hand. */
@@ -115,7 +118,7 @@ export const MAX_POST_URL = 8000;
 
 export function readTemplate(doc: string): { title: string; body: string } {
   const section = (name: string) => {
-    const m = doc.match(new RegExp(`<!-- outreach-template:${name} -->\\n([\\s\\S]*?)\\n<!-- /outreach-template:${name} -->`));
+    const m = new RegExp(String.raw`<!-- outreach-template:${name} -->\n([\s\S]*?)\n<!-- /outreach-template:${name} -->`).exec(doc);
     if (!m) throw new Error(`${TEMPLATE_DOC} has no outreach-template:${name} section`);
     return m[1];
   };
@@ -127,12 +130,12 @@ export function renderTemplate(template: string, values: Record<string, string>,
   return template
     .split('\n')
     .flatMap((line) => {
-      const flag = line.match(/^\{\{\?(\w+)\}\}/);
+      const flag = /^\{\{\?(\w+)\}\}/.exec(line);
       if (flag) {
         if (!flags[flag[1]]) return [];
         line = line.slice(flag[0].length);
       }
-      const indent = line.match(/^\s*/)![0];
+      const indent = /^\s*/.exec(line)![0];
       return [
         line.replace(/\{\{(\w+)\}\}/g, (whole, key: string) => {
           if (!(key in values)) throw new Error(`Unknown template placeholder ${whole}`);
@@ -162,18 +165,17 @@ export function renderMessage(template: { title: string; body: string }, author:
 /** Where to post: a prefilled new discussion or issue on the main repository, or null off GitHub / with both off. */
 export function postUrl(author: OutreachAuthor, message: { title: string; body: string }): string | null {
   if (!githubOwner(author.main.repo)) return null;
-  const repo = author.main.repo.replace(/\/+$/, '');
+  const repo = stripTrailingSlashes(author.main.repo);
   const params = new URLSearchParams({ title: message.title, body: message.body });
-  const url = author.facts?.hasDiscussions
-    ? `${repo}/discussions/new?category=general&${params}`
-    : author.facts && !author.facts.hasIssues
-      ? null
-      : `${repo}/issues/new?${params}`;
-  return url && url.length <= MAX_POST_URL ? url : null;
+  let url: string;
+  if (author.facts?.hasDiscussions) url = `${repo}/discussions/new?category=general&${params}`;
+  else if (author.facts && !author.facts.hasIssues) return null;
+  else url = `${repo}/issues/new?${params}`;
+  return url.length <= MAX_POST_URL ? url : null;
 }
 
 async function fetchRepoFacts(repoUrl: string, token?: string): Promise<RepoFacts | undefined> {
-  const m = repoUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+?)\/?$/);
+  const m = /^https:\/\/github\.com\/([^/]+)\/([^/]+?)\/?$/.exec(repoUrl);
   if (!m) return undefined;
   const res = await fetch(`https://api.github.com/repos/${m[1]}/${m[2]}`, {
     headers: { Accept: 'application/vnd.github+json', 'User-Agent': '0xTsoa-Outreach/1.0', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
@@ -184,7 +186,19 @@ async function fetchRepoFacts(repoUrl: string, token?: string): Promise<RepoFact
   return { hasIssues: r.has_issues, hasDiscussions: r.has_discussions, archived: r.archived };
 }
 
-const csvCell = (v: unknown) => {
+/** The line telling the maintainer where to post one message. */
+function whereToPost(a: OutreachAuthor, url: string | null): string {
+  if (url) {
+    const kind = url.includes('/discussions/') ? 'discussion' : 'issue';
+    return `[Open the prefilled ${kind}](${url})`;
+  }
+  let why = '';
+  if (a.facts && !a.facts.hasIssues) why = ' (Issues are off)';
+  else if (githubOwner(a.main.repo)) why = ' (the message is too long for a link)';
+  return `No prefilled link: post on ${a.main.repo} by hand, copying the text below${why}.`;
+}
+
+const csvCell = (v: string | number | boolean | null | undefined) => {
   const s = String(v ?? '');
   return /[",\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
 };
@@ -221,13 +235,13 @@ async function main() {
   const plan = planOutreach(entries, readSent(sentFile));
   if (useGithub) {
     if (!process.env.GITHUB_TOKEN) console.warn('⚠ GITHUB_TOKEN is not set: the anonymous API limit (60 an hour) may stop this run.');
-    for (const a of plan.authors) {
+    await mapPool(plan.authors, 4, async (a) => {
       try {
         a.facts = await fetchRepoFacts(a.main.repo, process.env.GITHUB_TOKEN);
       } catch (err) {
         console.warn(`⚠ @${a.github}: ${(err as Error).message}`);
       }
-    }
+    });
   }
 
   const template = readTemplate(fs.readFileSync(TEMPLATE_DOC, 'utf-8'));
@@ -243,9 +257,7 @@ async function main() {
     const message = renderMessage(template, a);
     const url = postUrl(a, message);
     if (i % batchSize === 0) md.push('', `## Batch ${batch}`);
-    const where = url
-      ? `[Open the prefilled ${url.includes('/discussions/') ? 'discussion' : 'issue'}](${url})`
-      : `No prefilled link: post on ${a.main.repo} by hand, copying the text below${a.facts && !a.facts.hasIssues ? ' (Issues are off)' : githubOwner(a.main.repo) ? ' (the message is too long for a link)' : ''}.`;
+    const where = whereToPost(a, url);
     const facts =
       (a.facts?.archived ? ' · ⚠ repository now archived, consider skipping' : '') +
       (a.large ? ' · large project: its issue tracker is for bugs, prefer Discussions or skip' : '');
@@ -280,9 +292,11 @@ async function main() {
   console.log(`✓ ${plan.authors.length} authors in ${Math.ceil(plan.authors.length / batchSize)} batches, ${plan.skipped.length} skipped → ${OUT_DIR}/messages.md, ${OUT_DIR}/authors.csv`);
 }
 
-if (process.argv[1] && process.argv[1].endsWith('outreach.ts')) {
-  main().catch((err) => {
+if (process.argv[1]?.endsWith('outreach.ts')) {
+  try {
+    await main();
+  } catch (err) {
     console.error(err instanceof Error ? err.message : err);
     process.exit(1);
-  });
+  }
 }

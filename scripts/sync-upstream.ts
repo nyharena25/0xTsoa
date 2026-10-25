@@ -19,6 +19,8 @@ import { stripLeadingSlashes, stripTrailingSlashes } from '../src/lib/strings';
 import type { RepoStats } from '../src/lib/stats';
 import { repoPathsInSteps, installsReleasePackages } from '../src/lib/schema';
 import { listRepoTree, missingRepoPaths } from './repo-tree';
+import { GIT } from './git-path';
+import { mapPool } from './pool';
 
 const run = promisify(execFile);
 const CONFIGS_DIR = path.resolve(process.cwd(), 'configs');
@@ -138,7 +140,7 @@ function heldBackSection(heldBack: HeldBack[]): string[] {
   for (const item of [...heldBack].sort((a, b) => a.id.localeCompare(b.id))) {
     const compareUrl = buildCompareUrl(item.repo, item.oldRef, item.newRef);
     lines.push(
-      `- **${item.id}**: \`${item.newRef.slice(0, 7)}\` lacks ${item.missing.map((m) => `\`${m}\``).join(', ')} ([what changed](${compareUrl}))`,
+      `- **${item.id}**: \`${item.newRef.slice(0, 7)}\` lacks ${item.missing.map((m) => '`' + m + '`').join(', ')} ([what changed](${compareUrl}))`,
     );
   }
   lines.push('');
@@ -179,7 +181,7 @@ export function formatSyncSummary(changes: SyncChange[], heldBack: HeldBack[] = 
 }
 
 async function git(...args: string[]): Promise<string> {
-  const { stdout } = await run('git', args, {
+  const { stdout } = await run(GIT, args, {
     env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
     timeout: 60_000,
     maxBuffer: 16 * 1024 * 1024,
@@ -225,13 +227,73 @@ async function fetchRepoStats(repoUrl: string): Promise<RepoStats | undefined> {
   }
 }
 
-async function pool<T>(items: T[], size: number, fn: (item: T) => Promise<void>) {
-  const queue = [...items];
-  await Promise.all(
-    Array.from({ length: size }, async () => {
-      for (let item = queue.shift(); item !== undefined; item = queue.shift()) await fn(item);
-    }),
-  );
+/** A config file as written on disk: only the fields the sync reads or changes are typed, the rest is kept. */
+interface ConfigJson {
+  source: { repo: string; ref: string };
+  version?: string;
+  install?: { script?: unknown; steps: { commands: string[] }[] };
+  [field: string]: unknown;
+}
+
+const entryId = (file: string) => path.relative(CONFIGS_DIR, file).replace(/\\/g, '/').replace(/\.json$/, '');
+
+/** The ref an entry should move to: its latest release for packaged installs, else the upstream HEAD. */
+function targetRef(data: ConfigJson, head: string, tagsOutput: string): string {
+  const release = installsReleasePackages(data) ? latestReleaseCommit(tagsOutput) : undefined;
+  if (release) return release.sha;
+  return /^[0-9a-f]{40}$/.test(head) ? head : data.source.ref;
+}
+
+/** Sets `source.ref` and `version` on the entry; true when either changed. */
+function applyRef(data: ConfigJson, newRef: string, version: string | undefined): boolean {
+  let changed = false;
+  if (newRef !== data.source.ref) {
+    data.source.ref = newRef;
+    changed = true;
+  }
+  if (version !== data.version) {
+    if (version) data.version = version;
+    else delete data.version;
+    changed = true;
+  }
+  return changed;
+}
+
+interface SyncResult {
+  change?: SyncChange;
+  held?: HeldBack;
+  stats?: RepoStats;
+}
+
+/** Moves one entry to its new upstream ref, unless that commit lacks a file the install steps use. */
+async function syncEntry(file: string): Promise<SyncResult> {
+  const id = entryId(file);
+  const data = JSON.parse(fs.readFileSync(file, 'utf-8')) as ConfigJson;
+  const repo = data.source.repo;
+  const oldRef = data.source.ref;
+  const result: SyncResult = {};
+  try {
+    const head = (await git('ls-remote', repo, 'HEAD')).split(/\s/)[0];
+    const tagsOutput = await git('ls-remote', '--tags', repo);
+    let newRef = targetRef(data, head, tagsOutput);
+    const repoPaths = repoPathsInSteps(data);
+    if (newRef !== oldRef && repoPaths.length > 0) {
+      const missing = missingRepoPaths(repoPaths, await listRepoTree(repo, newRef));
+      if (missing.length > 0) {
+        result.held = { id, repo, oldRef, newRef, missing };
+        console.warn(`⚠ ${id}: held at ${oldRef.slice(0, 7)}, ${newRef.slice(0, 7)} lacks ${missing.join(', ')}`);
+        newRef = oldRef;
+      }
+    }
+    const version = versionTagAtRef(tagsOutput, newRef);
+    if (newRef !== oldRef) result.change = { id, repo, oldRef, newRef, version };
+    if (applyRef(data, newRef, version)) fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
+  } catch (err) {
+    console.warn(`⚠ ${id}: ${(err as Error).message.split('\n')[0]}`);
+  }
+  // On API failure, the previous night's entry is kept.
+  result.stats = await fetchRepoStats(repo);
+  return result;
 }
 
 async function main() {
@@ -246,50 +308,11 @@ async function main() {
   const stats: Record<string, RepoStats> = fs.existsSync(STATS_PATH)
     ? JSON.parse(fs.readFileSync(STATS_PATH, 'utf-8'))
     : {};
-  const changes: SyncChange[] = [];
-  const heldBack: HeldBack[] = [];
-
-  await pool(files, 8, async (file) => {
-    const id = path.relative(CONFIGS_DIR, file).replace(/\\/g, '/').replace(/\.json$/, '');
-    const data = JSON.parse(fs.readFileSync(file, 'utf-8'));
-    const repo: string = data.source.repo;
-    try {
-      const head = (await git('ls-remote', repo, 'HEAD')).split(/\s/)[0];
-      const tagsOutput = await git('ls-remote', '--tags', repo);
-      const oldRef: string = data.source.ref;
-      // Packaged releases are what users install: pin those entries to the latest release, not the branch.
-      const release = installsReleasePackages(data) ? latestReleaseCommit(tagsOutput) : undefined;
-      let newRef = release ? release.sha : /^[0-9a-f]{40}$/.test(head) ? head : oldRef;
-      // Never move to a commit that lacks a file the reviewed install steps use.
-      const repoPaths = repoPathsInSteps(data);
-      if (newRef !== oldRef && repoPaths.length > 0) {
-        const missing = missingRepoPaths(repoPaths, await listRepoTree(repo, newRef));
-        if (missing.length > 0) {
-          heldBack.push({ id, repo, oldRef, newRef, missing });
-          console.warn(`⚠ ${id}: held at ${oldRef.slice(0, 7)}, ${newRef.slice(0, 7)} lacks ${missing.join(', ')}`);
-          newRef = oldRef;
-        }
-      }
-      const version = versionTagAtRef(tagsOutput, newRef);
-
-      let changed = false;
-      if (newRef !== oldRef) {
-        data.source.ref = newRef;
-        changed = true;
-        changes.push({ id, repo, oldRef, newRef, version });
-      }
-      if (version !== data.version) {
-        if (version) data.version = version;
-        else delete data.version;
-        changed = true;
-      }
-      if (changed) fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
-    } catch (err) {
-      console.warn(`⚠ ${id}: ${(err as Error).message.split('\n')[0]}`);
-    }
-    // On API failure, the previous night's entry is kept.
-    const repoStats = await fetchRepoStats(repo);
-    if (repoStats) stats[id] = repoStats;
+  const results = await mapPool(files, 8, syncEntry);
+  const changes = results.flatMap((r) => (r.change ? [r.change] : []));
+  const heldBack = results.flatMap((r) => (r.held ? [r.held] : []));
+  results.forEach((r, i) => {
+    if (r.stats) stats[entryId(files[i])] = r.stats;
   });
 
   const sorted = Object.fromEntries(Object.entries(stats).sort(([a], [b]) => a.localeCompare(b)));

@@ -1,18 +1,12 @@
-import {
-  DISTRO_LABELS,
-  WM_LABELS,
-  normalizeRepoUrl,
-  validateCloneSteps,
-  type CloneValidationResult,
-  type ConfigData,
-} from './schema';
+import { DISTRO_LABELS, WM_LABELS, normalizeRepoUrl, type ConfigData } from './schema';
 
 import { SITE_URL, REPO_OWNER, REPO_NAME, withBase } from '../../site.config';
 import RUNTIME from './installer-runtime.sh?raw';
-import { stripNewlines, renderCommand, classifyCommand, type InstallAction } from './commands';
+import { stripNewlines, classifyCommand, type InstallAction } from './commands';
 
-export { normalizeRepoUrl, validateCloneSteps, type CloneValidationResult };
-export { renderCommand, classifyCommand, type InstallAction };
+export { normalizeRepoUrl, classifyCommand, type InstallAction };
+export { validateCloneSteps, type CloneValidationResult } from './schema';
+export { renderCommand } from './commands';
 
 /** POSIX single-quote escaping: wraps in `'` and escapes internal `'` as `'\''`. */
 export function shQuote(s: string): string {
@@ -186,51 +180,63 @@ export const DIFFICULTY_INFO: Record<InstallDifficulty, { label: string; dot: st
   advanced: { label: 'Advanced', dot: 'bg-rose-600', text: "Uses the AUR, sudo or the project's own installer. Read the steps before running them." },
 };
 
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+/** The "What it changes" sentences for an install that does something (easy and up). */
+function impactChanges(impact: InstallImpact, packages: string[]): string[] {
+  const changes: string[] = [];
+  if (packages.length) {
+    const more = packages.length > 4 ? ` +${packages.length - 4} more` : '';
+    const aur = impact.aurPackages.length ? ' (AUR included)' : '';
+    changes.push(`${plural(packages.length, 'package')}: ${packages.slice(0, 4).join(', ')}${more}${aur}`);
+  }
+  if (impact.userPaths.length) {
+    const more = impact.userPaths.length > 3 ? '…' : '';
+    changes.push(`Writes to ${impact.userPaths.slice(0, 3).join(', ')}${more}`);
+  }
+  if (impact.systemCommands.length) changes.push(`Uses sudo outside package installs (${plural(impact.systemCommands.length, 'step')})`);
+  if (impact.upstreamCommands.length) changes.push("Runs the project's own installer");
+  if (impact.execCommands.length) changes.push(`Changes settings (${plural(impact.execCommands.length, 'command')})`);
+  return changes;
+}
+
+/** The comparison-table form: "12 packages · 3 folders in ~ · sudo". */
+function impactShort(impact: InstallImpact, packages: string[]): string {
+  const parts = [
+    packages.length && plural(packages.length, 'package'),
+    impact.userPaths.length && `${plural(impact.userPaths.length, 'folder')} in ~`,
+    impact.systemCommands.length && 'sudo',
+    impact.upstreamCommands.length && 'own installer',
+  ].filter(Boolean);
+  return parts.join(' · ') || '—';
+}
+
+/** How to undo an install that does something (easy and up). */
+function impactUndo(impact: InstallImpact, packages: string[]): string {
+  if (impact.upstreamCommands.length) {
+    return "Home files are backed up first and restored with --rollback; the project's own installer is not undone.";
+  }
+  if (packages.length || impact.systemCommands.length || impact.execCommands.length) {
+    return 'File changes: bash install.sh --rollback. Packages and settings stay.';
+  }
+  return 'bash install.sh --rollback restores every file it changed.';
+}
+
 /**
  * What an install changes and how to undo it, as sentences (config pages, and entry summaries in
  * guides). `short` is the comparison-table form: "12 packages · 3 folders in ~ · sudo".
  */
 export function describeImpact(difficulty: InstallDifficulty | null, impact: InstallImpact): { changes: string[]; short: string; undo: string | null } {
   const packages = [...impact.packages, ...impact.aurPackages];
-  const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
-  const changes: string[] = [];
-  if (difficulty === null) changes.push('Nothing: it is a reading list.');
-  else if (difficulty === 'manual') changes.push('Nothing is installed for you; the clone stays in its own folder.');
-  else {
-    if (packages.length) {
-      const shown = packages.slice(0, 4).join(', ') + (packages.length > 4 ? ` +${packages.length - 4} more` : '');
-      changes.push(`${plural(packages.length, 'package')}: ${shown}${impact.aurPackages.length ? ' (AUR included)' : ''}`);
-    }
-    if (impact.userPaths.length) changes.push(`Writes to ${impact.userPaths.slice(0, 3).join(', ')}${impact.userPaths.length > 3 ? '…' : ''}`);
-    if (impact.systemCommands.length) changes.push(`Uses sudo outside package installs (${plural(impact.systemCommands.length, 'step')})`);
-    if (impact.upstreamCommands.length) changes.push("Runs the project's own installer");
-    if (impact.execCommands.length) changes.push(`Changes settings (${plural(impact.execCommands.length, 'command')})`);
+  if (difficulty === null) return { changes: ['Nothing: it is a reading list.'], short: impactShort(impact, packages), undo: null };
+  if (difficulty === 'manual') {
+    return {
+      changes: ['Nothing is installed for you; the clone stays in its own folder.'],
+      short: 'Nothing for you: follow the upstream guide',
+      undo: 'Delete the cloned folder. Anything you set up afterwards follows the upstream guide.',
+    };
   }
-
-  const short =
-    difficulty === 'manual'
-      ? 'Nothing for you: follow the upstream guide'
-      : [
-          packages.length && plural(packages.length, 'package'),
-          impact.userPaths.length && `${plural(impact.userPaths.length, 'folder')} in ~`,
-          impact.systemCommands.length && 'sudo',
-          impact.upstreamCommands.length && 'own installer',
-        ]
-          .filter(Boolean)
-          .join(' · ') || '—';
-
-  const undo =
-    difficulty === null
-      ? null
-      : difficulty === 'manual'
-        ? 'Delete the cloned folder. Anything you set up afterwards follows the upstream guide.'
-        : impact.upstreamCommands.length
-          ? "Home files are backed up first and restored with --rollback; the project's own installer is not undone."
-          : packages.length || impact.systemCommands.length || impact.execCommands.length
-            ? 'File changes: bash install.sh --rollback. Packages and settings stay.'
-            : 'bash install.sh --rollback restores every file it changed.';
-
-  return { changes, short, undo };
+  return { changes: impactChanges(impact, packages), short: impactShort(impact, packages), undo: impactUndo(impact, packages) };
 }
 
 /** Public URL of the generated installer for a config id (`author/slug`). */
@@ -303,13 +309,16 @@ export function buildInstallScript(data: ConfigData, id = 'setup'): string {
         '  esac',
       ].join('\n');
 
+  const pinnedAt = data.version ? data.version + ' (' + data.source.ref + ')' : data.source.ref;
+  const sourceLine = pinned
+    ? `# Source: ${c(data.source.repo)} @ ${c(pinnedAt)}`
+    : `# Source: ${c(data.source.repo)} (reference only: installed from your package manager, not a pinned download)`;
+
   return [
     '#!/usr/bin/env bash',
     '# ==============================================================================',
     `# 0xTsoa installer: ${c(data.name)} by ${c(data.author.name)} (@${c(data.author.github)})`,
-    pinned
-      ? `# Source: ${c(data.source.repo)} @ ${c(data.version ? `${data.version} (${data.source.ref})` : data.source.ref)}`
-      : `# Source: ${c(data.source.repo)} (reference only: installed from your package manager, not a pinned download)`,
+    sourceLine,
     `# Window manager: ${c(wmLabel)}. Distros: ${c(distroLabels)}.`,
     '#',
     '# What this script does:',

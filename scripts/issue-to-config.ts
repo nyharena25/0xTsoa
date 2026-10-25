@@ -3,7 +3,7 @@ import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
 import { lintInstallSteps, formatLintIssue } from '../src/lib/install-lint';
-import { configSchema, type ConfigInput, CATEGORY_LABELS, STYLE_LABELS, WM_LABELS } from '../src/lib/schema';
+import { configSchema, type ConfigData, type ConfigInput, CATEGORY_LABELS, STYLE_LABELS, WM_LABELS } from '../src/lib/schema';
 import { fetchLimited, SCRIPT_HOSTS } from '../src/lib/fetch-limited';
 
 const TAG_RE = /^[a-z0-9][a-z0-9-]{0,29}$/;
@@ -263,10 +263,57 @@ function writeResult(result: IssueToConfigResult): void {
   fs.writeFileSync(resultPath, JSON.stringify(result, null, 2), 'utf-8');
 }
 
-async function main() {
-  const issueFile = process.argv[2];
-  const issueAuthor = process.argv[3];
+/** A generated config the bot refuses, with the reasons sent back to the issue. */
+class ConfigRejected extends Error {
+  constructor(
+    readonly heading: string,
+    readonly errors: string[],
+  ) {
+    super(heading);
+  }
+}
 
+const relPath = (file: string) => path.relative(process.cwd(), file).replaceAll('\\', '/');
+
+/** The file a config will be written to, and whether it already exists, as reported before validation. */
+function plannedTarget(outDir: string, slug: string): { mode: 'create' | 'update'; outRelPath: string } {
+  const cleanSlug = slug.replace(/[^a-z0-9_-]/g, '');
+  if (!cleanSlug) return { mode: 'create', outRelPath: '' };
+  const candidate = path.resolve(outDir, `${cleanSlug}.json`);
+  return { mode: fs.existsSync(candidate) ? 'update' : 'create', outRelPath: relPath(candidate) };
+}
+
+/** The schema, then the install-step standard (docs/INSTALL-STANDARD.md): errors go back to the issue. */
+function checkGenerated(config: ConfigInput): ConfigData {
+  const parsed = configSchema.safeParse(config);
+  if (!parsed.success) {
+    const errors = parsed.error.issues.map((issue) => `[${issue.path.join('.')}] ${issue.message}`);
+    throw new ConfigRejected('Validation error for generated config:', errors);
+  }
+  const lintErrors = lintInstallSteps(parsed.data)
+    .filter((issue) => issue.severity === 'error')
+    .map(formatLintIssue);
+  if (lintErrors.length > 0) throw new ConfigRejected('Install steps break the install-step standard:', lintErrors);
+  return parsed.data;
+}
+
+/** A claim proves ownership of one repository: an update keeps it only while the entry points there. */
+function keepVerification(outFile: string, data: ConfigData): void {
+  if (!fs.existsSync(outFile)) return;
+  const previous = JSON.parse(fs.readFileSync(outFile, 'utf-8'));
+  if (previous.author?.verified && previous.source?.repo === data.source.repo) {
+    data.author.verified = previous.author.verified;
+  }
+}
+
+function errorLines(err: unknown): string[] {
+  const rawMsg = err instanceof Error ? err.message : String(err);
+  const lines = rawMsg.split('\n').map((s) => s.trim()).filter(Boolean);
+  return lines.length > 0 ? lines : [rawMsg];
+}
+
+async function main() {
+  const [issueFile, issueAuthor] = process.argv.slice(2);
   let mode: 'create' | 'update' = 'create';
   let outRelPath = '';
 
@@ -278,72 +325,30 @@ async function main() {
   }
 
   try {
-    const validFilePath = safeReadPath(issueFile);
-    const body = fs.readFileSync(validFilePath, 'utf-8');
+    const body = fs.readFileSync(safeReadPath(issueFile), 'utf-8');
     const { config, author, slug } = await convertIssueToConfig(issueAuthor, body);
+    const outDir = safeOutputDir(path.resolve(process.cwd(), 'configs'), author);
+    ({ mode, outRelPath } = plannedTarget(outDir, slug));
 
-    const configsDir = path.resolve(process.cwd(), 'configs');
-    const outDir = safeOutputDir(configsDir, author);
-    const cleanSlug = slug.replace(/[^a-z0-9_-]/g, '');
-    if (cleanSlug) {
-      const candidateFile = path.resolve(outDir, `${cleanSlug}.json`);
-      outRelPath = path.relative(process.cwd(), candidateFile).replaceAll('\\', '/');
-      if (fs.existsSync(candidateFile)) {
-        mode = 'update';
-      }
-    }
-
-    const parsed = configSchema.safeParse(config);
-    if (!parsed.success) {
-      console.error('Validation error for generated config:');
-      const errors = parsed.error.issues.map((issue) => `[${issue.path.join('.')}] ${issue.message}`);
-      for (const line of errors) {
-        console.error(`- ${line}`);
-      }
-      writeResult({ status: 'error', mode, path: outRelPath, errors });
-      process.exit(1);
-    }
-
-    // The install-step standard (docs/INSTALL-STANDARD.md): errors are sent back to the issue.
-    const lintErrors = lintInstallSteps(parsed.data)
-      .filter((issue) => issue.severity === 'error')
-      .map(formatLintIssue);
-    if (lintErrors.length > 0) {
-      console.error('Install steps break the install-step standard:');
-      for (const line of lintErrors) console.error(`- ${line}`);
-      writeResult({ status: 'error', mode, path: outRelPath, errors: lintErrors });
-      process.exit(1);
-    }
-
-    if (!fs.existsSync(outDir)) {
-      fs.mkdirSync(outDir, { recursive: true });
-    }
-
+    const data = checkGenerated(config);
+    fs.mkdirSync(outDir, { recursive: true });
     const outFile = safeOutputFile(outDir, slug);
-    outRelPath = path.relative(process.cwd(), outFile).replaceAll('\\', '/');
+    outRelPath = relPath(outFile);
     mode = fs.existsSync(outFile) ? 'update' : 'create';
+    keepVerification(outFile, data);
 
-    // A claim proves ownership of one repository: an update keeps it only while the entry points there.
-    if (mode === 'update') {
-      const previous = JSON.parse(fs.readFileSync(outFile, 'utf-8'));
-      if (previous.author?.verified && previous.source?.repo === parsed.data.source.repo) {
-        parsed.data.author.verified = previous.author.verified;
-      }
-    }
-
-    fs.writeFileSync(outFile, JSON.stringify(parsed.data, null, 2), 'utf-8');
+    fs.writeFileSync(outFile, JSON.stringify(data, null, 2), 'utf-8');
     writeResult({ status: 'ok', mode, path: outRelPath, errors: [] });
     console.log(`✓ Successfully ${mode === 'update' ? 'updated' : 'created'} configuration: ${outFile}`);
   } catch (err) {
-    const rawMsg = err instanceof Error ? err.message : String(err);
-    const errors = rawMsg.split('\n').map((s) => s.trim()).filter(Boolean);
-    console.error(err);
-    writeResult({
-      status: 'error',
-      mode,
-      path: outRelPath,
-      errors: errors.length > 0 ? errors : [rawMsg],
-    });
+    if (err instanceof ConfigRejected) {
+      console.error(err.heading);
+      for (const line of err.errors) console.error(`- ${line}`);
+      writeResult({ status: 'error', mode, path: outRelPath, errors: err.errors });
+    } else {
+      console.error(err);
+      writeResult({ status: 'error', mode, path: outRelPath, errors: errorLines(err) });
+    }
     process.exit(1);
   }
 }

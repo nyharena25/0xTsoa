@@ -11,6 +11,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { configSchema, type ConfigData } from '../src/lib/schema';
 import { parseIssueBody } from './issue-to-config';
+import { stripTrailingSlashes } from '../src/lib/strings';
 
 const ENTRY_RE = /^([A-Za-z0-9](?:[A-Za-z0-9-]{0,38}))\/([a-z0-9][a-z0-9-]{2,47})$/;
 const RESULT_FILE = 'claim-result.json';
@@ -20,14 +21,14 @@ export type Verified = NonNullable<ConfigData['author']['verified']>;
 /** The entry id from the form's "Entry" field; also accepts a pasted page URL. */
 export function parseClaimEntry(body: string): string {
   const raw = (parseIssueBody(body)['Entry'] ?? '').trim();
-  const id = raw.replace(/^https?:\/\/[^/]+\/configs\//, '').replace(/^\/?configs\//, '').replace(/\/+$/, '');
+  const id = stripTrailingSlashes(raw.replace(/^https?:\/\/[^/]+\/configs\//, '').replace(/^\/?configs\//, ''));
   if (!ENTRY_RE.test(id)) throw new Error(`"${raw || '(empty)'}" is not an entry id. Use <author>/<slug>, as in /configs/<author>/<slug>/.`);
   return id;
 }
 
 /** Owner of a github.com repository URL, or null for other forges. */
 export function githubOwner(repoUrl: string): string | null {
-  const m = repoUrl.match(/^https:\/\/github\.com\/([A-Za-z0-9-]+)\/[^/]+?\/?$/);
+  const m = /^https:\/\/github\.com\/([A-Za-z0-9-]+)\/[^/]+?\/?$/.exec(repoUrl);
   return m ? m[1] : null;
 }
 
@@ -141,9 +142,11 @@ async function main() {
   }
 }
 
-if (process.argv[1] && process.argv[1].endsWith('claim-entry.ts')) {
-  main().catch((err) => {
+if (process.argv[1]?.endsWith('claim-entry.ts')) {
+  try {
+    await main();
+  } catch (err) {
     console.error(err);
     process.exit(1);
-  });
+  }
 }

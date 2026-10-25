@@ -46,7 +46,7 @@ if (fs.existsSync(guidesDir)) {
     docsDates.push(updated);
   }
 }
-if (docsDates.length) lastMod.set(pageUrl('/docs/'), docsDates.sort().at(-1));
+if (docsDates.length) lastMod.set(pageUrl('/docs/'), docsDates.toSorted((a, b) => a.localeCompare(b)).at(-1));
 
 export default defineConfig({
   site: SITE_URL,

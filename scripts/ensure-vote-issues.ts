@@ -2,12 +2,40 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { REPO_OWNER, REPO_NAME, VOTE_LABEL, voteIssueTitle, SITE_URL, withBase } from '../site.config';
 import { listVoteIssues } from '../src/lib/votes';
+import { mapPool } from './pool';
 
 /**
  * Ensures every configs/<author>/<slug>.json has one GitHub issue that collects its votes.
  * New vote issues are closed right after creation, so the repository's open issues stay for real
  * reports. Closed issues still take 👍 reactions, and votes are read from open and closed issues alike.
  */
+/** Opens the vote issue of one config and closes it right away (closed, never locked: locking would stop non-collaborators from reacting). */
+async function createVoteIssue(api: string, headers: Record<string, string>, id: string): Promise<void> {
+  const configUrl = `${SITE_URL}${withBase(`/configs/${id}/`)}`;
+  const body =
+    `### Upvotes for \`${id}\`\n\n` +
+    `- 📋 **Config page:** ${configUrl}\n` +
+    `- 👍 **To upvote:** react to this message with 👍 (+1).\n\n` +
+    `Votes are counted at every site rebuild. Please keep comments on-topic (feedback about this setup).`;
+  const res = await fetch(`${api}/issues`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ title: voteIssueTitle(id), body, labels: [VOTE_LABEL] }),
+  });
+  if (!res.ok) {
+    console.log(`✖ Failed for ${id}: ${res.status} ${await res.text()}`);
+    return;
+  }
+  const { number } = (await res.json()) as { number: number };
+  const closeRes = await fetch(`${api}/issues/${number}`, {
+    method: 'PATCH',
+    headers,
+    body: JSON.stringify({ state: 'closed', state_reason: 'completed' }),
+  });
+  if (closeRes.ok) console.log(`✓ Vote issue #${number} created (closed) for ${id}`);
+  else console.log(`⚠ Vote issue #${number} created for ${id} but left open: ${closeRes.status} ${await closeRes.text()}`);
+}
+
 async function main() {
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
@@ -48,36 +76,8 @@ async function main() {
   });
   if (!labelRes.ok && labelRes.status !== 422) throw new Error(`Cannot create label: ${labelRes.status}`);
 
-  for (const id of missing) {
-    const configPath = withBase(`/configs/${id}/`);
-    const configUrl = `${SITE_URL}${configPath}`;
-    const body =
-      `### Upvotes for \`${id}\`\n\n` +
-      `- 📋 **Config page:** ${configUrl}\n` +
-      `- 👍 **To upvote:** react to this message with 👍 (+1).\n\n` +
-      `Votes are counted at every site rebuild. Please keep comments on-topic (feedback about this setup).`;
-    const res = await fetch(`${api}/issues`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ title: voteIssueTitle(id), body, labels: [VOTE_LABEL] }),
-    });
-    if (!res.ok) {
-      console.log(`✖ Failed for ${id}: ${res.status} ${await res.text()}`);
-      continue;
-    }
-    // Closed, never locked: locking would stop non-collaborators from reacting.
-    const { number } = (await res.json()) as { number: number };
-    const closeRes = await fetch(`${api}/issues/${number}`, {
-      method: 'PATCH',
-      headers,
-      body: JSON.stringify({ state: 'closed', state_reason: 'completed' }),
-    });
-    console.log(
-      closeRes.ok
-        ? `✓ Vote issue #${number} created (closed) for ${id}`
-        : `⚠ Vote issue #${number} created for ${id} but left open: ${closeRes.status} ${await closeRes.text()}`,
-    );
-  }
+  // One issue at a time: GitHub's secondary rate limits ask for serial writes.
+  await mapPool(missing, 1, (id) => createVoteIssue(api, headers, id));
 }
 
 try {

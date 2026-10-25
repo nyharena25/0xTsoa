@@ -2,7 +2,8 @@ import { REPO_URL, SITE_URL, withBase } from '../../site.config';
 
 /** Absolute URL of a config page: the badge links here, so it must be the canonical host. */
 export function configPageUrl(id: string): string {
-  return `${SITE_URL}${withBase(`/configs/${id}/`)}`;
+  const pagePath = withBase('/configs/' + id + '/');
+  return `${SITE_URL}${pagePath}`;
 }
 
 export const BADGE_URL = `${SITE_URL}${withBase('/badge.svg')}`;

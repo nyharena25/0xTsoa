@@ -107,7 +107,7 @@ describe('picks and retired entries', () => {
     const { topic, entries } = live.find((t) => t.topic.slug === 'hyprland')!;
     const retired = new Set((topic.retired ?? []).map((r) => r.id));
     const picks = choosePicks(topic, entries, (e) => retired.has(e.id));
-    expect(picks.length).toBe(topic.picks!.length);
+    expect(picks).toHaveLength(topic.picks!.length);
     expect(new Set(picks.map((p) => p.entry.id)).size).toBe(picks.length);
     for (const p of picks) expect(retired.has(p.entry.id)).toBe(false);
   });
