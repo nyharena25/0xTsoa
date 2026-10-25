@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/polybar/polybar",
-    "ref": "f99e0b1c7a5b094f5a04b14101899d0cb4ece69d",
+    "ref": "b3af5a33166604c689705d7dc67b69c01482d707",
     "readme": "README.md"
   },
   "install": {
@@ -50,5 +50,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "3.7.2"
 }

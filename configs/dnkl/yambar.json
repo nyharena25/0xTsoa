@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://codeberg.org/dnkl/yambar",
-    "ref": "abeffbd9a9fd0b2133343e1149e65d4a795a43d0",
+    "ref": "a2d30b96fbb026621ec11692272f0117f35a00fd",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "1.11.0"
 }

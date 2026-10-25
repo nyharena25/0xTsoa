@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/catppuccin/sddm",
-    "ref": "28699090372cce33c12a923cf8fc297a9cae2cd4",
+    "ref": "5824845b721250bf5aad103ec70af500c49294d0",
     "readme": "README.md"
   },
   "install": {
@@ -57,5 +57,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v1.1.2"
 }

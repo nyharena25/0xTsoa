@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/davatorium/rofi",
-    "ref": "1ad1df6b72d4c8b0e40e8ced1249ef8a8a6bc0ad",
+    "ref": "0b6aa8ba8b4879f00c3cc96f2e47a13c079fe814",
     "readme": "README.md"
   },
   "install": {
@@ -59,5 +59,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "2.0.0"
 }

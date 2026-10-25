@@ -37,7 +37,7 @@
   ],
   "source": {
     "repo": "https://github.com/adapta-project/adapta-gtk-theme",
-    "ref": "51c02f689ccaa5a08bbe317d03c55b49dc4084c8",
+    "ref": "589d00cba24b2076f41f4022140ff442556eb9ca",
     "readme": "README.md"
   },
   "install": {
@@ -51,5 +51,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "3.95.0.11"
 }

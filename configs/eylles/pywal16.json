@@ -32,7 +32,7 @@
   ],
   "source": {
     "repo": "https://github.com/eylles/pywal16",
-    "ref": "af711710cdc3c88248b667342e5d4289f00f8c6e",
+    "ref": "a04c3e3b57ec57bdf080a863f45f917a18208e58",
     "readme": "README.md"
   },
   "install": {
@@ -46,5 +46,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "3.8.15"
 }

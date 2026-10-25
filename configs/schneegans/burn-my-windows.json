@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/Schneegans/Burn-My-Windows",
-    "ref": "b09d5e602c72b2ce626acfbcf732dc6d0654a84b",
+    "ref": "abccd27ef2099e721cddcdb01417ca7f08684eac",
     "readme": "README.md"
   },
   "install": {
@@ -50,5 +50,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v49"
 }

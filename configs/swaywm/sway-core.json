@@ -49,7 +49,7 @@
   ],
   "source": {
     "repo": "https://github.com/swaywm/sway",
-    "ref": "1652c54b73f67df17b7b4ab0b0f7048204aa8104",
+    "ref": "88869399f421d9180dd8b6ed0b5a1f4a3585d252",
     "readme": "README.md"
   },
   "install": {
@@ -100,5 +100,6 @@
       "effect": "Reload Sway config"
     }
   ],
-  "example": false
+  "example": false,
+  "version": "1.12"
 }

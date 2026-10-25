@@ -44,7 +44,7 @@
   ],
   "source": {
     "repo": "https://github.com/hyprwm/Hyprland",
-    "ref": "a1c2428f79b3b05c3fd36c27378e3538c8c6a014",
+    "ref": "efb50993780079460b0cbed1363e2166a2de1d9f",
     "readme": "README.md"
   },
   "install": {
@@ -96,5 +96,6 @@
       "effect": "Toggle window floating"
     }
   ],
-  "example": false
+  "example": false,
+  "version": "v0.56.2"
 }

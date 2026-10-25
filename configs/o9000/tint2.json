@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://gitlab.com/o9000/tint2",
-    "ref": "f3aa2ef0c61838ce16a88733e4d31990c5b5cdf2",
+    "ref": "f8f9c18cef88239688c62fdba70db9b082e1f0f4",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v17.0.2"
 }

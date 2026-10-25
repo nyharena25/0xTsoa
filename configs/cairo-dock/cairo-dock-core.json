@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/Cairo-Dock/cairo-dock-core",
-    "ref": "6304cf5db4fa24c9b918266de67158706a3c5a5b",
+    "ref": "761c3d77b6a2578accab50b1fe9c51d529b4d993",
     "readme": "README.md"
   },
   "install": {
@@ -50,5 +50,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "3.6.2"
 }

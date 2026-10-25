@@ -38,7 +38,7 @@
   ],
   "source": {
     "repo": "https://github.com/vinceliuice/WhiteSur-gtk-theme",
-    "ref": "d5782652d412137e26fb8ff55b55a5572e4c6995",
+    "ref": "99297948faf0191f8c48d215b925e54c984f3c39",
     "readme": "README.md"
   },
   "install": {
@@ -52,5 +52,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "2024.09.02"
 }

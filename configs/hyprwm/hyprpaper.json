@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/hyprwm/hyprpaper",
-    "ref": "39029bdfda857a5ea60340a427681893d12d4892",
+    "ref": "20fc0fa6c2056c388a4cd69cb394a9f989dd27c0",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.8.4"
 }

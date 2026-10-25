@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/Raymo111/i3lock-color",
-    "ref": "e6c0caf9b7aa22cc7864493132a1a2e258da1761",
+    "ref": "be02e80ef03a89b04dd819a622de3ce3bfecb541",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "2.10"
 }

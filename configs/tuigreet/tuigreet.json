@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/tuigreet/tuigreet",
-    "ref": "bd1078844cf2a98ccf82eb66dcdae3170dbe2e17",
+    "ref": "30bd91a650d5dfb261bf20cc1f437ce3b354296e",
     "readme": "README.md"
   },
   "install": {
@@ -49,5 +49,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "0.11.1"
 }

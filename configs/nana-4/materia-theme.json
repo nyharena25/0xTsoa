@@ -37,7 +37,7 @@
   ],
   "source": {
     "repo": "https://github.com/nana-4/materia-theme",
-    "ref": "d7f59a37ef51f893c28b55dc344146e04b2cd52c",
+    "ref": "5c91b710072401cb083d18452d3ef039cbbcb296",
     "readme": "README.md"
   },
   "install": {
@@ -51,5 +51,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v20210322"
 }

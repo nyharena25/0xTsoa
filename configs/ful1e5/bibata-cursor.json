@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/ful1e5/Bibata_Cursor",
-    "ref": "ddb09273cde49faeb6a32282660ff4293f52d6e0",
+    "ref": "35ccfe209a808e40d6c2ca60a46cbe4faf68b690",
     "readme": "README.md"
   },
   "install": {
@@ -50,5 +50,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v2.0.7"
 }

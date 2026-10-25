@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/WayfireWM/wayfire",
-    "ref": "cf18918b4b62d1f6851c8d5e6dabc97b62dcd6e6",
+    "ref": "d39902379c5737eebe1dc3a830659fa3f0fa22e0",
     "readme": "README.md"
   },
   "install": {
@@ -43,5 +43,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.11.0"
 }
