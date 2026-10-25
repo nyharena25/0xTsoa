@@ -48,6 +48,20 @@ describe('selectIndexNowUrls', () => {
     expect(picked.reason).toBe('no page changed');
   });
 
+  it('sends a changed guide with the Docs index, never the template', () => {
+    const picked = selectIndexNowUrls(changes('guides/install-dotfiles-safely.mdx'), ALL, SITE);
+    expect(picked.urls).toEqual([`${SITE}/docs/install-dotfiles-safely/`, `${SITE}/docs/`]);
+    expect(picked.reason).toBe('1 guide(s) changed, plus the Docs index');
+    expect(selectIndexNowUrls(changes('guides/_template.mdx'), ALL, SITE).urls).toEqual([]);
+  });
+
+  it('combines config and guide changes', () => {
+    const { urls, reason } = selectIndexNowUrls(changes('configs/a/b.json', 'guides/ricing.mdx'), ALL, SITE);
+    expect(urls).toEqual([`${SITE}/configs/a/b/`, `${SITE}/`, `${SITE}/catalogue/`, `${SITE}/docs/ricing/`, `${SITE}/docs/`]);
+    expect(reason).toContain('1 config page(s)');
+    expect(reason).toContain('1 guide(s)');
+  });
+
   it('ignores JSON outside configs/<author>/<slug>.json', () => {
     expect(selectIndexNowUrls(changes('configs/LICENSE', 'schema/example.config.json'), ALL, SITE).urls).toEqual([]);
   });

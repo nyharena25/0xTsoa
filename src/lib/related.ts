@@ -53,10 +53,16 @@ export function relatedConfigs(current: RelatedEntry, all: RelatedEntry[], { sta
     .map((r) => r.e);
 }
 
-/** For an archived entry: maintained entries of the same category, most starred first. */
+/** A Wayland-only entry cannot replace an X11-only one, and the other way round. */
+function sameDisplayServer(a: ConfigData, b: ConfigData): boolean {
+  return a.displayServer === 'both' || b.displayServer === 'both' || a.displayServer === b.displayServer;
+}
+
+/** For an archived entry: maintained entries of the same category that run on the same display server, most starred first. */
 export function maintainedAlternatives(current: RelatedEntry, all: RelatedEntry[], { stars, status, limit = 3 }: RelatedOptions): RelatedEntry[] {
   return all
     .filter((e) => e.id !== current.id && e.data.category === current.data.category && status(e.id, e.data) !== 'archived')
+    .filter((e) => sameDisplayServer(current.data, e.data))
     .filter((e) => relatednessScore(current.data, e.data) >= Math.max(3, minScore(current.data.category)))
     .sort((x, y) => relatednessScore(current.data, y.data) - relatednessScore(current.data, x.data) || stars(y.id) - stars(x.id))
     .slice(0, limit);

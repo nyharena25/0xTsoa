@@ -52,6 +52,14 @@ describe('relatedConfigs', () => {
   it('offers maintained alternatives of the same category for an archived entry', () => {
     expect(maintainedAlternatives(current, all, opts).map((e) => e.id)).toEqual(['d/hypr-bar-live', 'a/other-bar']);
   });
+
+  it('never offers an X11-only alternative for a Wayland-only entry', () => {
+    const x11 = make('f/x11-bar', { category: 'bar', displayServer: 'x11' });
+    const both = make('g/any-bar', { category: 'bar', displayServer: 'both' });
+    const ids = maintainedAlternatives(current, [...all, x11, both], { ...opts, limit: 5 }).map((e) => e.id);
+    expect(ids).not.toContain('f/x11-bar');
+    expect(ids).toContain('g/any-bar');
+  });
 });
 
 describe('maintenanceForConfig', () => {

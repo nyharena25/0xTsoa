@@ -1,0 +1,104 @@
+---
+// Registry entries side by side (works with, difficulty, what it changes, maintenance, stars).
+// Topic pages pass their entries; guides pass `ids` (as <Compare ids={[…]} />), shown in that order.
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { installDifficulty, installImpact, describeImpact, DIFFICULTY_INFO } from '../../lib/install';
+import { getStarsForConfig, maintenanceForConfig, compareForListing, MAINTENANCE_INFO } from '../../lib/stats';
+import { WM_LABELS, DISTRO_LABELS } from '../../lib/schema';
+import { withBase } from '../../../site.config';
+
+interface Props {
+  entries?: CollectionEntry<'configs'>[];
+  ids?: string[];
+  title?: string;
+  /** Catalogue filter for the "Filter in the catalogue" link, e.g. "wm=hyprland". */
+  catalogueQuery?: string;
+  headingId?: string;
+}
+
+const { ids, title, catalogueQuery, headingId = 'compare-title' } = Astro.props;
+
+let entries = Astro.props.entries ?? [];
+if (ids) {
+  const all = new Map((await getCollection('configs')).map((e) => [e.id, e]));
+  const missing = ids.filter((id) => !all.has(id));
+  if (missing.length) throw new Error(`<Compare>: no registry entry ${missing.join(', ')}`);
+  entries = ids.map((id) => all.get(id)!);
+}
+
+// Hand-picked lists keep their order; full lists put maintained projects first, then the most starred.
+const rows = (ids ? entries : [...entries].sort(compareForListing)).map((e) => ({
+  id: e.id,
+  data: e.data,
+  difficulty: installDifficulty(e.data),
+  maintenance: maintenanceForConfig(e.id, e.data.tags),
+  stars: getStarsForConfig(e.id),
+}));
+
+const thumb = (url: string) => (url.startsWith('http') ? url : withBase(url));
+const server = (d: CollectionEntry<'configs'>['data']['displayServer']) => (d === 'both' ? 'Wayland & X11' : d === 'wayland' ? 'Wayland' : 'X11');
+const formatStars = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n));
+const heading = title ?? `All ${rows.length} entries, compared`;
+---
+
+<section aria-labelledby={headingId} class="not-prose bg-white border border-zinc-200 rounded-xl shadow-xs p-3 sm:p-5 w-full min-w-0">
+  <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+    <h2 id={headingId} class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider m-0">{heading}</h2>
+    {catalogueQuery && <a href={withBase(`/catalogue/?${catalogueQuery}`)} class="font-mono text-[11px] underline text-zinc-600 hover:text-zinc-900">Filter in the catalogue &rarr;</a>}
+  </div>
+  <table class="w-full text-left font-mono text-[11px] border-collapse block md:table">
+    <thead class="hidden md:table-header-group bg-zinc-50 border-b border-zinc-200 text-zinc-500 uppercase tracking-wider text-[10px]">
+      <tr>
+        <th scope="col" class="p-2.5">Setup</th>
+        <th scope="col" class="p-2.5">Works with</th>
+        <th scope="col" class="p-2.5">Difficulty</th>
+        <th scope="col" class="p-2.5">What it changes</th>
+        <th scope="col" class="p-2.5">Maintenance</th>
+        <th scope="col" class="p-2.5 text-right">Stars</th>
+      </tr>
+    </thead>
+    <tbody class="block md:table-row-group divide-y divide-zinc-100">
+      {rows.map((r) => (
+        <tr class="block md:table-row py-3 md:py-0 align-top">
+          <th scope="row" class="block md:table-cell p-0 md:p-2.5 font-normal text-left">
+            <a href={withBase(`/configs/${r.id}/`)} class="group flex gap-3 no-underline min-w-0">
+              <img src={thumb(r.data.screenshots[0].url)} alt="" width="96" height="60" loading="lazy" decoding="async" class="w-24 h-[60px] object-cover rounded-md border border-zinc-200 bg-zinc-100 shrink-0" />
+              <span class="flex flex-col gap-0.5 min-w-0">
+                <span class="text-xs font-bold text-zinc-900 group-hover:underline">{r.data.name}</span>
+                <span class="font-sans text-xs text-zinc-600 leading-snug">{r.data.summary}</span>
+              </span>
+            </a>
+          </th>
+          <td class="block md:table-cell px-0 md:px-2.5 pt-2 md:py-2.5 text-zinc-700">
+            <span class="md:hidden text-zinc-500 uppercase text-[10px]">Works with: </span>
+            {r.data.wm === 'any' ? 'Any desktop' : WM_LABELS[r.data.wm]} ({server(r.data.displayServer)})
+            {!r.data.distros.includes('any') && <span class="text-zinc-500"> · {r.data.distros.map((d) => DISTRO_LABELS[d]).join(', ')}</span>}
+          </td>
+          <td class="block md:table-cell px-0 md:px-2.5 pt-1 md:py-2.5 whitespace-nowrap">
+            {r.difficulty ? (
+              <span class="inline-flex items-center gap-1.5 text-zinc-900 font-semibold">
+                <span class={`w-2 h-2 rounded-full inline-block ${DIFFICULTY_INFO[r.difficulty].dot}`} aria-hidden="true"></span>
+                {DIFFICULTY_INFO[r.difficulty].label}
+              </span>
+            ) : <span class="text-zinc-500">Reading list</span>}
+          </td>
+          <td class="block md:table-cell px-0 md:px-2.5 pt-1 md:py-2.5 text-zinc-700">
+            <span class="md:hidden text-zinc-500 uppercase text-[10px]">Changes: </span>
+            {describeImpact(r.difficulty, installImpact(r.data)).short}
+          </td>
+          <td class="block md:table-cell px-0 md:px-2.5 pt-1 md:py-2.5 whitespace-nowrap">
+            {r.maintenance ? (
+              <span class="inline-flex items-center gap-1.5 text-zinc-700">
+                <span class={`w-2 h-2 rounded-full inline-block ${MAINTENANCE_INFO[r.maintenance].dot}`} aria-hidden="true"></span>
+                {MAINTENANCE_INFO[r.maintenance].label}
+              </span>
+            ) : <span class="text-zinc-400">Not checked yet</span>}
+          </td>
+          <td class="block md:table-cell px-0 md:px-2.5 pt-1 md:py-2.5 md:text-right text-zinc-700">
+            <span class="md:hidden text-zinc-500 uppercase text-[10px]">Stars: </span>{formatStars(r.stars)}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</section>

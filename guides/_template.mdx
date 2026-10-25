@@ -1,0 +1,36 @@
+---
+# Copy this file to guides/<slug>.mdx (lowercase, hyphens) to start a guide; it is published at
+# /docs/<slug>/. Files starting with "_" are never published. The slug must not be a topic slug
+# from src/lib/topics.ts.
+title: How to Do the Thing on Linux, Step by Step # search title, at most 51 characters
+h1: How to do the thing on Linux, step by step
+label: The thing # breadcrumb and link text
+description: What the reader learns, in one or two sentences that fit in a search result. Between 70 and 160 characters.
+published: 2026-10-25
+updated: 2026-10-25 # bump when you review or change the text
+topics: [dotfiles] # topic pages this guide is about, linked at the end
+faq:
+  - q: A question people type into a search engine?
+    a: A direct answer in two or three sentences. It is shown on the page and marked up as an FAQ.
+draft: true # drafts only render in `npm run dev`
+---
+
+Start with the answer: what the reader will have done by the end, and for whom this guide is.
+
+## A section per step
+
+Write in short paragraphs. Link to [topic pages](/docs/hyprland/) and [config pages](/configs/end-4/dots-hyprland/)
+with root-relative paths; `npm test` fails when a link points at a page that does not exist.
+
+Registry data stays current on its own: <RegistryStat kind="sudo" /> of the <RegistryStat kind="installers" /> installers
+in the registry use sudo outside package installs.
+
+<WhatItChanges id="end-4/dots-hyprland" />
+
+## Comparing entries
+
+<Compare ids={['end-4/dots-hyprland', 'mylinuxforwork/dotfiles']} title="Two complete desktops, compared" headingId="compare-two" />
+
+```bash
+bash install.sh --dry-run
+```

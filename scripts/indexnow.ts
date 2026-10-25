@@ -7,8 +7,9 @@
  *   add --dry-run to print the URLs without submitting them
  *
  * With --changed-since, a changed config sends its own page (also when it was deleted, so the
- * engine drops it) plus the home page and catalogue that list it. A change to the site's code
- * changes every page, so every sitemap URL is sent. Anything else sends nothing.
+ * engine drops it) plus the home page and catalogue that list it. A changed guide sends its page
+ * and the Docs index. A change to the site's code changes every page, so every sitemap URL is
+ * sent. Anything else sends nothing.
  * Runs after every production deploy (.github/workflows/check-live.yml).
  */
 import fs from 'node:fs';
@@ -23,6 +24,8 @@ const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 const SITE_WIDE = [/^src\/(?!generated\/)/, /^astro\.config\.mjs$/, /^site\.config\.ts$/];
 const LISTING_ONLY = [/^src\/generated\//, /^featured\.json$/];
 const CONFIG_FILE = /^configs\/([^/]+)\/([^/]+)\.json$/;
+/** guides/_template.mdx and other "_" files are never published. */
+const GUIDE_FILE = /^guides\/([a-z0-9][a-z0-9-]*)\.mdx$/;
 
 export interface FileChange {
   path: string;
@@ -61,11 +64,21 @@ export function selectIndexNowUrls(
     urls.add(pageUrl('/'));
     urls.add(pageUrl('/catalogue/'));
   }
+  let guideCount = 0;
+  for (const c of changes) {
+    const m = c.path.match(GUIDE_FILE);
+    if (m && !urls.has(pageUrl(`/docs/${m[1]}/`))) {
+      urls.add(pageUrl(`/docs/${m[1]}/`));
+      guideCount++;
+    }
+  }
+  if (guideCount > 0) urls.add(pageUrl('/docs/'));
 
-  return {
-    urls: [...urls],
-    reason: configCount > 0 ? `${configCount} config page(s) changed, plus home and catalogue` : urls.size ? 'listing data changed' : 'no page changed',
-  };
+  const reasons = [
+    configCount > 0 ? `${configCount} config page(s) changed, plus home and catalogue` : urls.has(pageUrl('/catalogue/')) ? 'listing data changed' : '',
+    guideCount > 0 ? `${guideCount} guide(s) changed, plus the Docs index` : '',
+  ].filter(Boolean);
+  return { urls: [...urls], reason: reasons.join('; ') || 'no page changed' };
 }
 
 /** Remote text is logged as data: strip control characters (no forged log lines) and cap its length. */

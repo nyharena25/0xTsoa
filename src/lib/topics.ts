@@ -13,19 +13,38 @@ export type TopicFacet =
   | { kind: 'category'; value: ConfigData['category'] }
   | { kind: 'style'; value: ConfigData['themeStyle'] };
 
+/** A "Picks by need" row: the first candidate that is listed, maintained and not already picked wins. */
+export interface TopicPick {
+  need: string;
+  candidates: { id: string; reason: string }[];
+}
+
+/** An entry to move away from although its repository is not archived (deprecated, replaced by a successor). */
+export interface RetiredEntry {
+  id: string;
+  note: string;
+  /** Entries to move to; without it, maintained entries of the same category are suggested. */
+  to?: string[];
+}
+
 export interface Topic {
   slug: string;
   /** Short name for links and breadcrumbs. */
   label: string;
   facet: TopicFacet;
-  /** Search title without the " — 0xTsoa" suffix (at most 51 characters). */
+  /** Search title without the " — 0xTsoa" suffix (at most 51 characters). `{year}` becomes the build year. */
   title: string;
+  /** `{year}` becomes the build year. */
   h1: string;
+  /** When the hand-written text was last reviewed (YYYY-MM-DD). Feeds dateModified with the entries' dates. */
+  updated: string;
   /** Meta description; `{n}` becomes the number of entries. At most 160 characters once filled. */
   description: string;
   intro: string[];
   choose: string[];
   faq: { q: string; a: string }[];
+  picks?: TopicPick[];
+  retired?: RetiredEntry[];
 }
 
 export const TOPICS: Topic[] = [
@@ -33,9 +52,10 @@ export const TOPICS: Topic[] = [
     slug: 'hyprland',
     label: 'Hyprland',
     facet: { kind: 'wm', value: 'hyprland' },
-    title: 'Hyprland Dotfiles & Setups, Compared',
-    h1: 'Hyprland dotfiles and setups, compared',
-    description: '{n} Hyprland dotfiles, bars and tools side by side: what each install changes on your system, how to undo it, and whether it is still maintained.',
+    updated: '2026-10-25',
+    title: 'Best Hyprland Dotfiles in {year}, Compared',
+    h1: 'The best Hyprland dotfiles in {year}, compared',
+    description: '{n} Hyprland dotfiles and tools compared: picks by need, what each install changes, how to undo it, and which projects are no longer maintained.',
     intro: [
       'Hyprland is a dynamic tiling Wayland compositor known for its animations and for how far it can be customized. Out of the box it gives you windows and a config file, nothing else: the bar, launcher, widgets, wallpaper and colors come from the setup you put on top. That is why most people start from someone else’s dotfiles.',
       'The setups below range from complete desktops with their own installer and settings app, to small personal rices you copy by hand. They differ a lot in what they do to your system. Several replace your existing ~/.config folders, install dozens of packages and run their own install script, so the "What it changes" and "Difficulty" columns matter more than the screenshot.',
@@ -60,11 +80,50 @@ export const TOPICS: Topic[] = [
         a: 'Hyprland renames and removes options between releases. Setups that track the latest version are updated quickly; quiet or archived ones may need fixes. The Maintenance column shows when each upstream project was last updated.',
       },
     ],
+    picks: [
+      {
+        need: 'A complete desktop with a settings app',
+        candidates: [
+          { id: 'mylinuxforwork/dotfiles', reason: 'A guided installer, a settings app for the whole desktop and colors taken from your wallpaper. It runs on Arch-based distros, Fedora and openSUSE, and a Live ISO lets you try it in a virtual machine first.' },
+          { id: 'hyde-project/hyde', reason: 'A full desktop with Waybar, Rofi and a theme switcher, installed by one script on a fresh Arch install.' },
+        ],
+      },
+      {
+        need: 'The most polished interface',
+        candidates: [
+          { id: 'end-4/dots-hyprland', reason: 'A Quickshell interface with a live overview of your windows, an AI sidebar and Material colors. It is mostly a shell rather than a system setup, and its installer shows every command before running it.' },
+          { id: 'caelestia-dots/shell', reason: 'A Quickshell bar, dashboard and launcher with colors from your wallpaper, packaged in the AUR.' },
+        ],
+      },
+      {
+        need: 'Many looks to switch between',
+        candidates: [
+          { id: 'hyde-project/hyde', reason: 'The maintained successor of Hyprdots, with a theme switcher and a gallery of themes. It expects a fresh, minimal Arch install and also takes over GTK and Qt theming, your shell, SDDM and GRUB.' },
+        ],
+      },
+      {
+        need: 'On NixOS',
+        candidates: [
+          { id: 'misterio77/foundry', reason: 'A complete flake with home-manager and a heavily configured Hyprland. It also sets up disk layout, Secure Boot and secrets, so copy the parts you need rather than switching to it as it is.' },
+        ],
+      },
+      {
+        need: 'Building your own, piece by piece',
+        candidates: [
+          { id: 'hyprwm/hyprland-core', reason: 'Hyprland and its default Lua config from your distro’s packages. Add hyprlock and hyprpaper from the same project, then a bar and launcher of your choice: the slowest start, and the one you will understand best.' },
+        ],
+      },
+    ],
+    retired: [
+      { id: 'prasanthrangan/hyprdots', note: 'No longer maintained: development continues as HyDE.', to: ['hyde-project/hyde'] },
+      { id: 'jakoolit/arch-hyprland', note: 'Announced to be archived from March 2026, with maintenance moving to the LinuxBeginnings fork.' },
+    ],
   },
   {
     slug: 'dotfiles',
     label: 'Dotfiles',
     facet: { kind: 'category', value: 'dotfiles' },
+    updated: '2026-10-25',
     title: 'Linux Dotfiles & Rices, Compared',
     h1: 'Linux dotfiles and full rices, compared',
     description: '{n} complete Linux desktop setups for Hyprland, AwesomeWM, bspwm, dwm and more, with what each install changes and how to undo it.',
@@ -96,6 +155,7 @@ export const TOPICS: Topic[] = [
     slug: 'color-schemes',
     label: 'Color schemes',
     facet: { kind: 'category', value: 'colorscheme' },
+    updated: '2026-10-25',
     title: 'Linux Color Schemes & Wallpaper Color Generators',
     h1: 'Linux color schemes and wallpaper color generators',
     description: '{n} color palettes and generators for Linux: Catppuccin, Nord, Gruvbox, pywal, matugen and more, compared by maintenance and install impact.',
@@ -127,6 +187,7 @@ export const TOPICS: Topic[] = [
     slug: 'gtk-themes',
     label: 'GTK themes',
     facet: { kind: 'category', value: 'gtk-theme' },
+    updated: '2026-10-25',
     title: 'GTK Themes for Linux: Previews & Safe Install',
     h1: 'GTK themes for Linux, compared',
     description: '{n} GTK themes with previews: Orchis, WhiteSur, Colloid, Catppuccin, Dracula and more, with GTK4 support, maintenance and what each install changes.',
@@ -158,6 +219,7 @@ export const TOPICS: Topic[] = [
     slug: 'icon-themes',
     label: 'Icon themes',
     facet: { kind: 'category', value: 'icons' },
+    updated: '2026-10-25',
     title: 'Linux Icon Themes: Previews & Safe Install',
     h1: 'Linux icon themes, compared',
     description: '{n} Linux icon themes with previews: Papirus, Tela, WhiteSur, Colloid, Candy and more, compared by maintenance and what each install changes.',
@@ -189,6 +251,7 @@ export const TOPICS: Topic[] = [
     slug: 'launchers',
     label: 'Launchers',
     facet: { kind: 'category', value: 'launcher' },
+    updated: '2026-10-25',
     title: 'App Launchers for Linux: rofi, fuzzel & More',
     h1: 'Linux app launchers, compared',
     description: '{n} application launchers for Linux: rofi, fuzzel, tofi, Walker, Anyrun, Ulauncher and more, compared by Wayland or X11 support and maintenance.',
@@ -220,6 +283,7 @@ export const TOPICS: Topic[] = [
     slug: 'bars',
     label: 'Status bars',
     facet: { kind: 'category', value: 'bar' },
+    updated: '2026-10-25',
     title: 'Linux Status Bars: Waybar, Polybar & Alternatives',
     h1: 'Linux status bars and panels, compared',
     description: '{n} status bars and panels for Linux: Waybar, Polybar, HyprPanel, Ironbar, tint2 and more, compared by Wayland or X11 support and maintenance.',
@@ -251,6 +315,7 @@ export const TOPICS: Topic[] = [
     slug: 'gnome',
     label: 'GNOME',
     facet: { kind: 'wm', value: 'gnome' },
+    updated: '2026-10-25',
     title: 'GNOME Extensions & Themes, Compared',
     h1: 'GNOME extensions and themes, compared',
     description: '{n} GNOME Shell extensions and themes: tiling, blur, taskbar, live wallpapers and more, with GNOME version notes, maintenance and install impact.',
@@ -282,6 +347,7 @@ export const TOPICS: Topic[] = [
     slug: 'catppuccin',
     label: 'Catppuccin',
     facet: { kind: 'style', value: 'catppuccin' },
+    updated: '2026-10-25',
     title: 'Catppuccin for Linux: GTK, Cursors, GRUB & More',
     h1: 'Catppuccin for the Linux desktop',
     description: '{n} Catppuccin ports and setups for Linux: GTK, cursors, icons, GRUB, SDDM and Hyprland, with maintenance status and what each install changes.',
@@ -313,6 +379,7 @@ export const TOPICS: Topic[] = [
     slug: 'login-managers',
     label: 'Login screens',
     facet: { kind: 'category', value: 'login' },
+    updated: '2026-10-25',
     title: 'Linux Login Screens: SDDM Themes & Greeters',
     h1: 'Linux login screens: SDDM themes and greeters',
     description: '{n} Linux login screens: SDDM themes, greetd greeters such as tuigreet and ReGreet, and Ly, with what each changes on your system and how to recover.',
@@ -344,6 +411,7 @@ export const TOPICS: Topic[] = [
     slug: 'kde-plasma',
     label: 'KDE Plasma',
     facet: { kind: 'wm', value: 'kde' },
+    updated: '2026-10-25',
     title: 'KDE Plasma Extensions & KWin Scripts',
     h1: 'KDE Plasma extensions and KWin scripts, compared',
     description: '{n} KDE Plasma add-ons: tiling KWin scripts, rounded corners, panel styling and a HUD, with Plasma 6 support, maintenance and install impact.',
@@ -375,6 +443,7 @@ export const TOPICS: Topic[] = [
     slug: 'notification-daemons',
     label: 'Notifications',
     facet: { kind: 'category', value: 'notifications' },
+    updated: '2026-10-25',
     title: 'Linux Notification Daemons Compared',
     h1: 'Linux notification daemons, compared',
     description: '{n} Linux notification daemons: dunst, mako, fnott, SwayNotificationCenter and more, compared by Wayland or X11 support and maintenance.',
@@ -406,6 +475,7 @@ export const TOPICS: Topic[] = [
     slug: 'awesomewm',
     label: 'AwesomeWM',
     facet: { kind: 'wm', value: 'awesome' },
+    updated: '2026-10-25',
     title: 'AwesomeWM Dotfiles & Rices, Compared',
     h1: 'AwesomeWM dotfiles and rices, compared',
     description: '{n} AwesomeWM rices with Lua widgets, dashboards and custom palettes, compared by install impact, maintenance and what you need to run them.',
@@ -437,6 +507,7 @@ export const TOPICS: Topic[] = [
     slug: 'cursor-themes',
     label: 'Cursor themes',
     facet: { kind: 'category', value: 'cursors' },
+    updated: '2026-10-25',
     title: 'Linux Cursor Themes: Previews & Safe Install',
     h1: 'Linux cursor themes, compared',
     description: '{n} Linux cursor themes: Bibata, Catppuccin, macOS, Google and Vimix cursors, compared by maintenance and what each install changes.',
@@ -512,5 +583,48 @@ export function primaryTopic(data: ConfigData, live: Topic[]): Topic | undefined
 }
 
 export function topicDescription(topic: Topic, count: number): string {
-  return topic.description.replace('{n}', String(count));
+  return topicText(topic.description.replace('{n}', String(count)));
+}
+
+/** Fills `{year}` in a topic's title or heading with the build year, so "in 2026" never goes stale. */
+export function topicText(text: string, year: number = new Date().getUTCFullYear()): string {
+  return text.replaceAll('{year}', String(year));
+}
+
+/**
+ * The page's dateModified: the latest of the text's review date and the entries' pinned dates.
+ * Stars and maintenance refresh every night but are not edits, so they do not count.
+ */
+export function topicModified(topic: Topic, entries: { data: ConfigData }[]): string {
+  return entries.reduce((latest, e) => (e.data.updatedAt > latest ? e.data.updatedAt : latest), topic.updated);
+}
+
+/** "Picks by need": per need, the first candidate that is in the topic, not retired, and not picked for an earlier need. */
+export function choosePicks<T extends { id: string }>(
+  topic: Topic,
+  entries: T[],
+  isRetired: (entry: T) => boolean,
+): { need: string; reason: string; entry: T }[] {
+  const byId = new Map(entries.map((e) => [e.id, e]));
+  const used = new Set<string>();
+  const picks: { need: string; reason: string; entry: T }[] = [];
+  for (const { need, candidates } of topic.picks ?? []) {
+    const choice = candidates.find((c) => byId.has(c.id) && !used.has(c.id) && !isRetired(byId.get(c.id)!));
+    if (!choice) continue;
+    used.add(choice.id);
+    picks.push({ need, reason: choice.reason, entry: byId.get(choice.id)! });
+  }
+  return picks;
+}
+
+/** Entries to move away from: archived upstream (detected) or retired by hand in the topic, in that order. */
+export function retiredEntries<T extends { id: string }>(
+  topic: Topic,
+  entries: T[],
+  isArchived: (entry: T) => boolean,
+): { entry: T; note: string; to?: string[] }[] {
+  const listed = new Map((topic.retired ?? []).map((r) => [r.id, r]));
+  const archived = entries.filter((e) => isArchived(e)).map((entry) => ({ entry, note: listed.get(entry.id)?.note ?? 'The upstream repository is archived: it may still work, but bugs will not be fixed.', to: listed.get(entry.id)?.to }));
+  const byHand = entries.filter((e) => listed.has(e.id) && !isArchived(e)).map((entry) => ({ entry, note: listed.get(entry.id)!.note, to: listed.get(entry.id)!.to }));
+  return [...archived, ...byHand];
 }

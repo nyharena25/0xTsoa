@@ -2,7 +2,7 @@
 // The facts a visitor needs before installing, all derived from the reviewed config and the
 // nightly upstream sync: nothing here is written by hand, so it cannot drift from the installer.
 import { WM_LABELS, DISTRO_LABELS, type ConfigData } from '../lib/schema';
-import { DIFFICULTY_INFO, type InstallDifficulty, type InstallImpact } from '../lib/install';
+import { DIFFICULTY_INFO, describeImpact, type InstallDifficulty, type InstallImpact } from '../lib/install';
 import { MAINTENANCE_INFO, type MaintenanceStatus, type RepoStats } from '../lib/stats';
 
 interface Props {
@@ -32,31 +32,7 @@ const maintenanceText =
         ? 'The upstream repository is read-only: it may still work, but bugs will not be fixed.'
         : null;
 
-const packages = [...impact.packages, ...impact.aurPackages];
-const changes: string[] = [];
-if (difficulty === null) changes.push('Nothing: it is a reading list.');
-else if (difficulty === 'manual') changes.push('Nothing is installed for you; the clone stays in its own folder.');
-else {
-  if (packages.length) {
-    const shown = packages.slice(0, 4).join(', ') + (packages.length > 4 ? ` +${packages.length - 4} more` : '');
-    changes.push(`${packages.length} package${packages.length === 1 ? '' : 's'}: ${shown}${impact.aurPackages.length ? ' (AUR included)' : ''}`);
-  }
-  if (impact.userPaths.length) changes.push(`Writes to ${impact.userPaths.slice(0, 3).join(', ')}${impact.userPaths.length > 3 ? '…' : ''}`);
-  if (impact.systemCommands.length) changes.push(`Uses sudo outside package installs (${impact.systemCommands.length} step${impact.systemCommands.length === 1 ? '' : 's'})`);
-  if (impact.upstreamCommands.length) changes.push("Runs the project's own installer");
-  if (impact.execCommands.length) changes.push(`Changes settings (${impact.execCommands.length} command${impact.execCommands.length === 1 ? '' : 's'})`);
-}
-
-const undo =
-  difficulty === null
-    ? null
-    : difficulty === 'manual'
-      ? 'Delete the cloned folder. Anything you set up afterwards follows the upstream guide.'
-      : impact.upstreamCommands.length
-        ? "Home files are backed up first and restored with --rollback; the project's own installer is not undone."
-        : packages.length || impact.systemCommands.length || impact.execCommands.length
-          ? 'File changes: bash install.sh --rollback. Packages and settings stay.'
-          : 'bash install.sh --rollback restores every file it changed.';
+const { changes, undo } = describeImpact(difficulty, impact);
 
 const wm = data.wm === 'any' ? 'Any window manager or desktop' : WM_LABELS[data.wm];
 const server = data.displayServer === 'both' ? 'Wayland & X11' : data.displayServer === 'wayland' ? 'Wayland' : 'X11';

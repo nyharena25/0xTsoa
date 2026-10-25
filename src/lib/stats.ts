@@ -54,3 +54,9 @@ export function maintenanceStatus(stats: RepoStats | undefined, now: Date = new 
 export function maintenanceForConfig(id: string, tags: string[], now: Date = new Date()): MaintenanceStatus | null {
   return maintenanceStatus(STATS[id], now) ?? (tags.includes('archived') ? 'archived' : null);
 }
+
+/** Listing order for comparison tables: maintained projects first, then the most starred, then by name. */
+export function compareForListing(a: { id: string; data: { name: string; tags: string[] } }, b: { id: string; data: { name: string; tags: string[] } }): number {
+  const archived = (e: typeof a) => Number(maintenanceForConfig(e.id, e.data.tags) === 'archived');
+  return archived(a) - archived(b) || getStarsForConfig(b.id) - getStarsForConfig(a.id) || a.data.name.localeCompare(b.data.name);
+}

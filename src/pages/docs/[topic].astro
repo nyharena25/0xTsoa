@@ -2,11 +2,12 @@
 // Docs guides (/docs/hyprland/, /docs/gtk-themes/…): every entry of one facet compared side by side,
 // with the hand-written introduction, tips and FAQ from src/lib/topics.ts.
 import Base from '../../layouts/Base.astro';
+import CompareTable from '../../components/docs/CompareTable.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { liveTopics, topicDescription, topicPath, type Topic } from '../../lib/topics';
-import { installDifficulty, installImpact, DIFFICULTY_INFO } from '../../lib/install';
-import { getStarsForConfig, maintenanceForConfig, MAINTENANCE_INFO } from '../../lib/stats';
-import { WM_LABELS, DISTRO_LABELS } from '../../lib/schema';
+import { liveTopics, topicDescription, topicPath, topicText, topicModified, choosePicks, retiredEntries, type Topic } from '../../lib/topics';
+import { installDifficulty, DIFFICULTY_INFO } from '../../lib/install';
+import { getStarsForConfig, maintenanceForConfig, compareForListing, MAINTENANCE_INFO } from '../../lib/stats';
+import { maintainedAlternatives } from '../../lib/related';
 import { withBase } from '../../../site.config';
 
 export async function getStaticPaths() {
@@ -14,63 +15,61 @@ export async function getStaticPaths() {
   const live = liveTopics(all);
   return live.map(({ topic, entries }) => ({
     params: { topic: topic.slug },
-    props: { topic, entries, others: live.filter((t) => t.topic.slug !== topic.slug).map((t) => ({ topic: t.topic, count: t.entries.length })) },
+    props: { topic, entries, all, others: live.filter((t) => t.topic.slug !== topic.slug).map((t) => ({ topic: t.topic, count: t.entries.length })) },
   }));
 }
 
 interface Props {
   topic: Topic;
   entries: CollectionEntry<'configs'>[];
+  all: CollectionEntry<'configs'>[];
   others: { topic: Topic; count: number }[];
 }
 
-const { topic, entries, others } = Astro.props;
+const { topic, all, others } = Astro.props;
+const entries = [...Astro.props.entries].sort(compareForListing);
 
-const rows = entries
-  .map((e) => {
-    const impact = installImpact(e.data);
-    const packages = impact.packages.length + impact.aurPackages.length;
-    return {
-      id: e.id,
-      data: e.data,
-      difficulty: installDifficulty(e.data),
-      maintenance: maintenanceForConfig(e.id, e.data.tags),
-      stars: getStarsForConfig(e.id),
-      changes: [
-        packages && `${packages} package${packages === 1 ? '' : 's'}`,
-        impact.userPaths.length && `${impact.userPaths.length} folder${impact.userPaths.length === 1 ? '' : 's'} in ~`,
-        impact.systemCommands.length && 'sudo',
-        impact.upstreamCommands.length && 'own installer',
-      ].filter(Boolean) as string[],
-    };
-  })
-  // Maintained projects first, then the most starred.
-  .sort((a, b) => Number(a.maintenance === 'archived') - Number(b.maintenance === 'archived') || b.stars - a.stars || a.data.name.localeCompare(b.data.name));
-
+const title = topicText(topic.title);
+const h1 = topicText(topic.h1);
 const description = topicDescription(topic, entries.length);
 const pageUrl = new URL(withBase(topicPath(topic.slug)), Astro.site).href;
-const updated = new Date().toISOString().slice(0, 10);
+const updated = topicModified(topic, entries);
 const catalogueQuery = `${topic.facet.kind}=${topic.facet.value}`;
+
+const status = (id: string, data: CollectionEntry<'configs'>['data']) => maintenanceForConfig(id, data.tags);
+const isArchived = (e: CollectionEntry<'configs'>) => status(e.id, e.data) === 'archived';
+const retired = retiredEntries(topic, entries, isArchived);
+const retiredIds = new Set(retired.map((r) => r.entry.id));
+const picks = choosePicks(topic, entries, (e) => retiredIds.has(e.id)).map((p) => ({
+  ...p,
+  difficulty: installDifficulty(p.entry.data),
+  maintenance: status(p.entry.id, p.entry.data),
+}));
+const byId = new Map(all.map((e) => [e.id, e]));
+const moves = retired.map((r) => ({
+  ...r,
+  alternatives: r.to
+    ? r.to.map((id) => byId.get(id)).filter((e) => e !== undefined)
+    : maintainedAlternatives(r.entry, all.filter((e) => !retiredIds.has(e.id)), { stars: getStarsForConfig, status, limit: 2 }),
+}));
 const thumb = (url: string) => (url.startsWith('http') ? url : withBase(url));
-const server = (d: CollectionEntry<'configs'>['data']['displayServer']) => (d === 'both' ? 'Wayland & X11' : d === 'wayland' ? 'Wayland' : 'X11');
-const formatStars = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n));
 
 const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: topic.h1,
+    name: h1,
     description,
     url: pageUrl,
     dateModified: updated,
     mainEntity: {
       '@type': 'ItemList',
-      numberOfItems: rows.length,
-      itemListElement: rows.map((r, i) => ({
+      numberOfItems: entries.length,
+      itemListElement: entries.map((e, i) => ({
         '@type': 'ListItem',
         position: i + 1,
-        url: new URL(withBase(`/configs/${r.id}/`), Astro.site).href,
-        name: r.data.name,
+        url: new URL(withBase(`/configs/${e.id}/`), Astro.site).href,
+        name: e.data.name,
       })),
     },
   },
@@ -87,7 +86,7 @@ const jsonLd = [
 ---
 
 <Base
-  title={topic.title}
+  title={title}
   description={description}
   statusPrefix="[DOCS: "
   statusInitial={topic.label.toUpperCase()}
@@ -106,74 +105,71 @@ const jsonLd = [
     </nav>
 
     <header class="flex flex-col gap-3 max-w-3xl">
-      <h1 class="font-display text-2xl sm:text-4xl font-bold text-zinc-900 tracking-tight m-0" data-page-title="true">{topic.h1}</h1>
+      <h1 class="font-display text-2xl sm:text-4xl font-bold text-zinc-900 tracking-tight m-0" data-page-title="true">{h1}</h1>
       {topic.intro.map((p) => <p class="font-sans text-base text-zinc-700 leading-relaxed m-0">{p}</p>)}
       <p class="font-mono text-[11px] text-zinc-500 m-0">
         {entries.length} entries · each pinned to an exact upstream version · updated <time datetime={updated}>{updated}</time>
       </p>
     </header>
 
-    <section aria-labelledby="compare-title" class="bg-white border border-zinc-200 rounded-xl shadow-xs p-3 sm:p-5 w-full min-w-0">
-      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <h2 id="compare-title" class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider m-0">All {entries.length} entries, compared</h2>
-        <a href={withBase(`/catalogue/?${catalogueQuery}`)} class="font-mono text-[11px] underline text-zinc-600 hover:text-zinc-900">Filter in the catalogue &rarr;</a>
-      </div>
-      <table class="w-full text-left font-mono text-[11px] border-collapse block md:table">
-        <thead class="hidden md:table-header-group bg-zinc-50 border-b border-zinc-200 text-zinc-500 uppercase tracking-wider text-[10px]">
-          <tr>
-            <th scope="col" class="p-2.5">Setup</th>
-            <th scope="col" class="p-2.5">Works with</th>
-            <th scope="col" class="p-2.5">Difficulty</th>
-            <th scope="col" class="p-2.5">What it changes</th>
-            <th scope="col" class="p-2.5">Maintenance</th>
-            <th scope="col" class="p-2.5 text-right">Stars</th>
-          </tr>
-        </thead>
-        <tbody class="block md:table-row-group divide-y divide-zinc-100">
-          {rows.map((r) => (
-            <tr class="block md:table-row py-3 md:py-0 align-top">
-              <th scope="row" class="block md:table-cell p-0 md:p-2.5 font-normal text-left">
-                <a href={withBase(`/configs/${r.id}/`)} class="group flex gap-3 no-underline min-w-0">
-                  <img src={thumb(r.data.screenshots[0].url)} alt="" width="96" height="60" loading="lazy" decoding="async" class="w-24 h-[60px] object-cover rounded-md border border-zinc-200 bg-zinc-100 shrink-0" />
-                  <span class="flex flex-col gap-0.5 min-w-0">
-                    <span class="text-xs font-bold text-zinc-900 group-hover:underline">{r.data.name}</span>
-                    <span class="font-sans text-xs text-zinc-600 leading-snug">{r.data.summary}</span>
+    {picks.length > 0 && (
+      <section aria-labelledby="picks-title" class="flex flex-col gap-3">
+        <h2 id="picks-title" class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider m-0">Picks by need</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {picks.map(({ need, reason, entry, difficulty, maintenance }) => (
+            <li class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 flex flex-col gap-2.5 min-w-0">
+              <span class="font-mono text-[10px] uppercase font-bold text-zinc-500 tracking-wider">{need}</span>
+              <a href={withBase(`/configs/${entry.id}/`)} class="group flex items-center gap-3 no-underline min-w-0">
+                <img src={thumb(entry.data.screenshots[0].url)} alt="" width="80" height="50" loading="lazy" decoding="async" class="w-20 h-[50px] object-cover rounded-md border border-zinc-200 bg-zinc-100 shrink-0" />
+                <span class="font-display text-base font-bold text-zinc-900 group-hover:underline">{entry.data.name}</span>
+              </a>
+              <p class="font-sans text-sm text-zinc-700 leading-relaxed m-0">{reason}</p>
+              <span class="mt-auto flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-zinc-700">
+                {difficulty && (
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class={`w-2 h-2 rounded-full inline-block ${DIFFICULTY_INFO[difficulty].dot}`} aria-hidden="true"></span>
+                    {DIFFICULTY_INFO[difficulty].label}
                   </span>
-                </a>
-              </th>
-              <td class="block md:table-cell px-0 md:px-2.5 pt-2 md:py-2.5 text-zinc-700">
-                <span class="md:hidden text-zinc-500 uppercase text-[10px]">Works with: </span>
-                {r.data.wm === 'any' ? 'Any desktop' : WM_LABELS[r.data.wm]} ({server(r.data.displayServer)})
-                {!r.data.distros.includes('any') && <span class="text-zinc-500"> · {r.data.distros.map((d) => DISTRO_LABELS[d]).join(', ')}</span>}
-              </td>
-              <td class="block md:table-cell px-0 md:px-2.5 pt-1 md:py-2.5 whitespace-nowrap">
-                {r.difficulty ? (
-                  <span class="inline-flex items-center gap-1.5 text-zinc-900 font-semibold">
-                    <span class={`w-2 h-2 rounded-full inline-block ${DIFFICULTY_INFO[r.difficulty].dot}`} aria-hidden="true"></span>
-                    {DIFFICULTY_INFO[r.difficulty].label}
+                )}
+                {maintenance && (
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class={`w-2 h-2 rounded-full inline-block ${MAINTENANCE_INFO[maintenance].dot}`} aria-hidden="true"></span>
+                    {MAINTENANCE_INFO[maintenance].label}
                   </span>
-                ) : <span class="text-zinc-500">Reading list</span>}
-              </td>
-              <td class="block md:table-cell px-0 md:px-2.5 pt-1 md:py-2.5 text-zinc-700">
-                <span class="md:hidden text-zinc-500 uppercase text-[10px]">Changes: </span>
-                {r.difficulty === 'manual' ? 'Nothing for you: follow the upstream guide' : r.changes.length ? r.changes.join(' · ') : '—'}
-              </td>
-              <td class="block md:table-cell px-0 md:px-2.5 pt-1 md:py-2.5 whitespace-nowrap">
-                {r.maintenance ? (
-                  <span class="inline-flex items-center gap-1.5 text-zinc-700">
-                    <span class={`w-2 h-2 rounded-full inline-block ${MAINTENANCE_INFO[r.maintenance].dot}`} aria-hidden="true"></span>
-                    {MAINTENANCE_INFO[r.maintenance].label}
-                  </span>
-                ) : <span class="text-zinc-400">Not checked yet</span>}
-              </td>
-              <td class="block md:table-cell px-0 md:px-2.5 pt-1 md:py-2.5 md:text-right text-zinc-700">
-                <span class="md:hidden text-zinc-500 uppercase text-[10px]">Stars: </span>{formatStars(r.stars)}
-              </td>
-            </tr>
+                )}
+              </span>
+            </li>
           ))}
-        </tbody>
-      </table>
-    </section>
+        </ul>
+      </section>
+    )}
+
+    <CompareTable entries={entries} catalogueQuery={catalogueQuery} />
+
+    {moves.length > 0 && (
+      <section aria-labelledby="retired-title" class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-6">
+        <h2 id="retired-title" class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider mb-1">Avoid or migrate</h2>
+        <p class="font-sans text-sm text-zinc-600 leading-relaxed mt-0 mb-3">These still install, but their projects have stopped. Pick a maintained alternative for a new setup.</p>
+        <ul class="flex flex-col divide-y divide-zinc-100">
+          {moves.map(({ entry, note, alternatives }) => (
+            <li class="py-3 first:pt-0 last:pb-0 grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-6 gap-y-1.5">
+              <div class="min-w-0">
+                <a href={withBase(`/configs/${entry.id}/`)} class="font-sans text-sm font-bold text-zinc-900 underline">{entry.data.name}</a>
+                <p class="font-sans text-sm text-zinc-600 leading-relaxed m-0">{note}</p>
+              </div>
+              {alternatives.length > 0 && (
+                <p class="font-sans text-sm text-zinc-700 m-0">
+                  <span class="font-mono text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Move to: </span>
+                  {alternatives.map((a, i) => (
+                    <>{i > 0 && ', '}<a href={withBase(`/configs/${a.id}/`)} class="underline text-zinc-900 font-semibold">{a.data.name}</a></>
+                  ))}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <section aria-labelledby="choose-title" class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-6">

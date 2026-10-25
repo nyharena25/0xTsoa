@@ -1,0 +1,15 @@
+---
+// An inline number from the registry, for guide text: <RegistryStat kind="sudo" /> of <RegistryStat kind="installers" />.
+import { getCollection } from 'astro:content';
+import { registryStat, REGISTRY_STATS, type RegistryStatKind } from '../../lib/registry-facts';
+
+interface Props {
+  kind: RegistryStatKind;
+}
+
+const { kind } = Astro.props;
+if (!(kind in REGISTRY_STATS)) throw new Error(`<RegistryStat>: unknown kind "${kind}"`);
+const value = registryStat(kind, await getCollection('configs'));
+---
+
+<span class="tabular-nums" title={`Number of ${REGISTRY_STATS[kind]}, counted at build time`}>{value}</span>
