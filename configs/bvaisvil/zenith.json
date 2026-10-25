@@ -33,7 +33,7 @@
   ],
   "source": {
     "repo": "https://github.com/bvaisvil/zenith",
-    "ref": "b65891608978bb6f9654931d393a3797d33a8306",
+    "ref": "00247ba496fc1e9eb6d4c3e7d12ff56c23b0190a",
     "readme": "README.md"
   },
   "install": {
@@ -47,5 +47,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "0.15.1"
 }

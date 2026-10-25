@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/LemonBoy/bar",
-    "ref": "59b0d2826a74b62c1ec0ed8bc71dea873dfc8135",
+    "ref": "5420c86be097819028a9504c1cb6a8f7f23ab5c8",
     "readme": "README.md"
   },
   "install": {
@@ -43,5 +43,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v1.5"
 }

@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/home-sweet-gnome/dash-to-panel",
-    "ref": "c3aed934f927852a9ec28103e788d1954034bf4c",
+    "ref": "db578c4f0061686609ed0bd1422967dfee2554d6",
     "readme": "README.md"
   },
   "install": {
@@ -57,5 +57,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v74"
 }

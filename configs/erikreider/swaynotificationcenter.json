@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/ErikReider/SwayNotificationCenter",
-    "ref": "b8017a4d1a53debdf0e8766628fb80357eae31e7",
+    "ref": "1043ef98ec97a27e24192a726576fce807d2ee49",
     "readme": "README.md"
   },
   "install": {
@@ -43,5 +43,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.12.6"
 }

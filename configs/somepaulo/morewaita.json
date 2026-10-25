@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/somepaulo/MoreWaita",
-    "ref": "ec99a2b6cbc7f68ec0e5ec01849e6a4b33028eb2",
+    "ref": "1934092ebc94977f03e49a49f5543297479ac0e4",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v50.1"
 }

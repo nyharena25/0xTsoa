@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://codeberg.org/dnkl/fuzzel",
-    "ref": "815d4385afb844f74243a6bc1c7836c4fbebe830",
+    "ref": "c4491417f4d716d27d24428708de565d1636d689",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "1.15.0"
 }

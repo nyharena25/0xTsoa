@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/anishathalye/dotbot",
-    "ref": "087840716e0ba1edd60049094a0ab57a8aa3fbe3",
+    "ref": "a7fe585f087617f5d897754b970d1088af50084c",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v1.24.1"
 }

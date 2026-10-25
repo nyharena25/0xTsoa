@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/qtile/qtile",
-    "ref": "557e4645ee397420d77a35c3f85ecb43fc78a194",
+    "ref": "83c697a5621306c3586efca31867efcfa0482e2d",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.37.1"
 }

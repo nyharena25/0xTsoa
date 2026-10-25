@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/Schneegans/Fly-Pie",
-    "ref": "28ea7f4c810fa692eaa2f4629f87b227a0c37a19",
+    "ref": "2ebd59903712fd72b48c1a63253715ba1a0f6599",
     "readme": "README.md"
   },
   "install": {
@@ -49,5 +49,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v33"
 }

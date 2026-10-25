@@ -33,7 +33,7 @@
   ],
   "source": {
     "repo": "https://github.com/nwg-piotr/nwg-dock-hyprland",
-    "ref": "028ad56aa1dafbeed1772166749cedf00bef4108",
+    "ref": "30a333c6e4cb629b3d84d4dec51028e3a8e3be94",
     "readme": "README.md"
   },
   "install": {
@@ -47,5 +47,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.4.11"
 }

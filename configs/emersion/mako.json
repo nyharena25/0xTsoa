@@ -32,7 +32,7 @@
   ],
   "source": {
     "repo": "https://github.com/emersion/mako",
-    "ref": "cce37cd3405f64eee1b07d4656b5ecbbc912b46d",
+    "ref": "91c6b799855762ad1eb8b4498967c270a339be0c",
     "readme": "README.md"
   },
   "install": {
@@ -46,5 +46,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v1.11.0"
 }

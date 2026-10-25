@@ -35,7 +35,7 @@
   ],
   "source": {
     "repo": "https://github.com/vinceliuice/WhiteSur-icon-theme",
-    "ref": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "ref": "1113dda487fea381744de16a24df9d66512cf978",
     "readme": "README.md"
   },
   "install": {
@@ -49,5 +49,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "2024.04.08"
 }

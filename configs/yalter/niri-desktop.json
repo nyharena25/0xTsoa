@@ -48,7 +48,7 @@
   ],
   "source": {
     "repo": "https://github.com/niri-wm/niri",
-    "ref": "e19df12cf81ffe805609fee497da1a097066ad2f",
+    "ref": "8ed0da44d974c32c6877d2f4630c314da0717ecb",
     "readme": "README.md"
   },
   "install": {
@@ -104,5 +104,6 @@
       "effect": "Close active window"
     }
   ],
-  "example": false
+  "example": false,
+  "version": "v26.04"
 }

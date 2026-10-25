@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/Alexays/Waybar",
-    "ref": "c15ec02ede4343592a59eb5c2ff4443c9c045f7c",
+    "ref": "90b209add8937514d0a987aa842e701bd8f1232e",
     "readme": "README.md"
   },
   "install": {
@@ -43,5 +43,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "0.15.0"
 }

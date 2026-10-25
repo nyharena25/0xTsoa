@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/MarianArlt/sddm-sugar-dark",
-    "ref": "ceb2c455663429be03ba62d9f898c571650ef7fe",
+    "ref": "d861fa9c8abf527bf2f669ecd123f85a8608cbb6",
     "readme": "README.md"
   },
   "install": {
@@ -49,5 +49,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v1.2"
 }

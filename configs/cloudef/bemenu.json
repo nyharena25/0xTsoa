@@ -27,7 +27,7 @@
   ],
   "source": {
     "repo": "https://github.com/Cloudef/bemenu",
-    "ref": "44b82f9f3fb9f04acfaa89471dddc05a20e16883",
+    "ref": "6f0fd2ea4ce3418421ba3fc610b4539a62db3905",
     "readme": "README.md"
   },
   "install": {
@@ -41,5 +41,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "0.6.23"
 }

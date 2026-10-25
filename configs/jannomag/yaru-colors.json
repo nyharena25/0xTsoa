@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/Jannomag/Yaru-Colors",
-    "ref": "74f8179dab3ab0d0ac9858883815ff7941e74c0f",
+    "ref": "782ed0773ccea4d00f7d87043a95287b7c586837",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "21.04"
 }
