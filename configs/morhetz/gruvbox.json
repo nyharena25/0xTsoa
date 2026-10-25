@@ -52,7 +52,7 @@
         "id": "reload",
         "title": "Activate the colorscheme",
         "commands": [
-          "nvim +\"colorscheme gruvbox\""
+          "# Open Neovim and run :colorscheme gruvbox to try it; to keep it, add vim.cmd.colorscheme('gruvbox') to init.lua (or colorscheme gruvbox to init.vim)"
         ]
       }
     ]

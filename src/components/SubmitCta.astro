@@ -1,0 +1,41 @@
+---
+// "Submit your setup", shown where a visitor has just seen setups like theirs: config pages, topic
+// pages and the catalogue. The button opens the issue form directly; the bot turns it into a PR.
+import { formPicks, type SubmitContext } from '../lib/submit-links';
+import { NEW_CONFIG_ISSUE_URL, withBase } from '../../site.config';
+
+interface Props {
+  heading: string;
+  /** Facets of the page, named as the form answers to pick. */
+  context?: SubmitContext;
+}
+
+const { heading, context = {} } = Astro.props;
+const picks = formPicks(context);
+---
+
+<aside class="bg-zinc-50 border border-dashed border-zinc-300 rounded-xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 w-full min-w-0">
+  <div class="flex flex-col gap-1 min-w-0 flex-1">
+    <p class="font-mono text-xs sm:text-sm font-bold text-zinc-900 m-0">{heading}</p>
+    <p class="font-sans text-sm text-zinc-600 leading-relaxed m-0">
+      Fill in one form, no JSON or Git needed: a bot opens the pull request for you, credited to your GitHub account.
+      {picks.length > 0 && (
+        <span>
+          {' '}In the form, pick{' '}
+          {picks.map((p, i) => (
+            <>
+              {i > 0 && (i === picks.length - 1 ? ' and ' : ', ')}
+              <strong class="text-zinc-900 font-semibold">{p.option}</strong> under {p.field}
+            </>
+          ))}.
+        </span>
+      )}
+    </p>
+  </div>
+  <div class="flex flex-wrap gap-2 shrink-0">
+    <a href={NEW_CONFIG_ISSUE_URL} target="_blank" rel="noopener noreferrer" class="btn-solid text-xs min-h-[44px] justify-center">
+      Submit your setup
+    </a>
+    <a href={withBase('/contribute/')} class="btn-outline text-xs min-h-[44px] justify-center">How it works</a>
+  </div>
+</aside>

@@ -4,7 +4,7 @@ import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import { readmeRawUrl, type ConfigData } from './schema';
 import { fetchLimited } from './fetch-limited';
-import { stripTrailingSlashes } from './strings';
+import { replaceTags, stripTrailingSlashes } from './strings';
 
 const CACHE_DIR = path.resolve(process.cwd(), 'node_modules/.cache/0xtsoa-readme');
 const README_MAX_BYTES = 2 * 1024 * 1024;
@@ -509,4 +509,85 @@ export function sanitizeAndRewriteHtml(
       },
     },
   });
+}
+
+const VOID_TAGS = new Set(['area', 'br', 'col', 'embed', 'hr', 'img', 'input', 'source', 'track', 'wbr']);
+
+/**
+ * The tags of sanitized HTML in order, scanned by hand in linear time (quoted attribute values may
+ * hold `>`). An unterminated tag ends the scan: the rest is text.
+ */
+function* scanTags(html: string): Generator<{ index: number; end: number; name: string; closing: boolean; selfClosing: boolean }> {
+  for (let i = html.indexOf('<'); i !== -1; ) {
+    const closing = html[i + 1] === '/';
+    const nameStart = closing ? i + 2 : i + 1;
+    let j = nameStart;
+    if (!/[a-zA-Z]/.test(html[j] ?? '')) {
+      i = html.indexOf('<', i + 1);
+      continue;
+    }
+    while (j < html.length && /[\w-]/.test(html[j])) j++;
+    const name = html.slice(nameStart, j);
+    let quote = '';
+    for (; j < html.length; j++) {
+      const c = html[j];
+      if (quote) {
+        if (c === quote) quote = '';
+      } else if (c === '"' || c === "'") quote = c;
+      else if (c === '>') break;
+    }
+    if (j >= html.length) return;
+    yield { index: i, end: j + 1, name, closing, selfClosing: html[j - 1] === '/' };
+    i = html.indexOf('<', j + 1);
+  }
+}
+
+/** Top-level elements of sanitized HTML (whitespace between them dropped). */
+export function topLevelBlocks(html: string): string[] {
+  const blocks: string[] = [];
+  const pushText = (text: string) => {
+    if (text.trim()) blocks.push(text.trim());
+  };
+  let depth = 0;
+  let start = 0;
+  let cursor = 0;
+  for (const { index, end, name, closing, selfClosing } of scanTags(html)) {
+    if (depth === 0) {
+      pushText(html.slice(cursor, index)); // loose text between top-level elements
+      start = index;
+    }
+    if (closing) depth = Math.max(0, depth - 1);
+    else if (!VOID_TAGS.has(name.toLowerCase()) && !selfClosing) depth++;
+    if (depth === 0) {
+      cursor = end;
+      blocks.push(html.slice(start, cursor));
+    }
+  }
+  pushText(html.slice(cursor));
+  return blocks;
+}
+
+function wordCount(html: string): number {
+  return replaceTags(html, ' ').split(/\s+/).filter(Boolean).length;
+}
+
+/**
+ * The opening of a README: whole top-level blocks up to about `maxWords` words, stopping at the
+ * next heading once there is enough to read. The full text stays on the forge, linked from the page,
+ * so the page keeps its own content instead of copying the upstream README.
+ */
+export function readmeExcerpt(html: string, maxWords = 220): { html: string; truncated: boolean } {
+  const blocks = topLevelBlocks(html);
+  const kept: string[] = [];
+  let words = 0;
+  for (const block of blocks) {
+    const n = wordCount(block);
+    const isHeading = /^<h[1-6]\b/i.test(block);
+    if (kept.length > 0 && ((isHeading && words >= maxWords / 2) || words + n > maxWords)) break;
+    kept.push(block);
+    words += n;
+  }
+  // A trailing heading with nothing under it reads as a cut-off.
+  while (kept.length > 1 && /^<h[1-6]\b/i.test(kept.at(-1)!)) kept.pop();
+  return { html: kept.join('\n'), truncated: kept.length < blocks.length };
 }

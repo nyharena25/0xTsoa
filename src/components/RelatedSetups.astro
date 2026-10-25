@@ -1,0 +1,49 @@
+---
+import { WM_LABELS, CATEGORY_LABELS } from '../lib/schema';
+import type { RelatedEntry } from '../lib/related';
+import { withBase } from '../../site.config';
+
+interface Props {
+  entries: RelatedEntry[];
+  /** Numbered section title, e.g. "06. Related setups". */
+  title: string;
+}
+
+const { entries, title } = Astro.props;
+
+const thumb = (url: string) => (url.startsWith('http') ? url : withBase(url));
+---
+
+<section class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-7 flex flex-col gap-4 w-full min-w-0" id="related">
+  <div class="border-b border-zinc-200 pb-3 flex items-center gap-2.5">
+    <span class="w-2 h-2 rounded-full bg-zinc-900 inline-block"></span>
+    <h2 class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider">{title}</h2>
+  </div>
+  <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    {entries.map(({ id, data }) => (
+      <li class="min-w-0">
+        <a
+          href={withBase(`/configs/${id}/`)}
+          class="group flex gap-3 border border-zinc-200 rounded-xl p-2.5 hover:border-zinc-400 hover:bg-zinc-50 transition-colors no-underline min-w-0 h-full"
+        >
+          <img
+            src={thumb(data.screenshots[0].url)}
+            alt=""
+            width="112"
+            height="70"
+            loading="lazy"
+            decoding="async"
+            class="w-28 h-[70px] object-cover rounded-md border border-zinc-200 bg-zinc-100 shrink-0"
+          />
+          <span class="flex flex-col gap-0.5 min-w-0">
+            <span class="font-mono text-xs font-bold text-zinc-900 group-hover:underline truncate">{data.name}</span>
+            <span class="font-mono text-[10px] uppercase tracking-wider text-zinc-500 truncate">
+              {CATEGORY_LABELS[data.category]}{data.wm !== 'any' && ` · ${WM_LABELS[data.wm]}`}
+            </span>
+            <span class="font-sans text-xs text-zinc-600 leading-snug line-clamp-2">{data.summary}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>

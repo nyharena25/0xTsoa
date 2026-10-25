@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Successor of Hyprdots: themeable Hyprland desktop with a theme switcher and gallery.",
+  "description": "HyDE is the maintained successor of Hyprdots: a full Hyprland desktop with Waybar, Rofi, a theme switcher and a gallery of themes. Its installer targets a minimal Arch Linux install and takes over GTK and Qt theming, your shell, SDDM and GRUB, so it will clash with another desktop on the same account. On NVIDIA systems it installs a DKMS driver and edits the bootloader config to enable NVIDIA DRM. NixOS users have a separate port, Hydenix.",
   "license": "GPL-3.0-only",
   "updatedAt": "2026-10-03",
   "distros": [

@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/rharish101/ReGreet",
-    "ref": "855db82e9587f2f12db0c02ef0ed8c4f4f30b9ae",
+    "ref": "290e6f8d65b7034c5b63bc950a20bcf8277ebe5f",
     "readme": "README.md"
   },
   "install": {
@@ -57,5 +57,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "0.5.0"
 }

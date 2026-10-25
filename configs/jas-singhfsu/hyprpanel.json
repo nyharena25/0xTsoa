@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "All-in-one panel for Hyprland with dashboards, notifications and a settings dialog.",
+  "description": "An all-in-one panel for Hyprland built with Astal: bar, dashboard, notifications, media and system controls, with a graphical settings dialog. It is in maintenance mode and about to be archived; its author now works on Wayle, a compositor-agnostic successor written in Rust. Installed from the AUR as ags-hyprpanel-git.",
   "license": "MIT",
   "updatedAt": "2026-04-22",
   "distros": [

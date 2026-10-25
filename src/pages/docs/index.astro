@@ -1,0 +1,109 @@
+---
+// Docs index: the guides (guides/*.mdx) under "Start here", then every published topic page, grouped (TOPIC_GROUPS in src/lib/topics.ts).
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { liveTopics, topicPath, topicText, TOPIC_GROUPS } from '../../lib/topics';
+import { START_HERE_GUIDE } from '../../lib/guides';
+import { withBase } from '../../../site.config';
+
+const live = liveTopics(await getCollection('configs'));
+const guides = (await getCollection('guides', ({ data }) => import.meta.env.DEV || !data.draft)).sort((a, b) => Number(b.id === START_HERE_GUIDE) - Number(a.id === START_HERE_GUIDE) || a.data.published.localeCompare(b.data.published));
+const bySlug = new Map(live.map((t) => [t.topic.slug, t]));
+const groups = TOPIC_GROUPS.map((g) => ({ title: g.title, guides: g.slugs.map((s) => bySlug.get(s)).filter((t) => t !== undefined) })).filter(
+  (g) => g.guides.length > 0,
+);
+// The first sentence of a guide's introduction is its teaser.
+const teaser = (text: string) => text.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? text;
+
+const title = 'Linux Desktop Customization Guides';
+const description = `${live.length + guides.length} guides to customizing a Linux desktop: Hyprland, GNOME, KDE, bars, launchers, GTK and icon themes, each comparing what an install changes and how to undo it.`;
+const pageUrl = new URL(withBase('/docs/'), Astro.site).href;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: title,
+    description,
+    url: pageUrl,
+    hasPart: [
+      ...guides.map((g) => ({ '@type': 'TechArticle', name: g.data.h1, url: new URL(withBase(topicPath(g.id)), Astro.site).href })),
+      ...live.map(({ topic }) => ({ '@type': 'WebPage', name: topicText(topic.h1), url: new URL(withBase(topicPath(topic.slug)), Astro.site).href })),
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: new URL(withBase('/'), Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: 'Docs', item: pageUrl },
+    ],
+  },
+];
+---
+
+<Base title={title} description={description} statusPrefix="[DOCS: " statusInitial="GUIDES" statusFinal={`${live.length + guides.length} GUIDES`} jsonLd={jsonLd}>
+  <div class="max-w-7xl mx-auto w-full px-4 lg:px-8 py-6 sm:py-8 flex flex-col gap-8 min-w-0" data-pagefind-body>
+    <nav aria-label="Breadcrumb" class="font-mono text-xs text-zinc-500">
+      <ol class="flex flex-wrap items-center gap-1.5">
+        <li><a href={withBase('/')} class="hover:text-zinc-900 underline">Home</a></li>
+        <li aria-hidden="true">/</li>
+        <li class="text-zinc-900 font-semibold" aria-current="page">Docs</li>
+      </ol>
+    </nav>
+
+    <header class="flex flex-col gap-3 max-w-3xl">
+      <h1 class="font-display text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight m-0" data-page-title="true">Docs</h1>
+      <p class="font-sans text-base sm:text-lg text-zinc-700 leading-relaxed m-0">
+        Guides to customizing a Linux desktop. Each one explains a window manager, desktop part or palette, then compares every setup in the registry for it: how hard it is to install, what it changes on your system, how to undo it, and whether it is still maintained.
+      </p>
+    </header>
+
+    {guides.length > 0 && (
+      <section class="flex flex-col gap-3" aria-labelledby="docs-start-here">
+        <h2 id="docs-start-here" class="font-mono text-xs uppercase font-bold text-zinc-500 tracking-wider m-0">Start here</h2>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {guides.map((g) => (
+            <li class="min-w-0">
+              <a
+                href={withBase(topicPath(g.id))}
+                class="group h-full flex flex-col gap-2 bg-white border border-zinc-200 rounded-xl p-4 sm:p-5 shadow-xs hover:border-zinc-400 hover:shadow-sm transition-[border-color,box-shadow] no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+              >
+                <span class="font-display text-lg font-bold text-zinc-900 group-hover:underline">{g.data.h1}</span>
+                <span class="font-sans text-sm text-zinc-600 leading-relaxed">{g.data.description}</span>
+                <span class="mt-auto pt-1 font-mono text-xs font-semibold text-zinc-900">Read the guide &rarr;</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {groups.map((group, i) => (
+      <section class="flex flex-col gap-3" aria-labelledby={`docs-group-${i}`}>
+        <h2 id={`docs-group-${i}`} class="font-mono text-xs uppercase font-bold text-zinc-500 tracking-wider m-0">{group.title}</h2>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {group.guides.map(({ topic, entries }) => (
+            <li class="min-w-0">
+              <a
+                href={withBase(topicPath(topic.slug))}
+                class="group h-full flex flex-col gap-2 bg-white border border-zinc-200 rounded-xl p-4 sm:p-5 shadow-xs hover:border-zinc-400 hover:shadow-sm transition-[border-color,box-shadow] no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+              >
+                <span class="flex items-baseline justify-between gap-2">
+                  <span class="font-display text-lg font-bold text-zinc-900 group-hover:underline">{topic.label}</span>
+                  <span class="font-mono text-[11px] text-zinc-500 shrink-0">{entries.length} entries</span>
+                </span>
+                <span class="font-sans text-sm text-zinc-600 leading-relaxed">{teaser(topic.intro[0])}</span>
+                <span class="mt-auto pt-1 font-mono text-xs font-semibold text-zinc-900">Read the guide &rarr;</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <p class="font-sans text-sm text-zinc-600 m-0">
+      Looking for something specific? <a href={withBase('/catalogue/')} class="underline text-zinc-900 font-semibold">Search the catalogue</a>, or <a href={withBase('/contribute/')} class="underline text-zinc-900 font-semibold">submit a setup</a> that is missing.
+    </p>
+  </div>
+</Base>

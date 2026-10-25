@@ -1,0 +1,207 @@
+---
+// Docs guides (/docs/hyprland/, /docs/gtk-themes/…): every entry of one facet compared side by side,
+// with the hand-written introduction, tips and FAQ from src/lib/topics.ts.
+import Base from '../../layouts/Base.astro';
+import CompareTable from '../../components/docs/CompareTable.astro';
+import SubmitCta from '../../components/SubmitCta.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { liveTopics, topicDescription, topicPath, topicText, topicModified, choosePicks, retiredEntries, type Topic } from '../../lib/topics';
+import { installDifficulty, DIFFICULTY_INFO } from '../../lib/install';
+import { getStarsForConfig, maintenanceForConfig, compareForListing, MAINTENANCE_INFO } from '../../lib/stats';
+import { maintainedAlternatives } from '../../lib/related';
+import { withBase } from '../../../site.config';
+
+export async function getStaticPaths() {
+  const all = await getCollection('configs');
+  const live = liveTopics(all);
+  return live.map(({ topic, entries }) => ({
+    params: { topic: topic.slug },
+    props: { topic, entries, all, others: live.filter((t) => t.topic.slug !== topic.slug).map((t) => ({ topic: t.topic, count: t.entries.length })) },
+  }));
+}
+
+interface Props {
+  topic: Topic;
+  entries: CollectionEntry<'configs'>[];
+  all: CollectionEntry<'configs'>[];
+  others: { topic: Topic; count: number }[];
+}
+
+const { topic, all, others } = Astro.props;
+const entries = [...Astro.props.entries].sort(compareForListing);
+
+const title = topicText(topic.title);
+const h1 = topicText(topic.h1);
+const description = topicDescription(topic, entries.length);
+const pageUrl = new URL(withBase(topicPath(topic.slug)), Astro.site).href;
+const updated = topicModified(topic, entries);
+const catalogueQuery = `${topic.facet.kind}=${topic.facet.value}`;
+
+const status = (id: string, data: CollectionEntry<'configs'>['data']) => maintenanceForConfig(id, data.tags);
+const isArchived = (e: CollectionEntry<'configs'>) => status(e.id, e.data) === 'archived';
+const retired = retiredEntries(topic, entries, isArchived);
+const retiredIds = new Set(retired.map((r) => r.entry.id));
+const picks = choosePicks(topic, entries, (e) => retiredIds.has(e.id)).map((p) => ({
+  ...p,
+  difficulty: installDifficulty(p.entry.data),
+  maintenance: status(p.entry.id, p.entry.data),
+}));
+const byId = new Map(all.map((e) => [e.id, e]));
+const moves = retired.map((r) => ({
+  ...r,
+  alternatives: r.to
+    ? r.to.map((id) => byId.get(id)).filter((e) => e !== undefined)
+    : maintainedAlternatives(r.entry, all.filter((e) => !retiredIds.has(e.id)), { stars: getStarsForConfig, status, limit: 2 }),
+}));
+const thumb = (url: string) => (url.startsWith('http') ? url : withBase(url));
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: h1,
+    description,
+    url: pageUrl,
+    dateModified: updated,
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: entries.length,
+      itemListElement: entries.map((e, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: new URL(withBase(`/configs/${e.id}/`), Astro.site).href,
+        name: e.data.name,
+      })),
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: new URL(withBase('/'), Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: 'Docs', item: new URL(withBase('/docs/'), Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: topic.label, item: pageUrl },
+    ],
+  },
+];
+---
+
+<Base
+  title={title}
+  description={description}
+  statusPrefix="[DOCS: "
+  statusInitial={topic.label.toUpperCase()}
+  statusFinal={`${entries.length} ENTRIES`}
+  jsonLd={jsonLd}
+>
+  <div class="max-w-7xl mx-auto w-full px-4 lg:px-8 py-6 sm:py-8 flex flex-col gap-6 min-w-0" data-pagefind-body>
+    <nav aria-label="Breadcrumb" class="font-mono text-xs text-zinc-500">
+      <ol class="flex flex-wrap items-center gap-1.5">
+        <li><a href={withBase('/')} class="hover:text-zinc-900 underline">Home</a></li>
+        <li aria-hidden="true">/</li>
+        <li><a href={withBase('/docs/')} class="hover:text-zinc-900 underline">Docs</a></li>
+        <li aria-hidden="true">/</li>
+        <li class="text-zinc-900 font-semibold" aria-current="page">{topic.label}</li>
+      </ol>
+    </nav>
+
+    <header class="flex flex-col gap-3 max-w-3xl">
+      <h1 class="font-display text-2xl sm:text-4xl font-bold text-zinc-900 tracking-tight m-0" data-page-title="true">{h1}</h1>
+      {topic.intro.map((p) => <p class="font-sans text-base text-zinc-700 leading-relaxed m-0">{p}</p>)}
+      <p class="font-mono text-[11px] text-zinc-500 m-0">
+        {entries.length} entries · each pinned to an exact upstream version · updated <time datetime={updated}>{updated}</time>
+      </p>
+    </header>
+
+    {picks.length > 0 && (
+      <section aria-labelledby="picks-title" class="flex flex-col gap-3">
+        <h2 id="picks-title" class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider m-0">Picks by need</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {picks.map(({ need, reason, entry, difficulty, maintenance }) => (
+            <li class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 flex flex-col gap-2.5 min-w-0">
+              <span class="font-mono text-[10px] uppercase font-bold text-zinc-500 tracking-wider">{need}</span>
+              <a href={withBase(`/configs/${entry.id}/`)} class="group flex items-center gap-3 no-underline min-w-0">
+                <img src={thumb(entry.data.screenshots[0].url)} alt="" width="80" height="50" loading="lazy" decoding="async" class="w-20 h-[50px] object-cover rounded-md border border-zinc-200 bg-zinc-100 shrink-0" />
+                <span class="font-display text-base font-bold text-zinc-900 group-hover:underline">{entry.data.name}</span>
+              </a>
+              <p class="font-sans text-sm text-zinc-700 leading-relaxed m-0">{reason}</p>
+              <span class="mt-auto flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-zinc-700">
+                {difficulty && (
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class={`w-2 h-2 rounded-full inline-block ${DIFFICULTY_INFO[difficulty].dot}`} aria-hidden="true"></span>
+                    {DIFFICULTY_INFO[difficulty].label}
+                  </span>
+                )}
+                {maintenance && (
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class={`w-2 h-2 rounded-full inline-block ${MAINTENANCE_INFO[maintenance].dot}`} aria-hidden="true"></span>
+                    {MAINTENANCE_INFO[maintenance].label}
+                  </span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <CompareTable entries={entries} catalogueQuery={catalogueQuery} />
+
+    {moves.length > 0 && (
+      <section aria-labelledby="retired-title" class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-6">
+        <h2 id="retired-title" class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider mb-1">Avoid or migrate</h2>
+        <p class="font-sans text-sm text-zinc-600 leading-relaxed mt-0 mb-3">These still install, but their projects have stopped. Pick a maintained alternative for a new setup.</p>
+        <ul class="flex flex-col divide-y divide-zinc-100">
+          {moves.map(({ entry, note, alternatives }) => (
+            <li class="py-3 first:pt-0 last:pb-0 grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-6 gap-y-1.5">
+              <div class="min-w-0">
+                <a href={withBase(`/configs/${entry.id}/`)} class="font-sans text-sm font-bold text-zinc-900 underline">{entry.data.name}</a>
+                <p class="font-sans text-sm text-zinc-600 leading-relaxed m-0">{note}</p>
+              </div>
+              {alternatives.length > 0 && (
+                <p class="font-sans text-sm text-zinc-700 m-0">
+                  <span class="font-mono text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Move to: </span>
+                  {alternatives.map((a, i) => (
+                    <>{i > 0 && ', '}<a href={withBase(`/configs/${a.id}/`)} class="underline text-zinc-900 font-semibold">{a.data.name}</a></>
+                  ))}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <section aria-labelledby="choose-title" class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-6">
+        <h2 id="choose-title" class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider mb-3">How to choose</h2>
+        <ul class="flex flex-col gap-2 font-sans text-sm text-zinc-700 leading-relaxed list-disc pl-5">
+          {topic.choose.map((c) => <li>{c}</li>)}
+        </ul>
+      </section>
+
+      <section aria-labelledby="faq-title" class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-6">
+        <h2 id="faq-title" class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider mb-3">Questions</h2>
+        <div class="flex flex-col gap-4">
+          {topic.faq.map(({ q, a }) => (
+            <div>
+              <h3 class="font-sans text-sm font-bold text-zinc-900 mb-1">{q}</h3>
+              <p class="font-sans text-sm text-zinc-700 leading-relaxed m-0">{a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+
+    <section aria-labelledby="more-title" class="flex flex-col gap-3">
+      <h2 id="more-title" class="font-mono text-xs uppercase font-bold text-zinc-900 tracking-wider m-0">More guides</h2>
+      <ul class="flex flex-wrap gap-2">
+        {others.map(({ topic: t, count }) => (
+          <li><a href={withBase(topicPath(t.slug))} class="tag-pill">{t.label} <span class="text-zinc-400">({count})</span></a></li>
+        ))}
+      </ul>
+    </section>
+
+    <SubmitCta heading="Missing one you use? Add it to this list." context={{ [topic.facet.kind]: topic.facet.value }} />
+  </div>
+</Base>

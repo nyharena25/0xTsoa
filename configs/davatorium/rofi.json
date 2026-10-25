@@ -36,19 +36,29 @@
   ],
   "source": {
     "repo": "https://github.com/davatorium/rofi",
-    "ref": "1ad1df6b72d4c8b0e40e8ced1249ef8a8a6bc0ad",
+    "ref": "0b6aa8ba8b4879f00c3cc96f2e47a13c079fe814",
     "readme": "README.md"
   },
   "install": {
     "steps": [
       {
         "id": "deps",
-        "title": "Install rofi (Arch repos)",
+        "title": "Install rofi from your distro's packages",
         "commands": [
           "sudo pacman -S --needed rofi",
           "# Other distros: see the upstream README"
         ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Set it up",
+        "commands": [
+          "# Bind it to a key in your window manager, for example in i3 or Sway: bindsym $mod+d exec rofi -show drun",
+          "# For a starting config, save the output of rofi -dump-config as ~/.config/rofi/config.rasi, then edit it",
+          "# Preview and pick one of the bundled themes with rofi-theme-selector"
+        ]
       }
     ]
-  }
+  },
+  "version": "2.0.0"
 }

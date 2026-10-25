@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/keeferrourke/la-capitaine-icon-theme",
-    "ref": "8370e7c8f1fbbfdb66f08a325a6c1cd8b932afb3",
+    "ref": "9c514f1281d895b44a5ac92320dfc36f21aa5984",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.6.2"
 }

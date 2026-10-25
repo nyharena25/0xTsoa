@@ -185,8 +185,8 @@ describe('generated installer', () => {
   it('refuses to run as root (checked before anything else)', () => {
     const src = fs.readFileSync(script, 'utf8');
     const main = src.slice(src.indexOf('oxt_main() {'));
-    expect(main.indexOf('[ "$EUID" -ne 0 ] || die')).toBeGreaterThan(0);
-    expect(main.indexOf('[ "$EUID" -ne 0 ] || die')).toBeLessThan(main.indexOf('oxt_steps'));
+    expect(main.indexOf('[[ "$EUID" -ne 0 ]] || die')).toBeGreaterThan(0);
+    expect(main.indexOf('[[ "$EUID" -ne 0 ]] || die')).toBeLessThan(main.indexOf('oxt_steps'));
   });
 
   it('rollback refuses manifest paths outside HOME', () => {
@@ -231,6 +231,66 @@ describe('generated installer', () => {
     expect(fs.readFileSync(path.join(home, '.config/hypr/hyprland.conf'), 'utf8')).toBe('upstream\n');
     run(['--rollback', '--yes']);
     expect(userFiles()).toEqual(before);
+  });
+
+  it('exits with an error when a package fails to install, after doing the other steps', () => {
+    write(path.join(binDir, 'sudo'), `#!/bin/sh\necho "$@" >> '${sudoLog}'\nexit 1\n`);
+    const { code, out } = run(['--yes']);
+    expect(code).toBe(1);
+    expect(out).toContain('Could not install: demo-pkg');
+    expect(out).toContain('some steps failed');
+    expect(fs.readFileSync(path.join(home, '.config/fresh/f.conf'), 'utf8')).toBe('fresh\n');
+  });
+
+  it('skips packages that are already installed, and the rollback names the ones it added', () => {
+    // A fake pacman: "demo-pkg" is installed, "extra-pkg" is not.
+    write(path.join(binDir, 'pacman'), `#!/bin/sh\n[ "$1" = -Q ] && [ "$3" = demo-pkg ]\n`);
+    fs.chmodSync(path.join(binDir, 'pacman'), 0o755);
+    generate(['sudo pacman -S --needed demo-pkg extra-pkg']);
+    const plan = run(['--dry-run']);
+    expect(plan.out).toContain('[package]   extra-pkg (with pacman, uses sudo)');
+    expect(plan.out).not.toMatch(/\[package\][^\n]*demo-pkg/);
+
+    run(['--yes']);
+    expect(fs.readFileSync(sudoLog, 'utf8').trim().split('\n')).toEqual(['pacman -S --needed extra-pkg']);
+    const back = run(['--rollback', '--yes']);
+    expect(back.out).toContain('packages added by this install: extra-pkg. Remove them with: sudo pacman -Rns extra-pkg');
+  });
+
+  it('treats a session reload as best effort when no session is running (install from a TTY)', () => {
+    write(path.join(binDir, 'swaymsg'), '#!/bin/sh\necho "Unable to connect to the IPC socket" >&2\nexit 1\n');
+    fs.chmodSync(path.join(binDir, 'swaymsg'), 0o755);
+    generate(['swaymsg reload']);
+    expect(fs.readFileSync(script, 'utf8')).toContain("oxt_reload 'swaymsg reload'");
+    expect(run(['--dry-run']).out).toContain('[reload]    swaymsg reload  (only if that session is running now)');
+    const { code, out } = run(['--yes']);
+    expect(code, out).toBe(0);
+    expect(out).toContain('No running session answered');
+    expect(out).not.toContain('some steps failed');
+  });
+
+  it('reports a missing system file to copy and still does the remaining steps', () => {
+    generate(['cp /nonexistent-oxt/sway/config ~/.config/sway-config', 'printf "after\\n" > after.txt', 'cp after.txt ~/.config/after.txt']);
+    const { code, out } = run(['--yes']);
+    expect(code).toBe(1);
+    expect(out).toContain('Not copied: /nonexistent-oxt/sway/config does not exist');
+    expect(out).toContain('some steps failed');
+    expect(fs.readFileSync(path.join(home, '.config/after.txt'), 'utf8')).toBe('after\n');
+  });
+
+  it('does not claim a pinned version for a package-only setup', () => {
+    const data = config();
+    data.install!.steps = [{ id: 'deps', title: 'Install', commands: ['sudo pacman -S --needed demo-pkg'] }];
+    fs.writeFileSync(script, buildInstallScript(data, 'alice/demo'));
+    const src = fs.readFileSync(script, 'utf8');
+    expect(src).toContain('OXT_PINNED=0');
+    expect(src).toContain('OXT_COMMON=()');
+    expect(src).toContain("#      - Install with your distro's package manager: demo-pkg");
+    const { out } = run(['--dry-run']);
+    expect(out).toContain('reference only');
+    expect(out).not.toContain(REF);
+    expect(out).toContain('Summary: 1 package(s) to install.');
+    expect(out).not.toContain('restored by --rollback');
   });
 
   it('refuses to start when a clone destination belongs to something else, unless --force', () => {

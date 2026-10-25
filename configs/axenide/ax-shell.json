@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Hyprland shell written with Fabric: notch bar, dashboard, launcher and wallpaper colors.",
+  "description": "A complete Hyprland desktop shell written in Python with Fabric: a notch-style bar, dashboard, app launcher, clipboard and network managers, screen recorder, OCR and colors from your wallpaper through Matugen. The author has deprecated it in favor of Ambxst and archived the repository, so it gets no more updates. Its installer needs a working Hyprland session and enables NetworkManager.",
   "license": "AGPL-3.0-only",
   "updatedAt": "2026-01-29",
   "distros": [

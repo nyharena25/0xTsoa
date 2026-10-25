@@ -1,0 +1,30 @@
+# Read by scripts/claim-entry.ts through claim-to-pr.yml: keep the "Entry" label text as is.
+# Linked from the "For the author" box on every config page, which prefills `title` and `entry`.
+name: ✓ Claim your entry
+description: Confirm you made a listed project. Your entry gets a "Verified by author" mark.
+title: "[Claim]: "
+labels: ["claim"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Open this issue **from the GitHub account that owns the repository**, or from an account that is a **public** member of the organization that owns it. A bot checks that and opens the pull request that marks your entry as verified.
+        Repositories on GitLab or Codeberg, and accounts that don't pass the check, are reviewed by a maintainer instead.
+        Once verified, you can send corrections to your entry (description, screenshots, install steps) through the [change form](../issues/new?template=entry-change.yml).
+
+  - type: input
+    id: entry
+    attributes:
+      label: Entry
+      description: "The entry id, `<author>/<slug>`, as in the page URL `/configs/<author>/<slug>/`."
+      placeholder: catppuccin/hyprland-theme
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: I am the author or a maintainer of this project.
+          required: true

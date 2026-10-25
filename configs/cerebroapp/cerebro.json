@@ -32,7 +32,7 @@
   ],
   "source": {
     "repo": "https://github.com/cerebroapp/cerebro",
-    "ref": "62830502cd287d69c08c6da7a07d875710425615",
+    "ref": "add453b9881b44c676970fc0bb288abac7782a51",
     "readme": "README.md"
   },
   "install": {
@@ -46,5 +46,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.11.0"
 }

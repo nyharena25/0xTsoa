@@ -52,7 +52,7 @@
         "id": "reload",
         "title": "Activate the colorscheme",
         "commands": [
-          "nvim +\"colorscheme everforest\""
+          "# Open Neovim and run :colorscheme everforest to try it; to keep it, add vim.cmd.colorscheme('everforest') to init.lua (or colorscheme everforest to init.vim)"
         ]
       }
     ]

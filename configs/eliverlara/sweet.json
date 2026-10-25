@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/EliverLara/Sweet",
-    "ref": "c405a6a73878ce3beb4323d26bc6fa674a485f36",
+    "ref": "7d80a1646e93ede3752fc53138909204cb98b882",
     "readme": "README.md"
   },
   "install": {
@@ -43,5 +43,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v6.0"
 }

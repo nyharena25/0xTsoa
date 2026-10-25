@@ -2,12 +2,13 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { useTranslations } from '../lib/i18n';
-import { withBase, GA_MEASUREMENT_ID } from '../../site.config';
+import { withBase, GA_MEASUREMENT_ID, SITE_URL } from '../../site.config';
 import '../styles/global.css';
 
 interface Props {
   title?: string;
   description?: string;
+  canonical?: string;
   locale?: string;
   pageLabel?: string;
   statusPrefix?: string;
@@ -24,6 +25,7 @@ interface Props {
 const {
   title,
   description,
+  canonical,
   pageLabel,
   statusPrefix: propPrefix,
   statusInitial: propInitial,
@@ -40,7 +42,8 @@ const t = useTranslations('en');
 const pageTitle = title ? `${title} — 0xTsoa` : t('site.title');
 const pageDesc = description || t('site.description');
 const currentPath = Astro.url.pathname;
-const canonicalUrl = new URL(currentPath, Astro.site).href;
+const siteOrigin = Astro.site ? Astro.site.href : SITE_URL;
+const canonicalUrl = canonical || new URL(currentPath, siteOrigin).href;
 
 const defaultOgImage = new URL(withBase('/og.png'), Astro.site).href;
 const isDefaultOgImage =
@@ -82,10 +85,11 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
     resolvedFinal = resolvedFinal || 'EXIT 0';
   }
 }
+import BinaryBackground from '../components/BinaryBackground.astro';
 ---
 
 <!doctype html>
-<html lang="en" class="bg-[#FBFBFA] text-[#0F172A]">
+<html lang="en" class="bg-[#FAF9F5] text-[#0F172A]">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -163,7 +167,9 @@ gtag('config', ${JSON.stringify(GA_MEASUREMENT_ID)});`}
       </>
     )}
   </head>
-  <body class="min-h-screen flex flex-col font-sans antialiased text-[#0F172A] bg-[#FBFBFA] selection:bg-[#0F172A] selection:text-white overflow-x-hidden w-full max-w-full">
+  <body class="min-h-screen flex flex-col font-sans antialiased text-[#0F172A] selection:bg-[#0F172A] selection:text-white overflow-x-hidden w-full max-w-full">
+    <!-- Binary paper texture behind everything; the page background is on <html> so it shows through <body>. -->
+    <BinaryBackground />
     <Header
       currentPath={currentPath}
       pageLabel={pageLabel || resolvedFinal}
@@ -201,6 +207,8 @@ gtag('config', ${JSON.stringify(GA_MEASUREMENT_ID)});`}
         <p class="font-sans text-xs sm:text-sm text-zinc-600 leading-relaxed">
           {t('consent.message')}
         </p>
+        <p id="cookie-consent-current" class="hidden font-mono text-[11px] text-zinc-500" data-granted={t('consent.currentGranted')} data-denied={t('consent.currentDenied')}></p>
+        <!-- Refusing is as easy as accepting: same style, same size, Decline first. -->
         <div class="flex items-center justify-end gap-2.5 pt-1">
           <button
             type="button"
@@ -212,7 +220,7 @@ gtag('config', ${JSON.stringify(GA_MEASUREMENT_ID)});`}
           <button
             type="button"
             id="cookie-consent-accept"
-            class="btn-solid min-h-[40px] px-3.5 py-1.5 text-xs font-mono cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+            class="btn-outline min-h-[40px] px-3.5 py-1.5 text-xs font-mono cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
           >
             {t('consent.accept')}
           </button>
@@ -314,9 +322,18 @@ gtag('config', ${JSON.stringify(GA_MEASUREMENT_ID)});`}
         const banner = document.getElementById('cookie-consent-banner');
         const acceptBtn = document.getElementById('cookie-consent-accept') as HTMLButtonElement | null;
         const declineBtn = document.getElementById('cookie-consent-decline') as HTMLButtonElement | null;
+        const current = document.getElementById('cookie-consent-current');
         const settingsBtn = document.getElementById('btn-cookie-settings') as HTMLButtonElement | null;
 
         if (!banner || !acceptBtn || !declineBtn) return;
+
+        const readChoice = (): string | null => {
+          try {
+            return localStorage.getItem(STORAGE_KEY);
+          } catch {
+            return null;
+          }
+        };
 
         const updateGtagConsent = (state: 'granted' | 'denied') => {
           const w = window as Window & { gtag?: (...args: unknown[]) => void };
@@ -325,45 +342,52 @@ gtag('config', ${JSON.stringify(GA_MEASUREMENT_ID)});`}
           }
         };
 
-        const showBanner = (focusAccept = false) => {
-          banner.classList.remove('hidden');
-          if (focusAccept) {
-            acceptBtn.focus();
+        // Consent Mode stops new cookies but leaves the ones already set: remove them on decline,
+        // on this host and on the parent domain Google Analytics writes them to.
+        const deleteAnalyticsCookies = () => {
+          const names = document.cookie.split(';').map((c) => c.split('=')[0].trim()).filter((n) => n === '_ga' || n.startsWith('_ga_'));
+          const host = location.hostname;
+          const domains = ['', host, `.${host}`, `.${host.split('.').slice(-2).join('.')}`];
+          for (const name of names) {
+            for (const domain of domains) {
+              document.cookie = `${name}=; Max-Age=0; path=/${domain ? `; domain=${domain}` : ''}`;
+            }
           }
+        };
+
+        const showBanner = (fromSettings = false) => {
+          const choice = readChoice();
+          if (current) {
+            const text = choice === 'granted' ? current.dataset.granted : choice === 'denied' ? current.dataset.denied : '';
+            current.textContent = text ?? '';
+            current.classList.toggle('hidden', !fromSettings || !text);
+          }
+          banner.classList.remove('hidden');
+          if (fromSettings) declineBtn.focus();
         };
 
         const hideBanner = () => {
           banner.classList.add('hidden');
         };
 
-        let savedChoice: string | null = null;
-        try {
-          savedChoice = localStorage.getItem(STORAGE_KEY);
-        } catch {}
+        const choose = (state: 'granted' | 'denied') => {
+          try {
+            localStorage.setItem(STORAGE_KEY, state);
+          } catch {}
+          updateGtagConsent(state);
+          if (state === 'denied') deleteAnalyticsCookies();
+          hideBanner();
+        };
 
+        const savedChoice = readChoice();
         if (savedChoice !== 'granted' && savedChoice !== 'denied') {
-          showBanner(false);
+          showBanner();
         }
 
         if (banner.dataset.bound !== 'true') {
           banner.dataset.bound = 'true';
-
-          acceptBtn.addEventListener('click', () => {
-            try {
-              localStorage.setItem(STORAGE_KEY, 'granted');
-            } catch {}
-            updateGtagConsent('granted');
-            hideBanner();
-          });
-
-          declineBtn.addEventListener('click', () => {
-            try {
-              localStorage.setItem(STORAGE_KEY, 'denied');
-            } catch {}
-            updateGtagConsent('denied');
-            hideBanner();
-          });
-
+          acceptBtn.addEventListener('click', () => choose('granted'));
+          declineBtn.addEventListener('click', () => choose('denied'));
           banner.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
               hideBanner();
@@ -374,9 +398,7 @@ gtag('config', ${JSON.stringify(GA_MEASUREMENT_ID)});`}
 
         if (settingsBtn && settingsBtn.dataset.bound !== 'true') {
           settingsBtn.dataset.bound = 'true';
-          settingsBtn.addEventListener('click', () => {
-            showBanner(true);
-          });
+          settingsBtn.addEventListener('click', () => showBanner(true));
         }
       }
 

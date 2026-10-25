@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/catppuccin/gtk",
-    "ref": "23b52b5b9cde1e11c07315e79a55804d2ac77e3a",
+    "ref": "3cb2f3ab4a5eefb85f33a03a0d7130aaf04f05c0",
     "readme": "README.md"
   },
   "install": {
@@ -43,5 +43,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v1.0.3"
 }

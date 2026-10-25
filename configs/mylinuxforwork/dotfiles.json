@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Full Hyprland desktop with a settings app, wallpaper-driven colors and guided installer.",
+  "description": "ML4W OS turns Hyprland into a full desktop with its own settings app and colors generated from your wallpaper for every component. It supports Arch-based distributions such as CachyOS, Fedora, Ubuntu and openSUSE Tumbleweed, and a Live ISO lets you try it in a virtual machine before installing. The setup script installs a large selection of apps alongside the configs.",
   "license": "GPL-3.0-only",
   "updatedAt": "2026-10-17",
   "distros": [
@@ -32,7 +33,7 @@
   ],
   "source": {
     "repo": "https://github.com/mylinuxforwork/dotfiles",
-    "ref": "d766383cc36092017940fdb9053f39ea4c7dfb21",
+    "ref": "81b2acd9c53f321a5f3cc37736ad37622528d00b",
     "readme": "README.md"
   },
   "install": {

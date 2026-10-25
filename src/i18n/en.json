@@ -13,7 +13,8 @@
     "about": "About",
     "cookieSettings": "Cookie settings",
     "specification": "Specification",
-    "github": "GitHub"
+    "github": "GitHub",
+    "docs": "Docs"
   },
   "hero": {
     "badge": "OPEN DOTFILES REGISTRY • WAYLAND & X11",
@@ -34,9 +35,7 @@
     "githubRepo": "Source Code",
     "sourceCode": "Source Code",
     "fullSpec": "Full Spec",
-    "communitySignOff": "Community Sign-Off:",
-    "approved": "Approve this setup",
-    "signOffNotice": "Votes counted from +1 reactions on each setup's GitHub vote issue.",
+    "communityVotes": "Community upvotes:",
     "tabPreview": "Preview",
     "tabConsole": "Specs",
     "copy": "Copy",
@@ -49,19 +48,19 @@
     "step3": "03. Automation & Reload Scripts"
   },
   "manifesto": {
-    "heading": "Registry Architecture & Assurance Model",
-    "card1Title": "Open Linux Dotfiles Registry",
-    "card1Text": "0xTsoa (spoken \"ZeroTsoa\") is an open, static registry for discovering, inspecting, and reproducing Linux desktop configurations across Wayland compositors and X11 window managers.",
+    "heading": "How 0xTsoa works",
+    "card1Title": "An open registry, no database",
+    "card1Text": "0xTsoa (spoken \"ZeroTsoa\") lists Linux desktop setups, themes and tools for Wayland and X11. Every entry is a reviewed JSON file in a public Git repository: no accounts, no backend, and the whole registry can be downloaded or forked.",
     "card1Stat": "Code MIT · Entries CC BY 4.0",
-    "card2Title": "Wayland & X11 Desktop Setups",
-    "card2Text": "Complete Hyprland rice setups, Niri, Sway, i3, and BSPWM configs for Arch Linux, NixOS, Fedora, and Void—indexed by bar, terminal, launcher, and theme palette.",
-    "card2Stat": "Typed JSON Specs",
-    "card3Title": "Three Levels of Assurance",
-    "card3Text": "1. Schema validated: every entry passes Zod schema, screenshot-host, and clone-step checks.\n2. Source pinned: entries with a 40-char commit SHA check out that exact commit.\n3. Script hash-checked & reviewed: optional SHA-256 script verification and maintainer install review.",
-    "card3Stat": "Explicit Assurance Badges",
-    "card4Title": "Zero-Database GitHub Workflow",
-    "card4Text": "No accounts or backend database. Every configuration is a schema-validated JSON file in Git, and community votes come directly from +1 reactions on GitHub vote issues.",
-    "card4Stat": "GitHub Issues & PRs"
+    "card2Title": "Pinned, and kept current",
+    "card2Text": "Each entry points to an exact commit or release tag, so you install the version that was reviewed. Every night a bot moves entries to newer upstream versions, but holds one back when a file its install steps use is gone. Pages show whether a project is still maintained.",
+    "card2Stat": "Nightly upstream sync",
+    "card3Title": "Install with a way back",
+    "card3Text": "Every entry gets a generated installer that shows its plan first (--dry-run), keeps your existing files unless you approve, backs up what it changes and undoes it with --rollback. An install-step standard rejects piping downloads into a shell, deleting files and bootloader changes.",
+    "card3Stat": "--dry-run · --rollback",
+    "card4Title": "Credited and verified authors",
+    "card4Text": "Entries are credited to the owner of the repository. Owners can claim theirs to show \"Verified by author\", and every claim, edit or removal request is checked against the GitHub account that sends it. Upvotes are 👍 reactions on GitHub.",
+    "card4Stat": "Checked by GitHub account"
   },
   "catalogue": {
     "metaTitle": "Linux Dotfiles Catalogue — Hyprland, Sway, Niri, i3 & BSPWM",
@@ -78,9 +77,9 @@
     "distroSection": "Target Distributions",
     "favoritesOnly": "Favorites only",
     "searchLabel": "Search",
-    "searchPlaceholder": "grep -i setup...",
+    "searchPlaceholder": "Search by name, component or tag (waybar, rofi…)",
     "sortBy": "Sort by:",
-    "sortVotes": "Most approved",
+    "sortVotes": "Most upvoted",
     "sortNew": "Newest",
     "sortOld": "Oldest",
     "sortPopular": "Most popular (★ stars)",
@@ -109,7 +108,14 @@
     "checksum": "SHA-256 Digest:",
     "copyDoc": "Copy doc",
     "rawDoc": "Raw source",
-    "fullscreen": "Fullscreen view"
+    "fullscreen": "Fullscreen view",
+    "sectionRelated": "Related setups",
+    "sectionAuthor": "For the author"
+  },
+  "vote": {
+    "button": "Upvote on GitHub",
+    "short": "Upvote",
+    "hint": "Click 👍 on the first post · counts update daily"
   },
   "contribute": {
     "metaTitle": "Submit a Linux Desktop Config or Dotfiles Setup",
@@ -129,15 +135,17 @@
     "badge": "ENTITY & ORIGIN • ABOUT",
     "title": "ABOUT 0xTsoa",
     "canonicalIntro": "0xTsoa (pronounced ZeroTsoa) is an open-source registry of Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer.",
-    "privacyHeading": "05 // Analytics & Cookie Privacy",
-    "privacyNote": "0xTsoa uses Google Analytics 4 with Google Consent Mode v2 (when configured) to measure aggregate visitor counts, active users, and engagement time. Analytics storage is denied by default until you explicitly accept, and advertising and personalization signals remain permanently denied; however, Google Consent Mode v2 still sends cookieless pings to Google before consent is granted. You can accept, decline, or update your preference at any time via the \"Cookie settings\" link in the footer."
+    "privacyHeading": "06 // Analytics & cookies",
+    "privacyNote": "0xTsoa uses Google Analytics to count visits and time spent on pages. No analytics cookie is stored until you accept, and nothing is ever used for advertising or personalization. Before you choose, and if you decline, Google still receives anonymous, cookie-free signals (Google Consent Mode v2). Declining also deletes analytics cookies set earlier. Change your choice at any time with \"Cookie settings\" in the footer."
   },
   "consent": {
     "ariaLabel": "Cookie and analytics consent",
-    "title": "ANALYTICS CONSENT",
-    "message": "We use Google Analytics (Consent Mode v2) to measure aggregate visitor counts and engagement time. Before you accept, Consent Mode v2 sends cookieless pings without storing analytics cookies.",
+    "title": "ANALYTICS COOKIES",
+    "message": "With your OK, Google Analytics stores cookies to count visits and time spent on pages. Without it, no analytics cookie is stored, and Google only receives anonymous, cookie-free signals. Nothing is used for ads.",
     "learnMore": "Privacy note",
     "accept": "Accept",
-    "decline": "Decline"
+    "decline": "Decline",
+    "currentGranted": "Your current choice: accepted.",
+    "currentDenied": "Your current choice: declined."
   }
 }

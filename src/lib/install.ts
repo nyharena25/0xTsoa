@@ -1,25 +1,12 @@
-import {
-  DISTRO_LABELS,
-  WM_LABELS,
-  normalizeRepoUrl,
-  validateCloneSteps,
-  type CloneValidationResult,
-  type ConfigData,
-} from './schema';
+import { DISTRO_LABELS, WM_LABELS, normalizeRepoUrl, type ConfigData } from './schema';
 
 import { SITE_URL, REPO_OWNER, REPO_NAME, withBase } from '../../site.config';
 import RUNTIME from './installer-runtime.sh?raw';
+import { stripNewlines, classifyCommand, type InstallAction } from './commands';
 
-export { normalizeRepoUrl, validateCloneSteps, type CloneValidationResult };
-
-function stripNewlines(s: string): string {
-  return s.replace(/[\r\n]+/g, ' ');
-}
-
-/** Replace `{{ref}}` tokens in an install command with `data.source.ref`. */
-export function renderCommand(cmd: string, data: Pick<ConfigData, 'source'>): string {
-  return cmd.replaceAll('{{ref}}', data.source.ref);
-}
+export { normalizeRepoUrl, classifyCommand, type InstallAction };
+export { validateCloneSteps, type CloneValidationResult } from './schema';
+export { renderCommand } from './commands';
 
 /** POSIX single-quote escaping: wraps in `'` and escapes internal `'` as `'\''`. */
 export function shQuote(s: string): string {
@@ -36,11 +23,6 @@ export function verifiedScriptCommand(script: {
   return `f=$(mktemp) && curl -fsSL ${shQuote(script.url)} -o "$f" && echo '${script.sha256}  '"$f" | sha256sum -c - && ${shell} "$f"`;
 }
 
-// `<theme>`, `<hostname>`… are placeholders the user must fill in; bash would parse them as redirections.
-const PLACEHOLDER_RE = /<[A-Za-z][\w-]*>/;
-// Upstream installers decide for themselves what they touch.
-const UPSTREAM_RE = /^(?:sudo\s+)?(?:\.\/\S+|(?:ba)?sh\s+(?!-c\b)\S+|make(?:\s.*)?|bash\s+-c\s+.*)$/;
-
 /**
  * Home-relative folders an upstream installer (`./setup.sh`, `make install`…) usually rewrites.
  * The installer backs them up right before such a step; the page offers the same list for manual installs.
@@ -55,70 +37,6 @@ export const UPSTREAM_BACKUP_PATHS = [
   '.config/gtk-3.0', '.config/gtk-4.0', '.config/Kvantum', '.config/qt5ct', '.config/qt6ct',
   '.bashrc', '.zshrc', '.themes',
 ] as const;
-
-/** What one config command does, as seen by the installer and the page. */
-export type InstallAction =
-  | { kind: 'note'; text: string }
-  | { kind: 'package'; packages: string[]; aur: boolean }
-  | { kind: 'clone'; args: string; dest: string | null }
-  | { kind: 'copy'; args: string; dest: string }
-  | { kind: 'append'; line: string; file: string }
-  | { kind: 'upstream'; command: string }
-  | { kind: 'system'; command: string }
-  | { kind: 'exec'; command: string };
-
-function packageNames(rest: string): string[] {
-  return rest
-    .replace(/\s+#.*$/, '')
-    .split(/\s+/)
-    .filter((w) => w && !w.startsWith('-'));
-}
-
-/** Last non-option word of an argument string (cp/clone destination). */
-function lastOperand(args: string): string | null {
-  const words = args.split(/\s+/).filter((w) => w && !w.startsWith('-'));
-  return words.length > 1 ? words[words.length - 1] : null;
-}
-
-/** Classify one already-rendered, single command. */
-function classify(cmd: string): InstallAction | null {
-  if (!cmd) return null;
-  if (/^#\s*Other distros/i.test(cmd)) return null;
-  if (cmd.startsWith('#')) return { kind: 'note', text: cmd.replace(/^#\s*/, '') };
-  if (PLACEHOLDER_RE.test(cmd)) return { kind: 'note', text: `Run manually (fill in the <placeholder>): ${cmd}` };
-  const open = /^xdg-open\s+(\S+)/.exec(cmd);
-  if (open) return { kind: 'note', text: `Follow the upstream guide: ${open[1]}` };
-  if (/^(sudo\s+)?reboot\b/.test(cmd)) return { kind: 'note', text: 'Reboot to finish: sudo reboot' };
-
-  const pacman = /^sudo\s+pacman\s+-S\w*\s+(.*)$/.exec(cmd);
-  if (pacman) return { kind: 'package', packages: packageNames(pacman[1]), aur: false };
-  const native = /^sudo\s+(?:apt|apt-get|dnf|zypper)\s+install\s+(.*)$/.exec(cmd);
-  if (native) return { kind: 'package', packages: packageNames(native[1]), aur: false };
-  const aur = /^(?:yay|paru)\s+-S\w*\s+(.*)$/.exec(cmd);
-  if (aur) return { kind: 'package', packages: packageNames(aur[1]), aur: true };
-
-  const clone = /^git\s+clone\s+(.*)$/.exec(cmd);
-  if (clone) return { kind: 'clone', args: clone[1], dest: lastOperand(clone[1]) };
-  const copy = /^cp\s+(.*)$/.exec(cmd);
-  if (copy && lastOperand(copy[1])) return { kind: 'copy', args: copy[1], dest: lastOperand(copy[1])! };
-  const append = /^echo\s+("[^"]*"|'[^']*')\s+>>\s+(\S+)$/.exec(cmd);
-  if (append) return { kind: 'append', line: append[1], file: append[2] };
-
-  if (UPSTREAM_RE.test(cmd)) return { kind: 'upstream', command: cmd };
-  if (cmd.startsWith('sudo ')) return { kind: 'system', command: cmd };
-  return { kind: 'exec', command: cmd };
-}
-
-/**
- * Split a config command into single commands (`a && b` without quotes) and classify each.
- * Config commands are reviewed in the pull request; this only decides how the installer
- * wraps them (plan, backup, conflict check), never what they do.
- */
-export function classifyCommand(cmd: string, data: Pick<ConfigData, 'source'>): InstallAction[] {
-  const rendered = stripNewlines(renderCommand(cmd, data)).trim();
-  const parts = /["']/.test(rendered) ? [rendered] : rendered.split(/\s+&&\s+/);
-  return parts.map((p) => classify(p.trim())).filter((a): a is InstallAction => a !== null);
-}
 
 function actionToShell(a: InstallAction): string {
   switch (a.kind) {
@@ -137,9 +55,54 @@ function actionToShell(a: InstallAction): string {
       return `oxt_upstream ${shQuote(a.command)}`;
     case 'system':
       return `oxt_system ${shQuote(a.command)}`;
+    case 'reload':
+      return `oxt_reload ${shQuote(a.command)}`;
     case 'exec':
       return `oxt_exec ${shQuote(a.command)}`;
   }
+}
+
+function allStepsActions(data: ConfigData): InstallAction[] {
+  return (data.install?.steps ?? []).flatMap((step) => step.commands.flatMap((cmd) => classifyCommand(cmd, data)));
+}
+
+/** One line of the plain-language summary at the top of a generated install.sh. */
+function describeAction(a: InstallAction): string {
+  switch (a.kind) {
+    case 'note':
+      return `You do: ${a.text}`;
+    case 'package':
+      return `${a.aur ? 'Install from the AUR' : "Install with your distro's package manager"}: ${a.packages.join(' ')}`;
+    case 'clone':
+      return `Download: git clone ${a.args}`;
+    case 'copy':
+      return `Copy into place: cp ${a.args}`;
+    case 'append':
+      return `Add the line ${a.line} to ${a.file}`;
+    case 'upstream':
+      return `Run the project's own installer: ${a.command}`;
+    case 'system':
+      return `Run with sudo: ${a.command}`;
+    case 'reload':
+      return `Reload the running session, if there is one: ${a.command}`;
+    case 'exec':
+      return `Run: ${a.command}`;
+  }
+}
+
+/**
+ * True when the install downloads source.repo at source.ref: a pinned install.script, or a clone
+ * of source.repo (which validateCloneSteps forces to check out {{ref}}). Package installs get
+ * whatever the distro ships, so their installer must not claim the pinned commit.
+ */
+export function usesPinnedSource(data: ConfigData): boolean {
+  if (data.install?.script) return true;
+  const repo = normalizeRepoUrl(data.source.repo);
+  return (data.install?.steps ?? []).some((step) =>
+    step.commands.some((cmd) =>
+      classifyCommand(cmd, data).some((a) => a.kind === 'clone' && a.args.split(/\s+/).some((w) => /^(?:https?:\/\/|git@)/.test(w) && normalizeRepoUrl(w) === repo)),
+    ),
+  );
 }
 
 /** Shell lines for one config command, or null when nothing is left to run or show. */
@@ -160,9 +123,8 @@ export interface InstallImpact {
   manualNotes: string[];
 }
 
-// Commands that only move around, reload or read state: not worth listing as lasting changes.
-const NO_LASTING_EFFECT_RE =
-  /^(?:cd\b|mkdir\s+-p\b|git\s+-C\s+\S+\s+(?:checkout|fetch)\b|hyprctl\s+reload|swaymsg\s+reload|i3-msg\s+(?:reload|restart)|bspc\s+wm\s+-r|awesome-client\b|qdbus\b.*\breconfigure|gsettings\s+get\b|niri\s+msg\b)/;
+// Commands that only move around, check or read state: not worth listing as lasting changes.
+const NO_LASTING_EFFECT_RE = /^(?:cd\b|mkdir\s+-p\b|git\s+-C\s+\S+\s+(?:checkout|fetch)\b|gsettings\s+get\b|niri\s+validate\b)/;
 
 export function installImpact(data: ConfigData): InstallImpact {
   const impact: InstallImpact = { packages: [], aurPackages: [], userPaths: [], systemCommands: [], upstreamCommands: [], execCommands: [], manualNotes: [] };
@@ -184,6 +146,97 @@ export function installImpact(data: ConfigData): InstallImpact {
     }
   }
   return impact;
+}
+
+export type InstallDifficulty = 'manual' | 'easy' | 'moderate' | 'advanced';
+
+/**
+ * How much of the system an install touches, from the same classification as the installer:
+ * manual: the steps only fetch the source; the setup itself follows the upstream guide by hand;
+ * easy: copies files into your home folder, all undone by --rollback;
+ * moderate: also distro packages, or lasting commands --rollback does not undo (gsettings set…);
+ * advanced: AUR packages, the project's own installer (or install.script), or other sudo changes.
+ * null for entries without install steps (Lists & guides).
+ */
+export function installDifficulty(data: ConfigData): InstallDifficulty | null {
+  const steps = data.install?.steps ?? [];
+  if (!steps.length) return null;
+  const impact = installImpact(data);
+  if (data.install?.script || impact.aurPackages.length || impact.upstreamCommands.length || impact.systemCommands.length) {
+    return 'advanced';
+  }
+  if (impact.packages.length || impact.execCommands.length) return 'moderate';
+  const deploys = steps.some((step) =>
+    step.commands.some((cmd) => classifyCommand(cmd, data).some((a) => a.kind === 'copy' || a.kind === 'append')),
+  );
+  return deploys ? 'easy' : 'manual';
+}
+
+/** How each difficulty is shown on config and topic pages. */
+export const DIFFICULTY_INFO: Record<InstallDifficulty, { label: string; dot: string; text: string }> = {
+  manual: { label: 'Manual setup', dot: 'bg-zinc-400', text: 'The steps fetch the pinned source; you set it up by hand from the upstream guide.' },
+  easy: { label: 'Easy', dot: 'bg-emerald-600', text: 'Copies files into your home folder, nothing else.' },
+  moderate: { label: 'Moderate', dot: 'bg-amber-500', text: 'Installs packages from your distro or changes desktop settings, as well as files.' },
+  advanced: { label: 'Advanced', dot: 'bg-rose-600', text: "Uses the AUR, sudo or the project's own installer. Read the steps before running them." },
+};
+
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+/** The "What it changes" sentences for an install that does something (easy and up). */
+function impactChanges(impact: InstallImpact, packages: string[]): string[] {
+  const changes: string[] = [];
+  if (packages.length) {
+    const more = packages.length > 4 ? ` +${packages.length - 4} more` : '';
+    const aur = impact.aurPackages.length ? ' (AUR included)' : '';
+    changes.push(`${plural(packages.length, 'package')}: ${packages.slice(0, 4).join(', ')}${more}${aur}`);
+  }
+  if (impact.userPaths.length) {
+    const more = impact.userPaths.length > 3 ? '…' : '';
+    changes.push(`Writes to ${impact.userPaths.slice(0, 3).join(', ')}${more}`);
+  }
+  if (impact.systemCommands.length) changes.push(`Uses sudo outside package installs (${plural(impact.systemCommands.length, 'step')})`);
+  if (impact.upstreamCommands.length) changes.push("Runs the project's own installer");
+  if (impact.execCommands.length) changes.push(`Changes settings (${plural(impact.execCommands.length, 'command')})`);
+  return changes;
+}
+
+/** The comparison-table form: "12 packages · 3 folders in ~ · sudo". */
+function impactShort(impact: InstallImpact, packages: string[]): string {
+  const parts = [
+    packages.length && plural(packages.length, 'package'),
+    impact.userPaths.length && `${plural(impact.userPaths.length, 'folder')} in ~`,
+    impact.systemCommands.length && 'sudo',
+    impact.upstreamCommands.length && 'own installer',
+  ].filter(Boolean);
+  return parts.join(' · ') || '—';
+}
+
+/** How to undo an install that does something (easy and up). */
+function impactUndo(impact: InstallImpact, packages: string[]): string {
+  if (impact.upstreamCommands.length) {
+    return "Home files are backed up first and restored with --rollback; the project's own installer is not undone.";
+  }
+  if (packages.length || impact.systemCommands.length || impact.execCommands.length) {
+    return 'File changes: bash install.sh --rollback. Packages and settings stay.';
+  }
+  return 'bash install.sh --rollback restores every file it changed.';
+}
+
+/**
+ * What an install changes and how to undo it, as sentences (config pages, and entry summaries in
+ * guides). `short` is the comparison-table form: "12 packages · 3 folders in ~ · sudo".
+ */
+export function describeImpact(difficulty: InstallDifficulty | null, impact: InstallImpact): { changes: string[]; short: string; undo: string | null } {
+  const packages = [...impact.packages, ...impact.aurPackages];
+  if (difficulty === null) return { changes: ['Nothing: it is a reading list.'], short: impactShort(impact, packages), undo: null };
+  if (difficulty === 'manual') {
+    return {
+      changes: ['Nothing is installed for you; the clone stays in its own folder.'],
+      short: 'Nothing for you: follow the upstream guide',
+      undo: 'Delete the cloned folder. Anything you set up afterwards follows the upstream guide.',
+    };
+  }
+  return { changes: impactChanges(impact, packages), short: impactShort(impact, packages), undo: impactUndo(impact, packages) };
 }
 
 /** Public URL of the generated installer for a config id (`author/slug`). */
@@ -224,10 +277,13 @@ export function attestationVerifyCommand(): string {
 export function buildInstallScript(data: ConfigData, id = 'setup'): string {
   const wmLabel = WM_LABELS[data.wm] || data.wm;
   const distroLabels = data.distros.map((d) => DISTRO_LABELS[d] || d).join(', ');
-  const version = data.version || 'v1.0';
+  const pinned = usesPinnedSource(data);
+  const usesUpstream = allStepsActions(data).some((a) => a.kind === 'upstream');
   const slug = id.replaceAll('/', '-').replace(/[^\w.-]/g, '');
   const allSteps = data.install?.steps ?? [];
   const total = allSteps.length;
+  // Comment lines: newlines removed, so nothing in a config value can end the comment.
+  const c = (s: string) => stripNewlines(s);
 
   const steps = allSteps
     .map((step, i) => {
@@ -238,6 +294,12 @@ export function buildInstallScript(data: ConfigData, id = 'setup'): string {
     })
     .join('\n');
 
+  // What the script does, in plain words, before any code: the runtime below is the same in every installer.
+  const summary = allSteps.flatMap((step, i) => [
+    `#   ${i + 1}. ${c(step.title)}`,
+    ...step.commands.flatMap((cmd) => classifyCommand(cmd, data)).map((a) => `#      - ${c(describeAction(a))}`),
+  ]);
+
   const distroCheck = data.distros.includes('any')
     ? '  :'
     : [
@@ -247,15 +309,20 @@ export function buildInstallScript(data: ConfigData, id = 'setup'): string {
         '  esac',
       ].join('\n');
 
+  const pinnedAt = data.version ? data.version + ' (' + data.source.ref + ')' : data.source.ref;
+  const sourceLine = pinned
+    ? `# Source: ${c(data.source.repo)} @ ${c(pinnedAt)}`
+    : `# Source: ${c(data.source.repo)} (reference only: installed from your package manager, not a pinned download)`;
+
   return [
     '#!/usr/bin/env bash',
     '# ==============================================================================',
-    `# 0xTSOA INSTALLER // ${shQuote(stripNewlines(data.name.toUpperCase()))}`,
-    `# Version: ${shQuote(stripNewlines(version))}`,
-    `# Maintainer: ${shQuote(stripNewlines(data.author.name))} (@${shQuote(stripNewlines(data.author.github))})`,
-    `# Source: ${shQuote(stripNewlines(data.source.repo))} @ ${shQuote(stripNewlines(data.source.ref))}`,
-    `# Window Manager: ${stripNewlines(wmLabel)}`,
-    `# Supported Distros: ${stripNewlines(distroLabels)}`,
+    `# 0xTsoa installer: ${c(data.name)} by ${c(data.author.name)} (@${c(data.author.github)})`,
+    sourceLine,
+    `# Window manager: ${c(wmLabel)}. Distros: ${c(distroLabels)}.`,
+    '#',
+    '# What this script does:',
+    ...summary,
     '#',
     '# Read before running. Start with:  bash install.sh --dry-run   (changes nothing)',
     '# Options: --dry-run  --force  --yes  --rollback  --help',
@@ -267,9 +334,9 @@ export function buildInstallScript(data: ConfigData, id = 'setup'): string {
     `OXT_NAME=${shQuote(stripNewlines(data.name))}`,
     `OXT_REPO=${shQuote(stripNewlines(data.source.repo))}`,
     `OXT_REF=${shQuote(stripNewlines(data.source.ref))}`,
-    `OXT_COMMON=(${UPSTREAM_BACKUP_PATHS.join(' ')})`,
-    '',
-    RUNTIME.trimEnd(),
+    `OXT_PINNED=${pinned ? 1 : 0}`,
+    // Folders backed up before the project's own installer runs; empty when the setup has none.
+    `OXT_COMMON=(${usesUpstream ? UPSTREAM_BACKUP_PATHS.join(' ') : ''})`,
     '',
     '# --- Steps (from the reviewed config) ---',
     'oxt_distro_check() {',
@@ -279,6 +346,8 @@ export function buildInstallScript(data: ConfigData, id = 'setup'): string {
     'oxt_steps() {',
     steps,
     '}',
+    '',
+    RUNTIME.trimEnd(),
     '',
     'oxt_main "$@"',
     '',

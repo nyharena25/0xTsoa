@@ -43,16 +43,19 @@
     "steps": [
       {
         "id": "deps",
-        "title": "Install curl",
+        "title": "Download Gogh at the pinned version",
         "commands": [
-          "sudo pacman -S --needed curl"
+          "git clone --filter=blob:none https://github.com/Gogh-Co/Gogh",
+          "git -C Gogh checkout {{ref}}",
+          "cd Gogh"
         ]
       },
       {
         "id": "dotfiles",
         "title": "Run the interactive scheme picker",
         "commands": [
-          "bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Gogh-Co/Gogh/{{ref}}/gogh.sh)\""
+          "# Run from the pinned checkout, gogh.sh uses its own theme files instead of downloading them from the master branch",
+          "bash gogh.sh"
         ]
       }
     ]

@@ -1,9 +1,11 @@
 ---
+import { getImage } from 'astro:assets';
 import CopyButton from './CopyButton.astro';
 import { useTranslations, type Locale } from '../lib/i18n';
-import { getVotesForConfig, getDiscussionUrlForConfig } from '../lib/votes';
+import { getVotesForConfig, getDiscussionUrlForConfig, upvoteLabel } from '../lib/votes';
 import { WM_LABELS, DISTRO_LABELS, hasInstallSteps, type ConfigData } from '../lib/schema';
 import { verifiedScriptCommand, downloadInstallCommand } from '../lib/install';
+import { getRepoStats } from '../lib/stats';
 import { withBase } from '../../site.config';
 
 interface SpotlightItem {
@@ -19,8 +21,29 @@ interface Props {
 const { configs, locale = 'en' } = Astro.props;
 const t = useTranslations(locale);
 
+/** Spotlight frame widths: the image fills ~60% of a wide screen and the full width of a phone. */
+const SHOT_WIDTHS = [640, 960, 1280];
+const SHOT_SIZES = '(min-width: 1024px) 60vw, 100vw';
+
+/**
+ * Upstream screenshots are often multi-megabyte PNGs or GIFs. Resize them to WebP at build time so
+ * the spotlight swaps instantly; keep the original URL when the image cannot be fetched or decoded.
+ */
+async function optimizedShot(url: string): Promise<{ src: string; srcset: string }> {
+  if (url.startsWith('/')) return { src: url, srcset: '' };
+  try {
+    const img = await getImage({ src: url, inferSize: true, widths: SHOT_WIDTHS, format: 'webp', quality: 72 });
+    return { src: img.src, srcset: img.srcSet.attribute };
+  } catch {
+    return { src: url, srcset: '' };
+  }
+}
+
+const SERVER_LABELS = { wayland: 'WAYLAND', x11: 'X11', both: 'WAYLAND & X11' } as const;
+const formatPushed = (d: string) => new Date(`${d}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+
 // Pre-format serialized JSON data for client script
-const serializedSetups = configs.map((c, idx) => {
+const serializedSetups = await Promise.all(configs.map(async (c, idx) => {
   const votes = getVotesForConfig(c.id);
   const discussionUrl = getDiscussionUrlForConfig(c.id);
   const distroLabel = c.data.distros.map((d) => DISTRO_LABELS[d] || d).join(', ');
@@ -36,22 +59,19 @@ const serializedSetups = configs.map((c, idx) => {
       ? verifiedScriptCommand(c.data.install.script)
       : downloadInstallCommand(c.id);
 
-  const screenshots = c.data.screenshots && c.data.screenshots.length > 0
-    ? c.data.screenshots.map((s, sIdx) => ({
-        url: s.url,
+  const realShots = c.data.screenshots.filter((s) => !s.url.endsWith('/screenshots/fallback-terminal.svg'));
+  const screenshots = realShots.length > 0
+    ? await Promise.all(realShots.map(async (s, sIdx) => ({
+        ...(await optimizedShot(s.url)),
         alt: s.alt || `${c.data.name} screenshot ${sIdx + 1}`,
-        caption: s.caption || `Capture #${String(sIdx + 1).padStart(2, '0')}`,
-      }))
-    : [{
-        url: withBase('/screenshots/fallback-terminal.svg'),
-        alt: `${c.data.name} fallback preview`,
-        caption: '01_FALLBACK.RAW',
-      }];
+      })))
+    : [{ src: withBase('/screenshots/fallback-terminal.svg'), srcset: '', alt: `${c.data.name} preview` }];
+  const pushedAt = getRepoStats(c.id)?.pushedAt;
 
   return {
     index: idx + 1,
     id: c.id,
-    kicker: `Spotlight #${String(idx + 1).padStart(2, '0')} • ${c.data.displayServer.toUpperCase()}`,
+    kicker: `${pushedAt ? `Updated ${formatPushed(pushedAt)} on GitHub` : `Recently updated #${idx + 1}`} • ${SERVER_LABELS[c.data.displayServer]}`,
     name: c.data.name,
     author: c.data.author.name,
     desc: c.data.summary,
@@ -63,15 +83,13 @@ const serializedSetups = configs.map((c, idx) => {
     readOnly,
     cmdLabel: readOnly ? t('spotlight.readOnline') : t('spotlight.deployCmd'),
     votesCount: votes,
-    votesFormatted: `${votes.toLocaleString()} sign-offs`,
+    votesFormatted: upvoteLabel(votes),
     discussionUrl,
     repoUrl: c.data.source.repo,
     specUrl: specPath,
     screenshots,
-    imgUrl: screenshots[0].url,
-    imgAlt: screenshots[0].alt,
   };
-});
+}));
 
 const defaultSetup = serializedSetups[0];
 ---
@@ -163,19 +181,20 @@ const defaultSetup = serializedSetups[0];
       <div class="relative w-full aspect-video lg:aspect-auto lg:flex-1 min-h-[220px] rounded-lg overflow-hidden bg-zinc-900 my-4 shadow-md flex items-center justify-center instant-snap">
         <img
           id="spotlight-image"
-          src={defaultSetup?.imgUrl}
-          alt={defaultSetup?.imgAlt}
+          src={defaultSetup?.screenshots[0].src}
+          srcset={defaultSetup?.screenshots[0].srcset || undefined}
+          sizes={SHOT_SIZES}
+          alt={defaultSetup?.screenshots[0].alt}
           width="1280"
           height="720"
           class="w-full h-full object-cover instant-snap select-none"
           loading="eager"
+          fetchpriority="high"
+          decoding="async"
         />
         <!-- Live screenshot rhythm indicator -->
         <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-xs text-[10px] sm:text-[11px] font-mono text-zinc-200 font-bold border border-zinc-700/60 select-none instant-snap" id="spotlight-shot-pill">
           SHOT: 01 / {String(defaultSetup?.screenshots?.length || 1).padStart(2, '0')}
-        </div>
-        <div class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur-xs text-[9px] sm:text-[10px] font-mono text-emerald-400 font-semibold border border-zinc-700/60 select-none">
-          10s SETUP / 2s IMAGE
         </div>
       </div>
     </div>
@@ -279,11 +298,11 @@ const defaultSetup = serializedSetups[0];
         </div>
       </div>
 
-      <!-- Community Sign-Off Section -->
+      <!-- Community upvotes -->
       <div class="pt-4 border-t border-zinc-200 flex flex-col gap-2">
         <div class="flex items-center justify-between">
           <span class="font-mono text-xs font-bold text-zinc-700">
-            {t('spotlight.communitySignOff')}
+            {t('spotlight.communityVotes')}
           </span>
           <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-zinc-100 text-zinc-900 border border-zinc-200" id="spotlight-vote-pill">
             ▲ {defaultSetup?.votesFormatted}
@@ -297,12 +316,12 @@ const defaultSetup = serializedSetups[0];
           rel="noopener noreferrer"
           class="w-full min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-zinc-900 text-white font-mono text-xs font-semibold hover:bg-zinc-800 transition-colors shadow-xs"
         >
-          <span>✓</span>
-          <span>{t('spotlight.approved')}</span>
+          <span aria-hidden="true">👍</span>
+          <span>{t('vote.button')}</span>
         </a>
 
         <span class="font-mono text-[10px] text-zinc-400 text-center tracking-tight">
-          {t('spotlight.signOffNotice')}
+          {t('vote.hint')}
         </span>
       </div>
     </div>
@@ -318,7 +337,7 @@ const defaultSetup = serializedSetups[0];
     index: number; name: string; kicker: string; desc: string; distro: string; wm: string;
     bar: string | null; theme: string | null; cmd: string; readOnly: boolean; cmdLabel: string; votesFormatted: string;
     discussionUrl: string; repoUrl: string; specUrl: string;
-    screenshots: { url: string; alt: string; caption: string }[];
+    screenshots: { src: string; srcset: string; alt: string }[];
   }
 
   function initSpotlight() {
@@ -328,10 +347,33 @@ const defaultSetup = serializedSetups[0];
   section.dataset.bound = 'true';
   const serializedSetups: SpotlightSetup[] = JSON.parse(dataEl.textContent || '[]');
 
+  // Autoplay pace: time on each setup, and on each of its screenshots.
+  const SETUP_MS = 6000;
+  const IMAGE_MS = 2500;
+
   let currentSetupIndex = 0;
   let currentImageIndex = 0;
   let setupCycleTimer: ReturnType<typeof setTimeout> | null = null;
-  let imageCycleTimer: ReturnType<typeof setInterval> | null = null;
+  let imageCycleTimer: ReturnType<typeof setTimeout> | null = null;
+  let swapGeneration = 0;
+  const imageEl = document.getElementById('spotlight-image') as HTMLImageElement | null;
+  const imageSizes = imageEl?.getAttribute('sizes') ?? '';
+
+  // Each screenshot is fetched and decoded once, off screen, before it is shown.
+  const decoded = new Map<string, Promise<boolean>>();
+  function preload(shot: SpotlightSetup['screenshots'][number] | undefined): Promise<boolean> {
+    if (!shot) return Promise.resolve(false);
+    let ready = decoded.get(shot.src);
+    if (!ready) {
+      const probe = new Image();
+      probe.sizes = imageSizes;
+      if (shot.srcset) probe.srcset = shot.srcset;
+      probe.src = shot.src;
+      ready = probe.decode().then(() => true, () => false);
+      decoded.set(shot.src, ready);
+    }
+    return ready;
+  }
   const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   let userPaused = reducedMotionQuery.matches;
   let isHovered = false;
@@ -344,7 +386,7 @@ const defaultSetup = serializedSetups[0];
       setupCycleTimer = null;
     }
     if (imageCycleTimer) {
-      clearInterval(imageCycleTimer);
+      clearTimeout(imageCycleTimer);
       imageCycleTimer = null;
     }
   }
@@ -357,15 +399,20 @@ const defaultSetup = serializedSetups[0];
     const s = serializedSetups[currentSetupIndex];
     if (!s) return;
 
-    if (s.screenshots && s.screenshots.length > 1) {
-      imageCycleTimer = setInterval(() => {
-        swapScreenshot(currentImageIndex + 1);
-      }, 2000);
-    }
+    // Next screenshot only once it is decoded, so the frame never shows a half-loaded image.
+    const scheduleImage = () => {
+      if (s.screenshots.length < 2) return;
+      preload(s.screenshots[(currentImageIndex + 1) % s.screenshots.length]);
+      imageCycleTimer = setTimeout(async () => {
+        await swapScreenshot(currentImageIndex + 1, true);
+        scheduleImage();
+      }, IMAGE_MS);
+    };
+    scheduleImage();
 
-    setupCycleTimer = setTimeout(() => {
-      showSetup((currentSetupIndex + 1) % serializedSetups.length, true);
-    }, 10000);
+    const nextSetup = (currentSetupIndex + 1) % serializedSetups.length;
+    preload(serializedSetups[nextSetup]?.screenshots[0]);
+    setupCycleTimer = setTimeout(() => showSetup(nextSetup, true), SETUP_MS);
   }
 
   function updatePausePlayButton() {
@@ -409,18 +456,24 @@ const defaultSetup = serializedSetups[0];
     el.style.minHeight = '';
   }
 
-  function swapScreenshot(shotIdx: number) {
+  /** Shows screenshot `shotIdx` of the current setup; with `waitForLoad`, only after it is decoded. */
+  async function swapScreenshot(shotIdx: number, waitForLoad = false) {
     const s = serializedSetups[currentSetupIndex];
-    if (!s || !s.screenshots || s.screenshots.length === 0) return;
+    if (!s || s.screenshots.length === 0) return;
     const shots = s.screenshots;
-    currentImageIndex = (shotIdx + shots.length) % shots.length;
-    const shot = shots[currentImageIndex];
+    const nextIndex = (shotIdx + shots.length) % shots.length;
+    const shot = shots[nextIndex];
+    const generation = ++swapGeneration;
+    if (waitForLoad && !(await preload(shot))) return;
+    if (generation !== swapGeneration) return; // a newer swap or setup change won
+    currentImageIndex = nextIndex;
 
-    const img = document.getElementById('spotlight-image');
-    if (img) {
+    if (imageEl) {
       // Hard cut: instant swap like a raw terminal refresh (no fading, no blurring)
-      img.setAttribute('src', shot.url);
-      img.setAttribute('alt', shot.alt);
+      if (shot.srcset) imageEl.srcset = shot.srcset;
+      else imageEl.removeAttribute('srcset');
+      imageEl.src = shot.src;
+      imageEl.alt = shot.alt;
     }
 
     const shotPill = document.getElementById('spotlight-shot-pill');
@@ -583,6 +636,10 @@ const defaultSetup = serializedSetups[0];
   // Initialize rhythm on page load
   updatePausePlayButton();
   showSetup(0, false);
+  // Once the page itself has loaded, warm up each setup's first screenshot so tab clicks are instant.
+  const warmUp = () => serializedSetups.forEach((setup) => preload(setup.screenshots[0]));
+  if (document.readyState === 'complete') warmUp();
+  else window.addEventListener('load', warmUp, { once: true });
   }
 
   initSpotlight();

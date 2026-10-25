@@ -33,7 +33,7 @@
   ],
   "source": {
     "repo": "https://github.com/dylanaraps/pywal",
-    "ref": "236aa48e741ff8d65c4c3826db2813bf2ee6f352",
+    "ref": "984c7b640ea2336df351c87f744104e51ca32970",
     "readme": "README.md"
   },
   "install": {
@@ -47,5 +47,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "3.3.0"
 }

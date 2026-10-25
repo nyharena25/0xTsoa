@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/deviantfero/wpgtk",
-    "ref": "42853aa798764111d19fd221f4d8ac2e0bff6728",
+    "ref": "d6de9e6af2bf880a858758c64c04c0037d759b63",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "6.7.1"
 }

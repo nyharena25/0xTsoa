@@ -37,7 +37,7 @@
   ],
   "source": {
     "repo": "https://github.com/elkowar/eww",
-    "ref": "48f5aa8b379adf29da0b0bb9ca04164f65d8bdaa",
+    "ref": "d87c2fdbfdc012e76d229e4e9ea3325bc0f23e89",
     "readme": "README.md"
   },
   "install": {
@@ -51,5 +51,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.6.0"
 }

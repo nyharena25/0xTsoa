@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/twpayne/chezmoi",
-    "ref": "2871e65d104188da02da227b68f52a0e9a3b25e6",
+    "ref": "63093ac0e26e803817ced0e2184cb57c4f273388",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v2.73.3"
 }

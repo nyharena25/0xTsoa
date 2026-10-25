@@ -28,6 +28,33 @@
           "type": "string",
           "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$",
           "description": "GitHub username of the author. Must match the folder name: configs/<github>/<slug>.json."
+        },
+        "verified": {
+          "description": "Set by the claim bot (scripts/claim-entry.ts) once the author confirms the entry. Do not add it by hand.",
+          "type": "object",
+          "properties": {
+            "by": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$",
+              "description": "GitHub account that claimed the entry: the repository owner or a public member of the owning organization."
+            },
+            "at": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Date of the claim, as YYYY-MM-DD."
+            },
+            "issue": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Number of the claim issue in this repository."
+            }
+          },
+          "required": [
+            "by",
+            "at",
+            "issue"
+          ]
         }
       },
       "required": [
@@ -390,7 +417,7 @@
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 500,
-                  "description": "One shell command, written as you would type it (no sudo bash, no curl | bash from an unpinned URL). Lines starting with # are shown as notes; {{ref}} is replaced with source.ref."
+                  "description": "One shell command, written as you would type it. Follow docs/INSTALL-STANDARD.md: pinned clones and downloads, nothing piped into a shell, no deleting, root shells, bootloader or security changes. Lines starting with # are shown as notes for the reader (use them for interactive or per-distro steps); {{ref}} is replaced with source.ref."
                 },
                 "description": "1–30 shell commands, run in order."
               }

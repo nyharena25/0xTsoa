@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/JakeStanger/ironbar",
-    "ref": "119f361f661aa362843a6dccf02d13236520a8d9",
+    "ref": "cac7d684ddc7e26315b4e269b93143ab92c71757",
     "readme": "README.md"
   },
   "install": {
@@ -43,5 +43,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.19.1"
 }

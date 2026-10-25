@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/dunst-project/dunst",
-    "ref": "1249932aab9b7f687f1befe05ebf46b8d1ce0e42",
+    "ref": "312ed56fbcdc84823c99f21008467561394a8eb1",
     "readme": "README.md"
   },
   "install": {
@@ -50,5 +50,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v1.13.2"
 }

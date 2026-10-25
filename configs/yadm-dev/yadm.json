@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/yadm-dev/yadm",
-    "ref": "bbb58e6625de5d934fd49b4b81c1981e137e3057",
+    "ref": "7eabaee84c8bd9521e56966e5c88e7a435fdd9c7",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "3.5.0"
 }

@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/dracula/gtk",
-    "ref": "71640b9456110f3bac2130d0b387a3154a9fb4d2",
+    "ref": "f9fbda87504e284fe458bd10e9f1f6532b378c4e",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v4.0.0"
 }

@@ -1,0 +1,154 @@
+---
+// Guides (/docs/install-dotfiles-safely/…): the hand-written articles in guides/<slug>.mdx, with
+// live registry data through <Compare>, <WhatItChanges> and <RegistryStat>. Topic pages share the
+// /docs/ namespace, so a guide slug may never be a topic slug.
+import Base from '../../layouts/Base.astro';
+import CompareTable from '../../components/docs/CompareTable.astro';
+import WhatItChanges from '../../components/docs/WhatItChanges.astro';
+import RegistryStat from '../../components/docs/RegistryStat.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { TOPICS, liveTopics, topicPath, type Topic } from '../../lib/topics';
+import { GUIDE_AUTHOR, guideEditUrl } from '../../lib/guides';
+import { withBase } from '../../../site.config';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides', ({ data }) => import.meta.env.DEV || !data.draft);
+  const live = liveTopics(await getCollection('configs')).map((t) => t.topic);
+  for (const g of guides) {
+    if (TOPICS.some((t) => t.slug === g.id)) throw new Error(`guides/${g.id}.mdx: /docs/${g.id}/ is already a topic page`);
+    const unknown = g.data.topics.filter((s) => !TOPICS.some((t) => t.slug === s));
+    if (unknown.length) throw new Error(`guides/${g.id}.mdx: unknown topic ${unknown.join(', ')}`);
+  }
+  return guides.map((guide) => ({
+    params: { guide: guide.id },
+    props: {
+      guide,
+      topics: guide.data.topics.map((s) => live.find((t) => t.slug === s)).filter((t) => t !== undefined),
+      others: guides.filter((g) => g.id !== guide.id),
+    },
+  }));
+}
+
+interface Props {
+  guide: CollectionEntry<'guides'>;
+  topics: Topic[];
+  others: CollectionEntry<'guides'>[];
+}
+
+const { guide, topics, others } = Astro.props;
+const { data } = guide;
+const { Content, headings } = await render(guide);
+const toc = headings.filter((h) => h.depth === 2);
+
+const pageUrl = new URL(withBase(topicPath(guide.id)), Astro.site).href;
+const formatDate = (d: string) =>
+  new Date(`${d}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: data.h1,
+    description: data.description,
+    url: pageUrl,
+    mainEntityOfPage: pageUrl,
+    datePublished: data.published,
+    dateModified: data.updated,
+    inLanguage: 'en',
+    author: data.author === GUIDE_AUTHOR ? { '@type': 'Person', name: GUIDE_AUTHOR, url: 'https://github.com/nyharena25' } : { '@type': 'Person', name: data.author },
+    publisher: { '@type': 'Organization', name: '0xTsoa', url: new URL(withBase('/'), Astro.site).href },
+    ...(topics.length ? { about: topics.map((t) => ({ '@type': 'Thing', name: t.label })) } : {}),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: new URL(withBase('/'), Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: 'Docs', item: new URL(withBase('/docs/'), Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: data.label, item: pageUrl },
+    ],
+  },
+  ...(data.faq.length
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: data.faq.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+        },
+      ]
+    : []),
+];
+---
+
+<Base
+  title={data.title}
+  description={data.description}
+  ogType="article"
+  updatedAt={data.updated}
+  statusPrefix="[DOCS: "
+  statusInitial="GUIDE"
+  statusFinal={data.label.toUpperCase()}
+  jsonLd={jsonLd}
+>
+  <div class="max-w-7xl mx-auto w-full px-4 lg:px-8 py-6 sm:py-8 flex flex-col gap-6 min-w-0" data-pagefind-body>
+    <nav aria-label="Breadcrumb" class="font-mono text-xs text-zinc-500">
+      <ol class="flex flex-wrap items-center gap-1.5">
+        <li><a href={withBase('/')} class="hover:text-zinc-900 underline">Home</a></li>
+        <li aria-hidden="true">/</li>
+        <li><a href={withBase('/docs/')} class="hover:text-zinc-900 underline">Docs</a></li>
+        <li aria-hidden="true">/</li>
+        <li class="text-zinc-900 font-semibold" aria-current="page">{data.label}</li>
+      </ol>
+    </nav>
+
+    <header class="flex flex-col gap-3 max-w-3xl">
+      {data.draft && <p class="font-mono text-[11px] uppercase font-bold text-amber-700 m-0">Draft: only visible in astro dev</p>}
+      <h1 class="font-display text-2xl sm:text-4xl font-bold text-zinc-900 tracking-tight m-0" data-page-title="true">{data.h1}</h1>
+      <p class="font-sans text-base sm:text-lg text-zinc-700 leading-relaxed m-0">{data.description}</p>
+      <p class="font-mono text-[11px] text-zinc-500 m-0 flex flex-wrap gap-x-2 gap-y-1">
+        <span>By {data.author}</span>
+        <span aria-hidden="true">·</span>
+        <span>Updated <time datetime={data.updated}>{formatDate(data.updated)}</time></span>
+        <span aria-hidden="true">·</span>
+        <a href={guideEditUrl(guide.id)} target="_blank" rel="noopener noreferrer" class="underline hover:text-zinc-900">Edit this page on GitHub</a>
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_15rem] gap-8 items-start">
+      <article class="guide-prose min-w-0 max-w-3xl">
+        <Content components={{ Compare: CompareTable, WhatItChanges, RegistryStat }} />
+
+        {data.faq.length > 0 && (
+          <section aria-labelledby="faq-title" class="not-prose mt-10 flex flex-col gap-4">
+            <h2 id="faq-title" class="font-display text-xl font-bold text-zinc-900 m-0">Questions</h2>
+            {data.faq.map(({ q, a }) => (
+              <div>
+                <h3 class="font-sans text-sm font-bold text-zinc-900 mb-1">{q}</h3>
+                <p class="font-sans text-sm text-zinc-700 leading-relaxed m-0">{a}</p>
+              </div>
+            ))}
+          </section>
+        )}
+      </article>
+
+      {toc.length >= 3 && (
+        <nav aria-labelledby="toc-title" class="hidden lg:block sticky top-20 font-mono text-xs">
+          <h2 id="toc-title" class="uppercase font-bold text-zinc-500 tracking-wider text-[10px] mb-2">On this page</h2>
+          <ol class="flex flex-col gap-1.5 border-l border-zinc-200 pl-3">
+            {toc.map((h) => <li><a href={`#${h.slug}`} class="text-zinc-600 hover:text-zinc-900">{h.text}</a></li>)}
+          </ol>
+        </nav>
+      )}
+    </div>
+
+    {(topics.length > 0 || others.length > 0) && (
+      <section aria-labelledby="related-title" class="flex flex-col gap-3 border-t border-zinc-200 pt-6">
+        <h2 id="related-title" class="font-mono text-xs uppercase font-bold text-zinc-900 tracking-wider m-0">Keep reading</h2>
+        <ul class="flex flex-wrap gap-2">
+          {topics.map((t) => <li><a href={withBase(topicPath(t.slug))} class="tag-pill">{t.label}</a></li>)}
+          {others.map((g) => <li><a href={withBase(topicPath(g.id))} class="tag-pill">{g.data.label}</a></li>)}
+        </ul>
+      </section>
+    )}
+  </div>
+</Base>

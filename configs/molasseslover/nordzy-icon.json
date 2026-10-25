@@ -35,7 +35,7 @@
   ],
   "source": {
     "repo": "https://github.com/MolassesLover/Nordzy-icon",
-    "ref": "829c47bda534d3c9f3c7d46c73a6fe9d946eca41",
+    "ref": "7ccbe5e9133d513a9a53c401ab18e35f04c4eab7",
     "readme": "README.md"
   },
   "install": {
@@ -49,5 +49,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "1.8.7"
 }

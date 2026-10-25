@@ -2,7 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
-import { configSchema, type ConfigInput, CATEGORY_LABELS, STYLE_LABELS, WM_LABELS } from '../src/lib/schema';
+import { lintInstallSteps, formatLintIssue } from '../src/lib/install-lint';
+import { configSchema, type ConfigData, type ConfigInput, CATEGORY_LABELS, DISTRO_LABELS, STYLE_LABELS, WM_LABELS } from '../src/lib/schema';
+import { checkOwnership, githubOwner, publicMemberFromEnv, type Ownership, type PublicMemberCheck } from './ownership';
 import { fetchLimited, SCRIPT_HOSTS } from '../src/lib/fetch-limited';
 
 const TAG_RE = /^[a-z0-9][a-z0-9-]{0,29}$/;
@@ -67,10 +69,33 @@ export function parseChecked(raw: string): string[] {
   return boxes.filter((m) => m[1] !== ' ').map((m) => m[2].trim());
 }
 
+/** "SUPER + Return | Open a terminal" lines → keybindings (an optional third column is the effect). */
+export function parseKeybindings(raw: string): { keys: string; action: string; effect?: string }[] {
+  return parseCommands(raw)
+    .map((line) => line.split('|').map((c) => c.trim()))
+    .filter(([keys, action]) => keys && action)
+    .slice(0, 30)
+    .map(([keys, action, effect]) => ({ keys, action, ...(effect ? { effect } : {}) }));
+}
+
+export interface ConvertOptions {
+  /** The issue number: recorded in author.verified when the submitter owns the repository. */
+  issue?: number;
+  isPublicMember?: PublicMemberCheck;
+}
+
+/**
+ * Converts a filled `new-config` form into a config. The entry is credited to the GitHub owner of
+ * the repository, never to whoever opened the issue, so nobody can publish someone else's project
+ * under their own name; it is marked "Verified by author" only when the submitter is that owner (or a
+ * public member of the owning organization). Off GitHub, the owner cannot be read from the URL: the
+ * submitter is credited, unverified, and a maintainer checks it in review.
+ */
 export async function convertIssueToConfig(
   issueAuthor: string,
   issueBody: string,
-): Promise<{ config: ConfigInput; author: string; slug: string }> {
+  { issue, isPublicMember = publicMemberFromEnv }: ConvertOptions = {},
+): Promise<{ config: ConfigInput; author: string; slug: string; ownership: Ownership }> {
   const fields = parseIssueBody(issueBody);
 
   const name = fields['Project Name'] || fields['Configuration Name'] || '';
@@ -94,7 +119,7 @@ export async function convertIssueToConfig(
         : 'wayland';
 
   const distrosRaw = fields['Distributions'] || 'arch';
-  const distros = parseChecked(distrosRaw).map((s) => s.toLowerCase()) as any[];
+  const distros = parseChecked(distrosRaw).map((s) => fromLabel(DISTRO_LABELS, s) ?? s.toLowerCase()) as any[];
 
   const tagsRaw = fields['Tags'] || '';
   const tags = [
@@ -138,24 +163,24 @@ export async function convertIssueToConfig(
     throw new Error('"Install: Dependencies" is required (it may be empty only when Desktop Part is "Lists & guides").');
   }
 
-  const bar = fields['Status Bar'] || undefined;
-  const terminal = fields['Terminal'] || undefined;
-  const launcher = fields['Launcher'] || undefined;
-  const theme = fields['Theme'] || undefined;
-  const shell = fields['Shell'] || undefined;
+  const today = new Date().toISOString().split('T')[0];
+  const ownership = await checkOwnership(sourceRepo, issueAuthor, isPublicMember);
+  const credited = githubOwner(sourceRepo) ?? issueAuthor;
+  const verified = ownership.owns && issue ? { by: issueAuthor, at: today, issue } : undefined;
 
   const config: ConfigInput = {
     $schema: '../../schema/config.schema.json',
     name,
     author: {
-      name: issueAuthor,
-      github: issueAuthor,
+      name: credited,
+      github: credited,
+      ...(verified ? { verified } : {}),
     },
     lang: 'en',
     summary,
     description: description || undefined,
     license,
-    updatedAt: new Date().toISOString().split('T')[0],
+    updatedAt: today,
     distros: distros.length > 0 ? distros : (['arch'] as any),
     category,
     wm: wm as any,
@@ -163,23 +188,26 @@ export async function convertIssueToConfig(
     displayServer: displayServer as any,
     tags,
     specs: {
-      bar: bar || undefined,
-      terminal: terminal || undefined,
-      launcher: launcher || undefined,
-      theme: theme || undefined,
-      shell: shell || undefined,
+      bar: fields['Status Bar'] || undefined,
+      terminal: fields['Terminal'] || undefined,
+      launcher: fields['Launcher'] || undefined,
+      notifications: fields['Notifications'] || undefined,
+      theme: fields['Theme'] || undefined,
+      shell: fields['Shell'] || undefined,
+      editor: fields['Editor'] || undefined,
     },
     screenshots,
     source: {
       repo: sourceRepo,
       ref: sourceRef,
-      readme: 'README.md',
+      readme: fields['README Path'] || 'README.md',
     },
     // Reading lists without steps get no install block: their page links to the repo instead.
     install: steps.length > 0 || scriptUrl ? {
       script: scriptUrl ? { url: scriptUrl, sha256: PLACEHOLDER_SHA256, shell: 'bash' } : undefined,
       steps,
     } : undefined,
+    keybindings: parseKeybindings(fields['Keyboard Shortcuts'] || ''),
     example: false,
   };
 
@@ -210,7 +238,7 @@ export async function convertIssueToConfig(
     console.log(`Verified SHA-256: ${computedSha256}`);
   }
 
-  return { config, author: issueAuthor, slug };
+  return { config, author: credited, slug, ownership };
 }
 
 function safeReadPath(filePath: string): string {
@@ -255,6 +283,11 @@ export interface IssueToConfigResult {
   mode: 'create' | 'update';
   path: string;
   errors: string[];
+  /** Who the entry is credited to (the repository owner on GitHub). */
+  author?: string;
+  /** Whether the submitter owns the repository, and why: shown in the pull request. */
+  verified?: boolean;
+  ownership?: string;
 }
 
 function writeResult(result: IssueToConfigResult): void {
@@ -262,10 +295,57 @@ function writeResult(result: IssueToConfigResult): void {
   fs.writeFileSync(resultPath, JSON.stringify(result, null, 2), 'utf-8');
 }
 
-async function main() {
-  const issueFile = process.argv[2];
-  const issueAuthor = process.argv[3];
+/** A generated config the bot refuses, with the reasons sent back to the issue. */
+class ConfigRejected extends Error {
+  constructor(
+    readonly heading: string,
+    readonly errors: string[],
+  ) {
+    super(heading);
+  }
+}
 
+const relPath = (file: string) => path.relative(process.cwd(), file).replaceAll('\\', '/');
+
+/** The file a config will be written to, and whether it already exists, as reported before validation. */
+function plannedTarget(outDir: string, slug: string): { mode: 'create' | 'update'; outRelPath: string } {
+  const cleanSlug = slug.replace(/[^a-z0-9_-]/g, '');
+  if (!cleanSlug) return { mode: 'create', outRelPath: '' };
+  const candidate = path.resolve(outDir, `${cleanSlug}.json`);
+  return { mode: fs.existsSync(candidate) ? 'update' : 'create', outRelPath: relPath(candidate) };
+}
+
+/** The schema, then the install-step standard (docs/INSTALL-STANDARD.md): errors go back to the issue. */
+function checkGenerated(config: ConfigInput): ConfigData {
+  const parsed = configSchema.safeParse(config);
+  if (!parsed.success) {
+    const errors = parsed.error.issues.map((issue) => `[${issue.path.join('.')}] ${issue.message}`);
+    throw new ConfigRejected('Validation error for generated config:', errors);
+  }
+  const lintErrors = lintInstallSteps(parsed.data)
+    .filter((issue) => issue.severity === 'error')
+    .map(formatLintIssue);
+  if (lintErrors.length > 0) throw new ConfigRejected('Install steps break the install-step standard:', lintErrors);
+  return parsed.data;
+}
+
+/** A claim proves ownership of one repository: an update keeps it only while the entry points there. */
+function keepVerification(outFile: string, data: ConfigData): void {
+  if (data.author.verified || !fs.existsSync(outFile)) return;
+  const previous = JSON.parse(fs.readFileSync(outFile, 'utf-8'));
+  if (previous.author?.verified && previous.source?.repo === data.source.repo) {
+    data.author.verified = previous.author.verified;
+  }
+}
+
+function errorLines(err: unknown): string[] {
+  const rawMsg = err instanceof Error ? err.message : String(err);
+  const lines = rawMsg.split('\n').map((s) => s.trim()).filter(Boolean);
+  return lines.length > 0 ? lines : [rawMsg];
+}
+
+async function main() {
+  const [issueFile, issueAuthor, issueArg] = process.argv.slice(2);
   let mode: 'create' | 'update' = 'create';
   let outRelPath = '';
 
@@ -277,53 +357,37 @@ async function main() {
   }
 
   try {
-    const validFilePath = safeReadPath(issueFile);
-    const body = fs.readFileSync(validFilePath, 'utf-8');
-    const { config, author, slug } = await convertIssueToConfig(issueAuthor, body);
+    const body = fs.readFileSync(safeReadPath(issueFile), 'utf-8');
+    const issue = Number(issueArg);
+    const { config, author, slug, ownership } = await convertIssueToConfig(issueAuthor, body, { issue: Number.isInteger(issue) && issue > 0 ? issue : undefined });
+    const outDir = safeOutputDir(path.resolve(process.cwd(), 'configs'), author);
+    ({ mode, outRelPath } = plannedTarget(outDir, slug));
 
-    const configsDir = path.resolve(process.cwd(), 'configs');
-    const outDir = safeOutputDir(configsDir, author);
-    const cleanSlug = slug.replace(/[^a-z0-9_-]/g, '');
-    if (cleanSlug) {
-      const candidateFile = path.resolve(outDir, `${cleanSlug}.json`);
-      outRelPath = path.relative(process.cwd(), candidateFile).replaceAll('\\', '/');
-      if (fs.existsSync(candidateFile)) {
-        mode = 'update';
-      }
-    }
-
-    const parsed = configSchema.safeParse(config);
-    if (!parsed.success) {
-      console.error('Validation error for generated config:');
-      const errors = parsed.error.issues.map((issue) => `[${issue.path.join('.')}] ${issue.message}`);
-      for (const line of errors) {
-        console.error(`- ${line}`);
-      }
-      writeResult({ status: 'error', mode, path: outRelPath, errors });
-      process.exit(1);
-    }
-
-    if (!fs.existsSync(outDir)) {
-      fs.mkdirSync(outDir, { recursive: true });
-    }
-
+    const data = checkGenerated(config);
+    fs.mkdirSync(outDir, { recursive: true });
     const outFile = safeOutputFile(outDir, slug);
-    outRelPath = path.relative(process.cwd(), outFile).replaceAll('\\', '/');
+    outRelPath = relPath(outFile);
     mode = fs.existsSync(outFile) ? 'update' : 'create';
+    // Only the owner may replace a listed entry from this form; anyone else asks through the change form.
+    if (mode === 'update' && !ownership.owns && author.toLowerCase() !== issueAuthor.toLowerCase()) {
+      throw new ConfigRejected('This entry already exists:', [
+        `${outRelPath} is already listed. ${ownership.reason} Only the repository owner can replace it from this form; ask for changes with the "Change or remove a listed entry" form instead.`,
+      ]);
+    }
+    keepVerification(outFile, data);
 
-    fs.writeFileSync(outFile, JSON.stringify(parsed.data, null, 2), 'utf-8');
-    writeResult({ status: 'ok', mode, path: outRelPath, errors: [] });
+    fs.writeFileSync(outFile, JSON.stringify(data, null, 2), 'utf-8');
+    writeResult({ status: 'ok', mode, path: outRelPath, errors: [], author, verified: Boolean(data.author.verified), ownership: ownership.reason });
     console.log(`✓ Successfully ${mode === 'update' ? 'updated' : 'created'} configuration: ${outFile}`);
   } catch (err) {
-    const rawMsg = err instanceof Error ? err.message : String(err);
-    const errors = rawMsg.split('\n').map((s) => s.trim()).filter(Boolean);
-    console.error(err);
-    writeResult({
-      status: 'error',
-      mode,
-      path: outRelPath,
-      errors: errors.length > 0 ? errors : [rawMsg],
-    });
+    if (err instanceof ConfigRejected) {
+      console.error(err.heading);
+      for (const line of err.errors) console.error(`- ${line}`);
+      writeResult({ status: 'error', mode, path: outRelPath, errors: err.errors });
+    } else {
+      console.error(err);
+      writeResult({ status: 'error', mode, path: outRelPath, errors: errorLines(err) });
+    }
     process.exit(1);
   }
 }

@@ -142,6 +142,12 @@ const t = useTranslations(locale);
             <strong class="font-semibold text-zinc-900">Desktop part &amp; tags:</strong> set <code>category</code> to one of <code class="font-mono text-xs bg-zinc-100 px-1 py-0.5 rounded">{CATEGORIES.join(', ')}</code>. Tags name components and features, never the WM, distro or theme style (those are filters already).
           </div>
         </li>
+        <li class="flex items-start gap-2">
+          <span class="font-mono font-bold text-zinc-900 shrink-0">6.</span>
+          <div>
+            <strong class="font-semibold text-zinc-900">Install steps follow the standard:</strong> people run your commands on their own machines, so clones and downloads are pinned, nothing is piped into a shell, deleted or run as a root shell, and bootloader, display-manager and editor steps are written as <code># notes</code>. CI and the issue bot check it; the <a href={`${REPO_URL}/blob/dev/docs/INSTALL-STANDARD.md`} target="_blank" rel="noopener noreferrer" class="underline text-zinc-900 font-semibold">install-step standard</a> has the rules and examples for themes, GRUB, login screens and distros.
+          </div>
+        </li>
       </ul>
     </section>
 

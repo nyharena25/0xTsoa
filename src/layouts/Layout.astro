@@ -1,0 +1,10 @@
+---
+import Base from './Base.astro';
+import type { ComponentProps } from 'astro/types';
+
+export type Props = ComponentProps<typeof Base>;
+---
+
+<Base {...Astro.props}>
+  <slot />
+</Base>

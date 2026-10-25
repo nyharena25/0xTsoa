@@ -32,7 +32,7 @@
   ],
   "source": {
     "repo": "https://codeberg.org/dnkl/fnott",
-    "ref": "404d116118235ee9bca58fc2bce50c7a01351d0e",
+    "ref": "700a5836cc1a626c9868a008bb9491d11b943bf5",
     "readme": "README.md"
   },
   "install": {
@@ -46,5 +46,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "1.8.0"
 }

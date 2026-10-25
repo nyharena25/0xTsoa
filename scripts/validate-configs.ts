@@ -11,9 +11,14 @@ import {
   readmeRawUrl,
   validateCloneSteps,
   normalizeRepoUrl,
+  repoPathsInSteps,
   type CloneValidationResult,
+  type ConfigData,
 } from '../src/lib/schema';
 import { fetchLimited, SCRIPT_HOSTS } from '../src/lib/fetch-limited';
+import { listRepoTree, missingRepoPaths } from './repo-tree';
+import { mapPool } from './pool';
+import { lintInstallSteps, formatLintIssue } from '../src/lib/install-lint';
 import { ALLOWED_IMAGE_HOSTS, BASE_PATH, REPO_NAME } from '../site.config';
 
 export { validateCloneSteps, normalizeRepoUrl, type CloneValidationResult };
@@ -188,6 +193,150 @@ function collectAllConfigFiles(configsDir: string): string[] {
   return allFiles;
 }
 
+type Script = NonNullable<NonNullable<ConfigData['install']>['script']>;
+
+/** Allowed screenshot hosts, or existing local files. Returns the number of errors. */
+function checkScreenshotSources(data: ConfigData): number {
+  let errors = 0;
+  for (const shot of data.screenshots) {
+    if (shot.url.startsWith('/') || shot.url.startsWith('./')) {
+      const localPath = resolveLocalScreenshotPath(shot.url);
+      if (!fs.existsSync(localPath)) {
+        console.error(`  ✖ Local screenshot file not found: ${localPath}`);
+        errors++;
+      }
+      continue;
+    }
+    try {
+      const u = new URL(shot.url);
+      if (!(ALLOWED_IMAGE_HOSTS as readonly string[]).includes(u.hostname)) {
+        console.error(`  ✖ Screenshot hostname not in allowlist: ${u.hostname}`);
+        errors++;
+      }
+    } catch {
+      console.error(`  ✖ Malformed screenshot URL: ${shot.url}`);
+      errors++;
+    }
+  }
+  return errors;
+}
+
+/** install.script must still hash to its recorded SHA-256 (--scripts or --network). */
+async function checkScriptHash(script: Script): Promise<number> {
+  console.log(`  → Verifying install.script SHA-256...`);
+  const { match, actualSha, error } = await verifyScriptHash(script.url, script.sha256);
+  if (error) {
+    console.error(`  ✖ Failed to download or verify install script: ${error}`);
+    return 1;
+  }
+  if (!match) {
+    console.error(`  ✖ SHA-256 hash mismatch! Declared: ${script.sha256}, Actual: ${actualSha}`);
+    return 1;
+  }
+  console.log(`  ✓ Script SHA-256 verified successfully (${actualSha?.substring(0, 8)}...)`);
+  return 0;
+}
+
+/** Every repository path the install steps use must exist at the pinned version. */
+async function checkRepoPaths(data: ConfigData): Promise<number> {
+  const repoPaths = repoPathsInSteps(data);
+  if (repoPaths.length === 0) return 0;
+  try {
+    const missing = missingRepoPaths(repoPaths, await listRepoTree(data.source.repo, data.source.ref));
+    for (const p of missing) {
+      console.error(`  ✖ Install steps use ${p}, which does not exist in ${data.source.repo} at ${data.source.ref}`);
+    }
+    return missing.length;
+  } catch (err) {
+    console.warn(`  ⚠ Could not list the repository files at ${data.source.ref}: ${(err as Error).message.split('\n')[0]}`);
+    return 0;
+  }
+}
+
+/** Full remote checks (--network): screenshots reachable, README readable, repository paths present. */
+async function checkNetwork(data: ConfigData): Promise<number> {
+  console.log(`  → Running remote network verification...`);
+  const remoteShots = data.screenshots.filter((shot) => !shot.url.startsWith('/') && !shot.url.startsWith('./'));
+  const results = await Promise.all(remoteShots.map((shot) => checkRemoteUrl(shot.url, SCREENSHOT_FETCH_HOSTS, SCREENSHOT_MAX_BYTES)));
+  let errors = 0;
+  results.forEach((res, i) => {
+    if (res.ok) return;
+    console.error(`  ✖ Screenshot URL unreachable (${res.status || res.error}): ${remoteShots[i].url}`);
+    errors++;
+  });
+
+  const readmeUrl = readmeRawUrl(data.source);
+  const readmeRes = await checkRemoteUrl(readmeUrl, SCRIPT_HOSTS, SCREENSHOT_MAX_BYTES);
+  if (!readmeRes.ok) {
+    console.warn(`  ⚠ Remote README not accessible (${readmeRes.status || readmeRes.error}): ${readmeUrl}`);
+  }
+  return errors + (await checkRepoPaths(data));
+}
+
+/** Validates one config file and prints what it finds. */
+async function validateFile(filePath: string, flags: CliFlags): Promise<{ errors: number; lintWarnings: number }> {
+  let errors = 0;
+  let lintWarnings = 0;
+  const parsedPath = idFromPath(filePath);
+  console.log(`\nValidating: ${filePath}`);
+
+  if (!parsedPath) {
+    console.error(`  ✖ Invalid file path format: ${filePath}`);
+    return { errors: 1, lintWarnings };
+  }
+  if (!SLUG_RE.test(parsedPath.slug)) {
+    console.error(`  ✖ Invalid slug '${parsedPath.slug}' in path. Must match ^[a-z0-9][a-z0-9-]{2,47}$`);
+    errors++;
+  }
+
+  let jsonRaw: any;
+  try {
+    jsonRaw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  } catch (err) {
+    console.error(`  ✖ Invalid JSON:`, err);
+    return { errors: errors + 1, lintWarnings };
+  }
+
+  if (jsonRaw.author?.github && jsonRaw.author.github.toLowerCase() !== parsedPath.author.toLowerCase()) {
+    console.error(`  ✖ Folder author '${parsedPath.author}' does not match author.github '${jsonRaw.author.github}'`);
+    errors++;
+  }
+
+  const parsed = configSchema.safeParse(jsonRaw);
+  if (!parsed.success) {
+    console.error(`  ✖ Schema validation failed:`);
+    for (const issue of parsed.error.issues) {
+      console.error(`    - [${issue.path.join('.')}] ${issue.message}`);
+    }
+    return { errors: errors + 1, lintWarnings };
+  }
+  const data = parsed.data;
+
+  for (const warn of validateCloneSteps(data).warnings) {
+    console.warn(`  ⚠ ${warn}`);
+  }
+
+  // The install-step standard (docs/INSTALL-STANDARD.md). Warnings are printed in full for the
+  // entries a pull request changes (--only), and counted on full runs.
+  for (const issue of lintInstallSteps(data)) {
+    if (issue.severity === 'error') {
+      console.error(`  ✖ ${formatLintIssue(issue)}`);
+      errors++;
+    } else {
+      lintWarnings++;
+      if (flags.only.length > 0) console.warn(`  ⚠ ${formatLintIssue(issue)}`);
+    }
+  }
+
+  errors += checkScreenshotSources(data);
+  const script = data.install?.script;
+  if ((flags.scripts || flags.network) && script) errors += await checkScriptHash(script);
+  if (flags.network) errors += await checkNetwork(data);
+
+  if (errors === 0) console.log(`  ✓ Pass: ${data.name} (${parsedPath.id})`);
+  return { errors, lintWarnings };
+}
+
 async function main() {
   const flags = parseCliArgs(process.argv.slice(2));
   const configsDir = path.resolve(process.cwd(), 'configs');
@@ -197,14 +346,11 @@ async function main() {
   }
 
   const allConfigFiles = collectAllConfigFiles(configsDir);
-  let total = 0;
-  let errors = 0;
 
   // Check duplicate IDs and case collisions across all configs/*/
   const collisions = detectIdCollisions(allConfigFiles);
   for (const collision of collisions) {
     console.error(`  ✖ ${collision}`);
-    errors++;
   }
 
   const targetFiles =
@@ -214,126 +360,16 @@ async function main() {
           .filter((f) => fs.existsSync(f) && f.endsWith('.json'))
       : allConfigFiles;
 
-  for (const filePath of targetFiles) {
-    total++;
-    const errorsBefore = errors;
-    const parsedPath = idFromPath(filePath);
-
-    console.log(`\nValidating: ${filePath}`);
-
-    if (!parsedPath) {
-      console.error(`  ✖ Invalid file path format: ${filePath}`);
-      errors++;
-      continue;
-    }
-
-    if (!SLUG_RE.test(parsedPath.slug)) {
-      console.error(`  ✖ Invalid slug '${parsedPath.slug}' in path. Must match ^[a-z0-9][a-z0-9-]{2,47}$`);
-      errors++;
-    }
-
-    let jsonRaw: any;
-    try {
-      jsonRaw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    } catch (err) {
-      console.error(`  ✖ Invalid JSON:`, err);
-      errors++;
-      continue;
-    }
-
-    if (jsonRaw.author?.github && jsonRaw.author.github.toLowerCase() !== parsedPath.author.toLowerCase()) {
-      console.error(`  ✖ Folder author '${parsedPath.author}' does not match author.github '${jsonRaw.author.github}'`);
-      errors++;
-    }
-
-    const parsed = configSchema.safeParse(jsonRaw);
-    if (!parsed.success) {
-      console.error(`  ✖ Schema validation failed:`);
-      for (const issue of parsed.error.issues) {
-        console.error(`    - [${issue.path.join('.')}] ${issue.message}`);
-      }
-      errors++;
-      continue;
-    }
-
-    const data = parsed.data;
-
-    const cloneValidation = validateCloneSteps(data);
-    for (const warn of cloneValidation.warnings) {
-      console.warn(`  ⚠ ${warn}`);
-    }
-
-    // Check image hosts or local files
-    for (const shot of data.screenshots) {
-      if (shot.url.startsWith('/') || shot.url.startsWith('./')) {
-        const localPath = resolveLocalScreenshotPath(shot.url);
-        if (!fs.existsSync(localPath)) {
-          console.error(`  ✖ Local screenshot file not found: ${localPath}`);
-          errors++;
-        }
-        continue;
-      }
-
-      try {
-        const u = new URL(shot.url);
-        if (!(ALLOWED_IMAGE_HOSTS as readonly string[]).includes(u.hostname)) {
-          console.error(`  ✖ Screenshot hostname not in allowlist: ${u.hostname}`);
-          errors++;
-        }
-      } catch {
-        console.error(`  ✖ Malformed screenshot URL: ${shot.url}`);
-        errors++;
-      }
-    }
-
-    // Script hash checks (--scripts or --network)
-    const script = data.install?.script;
-    if ((flags.scripts || flags.network) && script) {
-      console.log(`  → Verifying install.script SHA-256...`);
-      const { match, actualSha, error } = await verifyScriptHash(
-        script.url,
-        script.sha256,
-      );
-      if (error) {
-        console.error(`  ✖ Failed to download or verify install script: ${error}`);
-        errors++;
-      } else if (!match) {
-        console.error(`  ✖ SHA-256 hash mismatch! Declared: ${script.sha256}, Actual: ${actualSha}`);
-        errors++;
-      } else {
-        console.log(`  ✓ Script SHA-256 verified successfully (${actualSha?.substring(0, 8)}...)`);
-      }
-    }
-
-    // Full network checks (--network)
-    if (flags.network) {
-      console.log(`  → Running remote network verification...`);
-
-      // Check remote screenshots
-      for (const shot of data.screenshots) {
-        if (shot.url.startsWith('/') || shot.url.startsWith('./')) continue;
-        const res = await checkRemoteUrl(shot.url, SCREENSHOT_FETCH_HOSTS, SCREENSHOT_MAX_BYTES);
-        if (!res.ok) {
-          console.error(`  ✖ Screenshot URL unreachable (${res.status || res.error}): ${shot.url}`);
-          errors++;
-        }
-      }
-
-      // Check README
-      const readmeUrl = readmeRawUrl(data.source);
-      const readmeRes = await checkRemoteUrl(readmeUrl, SCRIPT_HOSTS, SCREENSHOT_MAX_BYTES);
-      if (!readmeRes.ok) {
-        console.warn(`  ⚠ Remote README not accessible (${readmeRes.status || readmeRes.error}): ${readmeUrl}`);
-      }
-    }
-
-    if (errors === errorsBefore) {
-      console.log(`  ✓ Pass: ${data.name} (${parsedPath.id})`);
-    }
-  }
+  // One file at a time, so each file's output stays together.
+  const results = await mapPool(targetFiles, 1, (f) => validateFile(f, flags));
+  const errors = collisions.length + results.reduce((n, r) => n + r.errors, 0);
+  const lintWarnings = results.reduce((n, r) => n + r.lintWarnings, 0);
 
   console.log(`\n----------------------------------------`);
-  console.log(`Total configs checked: ${total}`);
+  console.log(`Total configs checked: ${targetFiles.length}`);
+  if (lintWarnings > 0 && flags.only.length === 0) {
+    console.log(`${lintWarnings} install-step warning(s); run with --only <file> to see an entry's warnings.`);
+  }
   if (errors > 0) {
     console.error(`Found ${errors} error(s). Validation failed.`);
     process.exit(1);
@@ -342,9 +378,11 @@ async function main() {
   }
 }
 
-if (process.argv[1] && process.argv[1].endsWith('validate-configs.ts')) {
-  main().catch((err) => {
+if (process.argv[1]?.endsWith('validate-configs.ts')) {
+  try {
+    await main();
+  } catch (err) {
     console.error(err);
     process.exit(1);
-  });
+  }
 }

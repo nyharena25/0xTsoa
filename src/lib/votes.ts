@@ -33,7 +33,12 @@ export function getVotesForConfig(configId: string): number {
   return map[configId]?.votes ?? 0;
 }
 
-/** Where the ✓ Sign-Off button points: the config's vote issue. */
+/** "1 upvote" / "12 upvotes": the count as shown on cards, the spotlight and the config page. */
+export function upvoteLabel(votes: number): string {
+  return `${votes.toLocaleString('en')} upvote${votes === 1 ? '' : 's'}`;
+}
+
+/** Where the "Upvote on GitHub" links point: the config's vote issue. */
 export function getDiscussionUrlForConfig(configId: string): string {
   const url = getVotesMap()[configId]?.discussionUrl;
   if (url) return url;
@@ -91,55 +96,3 @@ export function votesFromIssues(issues: VoteIssue[]): VotesMap {
   return map;
 }
 
-export function getFeaturedIds(): string[] {
-  const featuredPath = path.resolve(process.cwd(), 'featured.json');
-  if (fs.existsSync(featuredPath)) {
-    try {
-      const data = JSON.parse(fs.readFileSync(featuredPath, 'utf-8'));
-      if (Array.isArray(data.pinned)) return data.pinned;
-    } catch {
-      // Fallback
-    }
-  }
-  return [];
-}
-
-/**
- * Sort configs for the Top 5 Spotlight:
- * Pinned configs first (in order), then remaining configs sorted by votes descending.
- */
-export function getTop5Configs<T extends { id: string }>(allConfigs: T[]): T[] {
-  const pinned = getFeaturedIds();
-  const votes = getVotesMap();
-
-  const configMap = new Map<string, T>();
-  for (const c of allConfigs) {
-    configMap.set(c.id, c);
-  }
-
-  const result: T[] = [];
-
-  // Add pinned configs first if they exist
-  for (const id of pinned) {
-    const item = configMap.get(id);
-    if (item && !result.includes(item)) {
-      result.push(item);
-    }
-  }
-
-  // Get remaining configs sorted by votes
-  const remaining = allConfigs
-    .filter((c) => !result.includes(c))
-    .sort((a, b) => {
-      const vA = votes[a.id]?.votes ?? 0;
-      const vB = votes[b.id]?.votes ?? 0;
-      return vB - vA;
-    });
-
-  for (const item of remaining) {
-    if (result.length >= 5) break;
-    result.push(item);
-  }
-
-  return result.slice(0, 5);
-}

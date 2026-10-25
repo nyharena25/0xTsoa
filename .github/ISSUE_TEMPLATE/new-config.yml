@@ -8,7 +8,9 @@ body:
     attributes:
       value: |
         ## Add your project to 0xTsoa
-        Fill in this form. A bot turns it into a validated JSON file and **opens the pull request for you**, credited to your GitHub account. If something is wrong, it comments here with what to fix; edit the issue and it runs again.
+        Fill in this form. A bot turns it into a validated JSON file and **opens the pull request for you**. If something is wrong, it comments here with what to fix; edit the issue and it runs again.
+
+        **Credit goes to the repository owner**, read from the repository URL, never to whoever opens this issue. If you own the repository (or are a public member of the organization that owns it), your entry is marked **Verified by author** right away.
 
         **You need 4 things (5 minutes):**
         1. **A public repository** on GitHub, GitLab or Codeberg.
@@ -108,14 +110,14 @@ body:
         - labwc
         - i3
         - bspwm
-        - Awesome
+        - AwesomeWM
         - Qtile
         - XMonad
         - dwm
         - herbstluftwm
         - Openbox
         - GNOME
-        - KDE
+        - KDE Plasma
         - Xfce
         - Cinnamon
         - COSMIC
@@ -152,9 +154,9 @@ body:
     attributes:
       label: Display Server
       options:
-        - wayland
-        - x11
-        - both
+        - Wayland
+        - X11
+        - Wayland & X11
     validations:
       required: true
 
@@ -162,21 +164,21 @@ body:
     id: distros
     attributes:
       label: Distributions
-      description: Where you actually tested it (up to 8). Tick only "Any" for distro-independent themes, tools and lists.
+      description: Where you actually tested it (up to 8). Tick only "Any distro" for distro-independent themes, tools and lists.
       options:
-        - label: Arch
+        - label: Arch Linux
         - label: EndeavourOS
         - label: Manjaro
         - label: Fedora
         - label: NixOS
         - label: Debian
         - label: Ubuntu
-        - label: Mint
-        - label: Void
+        - label: Linux Mint
+        - label: Void Linux
         - label: openSUSE
         - label: Gentoo
         - label: Alpine
-        - label: Any
+        - label: Any distro
     validations:
       required: true
 
@@ -227,6 +229,13 @@ body:
     validations:
       required: true
 
+  - type: input
+    id: readme_path
+    attributes:
+      label: README Path
+      description: Where the README shown on your page lives in the repository. Leave empty for `README.md`.
+      placeholder: README.md
+
   - type: markdown
     attributes:
       value: |
@@ -239,10 +248,11 @@ body:
         | `sudo pacman -S --needed waybar kitty` (or apt/dnf) | `sudo bash install.sh` for the whole thing |
         | `git clone --filter=blob:none <repo> ~/dots` then `git -C ~/dots checkout {{ref}}` | `git clone --depth 1` (can't pin the version) |
         | `cp -r ~/dots/hypr ~/dots/waybar ~/.config/` (named folders) | `cp -r ~/dots/* ~/.config/` (overwrites everything) |
-        | `bash -c "$(curl -fsSL https://raw.githubusercontent.com/you/dots/{{ref}}/setup.sh)"` | `curl … \| bash` from a branch URL (rejected) |
+        | `cd ~/dots` then `./setup.sh` (your installer, run from the pinned clone) | `curl … \| bash` or `bash -c "$(curl …)"`, even from a pinned URL (rejected) |
+        | `# Then run: sudo grub-mkconfig -o /boot/grub/grub.cfg` (a note, with the command for each distro) | Bootloader commands, deleting files, `pacman -Syu`, opening an editor (rejected) |
         | `# Log out and back in` (shown as a note) | Personal values like your hostname: write `<hostname>` |
 
-        `{{ref}}` is replaced with your Git Ref.
+        `{{ref}}` is replaced with your Git Ref. The full rules, with examples for themes, GRUB, login screens and distros, are in the [install-step standard](https://github.com/nyharena25/0xTsoa/blob/dev/docs/INSTALL-STANDARD.md). The bot checks them and replies here if a command has to change.
 
   - type: textarea
     id: install_deps
@@ -313,10 +323,22 @@ body:
       placeholder: Rofi (Wayland)
 
   - type: input
+    id: notifications
+    attributes:
+      label: Notifications
+      placeholder: mako
+
+  - type: input
     id: shell
     attributes:
       label: Shell
       placeholder: zsh
+
+  - type: input
+    id: editor
+    attributes:
+      label: Editor
+      placeholder: Neovim
 
   - type: input
     id: theme
@@ -324,6 +346,15 @@ body:
       label: Theme
       description: Theme or color palette name.
       placeholder: Paper & Ink Monochrome
+
+  - type: textarea
+    id: keybindings
+    attributes:
+      label: Keyboard Shortcuts
+      description: Optional, shown as a table on your page. One per line, `keys | what it does`, up to 30.
+      placeholder: |
+        SUPER + Return | Open a terminal
+        SUPER + D | Open the launcher
 
   - type: checkboxes
     id: checklist
@@ -334,9 +365,9 @@ body:
           required: true
         - label: I ran my install commands on a clean system (or a fresh user) for at least one listed distribution.
           required: true
-        - label: No command pipes a download into a shell unless the URL is pinned to a tag, commit or `{{ref}}`.
+        - label: My commands follow the install-step standard (docs/INSTALL-STANDARD.md), so nothing is piped into a shell, deleted, or touching the bootloader.
           required: true
         - label: My screenshots are direct image links on an allowed host.
           required: true
-        - label: I am the author of this project, or I credit the original author and respect their license.
+        - label: If this project is not mine, I may share it and I respect its license (the entry is credited to its repository owner either way).
           required: true

@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/Toqozz/wired-notify",
-    "ref": "9a6b3674587dc0a01d14b83fb6513b802eee5ed1",
+    "ref": "44f233f50a94f1880917b50252205fb9088b0264",
     "readme": "README.md"
   },
   "install": {
@@ -50,5 +50,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "0.10.7"
 }

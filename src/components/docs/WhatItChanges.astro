@@ -1,0 +1,46 @@
+---
+// One entry's install facts inside a guide: <WhatItChanges id="end-4/dots-hyprland" />.
+// Same wording as the config page's "At a glance", derived from the reviewed install steps.
+import { getEntry } from 'astro:content';
+import { installDifficulty, installImpact, describeImpact, DIFFICULTY_INFO } from '../../lib/install';
+import { withBase } from '../../../site.config';
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+const entry = await getEntry('configs', id);
+if (!entry) throw new Error(`<WhatItChanges>: no registry entry ${id}`);
+
+const difficulty = installDifficulty(entry.data);
+const { changes, undo } = describeImpact(difficulty, installImpact(entry.data));
+---
+
+<aside class="not-prose my-6 bg-white border border-zinc-200 rounded-xl shadow-xs p-4 sm:p-5 flex flex-col gap-3" aria-label={`What installing ${entry.data.name} changes`}>
+  <div class="flex flex-wrap items-baseline justify-between gap-2">
+    <a href={withBase(`/configs/${id}/`)} class="font-display text-base font-bold text-zinc-900 underline">{entry.data.name}</a>
+    {difficulty && (
+      <span class="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold text-zinc-900">
+        <span class={`w-2 h-2 rounded-full inline-block ${DIFFICULTY_INFO[difficulty].dot}`} aria-hidden="true"></span>
+        {DIFFICULTY_INFO[difficulty].label}
+      </span>
+    )}
+  </div>
+  <dl class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-[11px]">
+    <div class="flex flex-col gap-1 min-w-0">
+      <dt class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">What it changes</dt>
+      <dd>
+        <ul class="flex flex-col gap-0.5 text-zinc-700 leading-relaxed break-words">
+          {changes.map((c) => <li>{c}</li>)}
+        </ul>
+      </dd>
+    </div>
+    {undo && (
+      <div class="flex flex-col gap-1 min-w-0">
+        <dt class="uppercase font-bold text-zinc-500 tracking-wider text-[10px]">How to undo it</dt>
+        <dd class="text-zinc-700 leading-relaxed">{undo}</dd>
+      </div>
+    )}
+  </dl>
+</aside>

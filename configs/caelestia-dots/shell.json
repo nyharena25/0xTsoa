@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Quickshell-based desktop shell for Hyprland with dashboard, launcher and dynamic colors.",
+  "description": "The desktop shell from the Caelestia dotfiles, built with Quickshell for Hyprland: bar, dashboard, launcher and colors generated from your wallpaper. This repository is the shell only; the complete dotfiles live in the main Caelestia repository. It is packaged in the AUR as caelestia-shell (stable) and caelestia-shell-git, and runs directly with Nix.",
   "license": "GPL-3.0-only",
   "updatedAt": "2026-10-21",
   "distros": [
@@ -29,7 +30,7 @@
   ],
   "source": {
     "repo": "https://github.com/caelestia-dots/shell",
-    "ref": "2e1c51fa76d94457624b642c678218970aa2517a",
+    "ref": "44ed8f76ce9eae1fdba422f570a5bfa4547575e7",
     "readme": "README.md"
   },
   "install": {

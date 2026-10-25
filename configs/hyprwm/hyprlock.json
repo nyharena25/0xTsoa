@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Fast, GPU-accelerated lock screen for Hyprland.",
+  "description": "Hyprland's official lock screen. It uses the ext-session-lock protocol, renders on the GPU, can show a blurred screenshot of your desktop as the background, and supports fingerprint unlock through libfprint. Its look is set in a config file and can reuse Hyprland's gradient borders, blur, shadows and animations.",
   "license": "BSD-3-Clause",
   "updatedAt": "2026-08-11",
   "distros": [
@@ -28,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/hyprwm/hyprlock",
-    "ref": "0332e40b8e56404f11cd79f859f208a4b9de8714",
+    "ref": "b222d9b1f87e980cac379371df57913a53b99d7f",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +43,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.9.6"
 }

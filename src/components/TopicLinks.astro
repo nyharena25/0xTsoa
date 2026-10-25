@@ -1,0 +1,34 @@
+---
+// Links to the published topic pages (src/lib/topics.ts), so every page reaches them in one click.
+import { getCollection } from 'astro:content';
+import { liveTopics, topicPath } from '../lib/topics';
+import { withBase } from '../../site.config';
+
+interface Props {
+  /** pills: tag pills with counts; inline: wrapped text links; columns: a two-column list (footer). */
+  variant?: 'pills' | 'inline' | 'columns';
+}
+
+const { variant = 'pills' } = Astro.props;
+const live = liveTopics(await getCollection('configs'));
+---
+
+{variant === 'pills' ? (
+  <ul class="flex flex-wrap items-center gap-2">
+    {live.map(({ topic, entries }) => (
+      <li><a href={withBase(topicPath(topic.slug))} class="tag-pill">{topic.label} <span class="text-zinc-400">({entries.length})</span></a></li>
+    ))}
+  </ul>
+) : variant === 'columns' ? (
+  <ul class="grid grid-cols-2 gap-x-4">
+    {live.map(({ topic }) => (
+      <li><a href={withBase(topicPath(topic.slug))} class="inline-block py-1 text-zinc-600 hover:text-zinc-900 transition-colors">{topic.label}</a></li>
+    ))}
+  </ul>
+) : (
+  <ul class="flex flex-wrap items-center gap-x-3 gap-y-1">
+    {live.map(({ topic }) => (
+      <li><a href={withBase(topicPath(topic.slug))} class="text-zinc-600 hover:text-zinc-900 transition-colors">{topic.label}</a></li>
+    ))}
+  </ul>
+)}

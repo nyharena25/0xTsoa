@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "GTK3 dock for Hyprland, styled with CSS.",
+  "description": "A dock for Hyprland only, written in Go as part of the nwg-shell project. It shows pinned apps, open windows and a launcher button (nwg-drawer by default), talks to Hyprland over its IPC socket, and is styled with CSS and command-line options. Its right-click menu can toggle floating and fullscreen.",
   "license": "MIT",
   "updatedAt": "2026-08-20",
   "distros": [
@@ -32,7 +33,7 @@
   ],
   "source": {
     "repo": "https://github.com/nwg-piotr/nwg-dock-hyprland",
-    "ref": "028ad56aa1dafbeed1772166749cedf00bef4108",
+    "ref": "30a333c6e4cb629b3d84d4dec51028e3a8e3be94",
     "readme": "README.md"
   },
   "install": {
@@ -46,5 +47,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.4.11"
 }

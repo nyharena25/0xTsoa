@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/bikass/kora",
-    "ref": "ba1e9e279aa5b3f6674ec6b17534ea05032de580",
+    "ref": "58ed0dd8bfda26fbff0b424c46c9bd2c43fa1527",
     "readme": "README.md"
   },
   "install": {
@@ -50,5 +50,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v2.0.6"
 }

@@ -7,6 +7,7 @@
   },
   "lang": "en",
   "summary": "Lightweight status bar for Wayland written in C++ with GTK.",
+  "description": "A lightweight status bar and widget set written in C++ with GTK 3. It runs on Wayland compositors with layer-shell support and adds a workspaces widget on Hyprland, plus optional NVIDIA GPU and Bluetooth status. Available from the AUR as gbar-git and as a Nix flake with a home-manager module.",
   "license": "MIT",
   "updatedAt": "2024-12-17",
   "distros": [

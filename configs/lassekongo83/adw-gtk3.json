@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/lassekongo83/adw-gtk3",
-    "ref": "47922ed96562c002696ad2d2d80383f2ad30dc93",
+    "ref": "34a69db97369475e931b10ce699d0be2307a5def",
     "readme": "README.md"
   },
   "install": {
@@ -50,5 +50,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v6.5"
 }

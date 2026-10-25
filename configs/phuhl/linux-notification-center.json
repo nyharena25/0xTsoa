@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/phuhl/linux_notification_center",
-    "ref": "6c3de4644b4c6cd027f2c0a9fb73f203327efd94",
+    "ref": "6e330bebf0c06111cf04c527d54d767917952e26",
     "readme": "README.md"
   },
   "install": {
@@ -42,5 +42,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "2.1.1"
 }

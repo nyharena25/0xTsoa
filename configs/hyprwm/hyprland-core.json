@@ -7,7 +7,7 @@
   },
   "lang": "en",
   "summary": "Official dynamic tiling Wayland compositor that doesn't sacrifice on the looks.",
-  "description": "The reference configuration for Hyprland: dynamic tiling, fluid bezier curves, rounded borders, GPU-accelerated blur, and comprehensive IPC controls. Serves as the high-performance foundation for modern Wayland desktops.",
+  "description": "Hyprland itself, with its default config. It is an independent Wayland compositor, not based on wlroots, with dwindle, master, scrolling and monocle layouts, window groups, special workspaces, plugins with a built-in plugin manager, and animations driven by bezier and spring curves. The config reloads as soon as you save it. Since Hyprland 0.55 the configuration is written in Lua instead of the older .conf format.",
   "license": "BSD-3-Clause",
   "updatedAt": "2026-10-21",
   "distros": [
@@ -27,13 +27,8 @@
     "dynamic-tiling"
   ],
   "specs": {
-    "bar": "Waybar",
     "terminal": "Kitty",
-    "launcher": "Wofi / Rofi-wayland",
-    "notifications": "Dunst",
-    "theme": "Hyprland Cyan & Charcoal",
-    "shell": "zsh",
-    "editor": "Neovim"
+    "launcher": "hyprlauncher"
   },
   "screenshots": [
     {
@@ -49,29 +44,30 @@
   ],
   "source": {
     "repo": "https://github.com/hyprwm/Hyprland",
-    "ref": "a1c2428f79b3b05c3fd36c27378e3538c8c6a014",
+    "ref": "efb50993780079460b0cbed1363e2166a2de1d9f",
     "readme": "README.md"
   },
   "install": {
     "steps": [
       {
         "id": "deps",
-        "title": "Install Hyprland & Waybar",
+        "title": "Install Hyprland and the apps its default config opens",
         "commands": [
-          "sudo pacman -S --needed hyprland waybar kitty wofi"
+          "sudo pacman -S --needed hyprland kitty hyprlauncher dolphin"
         ]
       },
       {
         "id": "dotfiles",
-        "title": "Set up basic ~/.config/hypr/hyprland.conf",
+        "title": "Copy the default ~/.config/hypr/hyprland.lua",
         "commands": [
           "mkdir -p ~/.config/hypr",
-          "cp /usr/share/hyprland/hyprland.conf ~/.config/hypr/"
+          "cp /usr/share/hypr/hyprland.lua ~/.config/hypr/",
+          "# Since Hyprland 0.55 the config is Lua. The default opens kitty (Super+Q), hyprlauncher (Super+R) and dolphin (Super+E); change them at the top of hyprland.lua."
         ]
       },
       {
         "id": "reload",
-        "title": "Live reload compositor",
+        "title": "Reload Hyprland",
         "commands": [
           "hyprctl reload"
         ]
@@ -100,5 +96,6 @@
       "effect": "Toggle window floating"
     }
   ],
-  "example": false
+  "example": false,
+  "version": "v0.56.2"
 }

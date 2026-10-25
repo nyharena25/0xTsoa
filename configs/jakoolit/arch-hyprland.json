@@ -7,7 +7,7 @@
   },
   "lang": "en",
   "summary": "Complete automated Arch Linux Hyprland installation and configuration setup.",
-  "description": "Battle-tested, turnkey Hyprland desktop environment tailored for Arch Linux and its derivatives. Bundles pre-configured Waybar layouts, Rofi styling, SDDM theme integration, automatic monitor hotplugging, and gaming/GPU driver optimizations.",
+  "description": "An install script that sets up Hyprland on Arch Linux and its derivatives, and can copy KooL's pre-configured dotfiles from the separate Hyprland-Dots repository during the install. The author recommends a full system backup with Snapper or Timeshift first. It was announced to be archived from March 2026, with maintenance moving to the LinuxBeginnings fork.",
   "license": "GPL-3.0-only",
   "updatedAt": "2026-10-14",
   "distros": [
@@ -74,7 +74,7 @@
         "id": "reload",
         "title": "Reboot into new desktop",
         "commands": [
-          "systemctl reboot"
+          "# Reboot to start the new desktop: systemctl reboot"
         ]
       }
     ]

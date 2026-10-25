@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/philj56/tofi",
-    "ref": "1eb6137572ab6c257ab6ab851d5d742167c18120",
+    "ref": "71a4801d20d8904cfcfa5e92c96d53ee06a2c69f",
     "readme": "README.md"
   },
   "install": {
@@ -50,5 +50,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "v0.9.1"
 }

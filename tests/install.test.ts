@@ -7,6 +7,7 @@ import {
   validateCloneSteps,
   translateCommand,
   installImpact,
+  installDifficulty,
   attestationVerifyCommand,
   ATTEST_WORKFLOW,
 } from '../src/lib/install';
@@ -105,9 +106,15 @@ describe('install helpers (src/lib/install.ts)', () => {
 
     const script = buildInstallScript(malicious);
 
-    // Strip all POSIX single-quoted segments ('...') from the script; no $( should remain anywhere.
-    const withoutSingleQuoted = script.replace(/'[^']*'/g, '');
-    expect(withoutSingleQuoted).not.toContain('$(');
+    // Strip all POSIX single-quoted segments ('...') and comment lines (the plain-language summary
+    // quotes config text there; with newlines stripped a comment cannot run). No $( may remain.
+    const code = script
+      .split('\n')
+      .filter((l) => !l.trimStart().startsWith('#'))
+      .join('\n');
+    expect(code.replace(/'[^']*'/g, '')).not.toContain('$(');
+    // The injected title stays inside one comment line.
+    expect(script).toContain('#   1. Step title $(touch /tmp/pwn)');
 
     // Also verify {{ref}} was expanded in the step commands
     expect(script).toContain(`git -C ~/dots checkout ${baseConfig.source.ref}`);
@@ -246,6 +253,29 @@ describe('remote script pinning (schema)', () => {
   });
 });
 
+describe('upstream installers with arguments', () => {
+  it('classifies ./script and bash script with plain arguments as the project installer', () => {
+    expect(translateCommand('./setup install', baseConfig)).toBe("oxt_upstream './setup install'");
+    expect(translateCommand('bash install.sh --all', baseConfig)).toBe("oxt_upstream 'bash install.sh --all'");
+    expect(translateCommand('./setup.sh', baseConfig)).toBe("oxt_upstream './setup.sh'");
+  });
+
+  it('keeps shell syntax out of the upstream rule', () => {
+    expect(translateCommand('./setup install > log.txt', baseConfig)).not.toContain('oxt_upstream');
+  });
+});
+
+describe('session reloads', () => {
+  it('are their own best-effort action, and not lasting changes', () => {
+    for (const cmd of ['swaymsg reload', 'hyprctl reload', 'i3-msg restart', 'bspc wm -r', 'awesome-client "awesome.restart()"', 'qdbus org.kde.KWin /KWin reconfigure']) {
+      expect(translateCommand(cmd, baseConfig), cmd).toMatch(/^oxt_reload /);
+    }
+    expect(translateCommand('sudo grub-mkconfig -o /boot/grub/grub.cfg', baseConfig)).toMatch(/^oxt_system /);
+    const impact = installImpact({ ...baseConfig, install: { ...baseConfig.install!, steps: [{ id: 'reload', title: 'reload', commands: ['swaymsg reload', 'niri validate'] }] } });
+    expect(impact.execCommands).toEqual([]);
+  });
+});
+
 describe('installImpact (page facts)', () => {
   it('lists packages, home paths, sudo and upstream commands from the same classification', () => {
     const impact = installImpact({
@@ -262,6 +292,51 @@ describe('installImpact (page facts)', () => {
     expect(impact.aurPackages).toEqual(['walker']);
     expect(impact.userPaths).toEqual(['~/dots', '~/.config/']);
     expect(impact.upstreamCommands).toEqual(['sudo make install', './setup.sh']);
+  });
+});
+
+describe('installDifficulty', () => {
+  const withSteps = (...commands: string[][]): ConfigData => ({
+    ...baseConfig,
+    install: {
+      ...baseConfig.install!,
+      steps: commands.map((c, i) => ({ id: (['deps', 'dotfiles', 'reload'] as const)[i], title: 'step', commands: c })),
+    },
+  });
+  const clone = ['git clone https://github.com/alice/dots ~/dots', 'git -C ~/dots checkout {{ref}}'];
+
+  it('is manual when the steps only fetch the source and point to the upstream guide', () => {
+    expect(installDifficulty(baseConfig)).toBe('manual');
+    expect(installDifficulty(withSteps([...clone, 'cd ~/dots'], ['xdg-open https://github.com/alice/dots#readme']))).toBe('manual');
+  });
+
+  it('is easy when it only copies files into the home folder', () => {
+    expect(installDifficulty(withSteps(clone, ['cp -r ~/dots/hypr ~/.config/']))).toBe('easy');
+    expect(installDifficulty(withSteps(clone, ['echo "source ~/dots/theme.conf" >> ~/.config/hypr/hyprland.conf']))).toBe('easy');
+  });
+
+  it('is moderate with distro packages or lasting commands rollback does not undo', () => {
+    expect(installDifficulty(withSteps(['sudo pacman -S --needed waybar', ...clone], ['cp -r ~/dots/waybar ~/.config/']))).toBe('moderate');
+    expect(installDifficulty(withSteps(clone, ["gsettings set org.gnome.desktop.interface gtk-theme 'Nordic'"]))).toBe('moderate');
+  });
+
+  it('is advanced with AUR packages, an upstream installer, other sudo changes or install.script', () => {
+    expect(installDifficulty(withSteps(['yay -S walker', ...clone]))).toBe('advanced');
+    expect(installDifficulty(withSteps(clone, ['cd ~/dots && ./setup.sh']))).toBe('advanced');
+    expect(installDifficulty(withSteps(clone, ['sudo cp -r ~/dots/theme /usr/share/themes/']))).toBe('advanced');
+    expect(
+      installDifficulty({
+        ...baseConfig,
+        install: {
+          ...baseConfig.install!,
+          script: { url: 'https://raw.githubusercontent.com/alice/dots/v1.0.0/install.sh', sha256: 'a'.repeat(64), shell: 'bash' },
+        },
+      }),
+    ).toBe('advanced');
+  });
+
+  it('is null for entries without install steps (Lists & guides)', () => {
+    expect(installDifficulty({ ...baseConfig, category: 'resource', install: undefined })).toBeNull();
   });
 });
 

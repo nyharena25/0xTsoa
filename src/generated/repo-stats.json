@@ -1,521 +1,866 @@
 {
   "0pandadev/awesome-unixporn": {
-    "stars": 58
+    "stars": 58,
+    "archived": false,
+    "pushedAt": "2025-07-24"
   },
   "abenz1267/walker": {
-    "stars": 3090
+    "stars": 3091,
+    "archived": false,
+    "pushedAt": "2026-10-08"
   },
   "adapta-project/adapta-gtk-theme": {
-    "stars": 3345
+    "stars": 3344,
+    "archived": true,
+    "pushedAt": "2020-03-27"
   },
   "adi1090x/plymouth-themes": {
-    "stars": 2978
+    "stars": 2980,
+    "archived": false,
+    "pushedAt": "2024-05-26"
   },
   "adi1090x/polybar-themes": {
-    "stars": 6260
+    "stars": 6261,
+    "archived": false,
+    "pushedAt": "2026-08-18"
   },
   "adi1090x/rofi": {
-    "stars": 8822
+    "stars": 8825,
+    "archived": false,
+    "pushedAt": "2026-05-31"
   },
   "adisoncavani/distro-grub-themes": {
-    "stars": 1166
+    "stars": 1164,
+    "archived": false,
+    "pushedAt": "2026-03-28"
   },
   "albertlauncher/albert": {
-    "stars": 8005
+    "stars": 8004,
+    "archived": false,
+    "pushedAt": "2026-10-24"
   },
   "alexays/waybar": {
-    "stars": 12103
+    "stars": 12105,
+    "archived": false,
+    "pushedAt": "2026-10-19"
   },
   "anametologin/krohnkite": {
-    "stars": 1228
+    "stars": 1228,
+    "archived": true,
+    "pushedAt": "2025-12-11"
   },
   "anishathalye/dotbot": {
-    "stars": 8028
+    "stars": 8029,
+    "archived": false,
+    "pushedAt": "2026-07-12"
   },
   "anyrun-org/anyrun": {
-    "stars": 1315
+    "stars": 1314,
+    "archived": false,
+    "pushedAt": "2026-10-20"
   },
   "aunetx/blur-my-shell": {
-    "stars": 2367
+    "stars": 2371,
+    "archived": false,
+    "pushedAt": "2026-10-23"
   },
   "avtzis/awesome-linux-ricing": {
-    "stars": 1339
+    "stars": 1340,
+    "archived": false,
+    "pushedAt": "2026-10-13"
   },
   "axenide/ax-shell": {
-    "stars": 1564
+    "stars": 1563,
+    "archived": true,
+    "pushedAt": "2026-01-29"
   },
   "aylur/ags": {
-    "stars": 3113
+    "stars": 3112,
+    "archived": false,
+    "pushedAt": "2026-04-08"
   },
   "aylur/dotfiles": {
-    "stars": 3100
+    "stars": 3099,
+    "archived": false,
+    "pushedAt": "2026-10-17"
   },
   "baskerville/bspwm": {
-    "stars": 8331
+    "stars": 8332,
+    "archived": false,
+    "pushedAt": "2026-06-19"
   },
   "betterlockscreen/betterlockscreen": {
-    "stars": 2649
+    "stars": 2649,
+    "archived": false,
+    "pushedAt": "2025-11-21"
   },
   "bikass/kora": {
-    "stars": 956
+    "stars": 956,
+    "archived": false,
+    "pushedAt": "2026-09-04"
   },
   "bismuth-forge/bismuth": {
-    "stars": 2418
+    "stars": 2418,
+    "archived": true,
+    "pushedAt": "2024-05-23"
   },
   "bvaisvil/zenith": {
-    "stars": 3065
+    "stars": 3065,
+    "archived": false,
+    "pushedAt": "2026-10-01"
   },
   "caelestia-dots/shell": {
-    "stars": 13040
+    "stars": 13059,
+    "archived": false,
+    "pushedAt": "2026-10-25"
   },
   "cairo-dock/cairo-dock-core": {
-    "stars": 313
+    "stars": 313,
+    "archived": false,
+    "pushedAt": "2026-10-14"
   },
   "catppuccin/catppuccin": {
-    "stars": 19868
+    "stars": 19872,
+    "archived": false,
+    "pushedAt": "2026-07-25"
   },
   "catppuccin/cursors": {
-    "stars": 761
+    "stars": 758,
+    "archived": false,
+    "pushedAt": "2026-06-20"
   },
   "catppuccin/grub": {
-    "stars": 646
+    "stars": 645,
+    "archived": false,
+    "pushedAt": "2025-07-11"
   },
   "catppuccin/gtk": {
-    "stars": 947
+    "stars": 946,
+    "archived": true,
+    "pushedAt": "2024-06-02"
   },
   "catppuccin/hyprland-theme": {
-    "stars": 426
+    "stars": 425,
+    "archived": false,
+    "pushedAt": "2026-05-25"
   },
   "catppuccin/papirus-folders": {
-    "stars": 269
+    "stars": 269,
+    "archived": false,
+    "pushedAt": "2024-06-08"
   },
   "catppuccin/sddm": {
-    "stars": 530
+    "stars": 530,
+    "archived": false,
+    "pushedAt": "2026-06-18"
   },
   "cerebroapp/cerebro": {
-    "stars": 8562
+    "stars": 8563,
+    "archived": false,
+    "pushedAt": "2026-10-25"
   },
   "christitustech/dwm-titus": {
-    "stars": 467
+    "stars": 469,
+    "archived": false,
+    "pushedAt": "2026-10-21"
   },
   "cloudef/bemenu": {
-    "stars": 1506
+    "stars": 1506,
+    "archived": false,
+    "pushedAt": "2025-08-29"
   },
   "danielrosehill/linux-desktop-tools-index": {
-    "stars": 1
+    "stars": 1,
+    "archived": false,
+    "pushedAt": "2026-10-21"
   },
   "danihek/hellwal": {
-    "stars": 859
+    "stars": 862,
+    "archived": false,
+    "pushedAt": "2026-10-23"
   },
   "davatorium/rofi": {
-    "stars": 16486
+    "stars": 16491,
+    "archived": false,
+    "pushedAt": "2026-10-19"
   },
   "deviantfero/wpgtk": {
-    "stars": 2191
+    "stars": 2191,
+    "archived": false,
+    "pushedAt": "2026-08-25"
   },
   "dnkl/fnott": {
-    "stars": 189
+    "stars": 189,
+    "archived": false,
+    "pushedAt": "2026-09-10"
   },
   "dnkl/fuzzel": {
-    "stars": 960
+    "stars": 961,
+    "archived": false,
+    "pushedAt": "2026-09-25"
   },
   "dnkl/yambar": {
-    "stars": 296
+    "stars": 295,
+    "archived": false,
+    "pushedAt": "2025-05-05"
   },
   "domferr/tilingshell": {
-    "stars": 2099
+    "stars": 2099,
+    "archived": false,
+    "pushedAt": "2026-10-17"
   },
   "dracula/gtk": {
-    "stars": 1056
+    "stars": 1056,
+    "archived": false,
+    "pushedAt": "2026-08-24"
   },
   "dunst-project/dunst": {
-    "stars": 5619
+    "stars": 5620,
+    "archived": false,
+    "pushedAt": "2026-10-11"
   },
   "dylanaraps/pywal": {
-    "stars": 9068
+    "stars": 9069,
+    "archived": true,
+    "pushedAt": "2024-01-27"
   },
   "elenapan/dotfiles-awesome": {
-    "stars": 3902
+    "stars": 3902,
+    "archived": false,
+    "pushedAt": "2025-09-17"
   },
   "eliverlara/candy-icons": {
-    "stars": 1329
+    "stars": 1329,
+    "archived": false,
+    "pushedAt": "2026-10-19"
   },
   "eliverlara/nordic-gtk": {
-    "stars": 2737
+    "stars": 2738,
+    "archived": false,
+    "pushedAt": "2026-07-23"
   },
   "eliverlara/sweet": {
-    "stars": 1710
+    "stars": 1712,
+    "archived": false,
+    "pushedAt": "2026-08-13"
   },
   "elkowar/eww": {
-    "stars": 12721
+    "stars": 12725,
+    "archived": false,
+    "pushedAt": "2026-07-17"
   },
   "emersion/mako": {
-    "stars": 3290
+    "stars": 3290,
+    "archived": false,
+    "pushedAt": "2026-06-30"
   },
   "end-4/dots-hyprland": {
-    "stars": 16444
+    "stars": 16457,
+    "archived": false,
+    "pushedAt": "2026-10-11"
   },
   "enkore/j4-dmenu-desktop": {
-    "stars": 745
+    "stars": 746,
+    "archived": false,
+    "pushedAt": "2026-08-05"
   },
   "erikreider/swaynotificationcenter": {
-    "stars": 2624
+    "stars": 2627,
+    "archived": false,
+    "pushedAt": "2026-06-25"
   },
   "explosion-mental/wallust": {
-    "stars": 184
+    "stars": 184,
+    "archived": false,
+    "pushedAt": "2026-10-01"
   },
   "eylles/pywal16": {
-    "stars": 818
+    "stars": 819,
+    "archived": false,
+    "pushedAt": "2026-05-11"
   },
   "fabric-development/fabric": {
-    "stars": 1393
+    "stars": 1393,
+    "archived": false,
+    "pushedAt": "2026-10-22"
   },
   "fairyglade/ly-login": {
-    "stars": 7644
+    "stars": 7643,
+    "archived": false,
+    "pushedAt": "2026-10-21"
   },
   "fastfetch-cli/fastfetch": {
-    "stars": 25130
+    "stars": 25144,
+    "archived": false,
+    "pushedAt": "2026-10-24"
   },
   "fausto-korpsvart/gruvbox-gtk-theme": {
-    "stars": 1006
+    "stars": 1005,
+    "archived": true,
+    "pushedAt": "2025-10-23"
   },
   "fausto-korpsvart/rose-pine-gtk-theme": {
-    "stars": 223
+    "stars": 223,
+    "archived": true,
+    "pushedAt": "2025-10-23"
   },
   "fausto-korpsvart/tokyonight-gtk-theme": {
-    "stars": 824
+    "stars": 823,
+    "archived": true,
+    "pushedAt": "2025-10-23"
   },
   "flickowoa/dotfiles": {
-    "stars": 1989
+    "stars": 1988,
+    "archived": false,
+    "pushedAt": "2026-06-15"
   },
   "folke/tokyonight-nvim": {
-    "stars": 8227
+    "stars": 8228,
+    "archived": false,
+    "pushedAt": "2026-03-24"
   },
   "fosslife/awesome-ricing": {
-    "stars": 4570
+    "stars": 4571,
+    "archived": false,
+    "pushedAt": "2026-09-28"
   },
   "ful1e5/apple-cursor": {
-    "stars": 2083
+    "stars": 2083,
+    "archived": false,
+    "pushedAt": "2024-09-28"
   },
   "ful1e5/bibata-cursor": {
-    "stars": 4216
+    "stars": 4220,
+    "archived": false,
+    "pushedAt": "2026-09-25"
   },
   "ful1e5/google-cursor": {
-    "stars": 445
+    "stars": 445,
+    "archived": false,
+    "pushedAt": "2026-03-29"
   },
   "gh0stzk/dotfiles-bspwm": {
-    "stars": 4770
+    "stars": 4768,
+    "archived": false,
+    "pushedAt": "2026-10-18"
   },
   "gideonwolfe/chameleon": {
-    "stars": 192
+    "stars": 192,
+    "archived": false,
+    "pushedAt": "2023-04-09"
   },
   "gogh-co/gogh": {
-    "stars": 10350
+    "stars": 10348,
+    "archived": false,
+    "pushedAt": "2026-10-23"
   },
   "home-sweet-gnome/dash-to-panel": {
-    "stars": 4476
+    "stars": 4476,
+    "archived": false,
+    "pushedAt": "2026-10-12"
   },
   "hyde-project/hyde": {
-    "stars": 9688
+    "stars": 9689,
+    "archived": false,
+    "pushedAt": "2026-10-23"
   },
   "hykilpikonna/hyfetch": {
-    "stars": 2131
+    "stars": 2132,
+    "archived": false,
+    "pushedAt": "2026-10-17"
   },
   "hyprland-community/awesome-hyprland": {
-    "stars": 5371
+    "stars": 5372,
+    "archived": false,
+    "pushedAt": "2026-06-14"
   },
   "hyprwm/hyprland-core": {
-    "stars": 38964
+    "stars": 38976,
+    "archived": false,
+    "pushedAt": "2026-10-24"
   },
   "hyprwm/hyprlock": {
-    "stars": 1678
+    "stars": 1678,
+    "archived": false,
+    "pushedAt": "2026-08-11"
   },
   "hyprwm/hyprpaper": {
-    "stars": 1351
+    "stars": 1350,
+    "archived": false,
+    "pushedAt": "2026-08-13"
   },
   "i3/i3-tiling": {
-    "stars": 10606
+    "stars": 10607,
+    "archived": false,
+    "pushedAt": "2026-10-12"
   },
   "ibrahimbutt/direwolf-arch-rice": {
-    "stars": 992
+    "stars": 992,
+    "archived": false,
+    "pushedAt": "2021-09-30"
   },
   "iniox/matugen": {
-    "stars": 2079
+    "stars": 2082,
+    "archived": false,
+    "pushedAt": "2026-10-08"
   },
   "jakestanger/ironbar": {
-    "stars": 1493
+    "stars": 1493,
+    "archived": false,
+    "pushedAt": "2026-10-21"
   },
   "jakoolit/arch-hyprland": {
-    "stars": 4586
+    "stars": 4587,
+    "archived": false,
+    "pushedAt": "2026-02-22"
   },
   "janleigh/dotfiles": {
-    "stars": 936
+    "stars": 936,
+    "archived": true,
+    "pushedAt": "2023-02-03"
   },
   "jannomag/yaru-colors": {
-    "stars": 527
+    "stars": 527,
+    "archived": false,
+    "pushedAt": "2023-10-13"
   },
   "jas-singhfsu/hyprpanel": {
-    "stars": 2183
+    "stars": 2183,
+    "archived": true,
+    "pushedAt": "2026-04-23"
   },
   "jeffshee/gnome-ext-hanabi": {
-    "stars": 1647
+    "stars": 1644,
+    "archived": false,
+    "pushedAt": "2026-10-09"
   },
   "jgmenu/jgmenu": {
-    "stars": 962
+    "stars": 962,
+    "archived": false,
+    "pushedAt": "2026-10-11"
   },
   "jirutka/swaylock-effects": {
-    "stars": 227
+    "stars": 227,
+    "archived": false,
+    "pushedAt": "2024-03-08"
   },
   "keeferrourke/la-capitaine-icon-theme": {
-    "stars": 1997
+    "stars": 1997,
+    "archived": false,
+    "pushedAt": "2021-11-25"
   },
   "keyitdev/sddm-astronaut-theme": {
-    "stars": 3347
+    "stars": 3346,
+    "archived": false,
+    "pushedAt": "2026-09-18"
   },
   "labwc/labwc": {
-    "stars": 2864
+    "stars": 2865,
+    "archived": false,
+    "pushedAt": "2026-10-24"
   },
   "lassekongo83/adw-gtk3": {
-    "stars": 2072
+    "stars": 2072,
+    "archived": false,
+    "pushedAt": "2026-05-07"
   },
   "lbonn/rofi": {
-    "stars": 1321
+    "stars": 1321,
+    "archived": false,
+    "pushedAt": "2025-09-12"
   },
   "lemonboy/bar": {
-    "stars": 1691
+    "stars": 1688,
+    "archived": false,
+    "pushedAt": "2024-09-02"
   },
   "lgfae/swww": {
-    "stars": 3584
+    "stars": 3584,
+    "archived": true,
+    "pushedAt": "2025-10-31"
   },
   "linuxmobile/hyprland-dots": {
-    "stars": 1701
+    "stars": 1700,
+    "archived": true,
+    "pushedAt": "2023-10-18"
   },
   "luisbocanegra/plasma-panel-colorizer": {
-    "stars": 1246
+    "stars": 1246,
+    "archived": false,
+    "pushedAt": "2026-09-20"
   },
   "luong-komorebi/awesome-linux-software": {
-    "stars": 25646
+    "stars": 25648,
+    "archived": true,
+    "pushedAt": "2026-05-03"
   },
   "marianarlt/sddm-sugar-dark": {
-    "stars": 310
+    "stars": 310,
+    "archived": false,
+    "pushedAt": "2023-04-26"
   },
   "matinlotfali/kde-rounded-corners": {
-    "stars": 1276
+    "stars": 1276,
+    "archived": false,
+    "pushedAt": "2026-10-22"
   },
   "meskarune/i3lock-fancy": {
-    "stars": 1559
+    "stars": 1559,
+    "archived": false,
+    "pushedAt": "2024-06-08"
   },
   "misterio77/foundry": {
-    "stars": 1345
+    "stars": 1345,
+    "archived": false,
+    "pushedAt": "2026-10-25"
   },
   "mitchellh/nixos-config": {
-    "stars": 3116
+    "stars": 3117,
+    "archived": false,
+    "pushedAt": "2026-09-28"
   },
   "mjakeman/extension-manager": {
-    "stars": 1386
+    "stars": 1385,
+    "archived": false,
+    "pushedAt": "2026-10-22"
   },
   "molasseslover/nordzy-icon": {
-    "stars": 425
+    "stars": 425,
+    "archived": false,
+    "pushedAt": "2026-04-27"
   },
   "morhetz/gruvbox": {
-    "stars": 15802
+    "stars": 15804,
+    "archived": false,
+    "pushedAt": "2026-09-18"
   },
   "mylinuxforwork/dotfiles": {
-    "stars": 5087
+    "stars": 5088,
+    "archived": false,
+    "pushedAt": "2026-10-24"
   },
   "myugan/awesome-linux-customization": {
-    "stars": 360
+    "stars": 360,
+    "archived": false,
+    "pushedAt": "2023-10-05"
   },
   "namishh/crystal": {
-    "stars": 885
+    "stars": 885,
+    "archived": false,
+    "pushedAt": "2026-01-13"
   },
   "nana-4/materia-theme": {
-    "stars": 3516
+    "stars": 3516,
+    "archived": false,
+    "pushedAt": "2026-04-08"
   },
   "nikitaivanovv/ctpv": {
-    "stars": 297
+    "stars": 297,
+    "archived": false,
+    "pushedAt": "2024-07-25"
   },
   "nix-community/stylix": {
-    "stars": 2450
+    "stars": 2449,
+    "archived": false,
+    "pushedAt": "2026-10-09"
   },
   "nordtheme/nord": {
-    "stars": 6898
+    "stars": 6899,
+    "archived": false,
+    "pushedAt": "2023-10-18"
   },
   "numixproject/numix-icon-theme-circle": {
-    "stars": 931
+    "stars": 931,
+    "archived": false,
+    "pushedAt": "2026-02-21"
   },
   "nwg-piotr/nwg-dock-hyprland": {
-    "stars": 455
+    "stars": 456,
+    "archived": false,
+    "pushedAt": "2026-08-19"
   },
   "nwg-piotr/nwg-hello": {
-    "stars": 104
+    "stars": 104,
+    "archived": false,
+    "pushedAt": "2026-10-14"
   },
   "nwg-piotr/nwg-look": {
-    "stars": 1018
+    "stars": 1020,
+    "archived": false,
+    "pushedAt": "2026-10-14"
   },
   "nwg-piotr/nwg-panel": {
-    "stars": 782
+    "stars": 781,
+    "archived": false,
+    "pushedAt": "2026-10-23"
   },
   "o9000/tint2": {
-    "stars": 294
+    "stars": 294,
+    "pushedAt": "2023-05-31"
   },
   "owl4ce/dotfiles": {
-    "stars": 2168
+    "stars": 2169,
+    "archived": true,
+    "pushedAt": "2022-09-29"
   },
   "paperwm/paperwm": {
-    "stars": 4359
+    "stars": 4360,
+    "archived": false,
+    "pushedAt": "2026-10-13"
   },
   "papirusdevelopmentteam/papirus-icon-theme": {
-    "stars": 8165
+    "stars": 8167,
+    "archived": false,
+    "pushedAt": "2026-09-21"
   },
   "philj56/tofi": {
-    "stars": 1406
+    "stars": 1406,
+    "archived": false,
+    "pushedAt": "2024-12-30"
   },
   "phuhl/linux-notification-center": {
-    "stars": 1046
+    "stars": 1045,
+    "archived": false,
+    "pushedAt": "2025-02-06"
   },
   "polybar/polybar": {
-    "stars": 15367
+    "stars": 15367,
+    "archived": false,
+    "pushedAt": "2025-09-24"
   },
   "prasanthrangan/hyprdots": {
-    "stars": 8479
+    "stars": 8478,
+    "archived": false,
+    "pushedAt": "2025-03-23"
   },
   "qtile/qtile": {
-    "stars": 5313
+    "stars": 5312,
+    "archived": false,
+    "pushedAt": "2026-10-24"
   },
   "quickshell-mirror/quickshell": {
-    "stars": 3177
+    "stars": 3180,
+    "archived": false,
+    "pushedAt": "2026-10-22"
   },
   "raymo111/i3lock-color": {
-    "stars": 1207
+    "stars": 1207,
+    "archived": false,
+    "pushedAt": "2025-12-12"
   },
   "rebelot/kanagawa-nvim": {
-    "stars": 6431
+    "stars": 6435,
+    "archived": false,
+    "pushedAt": "2026-05-10"
   },
   "rharish101/regreet": {
-    "stars": 829
+    "stars": 830,
+    "archived": false,
+    "pushedAt": "2026-10-20"
   },
   "ricotz/plank": {
-    "stars": 523
+    "stars": 523,
+    "archived": false,
+    "pushedAt": "2024-07-16"
   },
   "rose-pine/rose-pine-theme": {
-    "stars": 1630
+    "stars": 1630,
+    "archived": false,
+    "pushedAt": "2026-07-05"
   },
   "rxyhn/yoru-awesome": {
-    "stars": 3580
+    "stars": 3579,
+    "archived": true,
+    "pushedAt": "2024-08-02"
   },
   "sainnhe/everforest": {
-    "stars": 4257
+    "stars": 4259,
+    "archived": false,
+    "pushedAt": "2026-06-08"
   },
   "schneegans/burn-my-windows": {
-    "stars": 3102
+    "stars": 3102,
+    "archived": false,
+    "pushedAt": "2026-10-25"
   },
   "schneegans/fly-pie": {
-    "stars": 1318
+    "stars": 1317,
+    "archived": false,
+    "pushedAt": "2026-09-29"
   },
   "scorpion-26/gbar": {
-    "stars": 539
+    "stars": 540,
+    "archived": false,
+    "pushedAt": "2024-12-17"
   },
   "siduck/chadwm": {
-    "stars": 3028
+    "stars": 3027,
+    "archived": false,
+    "pushedAt": "2025-12-30"
   },
   "somepaulo/morewaita": {
-    "stars": 1113
+    "stars": 1113,
+    "archived": false,
+    "pushedAt": "2026-10-18"
   },
   "supercuber/dotter": {
-    "stars": 2022
+    "stars": 2024,
+    "archived": false,
+    "pushedAt": "2026-07-13"
   },
   "swaywm/sway-core": {
-    "stars": 17453
+    "stars": 17457,
+    "archived": false,
+    "pushedAt": "2026-09-21"
   },
   "swaywm/swaylock": {
-    "stars": 1235
+    "stars": 1235,
+    "archived": false,
+    "pushedAt": "2026-07-09"
   },
   "syleleuth/gruvbox-plus-icon-pack": {
-    "stars": 816
+    "stars": 815,
+    "archived": false,
+    "pushedAt": "2026-10-23"
   },
   "syndrizzle/hotfiles": {
-    "stars": 1573
+    "stars": 1572,
+    "archived": false,
+    "pushedAt": "2023-04-21"
   },
   "themix-project/themix-gui": {
-    "stars": 2324
+    "stars": 2324,
+    "archived": false,
+    "pushedAt": "2026-10-25"
   },
   "tinted-theming/home": {
-    "stars": 469
+    "stars": 468,
+    "archived": false,
+    "pushedAt": "2026-10-19"
   },
   "toqozz/wired-notify": {
-    "stars": 707
+    "stars": 708,
+    "archived": false,
+    "pushedAt": "2026-10-12"
   },
   "tuigreet/tuigreet": {
-    "stars": 1830
+    "stars": 1834,
+    "archived": false,
+    "pushedAt": "2026-10-21"
   },
   "twpayne/chezmoi": {
-    "stars": 22026
+    "stars": 22039,
+    "archived": false,
+    "pushedAt": "2026-10-23"
   },
   "ulauncher/ulauncher": {
-    "stars": 4531
+    "stars": 4529,
+    "archived": false,
+    "pushedAt": "2026-10-21"
   },
   "vinceliuice/colloid-gtk-theme": {
-    "stars": 1508
+    "stars": 1509,
+    "archived": false,
+    "pushedAt": "2026-08-22"
   },
   "vinceliuice/colloid-icon-theme": {
-    "stars": 1193
+    "stars": 1193,
+    "archived": false,
+    "pushedAt": "2026-08-29"
   },
   "vinceliuice/fluent-icon-theme": {
-    "stars": 883
+    "stars": 884,
+    "archived": false,
+    "pushedAt": "2026-08-30"
   },
   "vinceliuice/graphite-gtk-theme": {
-    "stars": 1544
+    "stars": 1544,
+    "archived": false,
+    "pushedAt": "2026-08-24"
   },
   "vinceliuice/grub2-themes": {
-    "stars": 4654
+    "stars": 4654,
+    "archived": false,
+    "pushedAt": "2026-09-01"
   },
   "vinceliuice/orchis-theme": {
-    "stars": 4152
+    "stars": 4154,
+    "archived": false,
+    "pushedAt": "2026-09-14"
   },
   "vinceliuice/qogir-icon-theme": {
-    "stars": 939
+    "stars": 939,
+    "archived": false,
+    "pushedAt": "2025-11-04"
   },
   "vinceliuice/tela-icon-theme": {
-    "stars": 1893
+    "stars": 1892,
+    "archived": false,
+    "pushedAt": "2026-08-10"
   },
   "vinceliuice/vimix-cursors": {
-    "stars": 461
+    "stars": 461,
+    "archived": false,
+    "pushedAt": "2022-08-13"
   },
   "vinceliuice/whitesur-gtk-theme": {
-    "stars": 9372
+    "stars": 9376,
+    "archived": false,
+    "pushedAt": "2026-09-11"
   },
   "vinceliuice/whitesur-icon-theme": {
-    "stars": 2102
+    "stars": 2103,
+    "archived": false,
+    "pushedAt": "2026-09-10"
   },
   "wayfirewm/wayfire": {
-    "stars": 3067
+    "stars": 3066,
+    "archived": false,
+    "pushedAt": "2026-10-25"
   },
   "webpro/awesome-dotfiles": {
-    "stars": 10910
+    "stars": 10912,
+    "archived": false,
+    "pushedAt": "2026-10-11"
   },
   "yadm-dev/yadm": {
-    "stars": 6459
+    "stars": 6461,
+    "archived": false,
+    "pushedAt": "2026-04-13"
   },
   "yalter/niri-desktop": {
-    "stars": 28634
+    "stars": 28652,
+    "archived": false,
+    "pushedAt": "2026-10-22"
   },
   "yeyushengfan258/win11-icon-theme": {
-    "stars": 391
+    "stars": 391,
+    "archived": false,
+    "pushedAt": "2025-11-14"
   },
   "zayronxio/zafiro-icons": {
-    "stars": 465
+    "stars": 465,
+    "archived": false,
+    "pushedAt": "2024-11-05"
   },
   "zemmsoares/awesome-rices": {
-    "stars": 1375
+    "stars": 1376,
+    "archived": false,
+    "pushedAt": "2026-09-22"
   },
   "zeroxoneafour/polonium": {
-    "stars": 1175
+    "stars": 1177,
+    "archived": false,
+    "pushedAt": "2026-10-23"
   },
   "zquestz/plank-reloaded": {
-    "stars": 462
+    "stars": 462,
+    "archived": false,
+    "pushedAt": "2026-10-17"
   },
   "zren/plasma-hud": {
-    "stars": 244
+    "stars": 244,
+    "archived": false,
+    "pushedAt": "2022-05-01"
   }
 }
