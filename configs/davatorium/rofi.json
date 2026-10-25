@@ -43,10 +43,19 @@
     "steps": [
       {
         "id": "deps",
-        "title": "Install rofi (Arch repos)",
+        "title": "Install rofi from your distro's packages",
         "commands": [
           "sudo pacman -S --needed rofi",
           "# Other distros: see the upstream README"
+        ]
+      },
+      {
+        "id": "dotfiles",
+        "title": "Set it up",
+        "commands": [
+          "# Bind it to a key in your window manager, for example in i3 or Sway: bindsym $mod+d exec rofi -show drun",
+          "# For a starting config, save the output of rofi -dump-config as ~/.config/rofi/config.rasi, then edit it",
+          "# Preview and pick one of the bundled themes with rofi-theme-selector"
         ]
       }
     ]

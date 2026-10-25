@@ -106,9 +106,15 @@ describe('install helpers (src/lib/install.ts)', () => {
 
     const script = buildInstallScript(malicious);
 
-    // Strip all POSIX single-quoted segments ('...') from the script; no $( should remain anywhere.
-    const withoutSingleQuoted = script.replace(/'[^']*'/g, '');
-    expect(withoutSingleQuoted).not.toContain('$(');
+    // Strip all POSIX single-quoted segments ('...') and comment lines (the plain-language summary
+    // quotes config text there; with newlines stripped a comment cannot run). No $( may remain.
+    const code = script
+      .split('\n')
+      .filter((l) => !l.trimStart().startsWith('#'))
+      .join('\n');
+    expect(code.replace(/'[^']*'/g, '')).not.toContain('$(');
+    // The injected title stays inside one comment line.
+    expect(script).toContain('#   1. Step title $(touch /tmp/pwn)');
 
     // Also verify {{ref}} was expanded in the step commands
     expect(script).toContain(`git -C ~/dots checkout ${baseConfig.source.ref}`);

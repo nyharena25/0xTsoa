@@ -233,6 +233,45 @@ describe('generated installer', () => {
     expect(userFiles()).toEqual(before);
   });
 
+  it('exits with an error when a package fails to install, after doing the other steps', () => {
+    write(path.join(binDir, 'sudo'), `#!/bin/sh\necho "$@" >> '${sudoLog}'\nexit 1\n`);
+    const { code, out } = run(['--yes']);
+    expect(code).toBe(1);
+    expect(out).toContain('Could not install: demo-pkg');
+    expect(out).toContain('some steps failed');
+    expect(fs.readFileSync(path.join(home, '.config/fresh/f.conf'), 'utf8')).toBe('fresh\n');
+  });
+
+  it('skips packages that are already installed, and the rollback names the ones it added', () => {
+    // A fake pacman: "demo-pkg" is installed, "extra-pkg" is not.
+    write(path.join(binDir, 'pacman'), `#!/bin/sh\n[ "$1" = -Q ] && [ "$3" = demo-pkg ]\n`);
+    fs.chmodSync(path.join(binDir, 'pacman'), 0o755);
+    generate(['sudo pacman -S --needed demo-pkg extra-pkg']);
+    const plan = run(['--dry-run']);
+    expect(plan.out).toContain('[package]   extra-pkg (with pacman, uses sudo)');
+    expect(plan.out).not.toMatch(/\[package\][^\n]*demo-pkg/);
+
+    run(['--yes']);
+    expect(fs.readFileSync(sudoLog, 'utf8').trim().split('\n')).toEqual(['pacman -S --needed extra-pkg']);
+    const back = run(['--rollback', '--yes']);
+    expect(back.out).toContain('packages added by this install: extra-pkg. Remove them with: sudo pacman -Rns extra-pkg');
+  });
+
+  it('does not claim a pinned version for a package-only setup', () => {
+    const data = config();
+    data.install!.steps = [{ id: 'deps', title: 'Install', commands: ['sudo pacman -S --needed demo-pkg'] }];
+    fs.writeFileSync(script, buildInstallScript(data, 'alice/demo'));
+    const src = fs.readFileSync(script, 'utf8');
+    expect(src).toContain('OXT_PINNED=0');
+    expect(src).toContain('OXT_COMMON=()');
+    expect(src).toContain("#      - Install with your distro's package manager: demo-pkg");
+    const { out } = run(['--dry-run']);
+    expect(out).toContain('reference only');
+    expect(out).not.toContain(REF);
+    expect(out).toContain('Summary: 1 package(s) to install.');
+    expect(out).not.toContain('restored by --rollback');
+  });
+
   it('refuses to start when a clone destination belongs to something else, unless --force', () => {
     write(path.join(home, 'dots/notes.txt'), 'my own folder\n');
     generate(['git clone https://github.com/alice/demo ~/dots']);

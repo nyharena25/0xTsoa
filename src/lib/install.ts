@@ -143,6 +143,47 @@ function actionToShell(a: InstallAction): string {
   }
 }
 
+function allStepsActions(data: ConfigData): InstallAction[] {
+  return (data.install?.steps ?? []).flatMap((step) => step.commands.flatMap((cmd) => classifyCommand(cmd, data)));
+}
+
+/** One line of the plain-language summary at the top of a generated install.sh. */
+function describeAction(a: InstallAction): string {
+  switch (a.kind) {
+    case 'note':
+      return `You do: ${a.text}`;
+    case 'package':
+      return `${a.aur ? 'Install from the AUR' : "Install with your distro's package manager"}: ${a.packages.join(' ')}`;
+    case 'clone':
+      return `Download: git clone ${a.args}`;
+    case 'copy':
+      return `Copy into place: cp ${a.args}`;
+    case 'append':
+      return `Add the line ${a.line} to ${a.file}`;
+    case 'upstream':
+      return `Run the project's own installer: ${a.command}`;
+    case 'system':
+      return `Run with sudo: ${a.command}`;
+    case 'exec':
+      return `Run: ${a.command}`;
+  }
+}
+
+/**
+ * True when the install downloads source.repo at source.ref: a pinned install.script, or a clone
+ * of source.repo (which validateCloneSteps forces to check out {{ref}}). Package installs get
+ * whatever the distro ships, so their installer must not claim the pinned commit.
+ */
+export function usesPinnedSource(data: ConfigData): boolean {
+  if (data.install?.script) return true;
+  const repo = normalizeRepoUrl(data.source.repo);
+  return (data.install?.steps ?? []).some((step) =>
+    step.commands.some((cmd) =>
+      classifyCommand(cmd, data).some((a) => a.kind === 'clone' && a.args.split(/\s+/).some((w) => /^(?:https?:\/\/|git@)/.test(w) && normalizeRepoUrl(w) === repo)),
+    ),
+  );
+}
+
 /** Shell lines for one config command, or null when nothing is left to run or show. */
 export function translateCommand(cmd: string, data: Pick<ConfigData, 'source'>): string | null {
   const lines = classifyCommand(cmd, data).map(actionToShell);
@@ -304,10 +345,13 @@ export function attestationVerifyCommand(): string {
 export function buildInstallScript(data: ConfigData, id = 'setup'): string {
   const wmLabel = WM_LABELS[data.wm] || data.wm;
   const distroLabels = data.distros.map((d) => DISTRO_LABELS[d] || d).join(', ');
-  const version = data.version || 'v1.0';
+  const pinned = usesPinnedSource(data);
+  const usesUpstream = allStepsActions(data).some((a) => a.kind === 'upstream');
   const slug = id.replaceAll('/', '-').replace(/[^\w.-]/g, '');
   const allSteps = data.install?.steps ?? [];
   const total = allSteps.length;
+  // Comment lines: newlines removed, so nothing in a config value can end the comment.
+  const c = (s: string) => stripNewlines(s);
 
   const steps = allSteps
     .map((step, i) => {
@@ -317,6 +361,12 @@ export function buildInstallScript(data: ConfigData, id = 'setup'): string {
       return [`  step ${i + 1} ${total} ${shQuote(stripNewlines(step.title))}`, ...lines.flatMap((l) => l.split('\n')).map((l) => `  ${l}`)].join('\n');
     })
     .join('\n');
+
+  // What the script does, in plain words, before any code: the runtime below is the same in every installer.
+  const summary = allSteps.flatMap((step, i) => [
+    `#   ${i + 1}. ${c(step.title)}`,
+    ...step.commands.flatMap((cmd) => classifyCommand(cmd, data)).map((a) => `#      - ${c(describeAction(a))}`),
+  ]);
 
   const distroCheck = data.distros.includes('any')
     ? '  :'
@@ -330,12 +380,14 @@ export function buildInstallScript(data: ConfigData, id = 'setup'): string {
   return [
     '#!/usr/bin/env bash',
     '# ==============================================================================',
-    `# 0xTSOA INSTALLER // ${shQuote(stripNewlines(data.name.toUpperCase()))}`,
-    `# Version: ${shQuote(stripNewlines(version))}`,
-    `# Maintainer: ${shQuote(stripNewlines(data.author.name))} (@${shQuote(stripNewlines(data.author.github))})`,
-    `# Source: ${shQuote(stripNewlines(data.source.repo))} @ ${shQuote(stripNewlines(data.source.ref))}`,
-    `# Window Manager: ${stripNewlines(wmLabel)}`,
-    `# Supported Distros: ${stripNewlines(distroLabels)}`,
+    `# 0xTsoa installer: ${c(data.name)} by ${c(data.author.name)} (@${c(data.author.github)})`,
+    pinned
+      ? `# Source: ${c(data.source.repo)} @ ${c(data.version ? `${data.version} (${data.source.ref})` : data.source.ref)}`
+      : `# Source: ${c(data.source.repo)} (reference only: installed from your package manager, not a pinned download)`,
+    `# Window manager: ${c(wmLabel)}. Distros: ${c(distroLabels)}.`,
+    '#',
+    '# What this script does:',
+    ...summary,
     '#',
     '# Read before running. Start with:  bash install.sh --dry-run   (changes nothing)',
     '# Options: --dry-run  --force  --yes  --rollback  --help',
@@ -347,9 +399,9 @@ export function buildInstallScript(data: ConfigData, id = 'setup'): string {
     `OXT_NAME=${shQuote(stripNewlines(data.name))}`,
     `OXT_REPO=${shQuote(stripNewlines(data.source.repo))}`,
     `OXT_REF=${shQuote(stripNewlines(data.source.ref))}`,
-    `OXT_COMMON=(${UPSTREAM_BACKUP_PATHS.join(' ')})`,
-    '',
-    RUNTIME.trimEnd(),
+    `OXT_PINNED=${pinned ? 1 : 0}`,
+    // Folders backed up before the project's own installer runs; empty when the setup has none.
+    `OXT_COMMON=(${usesUpstream ? UPSTREAM_BACKUP_PATHS.join(' ') : ''})`,
     '',
     '# --- Steps (from the reviewed config) ---',
     'oxt_distro_check() {',
@@ -359,6 +411,8 @@ export function buildInstallScript(data: ConfigData, id = 'setup'): string {
     'oxt_steps() {',
     steps,
     '}',
+    '',
+    RUNTIME.trimEnd(),
     '',
     'oxt_main "$@"',
     '',

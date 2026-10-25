@@ -1,14 +1,17 @@
 # ==============================================================================
 # 0xTsoa installer runtime. Identical in every generated install.sh; only the
-# OXT_* values above and the oxt_steps function below come from the reviewed config.
+# OXT_* values and the oxt_steps function above come from the reviewed config.
+# Parts a setup does not use (cloning, copying, upstream installers) stay idle.
 #
 # Guarantees (tested in tests/installer-runtime.test.ts):
 #   --dry-run writes nothing, installs nothing and never calls sudo.
 #   Existing files that differ are kept unless you approve (or pass --force).
 #   Every file in your home folder is backed up and verified before it changes.
-#   --rollback restores those files; packages and sudo changes are not undone.
+#   --rollback restores those files; packages and sudo changes are not undone,
+#   but it lists the packages this install added and the command to remove them.
+#   A package that fails to install makes the script exit with an error.
 # ==============================================================================
-# OXT_SLUG, OXT_NAME, OXT_REPO, OXT_REF and OXT_COMMON are set by the generated header.
+# OXT_SLUG, OXT_NAME, OXT_REPO, OXT_REF, OXT_PINNED and OXT_COMMON are set by the generated header.
 # shellcheck disable=SC2153
 
 OXT_MODE=install
@@ -16,6 +19,7 @@ OXT_PHASE=plan
 OXT_FORCE=0
 OXT_YES="${OXTSOA_YES:-0}"
 OXT_WARNED=0
+OXT_FAILED=0
 OXT_N=0
 OXT_SEEN=$'\n'
 OXT_BACKUP=''
@@ -27,7 +31,12 @@ OXT_C_BLOCK=0
 OXT_C_SYSTEM=0
 OXT_C_UPSTREAM=0
 OXT_C_EXEC=0
+OXT_C_PKG=0
+OXT_C_FILES=0
+OXT_C_UNAVAILABLE=0
 OXT_KEPT=''
+OXT_NEW=()
+OXT_RM=''
 OXT_ROLLBACK_CMD='bash install.sh'
 
 # OXT_COMMON (set by the generated header): folders an upstream installer usually
@@ -37,6 +46,8 @@ note() {
   if [ "$OXT_PHASE" = plan ]; then oxt_say '[manual]' "$*"; else printf '  -> %s\n' "$*"; fi
 }
 warn() { printf '  !! %s\n' "$*" >&2; OXT_WARNED=1; }
+# A step that did not do its job: the run goes on, but the script exits with an error.
+fail() { warn "$*"; OXT_FAILED=1; }
 die() { printf '  xx %s\n' "$*" >&2; exit 1; }
 oxt_say() { printf '  %-11s %s\n' "$1" "${2//"$HOME/"/"~/"}"; }
 step() { printf '\n[%s/%s] %s\n' "$1" "$2" "$3"; }
@@ -134,49 +145,119 @@ OXT_PM=none
 for oxt_pm in pacman apt-get dnf zypper xbps-install apk emerge nix-env; do
   if command -v "$oxt_pm" >/dev/null 2>&1; then OXT_PM="$oxt_pm"; break; fi
 done
+OXT_SUDO=''
+for oxt_su in sudo doas; do
+  if command -v "$oxt_su" >/dev/null 2>&1; then OXT_SUDO="$oxt_su"; break; fi
+done
+
+# True when package $1 is already installed (read-only query, no sudo). Unknown package
+# managers answer "no", so every package is treated as new there.
+oxt_pkg_installed() {
+  case "$OXT_PM" in
+    pacman) pacman -Q -- "$1" >/dev/null 2>&1 ;;
+    apt-get) dpkg -s "$1" 2>/dev/null | grep -q '^Status: install ok installed' ;;
+    dnf | zypper) rpm -q -- "$1" >/dev/null 2>&1 ;;
+    xbps-install) xbps-query -- "$1" >/dev/null 2>&1 ;;
+    apk) apk info -e -- "$1" >/dev/null 2>&1 ;;
+    *) return 1 ;;
+  esac
+}
+
+# Sets OXT_RM to the command that removes packages "$@" again, for the rollback summary.
+oxt_pkg_remove_cmd() {
+  local su="${OXT_SUDO:-sudo}"
+  case "$OXT_PM" in
+    pacman) OXT_RM="$su pacman -Rns $*" ;;
+    apt-get) OXT_RM="$su apt-get remove $*" ;;
+    dnf) OXT_RM="$su dnf remove $*" ;;
+    zypper) OXT_RM="$su zypper remove $*" ;;
+    xbps-install) OXT_RM="$su xbps-remove -R $*" ;;
+    apk) OXT_RM="$su apk del $*" ;;
+    emerge) OXT_RM="$su emerge --deselect $* && $su emerge --depclean" ;;
+    *) OXT_RM="the remove command of your package manager, for: $*" ;;
+  esac
+}
+
+# Sets OXT_NEW to the packages among "$@" that are not installed yet.
+oxt_new_packages() {
+  local p
+  OXT_NEW=()
+  for p in "$@"; do oxt_pkg_installed "$p" || OXT_NEW+=("$p"); done
+}
 
 pkg_install() {
+  oxt_new_packages "$@"
   if [ "$OXT_PHASE" = plan ]; then
-    oxt_say '[package]' "$* (with $OXT_PM, uses sudo)"
+    if [ "$OXT_PM" = nix-env ]; then
+      oxt_say '[manual]' "NixOS: add $* to environment.systemPackages, then run nixos-rebuild switch"
+    elif [ "${#OXT_NEW[@]}" -eq 0 ]; then
+      oxt_say '[same]' "$* (already installed)"
+    elif [ "$OXT_PM" = none ] || [ -z "$OXT_SUDO" ]; then
+      oxt_say '[missing]' "${OXT_NEW[*]} (needs a supported package manager and sudo or doas)"
+      ((OXT_C_UNAVAILABLE += 1))
+    else
+      oxt_say '[package]' "${OXT_NEW[*]} (with $OXT_PM, uses $OXT_SUDO)"
+      ((OXT_C_PKG += ${#OXT_NEW[@]}))
+    fi
     return 0
   fi
-  oxt_record packages "$*"
+  if [ "$OXT_PM" = nix-env ]; then
+    warn "NixOS: add to environment.systemPackages, then nixos-rebuild switch: $*"
+    return 0
+  fi
+  if [ "${#OXT_NEW[@]}" -eq 0 ]; then
+    note "already installed: $*"
+    return 0
+  fi
+  if [ "$OXT_PM" = none ] || [ -z "$OXT_SUDO" ]; then
+    fail "Not installed: ${OXT_NEW[*]} (no supported package manager, or no sudo/doas). See $OXT_REPO"
+    return 0
+  fi
+  oxt_record packages "${OXT_NEW[*]}"
   local ok=1
   case "$OXT_PM" in
-    pacman) sudo pacman -S --needed "$@" || ok=0 ;;
-    apt-get) sudo apt-get install -y "$@" || ok=0 ;;
-    dnf) sudo dnf install -y "$@" || ok=0 ;;
-    zypper) sudo zypper install -y "$@" || ok=0 ;;
-    xbps-install) sudo xbps-install -y "$@" || ok=0 ;;
-    apk) sudo apk add "$@" || ok=0 ;;
-    emerge) sudo emerge --noreplace "$@" || ok=0 ;;
-    nix-env)
-      warn "NixOS: add to environment.systemPackages, then nixos-rebuild switch: $*"
-      return 0
-      ;;
-    *) ok=0 ;;
+    pacman) "$OXT_SUDO" pacman -S --needed "${OXT_NEW[@]}" || ok=0 ;;
+    apt-get) "$OXT_SUDO" apt-get install -y "${OXT_NEW[@]}" || ok=0 ;;
+    dnf) "$OXT_SUDO" dnf install -y "${OXT_NEW[@]}" || ok=0 ;;
+    zypper) "$OXT_SUDO" zypper install -y "${OXT_NEW[@]}" || ok=0 ;;
+    xbps-install) "$OXT_SUDO" xbps-install -y "${OXT_NEW[@]}" || ok=0 ;;
+    apk) "$OXT_SUDO" apk add "${OXT_NEW[@]}" || ok=0 ;;
+    emerge) "$OXT_SUDO" emerge --noreplace "${OXT_NEW[@]}" || ok=0 ;;
   esac
-  if [ "$ok" = 0 ]; then warn "Could not install: $* (names can differ on $OXT_DISTRO). See $OXT_REPO"; fi
+  if [ "$ok" = 0 ]; then fail "Could not install: ${OXT_NEW[*]} (names can differ on $OXT_DISTRO). See $OXT_REPO"; fi
   return 0
 }
 
 aur_install() {
   local helper
+  oxt_new_packages "$@"
   if [ "$OXT_PHASE" = plan ]; then
-    oxt_say '[package]' "$* (Arch AUR; needs yay or paru)"
+    if [ "${#OXT_NEW[@]}" -eq 0 ]; then
+      oxt_say '[same]' "$* (already installed)"
+    elif [ "$OXT_PM" != pacman ]; then
+      oxt_say '[missing]' "${OXT_NEW[*]} (Arch AUR packages, not available on $OXT_DISTRO)"
+      ((OXT_C_UNAVAILABLE += 1))
+    else
+      oxt_say '[package]' "${OXT_NEW[*]} (Arch AUR; needs yay or paru)"
+      ((OXT_C_PKG += ${#OXT_NEW[@]}))
+    fi
+    return 0
+  fi
+  if [ "${#OXT_NEW[@]}" -eq 0 ]; then
+    note "already installed: $*"
     return 0
   fi
   for helper in yay paru; do
     if command -v "$helper" >/dev/null 2>&1; then
-      oxt_record packages "$*"
-      "$helper" -S --needed "$@" || warn "AUR install failed: $*"
+      oxt_record packages "${OXT_NEW[*]}"
+      "$helper" -S --needed "${OXT_NEW[@]}" || fail "AUR install failed: ${OXT_NEW[*]}"
       return 0
     fi
   done
   if [ "$OXT_PM" = pacman ]; then
-    warn "$* is in the AUR: install yay or paru, then rerun this script."
+    fail "${OXT_NEW[*]} is in the AUR: install yay or paru, then rerun this script."
   else
-    warn "$* is an Arch (AUR) package with no $OXT_DISTRO equivalent here. Install it from $OXT_REPO"
+    fail "${OXT_NEW[*]} is an Arch (AUR) package with no $OXT_DISTRO equivalent here. Install it from $OXT_REPO"
   fi
   return 0
 }
@@ -262,7 +343,10 @@ oxt_clone() {
   if [ "$OXT_PHASE" = plan ]; then
     case "$state" in
       new) oxt_say '[new]' "$target (clone of $url)"; ((OXT_C_NEW += 1)) ;;
-      same) oxt_say '[update]' "$target (already a clone of $url; backed up, then updated)" ;;
+      same)
+        oxt_say '[update]' "$target (already a clone of $url; backed up, then updated)"
+        ((OXT_C_FILES += 1))
+        ;;
       conflict)
         oxt_say '[conflict]' "$target exists and is not a clone of $url"
         ((OXT_C_BLOCK += 1))
@@ -387,6 +471,7 @@ oxt_append() {
   fi
   if [ "$OXT_PHASE" = plan ]; then
     oxt_say '[append]' "$file += $line"
+    ((OXT_C_FILES += 1))
     return 0
   fi
   oxt_backup "$file"
@@ -409,8 +494,12 @@ oxt_on_exit() {
   [ "$OXT_PHASE" = run ] || return 0
   [ "$OXT_DONE" = 1 ] && return 0
   [ "$rc" = 0 ] && return 0
-  printf '\n  xx Stopped (exit %s). Files changed so far are backed up in:\n     %s\n' "$rc" "$OXT_BACKUP" >&2
-  printf '     Restore them with: %s --rollback\n' "$OXT_ROLLBACK_CMD" >&2
+  if grep -q -E '^(existed|created)'$'\t' "$OXT_MANIFEST" 2>/dev/null; then
+    printf '\n  xx Stopped (exit %s). Files changed so far are backed up in:\n     %s\n' "$rc" "$OXT_BACKUP" >&2
+    printf '     Restore them with: %s --rollback\n' "$OXT_ROLLBACK_CMD" >&2
+  else
+    printf '\n  xx Stopped (exit %s). No file in your home folder was changed.\n' "$rc" >&2
+  fi
 }
 
 oxt_begin_run() {
@@ -454,7 +543,10 @@ oxt_rollback() {
     case "${kinds[i]}" in
       existed) oxt_say '[restore]' "${paths[i]}" ;;
       created) if oxt_exists "${paths[i]}"; then oxt_say '[remove]' "${paths[i]}  (moved aside, not deleted)"; fi ;;
-      packages) oxt_say '[kept]' "packages ${paths[i]} (uninstall them yourself if needed)" ;;
+      packages)
+        oxt_pkg_remove_cmd "${paths[i]}"
+        oxt_say '[kept]' "packages added by this install: ${paths[i]}. Remove them with: $OXT_RM"
+        ;;
       system) oxt_say '[kept]' "${paths[i]} (sudo change, not undone)" ;;
     esac
   done
@@ -489,6 +581,23 @@ oxt_rollback() {
   printf '\nRestored. What was there before the rollback is kept in %s/undone (see undone.tsv).\n' "$latest"
   printf 'Run --rollback again to go back one more install.\n'
 }
+# One line counting what the plan will do; only the kinds that occur are listed.
+oxt_summary() {
+  local -a parts=()
+  [ "$OXT_C_NEW" = 0 ] || parts+=("$OXT_C_NEW new")
+  [ "$OXT_C_FILES" = 0 ] || parts+=("$OXT_C_FILES updated")
+  [ "$OXT_C_CONFLICT" = 0 ] || parts+=("$OXT_C_CONFLICT conflicting (kept unless replaced)")
+  [ "$OXT_C_BLOCK" = 0 ] || parts+=("$OXT_C_BLOCK blocking")
+  [ "$OXT_C_PKG" = 0 ] || parts+=("$OXT_C_PKG package(s) to install")
+  [ "$OXT_C_UNAVAILABLE" = 0 ] || parts+=("$OXT_C_UNAVAILABLE package step(s) that cannot run here")
+  [ "$OXT_C_SYSTEM" = 0 ] || parts+=("$OXT_C_SYSTEM other sudo change(s)")
+  [ "$OXT_C_UPSTREAM" = 0 ] || parts+=("$OXT_C_UPSTREAM upstream installer(s)")
+  [ "$OXT_C_EXEC" = 0 ] || parts+=("$OXT_C_EXEC command(s) to run")
+  local out='' p
+  for p in "${parts[@]}"; do out+="${out:+, }$p"; done
+  printf '\nSummary: %s.\n' "${out:-nothing to change}"
+}
+
 oxt_main() {
   local a
   for a in "$@"; do
@@ -510,7 +619,11 @@ oxt_main() {
 
   printf '%s\n' '======================================================================'
   printf ' [0xTSOA] %s\n' "$OXT_NAME"
-  printf ' Source:   %s @ %s\n' "$OXT_REPO" "$OXT_REF"
+  if [ "$OXT_PINNED" = 1 ]; then
+    printf ' Source:   %s @ %s\n' "$OXT_REPO" "$OXT_REF"
+  else
+    printf ' Source:   %s (reference only: this script does not download it at a pinned version)\n' "$OXT_REPO"
+  fi
   printf ' Detected: %s (package manager: %s)\n' "$OXT_DISTRO" "$OXT_PM"
   printf '%s\n' '======================================================================'
 
@@ -522,10 +635,14 @@ oxt_main() {
   oxt_distro_check
   printf '\nPlan (nothing has been changed yet):\n'
   oxt_steps
-  printf '\nSummary: %s new, %s conflicting (kept unless replaced), %s blocking, %s sudo change(s), %s upstream installer(s).\n' \
-    "$OXT_C_NEW" "$OXT_C_CONFLICT" "$OXT_C_BLOCK" "$OXT_C_SYSTEM" "$OXT_C_UPSTREAM"
-  printf 'Files marked [new], [update], [append], [conflict] and folders backed up for [upstream] are\n'
-  printf 'backed up to %s/<date> and restored by --rollback.\n' "$OXT_BACKUPS"
+  oxt_summary
+  if ((OXT_C_NEW + OXT_C_CONFLICT + OXT_C_UPSTREAM + OXT_C_FILES > 0)); then
+    printf 'Files marked [new], [update], [append], [conflict] and folders backed up for [upstream] are\n'
+    printf 'backed up to %s/<date> and restored by --rollback.\n' "$OXT_BACKUPS"
+  fi
+  if [ "$OXT_C_PKG" -gt 0 ]; then
+    printf 'Packages stay installed after --rollback, which lists the command to remove them.\n'
+  fi
   if [ "$OXT_C_EXEC" -gt 0 ] || [ "$OXT_C_SYSTEM" -gt 0 ]; then
     printf 'The effects of [run] and [system] commands are not undone by --rollback.\n'
   fi
@@ -537,6 +654,9 @@ oxt_main() {
   if [ "$OXT_C_BLOCK" -gt 0 ] && [ "$OXT_FORCE" != 1 ]; then
     die "Some destinations already exist and belong to something else (see [conflict] above). Nothing was changed. Move them away, or rerun with --force to back them up and replace them."
   fi
+  if [ "$OXT_C_UNAVAILABLE" -gt 0 ] && [ "$OXT_FORCE" != 1 ]; then
+    die "Some packages cannot be installed here (see [missing] above). Nothing was changed. Install them yourself, or rerun with --force to install the rest anyway."
+  fi
   oxt_confirm 'Apply this plan?' 'Nothing was changed.'
 
   oxt_begin_run
@@ -545,11 +665,14 @@ oxt_main() {
 
   printf '\n%s\n' '======================================================================'
   if [ -n "$OXT_KEPT" ]; then printf ' Kept your versions of:\n%s' "$OXT_KEPT"; fi
-  if [ "$OXT_WARNED" = 1 ]; then
+  if [ "$OXT_FAILED" = 1 ]; then
+    printf ' [0xTSOA] Finished, but some steps failed (see !! lines above).\n'
+  elif [ "$OXT_WARNED" = 1 ]; then
     printf ' [0xTSOA] Done with warnings (see !! lines above).\n'
   else
     printf ' [0xTSOA] Installation completed.\n'
   fi
   printf ' Backup: %s\n Undo:   %s --rollback\n' "$OXT_BACKUP" "$OXT_ROLLBACK_CMD"
   printf '%s\n' '======================================================================'
+  [ "$OXT_FAILED" = 0 ] || exit 1
 }

@@ -93,11 +93,12 @@ Every line of the plan starts with a label:
 | --- | --- |
 | `[download]` | The project's source, fetched into a cache folder (`~/.cache/0xtsoa`). |
 | `[new]` | A file or folder that does not exist yet; it will be created. |
-| `[same]` | Already identical; skipped. |
+| `[same]` | Already identical, or a package that is already installed; skipped. |
 | `[update]` | An existing clone of the same repository; backed up, then updated. |
 | `[append]` | A line added to a file, such as `~/.bashrc`; the file is backed up first. |
 | `[conflict]` | Something different is already there; you are asked before it is replaced. |
-| `[package]` | A package install, with your package manager and sudo. |
+| `[package]` | Packages that are not installed yet, with your package manager and sudo. |
+| `[missing]` | Packages that cannot be installed on this system; the install stops before changing anything unless you pass `--force`. |
 | `[upstream]` | The project's own installer, with the folders backed up before it runs. |
 | `[system]` | A sudo change outside your home folder, not undone by a rollback. |
 | `[run]` | A command run as written, such as reloading your compositor or changing a setting. |
@@ -115,6 +116,8 @@ bash install.sh
 
 It shows the plan again and asks before doing anything. Then, before each change, it copies the file or folder it is about to change into a backup and checks the copy; if the backup fails, it stops before making the change. When a file already exists and differs, it asks you to keep yours (the default), replace it, or see the difference first.
 
+If a package fails to install, the script still does the other steps, then ends with an error so you notice; scripts and CI that call it see the failure too.
+
 Two options change that behaviour. `--yes` never asks, and still keeps your conflicting files. `--force` replaces them, after backing each one up. Use `--force` only when you have read the conflicts in the plan.
 
 ## Undo it with `--rollback`
@@ -129,13 +132,13 @@ It lists what it will do and asks first:
 
 - files and folders that existed before are restored from the backup;
 - files and folders the install created are moved aside, not deleted;
-- packages and sudo changes are listed as kept, so you know what is left to remove by hand.
+- packages and sudo changes are listed as kept, with the command that removes the packages this install added (packages you already had are never listed).
 
 Backups live in `~/.local/state/0xtsoa/backups/` (one folder per setup, then one per install, named by date), with a copy of the script that made them. A rollback can itself be undone: whatever was in place before it is kept in that backup's `undone` folder. Running `--rollback` again goes back one more install.
 
 What a rollback does not undo:
 
-- **Packages.** Remove them with your package manager, for example `sudo pacman -Rns`, `sudo apt remove` or `sudo dnf remove`, followed by the package names the rollback listed.
+- **Packages.** The rollback prints the exact command, such as `sudo pacman -Rns rofi`; run it yourself once you are sure nothing else needs them.
 - **Sudo changes and settings commands**, such as files copied into `/usr/share` or a `gsettings set`. The plan marks them as `[system]` and `[run]`. A system snapshot taken before the install is the easy way back.
 - **Whatever a project's own installer writes outside the folders listed in the plan.** For those setups, the backup covers the usual config folders (`~/.config/hypr`, `~/.config/waybar`, `~/.zshrc` and similar), not everything the script can reach. Read the project's README for what else it changes, and prefer a second account or a VM.
 
