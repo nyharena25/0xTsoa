@@ -60,3 +60,20 @@ export function compareForListing(a: { id: string; data: { name: string; tags: s
   const archived = (e: typeof a) => Number(maintenanceForConfig(e.id, e.data.tags) === 'archived');
   return archived(a) - archived(b) || getStarsForConfig(b.id) - getStarsForConfig(a.id) || a.data.name.localeCompare(b.data.name);
 }
+
+const FALLBACK_SCREENSHOT = '/screenshots/fallback-terminal.svg';
+
+/**
+ * The home page spotlight: the `count` entries whose upstream repository was pushed to most recently
+ * (pushedAt from the nightly sync), most starred first on the same day. Archived projects and entries
+ * without a real screenshot are left out, since the spotlight is a visual showcase.
+ */
+export function recentlyUpdated<T extends { id: string; data: { tags: string[]; screenshots: { url: string }[] } }>(all: T[], count = 5): T[] {
+  return all
+    .filter((e) => {
+      const stats = STATS[e.id];
+      return stats?.pushedAt && !stats.archived && !e.data.tags.includes('archived') && e.data.screenshots.some((s) => !s.url.endsWith(FALLBACK_SCREENSHOT));
+    })
+    .toSorted((a, b) => STATS[b.id].pushedAt!.localeCompare(STATS[a.id].pushedAt!) || STATS[b.id].stars - STATS[a.id].stars || a.id.localeCompare(b.id))
+    .slice(0, count);
+}

@@ -85,10 +85,11 @@ if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
     resolvedFinal = resolvedFinal || 'EXIT 0';
   }
 }
+import BinaryBackground from '../components/BinaryBackground.astro';
 ---
 
 <!doctype html>
-<html lang="en" class="bg-[#FBFBFA] text-[#0F172A]">
+<html lang="en" class="bg-[#FAF9F5] text-[#0F172A]">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -166,7 +167,9 @@ gtag('config', ${JSON.stringify(GA_MEASUREMENT_ID)});`}
       </>
     )}
   </head>
-  <body class="min-h-screen flex flex-col font-sans antialiased text-[#0F172A] bg-[#FBFBFA] selection:bg-[#0F172A] selection:text-white overflow-x-hidden w-full max-w-full">
+  <body class="min-h-screen flex flex-col font-sans antialiased text-[#0F172A] selection:bg-[#0F172A] selection:text-white overflow-x-hidden w-full max-w-full">
+    <!-- Binary paper texture behind everything; the page background is on <html> so it shows through <body>. -->
+    <BinaryBackground />
     <Header
       currentPath={currentPath}
       pageLabel={pageLabel || resolvedFinal}

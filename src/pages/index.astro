@@ -5,13 +5,14 @@ import Spotlight from '../components/Spotlight.astro';
 import Manifesto from '../components/Manifesto.astro';
 import TopicLinks from '../components/TopicLinks.astro';
 import { getCollection } from 'astro:content';
-import { getTop5Configs } from '../lib/votes';
+import { recentlyUpdated } from '../lib/stats';
 import { useTranslations } from '../lib/i18n';
 import { withBase, REPO_URL } from '../../site.config';
 
 const t = useTranslations('en');
 const allConfigs = await getCollection('configs');
-const spotlightConfigs = getTop5Configs(allConfigs);
+// The five entries most recently updated upstream on GitHub (nightly sync data).
+const spotlightConfigs = recentlyUpdated(allConfigs);
 
 const siteRootUrl = new URL(withBase('/'), Astro.site).href;
 const aboutUrl = new URL(withBase('/about/'), Astro.site).href;

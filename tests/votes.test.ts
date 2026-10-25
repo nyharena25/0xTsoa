@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getDiscussionUrlForConfig, getVotesForConfig, getTop5Configs, votesFromIssues, upvoteLabel } from '../src/lib/votes';
+import { getDiscussionUrlForConfig, getVotesForConfig, votesFromIssues, upvoteLabel } from '../src/lib/votes';
 import { REPO_URL } from '../site.config';
 
 describe('Votes & upvote URL resolver', () => {
@@ -29,10 +29,5 @@ describe('Votes & upvote URL resolver', () => {
 
   it('correctly handles votes lookup fallback to 0 for unknown configs', () => {
     expect(getVotesForConfig('unknown/nonexistent-config')).toBe(0);
-  });
-
-  it('returns top 5 configs', () => {
-    const configs = Array.from({ length: 6 }, (_, i) => ({ id: `config-${i}` }));
-    expect(getTop5Configs(configs)).toHaveLength(5);
   });
 });

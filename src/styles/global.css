@@ -15,8 +15,22 @@
   font-display: swap;
 }
 
+/* Binary background (src/components/BinaryBackground.astro). Adjust here:
+   rest = digits far from the cursor (barely visible on --color-paper), reveal = digits near the
+   cursor, reveal-strong = the inner third of the reveal circle; radius in px; speed = average
+   column drift in px per second; fade-ms = how long revealed digits take to fade back. */
+:root {
+  --binary-rest: #F1EFE8;
+  --binary-reveal: #C9C1B2;
+  --binary-reveal-strong: #B8B0A1;
+  --binary-radius: 180;
+  --binary-speed: 14;
+  --binary-font-size: 13;
+  --binary-fade-ms: 450;
+}
+
 @theme {
-  --color-paper: #FBFBFA;
+  --color-paper: #FAF9F5;
   --color-surface: #FFFFFF;
   --color-card: #FFFFFF;
   --color-ink: #0F172A;
