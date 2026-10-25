@@ -15,7 +15,7 @@ faq:
     a: Install qt6ct (and qt5ct for older apps), set QT_QPA_PLATFORMTHEME so Qt loads it, then pick a style, icon theme and font in its window. Kvantum adds themes that match popular GTK themes.
   - q: Why is my cursor different in some windows?
     a: Each toolkit and the compositor read the cursor from a different place. Set the same theme and size in gsettings, in ~/.icons/default/index.theme, in the XCURSOR_THEME and XCURSOR_SIZE variables, and in your compositor's own cursor setting.
-draft: true
+draft: false
 ---
 
 On GNOME and KDE, the settings app themes every program at once. On a window manager like Hyprland, Sway or i3, nothing does: GTK apps, the newer libadwaita apps, Qt apps and the cursor each read their look from a different place. This guide sets each one so they match, with commands you can copy.

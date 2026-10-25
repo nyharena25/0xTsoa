@@ -1,0 +1,75 @@
+---
+title: What Is Ricing? A Linux Desktop Guide for Beginners
+h1: What is ricing? A beginner's guide to customizing Linux
+label: Start here
+description: What ricing and dotfiles mean, the words you will meet (window manager, compositor, bar, Wayland), and a four-step path to your first customized Linux desktop.
+published: 2026-10-25
+updated: 2026-10-25
+topics: [hyprland, dotfiles, bars, gtk-themes]
+faq:
+  - q: What does ricing mean on Linux?
+    a: Ricing is customizing how your desktop looks and works, usually far beyond what the settings app offers. A finished setup is called a rice, and people share them as screenshots together with their dotfiles, the config files that recreate it.
+  - q: Do I need a window manager to rice my desktop?
+    a: No. GNOME and KDE Plasma can be themed a long way with extensions, themes and icon packs. Most rices use a window manager such as Hyprland, Sway or i3 because every part, from the bar to the launcher, is a separate program you choose and configure.
+  - q: Is ricing safe for my system?
+    a: Changing themes and config files is safe and easy to undo. Installing someone else's complete setup can change much more, such as packages, your shell or your login screen, so preview what an install does and keep a backup or snapshot before you run it.
+  - q: Should I choose Wayland or X11 for ricing?
+    a: Start with Wayland on a current distro, unless you want a window manager that only exists on X11, such as bspwm or AwesomeWM. Hyprland, Sway and niri are Wayland compositors, and Sway reads most i3 configs.
+draft: false
+---
+
+Ricing means customizing your Linux desktop until it looks and works the way you want: the colors, the fonts, the bar at the top of the screen, how windows are arranged. A finished setup is a **rice**, and the files that recreate it are its **dotfiles**. This guide explains the words you will keep meeting, then walks you through four steps to your first rice, each linking to a page that goes deeper.
+
+You do not need to write any config to start. The registry has <RegistryStat kind="entries" /> setups, themes and tools, each pinned to an exact version, and most of them can be installed with a preview and a way back.
+
+## The words you will meet
+
+- **Rice.** A customized desktop, usually shown off as a screenshot. "Ricing" is building one.
+- **Dotfiles.** Config files, named after the dot that hides them in your home folder (`~/.bashrc`, `~/.config/`). Sharing your dotfiles means sharing everything needed to rebuild your rice.
+- **Desktop environment (DE).** A complete desktop where every part comes from one project and one settings app: [GNOME](/docs/gnome/), [KDE Plasma](/docs/kde-plasma/), Xfce.
+- **Window manager (WM).** The program that places and draws your windows, and nothing else. You pick the other parts yourself, which is why most rices use one.
+- **Tiling and floating.** A tiling window manager arranges windows side by side so they never overlap; a floating one lets you drag them around like on Windows or macOS. Most tiling WMs can float a window when you need it.
+- **Compositor.** On Wayland, the compositor *is* the window manager: [Hyprland](/docs/hyprland/), [Sway](/configs/swaywm/sway-core/) and [niri](/configs/yalter/niri-desktop/) are compositors. On X11, a separate compositor such as picom adds transparency, shadows and blur.
+- **Wayland and X11.** The two ways Linux draws a desktop. Wayland is the current one and what new projects target. X11 is older, and some popular window managers only exist there, such as [i3](/configs/i3/i3-tiling/), [bspwm](/configs/baskerville/bspwm/) and [AwesomeWM](/docs/awesomewm/).
+- **Bar or panel.** The strip showing workspaces, the clock and the battery, such as [Waybar](/configs/alexays/waybar/) on Wayland or [Polybar](/configs/adi1090x/polybar-themes/) on X11. See [status bars](/docs/bars/).
+- **Launcher.** The search box that opens apps, such as [rofi](/configs/adi1090x/rofi/). See [launchers](/docs/launchers/).
+- **Notification daemon.** The program that shows notifications, such as [mako](/configs/emersion/mako/) or [dunst](/configs/dunst-project/dunst/). See [notification daemons](/docs/notification-daemons/).
+
+## Your first rice in four steps
+
+### 1. Pick a window manager or desktop
+
+This choice decides everything else, because bars, launchers and configs are written for one of them.
+
+- **Want the modern look with animations and blur?** [Hyprland](/docs/hyprland/) is the most popular choice on Wayland, with the most complete setups to start from.
+- **Coming from i3, or want something calm and stable?** Sway reads most i3 configs and runs on Wayland.
+- **Prefer to keep a full desktop?** [GNOME](/docs/gnome/) and [KDE Plasma](/docs/kde-plasma/) both go a long way with extensions and themes, and keep their settings apps.
+- **Want to configure everything in code?** [AwesomeWM](/docs/awesomewm/) is set up in Lua, on X11.
+
+You can install a window manager next to the desktop you have and choose between them on the login screen, so this is not a final decision.
+
+### 2. Start from someone else's setup
+
+Building a rice from nothing takes days. Most people start from a complete setup and change it bit by bit. The [Hyprland guide](/docs/hyprland/) compares the popular ones with picks by need, and the [dotfiles page](/docs/dotfiles/) covers setups for every window manager.
+
+On each entry's page, "At a glance" tells you how hard it is to install, what it changes on your system, whether it is still maintained, and how to undo it. Pick an "Easy" or "Manual setup" entry first if you want to understand what each file does.
+
+### 3. Install it without losing your own setup
+
+A complete setup often replaces folders in `~/.config`, installs packages and sometimes runs its own installer. Before you run anything, read [how to install dotfiles safely and roll back](/docs/install-dotfiles-safely/): it shows how to preview the plan with `--dry-run`, what gets backed up, and what a rollback cannot undo.
+
+### 4. Make it yours
+
+Once the setup runs, change one layer at a time:
+
+- **Colors.** A [color scheme](/docs/color-schemes/) such as [Catppuccin](/docs/catppuccin/) usually has ports for your terminal, bar, launcher and editor, so everything matches.
+- **App themes.** [GTK themes](/docs/gtk-themes/), [icon themes](/docs/icon-themes/) and [cursor themes](/docs/cursor-themes/) change how your apps look. Outside GNOME and KDE they need a few settings to apply everywhere; the [theme matching guide](/docs/match-gtk-qt-themes/) shows each one.
+- **Parts.** Swap the bar, the launcher or the notification daemon for another from the [catalogue](/catalogue/).
+
+Keep your changed files in a git repository from the start. When something breaks, you can see what you changed and go back.
+
+## Share your rice
+
+The best-known place to share a rice is the r/unixporn subreddit. Screenshot posts need your window manager or desktop in square brackets in the title, such as `[Hyprland] my first rice`, and posters usually link their dotfiles in a comment. Read the subreddit's rules before posting; they are enforced.
+
+You can also add your setup to 0xTsoa. One [form](/contribute/) is enough, no JSON or Git needed: a bot opens the pull request for you, and your page gets the same preview, backups and rollback as every other entry.

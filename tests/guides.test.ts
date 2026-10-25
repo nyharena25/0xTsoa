@@ -56,6 +56,15 @@ describe('guide files', () => {
     }
   });
 
+  it('never link from a published guide to a draft, which the live site does not build', () => {
+    const isDraft = (f: string) => /^draft:\s*true\s*$/m.test(read(f).match(/^---[\s\S]*?\n---\n/)?.[0] ?? '');
+    const drafts = files.filter(isGuideFile).filter(isDraft).map((f) => `/docs/${f.replace(/\.mdx$/, '')}/`);
+    for (const f of files.filter((f) => isGuideFile(f) && !isDraft(f))) {
+      const body = read(f).replace(/^---[\s\S]*?\n---\n/, '');
+      for (const d of drafts) expect(body, `${f} links to draft ${d}`).not.toContain(`](${d}`);
+    }
+  });
+
   it('only embed registry entries and known counts', () => {
     for (const f of files) {
       const text = read(f);

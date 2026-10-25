@@ -11,6 +11,8 @@ export const GUIDES_DIR = 'guides';
 export const GUIDE_AUTHOR = 'Ny Harena RAVELOMANANTSOA';
 /** Edits go through a pull request on the branch PRs target. */
 export const EDIT_BRANCH = 'dev';
+/** The beginners' guide: listed first under "Start here", and linked from the home hero and the catalogue once published. */
+export const START_HERE_GUIDE = 'ricing';
 
 // YAML reads an unquoted 2026-10-25 as a Date: keep it as the YYYY-MM-DD string either way.
 const isoDate = z.preprocess(

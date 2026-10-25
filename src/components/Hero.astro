@@ -2,6 +2,9 @@
 import { useTranslations } from '../lib/i18n';
 import { withBase } from '../../site.config';
 import BdBrickLogo from './BdBrickLogo.astro';
+import { getCollection } from 'astro:content';
+import { START_HERE_GUIDE } from '../lib/guides';
+import { topicPath } from '../lib/topics';
 
 interface Props {
   locale?: string;
@@ -9,6 +12,8 @@ interface Props {
 
 const t = useTranslations('en');
 const cataloguePath = withBase('/catalogue/');
+// Linked only once published, so the live site never points at a draft.
+const startHere = (await getCollection('guides', ({ id, data }) => id === START_HERE_GUIDE && (import.meta.env.DEV || !data.draft)))[0];
 ---
 
 <section class="w-full max-w-full bg-white border border-zinc-200 rounded-xl shadow-xs px-5 py-7 sm:px-8 sm:py-10 lg:px-10 lg:py-12 relative overflow-hidden">
@@ -61,5 +66,11 @@ const cataloguePath = withBase('/catalogue/');
         <span>{t('nav.manifesto')}</span>
       </a>
     </div>
+
+    {startHere && (
+      <p class="font-mono text-xs text-zinc-600 m-0">
+        New to ricing? <a href={withBase(topicPath(startHere.id))} class="underline text-zinc-900 font-semibold">Start with the basics &rarr;</a>
+      </p>
+    )}
   </div>
 </section>

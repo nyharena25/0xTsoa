@@ -3,10 +3,11 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { liveTopics, topicPath, topicText, TOPIC_GROUPS } from '../../lib/topics';
+import { START_HERE_GUIDE } from '../../lib/guides';
 import { withBase } from '../../../site.config';
 
 const live = liveTopics(await getCollection('configs'));
-const guides = (await getCollection('guides', ({ data }) => import.meta.env.DEV || !data.draft)).sort((a, b) => a.data.published.localeCompare(b.data.published));
+const guides = (await getCollection('guides', ({ data }) => import.meta.env.DEV || !data.draft)).sort((a, b) => Number(b.id === START_HERE_GUIDE) - Number(a.id === START_HERE_GUIDE) || a.data.published.localeCompare(b.data.published));
 const bySlug = new Map(live.map((t) => [t.topic.slug, t]));
 const groups = TOPIC_GROUPS.map((g) => ({ title: g.title, guides: g.slugs.map((s) => bySlug.get(s)).filter((t) => t !== undefined) })).filter(
   (g) => g.guides.length > 0,

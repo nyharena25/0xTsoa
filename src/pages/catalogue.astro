@@ -9,10 +9,13 @@ import { useTranslations } from '../lib/i18n';
 import { getStarsForConfig } from '../lib/stats';
 import { PAGE_SIZE } from '../lib/filters';
 import { withBase } from '../../site.config';
+import { START_HERE_GUIDE } from '../lib/guides';
+import { topicPath } from '../lib/topics';
 
 const locale = 'en';
 const t = useTranslations(locale);
 
+const startHere = (await getCollection('guides', ({ id, data }) => id === START_HERE_GUIDE && (import.meta.env.DEV || !data.draft)))[0];
 const allConfigs = await getCollection('configs');
 
 const counts = {
@@ -53,7 +56,7 @@ const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
       <h1 class="font-display text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight m-0" data-page-title="true">Linux desktop catalogue</h1>
       <p class="font-sans text-base text-zinc-700 leading-relaxed m-0">
         {allConfigs.length} setups, themes and tools, each pinned to an exact upstream version and installed with a preview and a rollback.
-        <a href={withBase('/docs/')} class="underline text-zinc-900 font-semibold whitespace-nowrap">New here? Read the guides &rarr;</a>
+        <a href={withBase(startHere ? topicPath(startHere.id) : '/docs/')} class="underline text-zinc-900 font-semibold whitespace-nowrap">New here? {startHere ? 'Start with the basics' : 'Read the guides'} &rarr;</a>
       </p>
     </header>
 
