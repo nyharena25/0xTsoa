@@ -83,7 +83,8 @@ export default defineConfig({
         "img-src 'self' https: data:",
         // Vite inlines small woff2 subsets as data: URIs.
         "font-src 'self' data:",
-        "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+        // GA4 also sends hits to www.google.com/g/collect, and to doubleclick when Google signals is on.
+        "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.google.com https://*.g.doubleclick.net",
         // Tag Manager's <noscript> fallback is an iframe.
         "frame-src https://www.googletagmanager.com",
         "object-src 'none'",

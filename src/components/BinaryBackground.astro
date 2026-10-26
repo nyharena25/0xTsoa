@@ -1,7 +1,7 @@
 ---
-// Full-page binary background: slow columns of 0 and 1, almost invisible at rest, darker near the
-// mouse. One fixed canvas behind all content (z-index -1, pointer-events none); colours, radius and
-// speed come from the --binary-* variables in src/styles/global.css. Reduced motion: frozen, no reveal.
+// Full-page binary background: slow columns of 0 and 1, almost invisible. One fixed canvas behind
+// all content (z-index -1, pointer-events none); colour, speed and size come from the --binary-*
+// variables in src/styles/global.css. Reduced motion: one frozen frame.
 ---
 
 <canvas id="binary-bg" aria-hidden="true"></canvas>
@@ -18,24 +18,6 @@
 </style>
 
 <script>
-  type Rgba = [number, number, number, number];
-
-  /** Parses #rgb, #rrggbb, rgb() and rgba() into [r, g, b, a]. */
-  function parseColor(value: string): Rgba {
-    const v = value.trim();
-    if (v.startsWith('#')) {
-      const hex = v.length === 4 ? [...v.slice(1)].map((c) => c + c).join('') : v.slice(1, 7);
-      return [0, 2, 4].map((i) => Number.parseInt(hex.slice(i, i + 2), 16)).concat(1) as Rgba;
-    }
-    const parts = v.replace(/^rgba?\(|\)$/g, '').split(',').map((p) => Number.parseFloat(p));
-    return [parts[0] ?? 0, parts[1] ?? 0, parts[2] ?? 0, parts[3] ?? 1];
-  }
-
-  const mix = (a: Rgba, b: Rgba, t: number): string => {
-    const c = a.map((x, i) => x + (b[i] - x) * t);
-    return `rgba(${Math.round(c[0])}, ${Math.round(c[1])}, ${Math.round(c[2])}, ${c[3].toFixed(3)})`;
-  };
-
   function initBinaryBackground() {
     const canvas = document.getElementById('binary-bg') as HTMLCanvasElement | null;
     if (!canvas || canvas.dataset.bound) return;
@@ -45,50 +27,38 @@
 
     const css = getComputedStyle(document.documentElement);
     const read = (name: string, fallback: string) => css.getPropertyValue(name).trim() || fallback;
-    const REST = parseColor(read('--binary-rest', '#F1EFE8'));
-    const REVEAL = parseColor(read('--binary-reveal', '#C9C1B2'));
-    const STRONG = parseColor(read('--binary-reveal-strong', '#B8B0A1'));
-    const RADIUS = Number.parseFloat(read('--binary-radius', '180'));
+    const COLOR = read('--binary-rest', '#F1EFE8');
     const SPEED = Number.parseFloat(read('--binary-speed', '14')); // px per second, average column
     const FONT_SIZE = Number.parseFloat(read('--binary-font-size', '13'));
-    const FADE_MS = Number.parseFloat(read('--binary-fade-ms', '450')); // revealed digits fade back over this
     const FONT = `300 ${FONT_SIZE}px ${read('--font-mono', 'monospace')}`;
     const CELL_W = Math.round(FONT_SIZE * 1.15);
     const CELL_H = Math.round(FONT_SIZE * 1.6);
 
     // Pre-rendered glyphs: drawImage of a sprite is far cheaper than thousands of fillText calls.
-    // LEVELS shades go from the resting colour to the reveal colour; one more is the strong reveal.
-    const LEVELS = 8;
-    let sprites: HTMLCanvasElement[][] = []; // [level][digit]
+    let sprites: HTMLCanvasElement[] = []; // [digit]
     let dpr = 1;
     let cols = 0;
     let rows = 0;
     let digits: Uint8Array = new Uint8Array(0); // column-major, `rows` per column
-    let lit: Float32Array = new Float32Array(0); // reveal level per cell, 0..1 (>1 = strong)
     let offsets: Float32Array = new Float32Array(0);
     let speeds: Float32Array = new Float32Array(0);
-    let mouseX = -1e4;
-    let mouseY = -1e4;
     let last = performance.now();
     let frame = 0;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     function buildSprites() {
-      sprites = Array.from({ length: LEVELS + 1 }, (_, level) => {
-        const color = level === LEVELS ? mix(REVEAL, STRONG, 1) : mix(REST, REVEAL, level / (LEVELS - 1));
-        return ['0', '1'].map((digit) => {
-          const sprite = document.createElement('canvas');
-          sprite.width = Math.ceil(CELL_W * dpr);
-          sprite.height = Math.ceil(CELL_H * dpr);
-          const s = sprite.getContext('2d')!;
-          s.scale(dpr, dpr);
-          s.font = FONT;
-          s.fillStyle = color;
-          s.textAlign = 'center';
-          s.textBaseline = 'middle';
-          s.fillText(digit, CELL_W / 2, CELL_H / 2);
-          return sprite;
-        });
+      sprites = ['0', '1'].map((digit) => {
+        const sprite = document.createElement('canvas');
+        sprite.width = Math.ceil(CELL_W * dpr);
+        sprite.height = Math.ceil(CELL_H * dpr);
+        const s = sprite.getContext('2d')!;
+        s.scale(dpr, dpr);
+        s.font = FONT;
+        s.fillStyle = COLOR;
+        s.textAlign = 'center';
+        s.textBaseline = 'middle';
+        s.fillText(digit, CELL_W / 2, CELL_H / 2);
+        return sprite;
       });
     }
 
@@ -102,7 +72,6 @@
       cols = Math.ceil(w / CELL_W);
       rows = Math.ceil(h / CELL_H) + 1;
       digits = new Uint8Array(cols * rows).map(() => (Math.random() < 0.5 ? 0 : 1));
-      lit = new Float32Array(cols * rows);
       offsets = new Float32Array(cols).map(() => Math.random() * CELL_H);
       // Each column drifts at its own pace, between 0.5x and 1.5x the average speed.
       speeds = new Float32Array(cols).map(() => SPEED * (0.5 + Math.random()));
@@ -112,9 +81,6 @@
 
     function draw(dt: number) {
       ctx!.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      const reveal = !reduced.matches;
-      const decay = dt / FADE_MS;
-      const r2 = RADIUS * RADIUS;
       for (let c = 0; c < cols; c++) {
         offsets[c] += speeds[c] * (dt / 1000);
         // A full cell scrolled past: shift the column down by one and add a fresh digit on top.
@@ -122,24 +88,12 @@
           offsets[c] -= CELL_H;
           const base = c * rows;
           digits.copyWithin(base + 1, base, base + rows - 1);
-          lit.copyWithin(base + 1, base, base + rows - 1);
           digits[base] = Math.random() < 0.5 ? 0 : 1;
-          lit[base] = 0;
         }
         const x = c * CELL_W;
-        const dx = x + CELL_W / 2 - mouseX;
         for (let r = 0; r < rows; r++) {
-          const i = c * rows + r;
           const y = (r - 1) * CELL_H + offsets[c];
-          if (reveal) {
-            const dy = y + CELL_H / 2 - mouseY;
-            const d2 = dx * dx + dy * dy;
-            // Inside the radius a digit is revealed at once; the inner third gets the strong ink.
-            if (d2 < r2) lit[i] = d2 < r2 / 9 ? 1.01 : 1;
-            else if (lit[i] > 0) lit[i] = Math.max(0, Math.min(lit[i], 1) - decay);
-          }
-          const level = lit[i] > 1 ? LEVELS : Math.round(lit[i] * (LEVELS - 1));
-          ctx!.drawImage(sprites[level][digits[i]], x, y, CELL_W, CELL_H);
+          ctx!.drawImage(sprites[digits[c * rows + r]], x, y, CELL_W, CELL_H);
         }
       }
     }
@@ -154,8 +108,7 @@
     function start() {
       cancelAnimationFrame(frame);
       if (reduced.matches) {
-        lit.fill(0);
-        draw(0); // frozen: one static frame, no reveal
+        draw(0); // frozen: one static frame
         return;
       }
       last = performance.now();
@@ -169,21 +122,7 @@
       requestAnimationFrame(() => {
         resizeQueued = false;
         resize();
-        if (reduced.matches) draw(0);
       });
-    });
-    window.addEventListener(
-      'pointermove',
-      (e) => {
-        if (e.pointerType === 'touch') return; // the reveal follows a mouse or pen, not a finger
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-      },
-      { passive: true },
-    );
-    document.documentElement.addEventListener('pointerleave', () => {
-      mouseX = -1e4;
-      mouseY = -1e4;
     });
     reduced.addEventListener('change', start);
 
