@@ -83,7 +83,9 @@ export default defineConfig({
         "img-src 'self' https: data:",
         // Vite inlines small woff2 subsets as data: URIs.
         "font-src 'self' data:",
-        "connect-src 'self' https://*.google-analytics.com https://www.googletagmanager.com",
+        "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+        // Tag Manager's <noscript> fallback is an iframe.
+        "frame-src https://www.googletagmanager.com",
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",
@@ -92,7 +94,8 @@ export default defineConfig({
         resources: ["'self'", "'unsafe-inline'"],
       },
       scriptDirective: {
-        resources: ["'self'", 'https://www.googletagmanager.com'],
+        // tagmanager.google.com serves Tag Manager's preview (Tag Assistant) script.
+        resources: ["'self'", 'https://www.googletagmanager.com', 'https://tagmanager.google.com'],
       },
     },
   },

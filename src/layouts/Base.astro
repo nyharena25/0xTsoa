@@ -2,7 +2,7 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { useTranslations } from '../lib/i18n';
-import { withBase, GA_MEASUREMENT_ID, SITE_URL } from '../../site.config';
+import { withBase, GA_MEASUREMENT_ID, GTM_CONTAINER_ID, SITE_URL } from '../../site.config';
 import '../styles/global.css';
 
 interface Props {
@@ -42,6 +42,7 @@ const t = useTranslations('en');
 const pageTitle = title ? `${title} — 0xTsoa` : t('site.title');
 const pageDesc = description || t('site.description');
 const currentPath = Astro.url.pathname;
+const analyticsEnabled = import.meta.env.PROD && Boolean(GA_MEASUREMENT_ID || GTM_CONTAINER_ID);
 const siteOrigin = Astro.site ? Astro.site.href : SITE_URL;
 const canonicalUrl = canonical || new URL(currentPath, siteOrigin).href;
 
@@ -94,6 +95,7 @@ import BinaryBackground from '../components/BinaryBackground.astro';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google-site-verification" content="teSYi3Oiia7lE7wcbzWwjfrd3Qm3kc_pdzAQbeYXb2M" />
+    <meta name="google-site-verification" content="TOl5l9RbtdQFkWuaPyACJu-rNxh6jcenYQnZuFLrIEA" />
     <meta name="author" content="Ny Harena RAVELOMANANTSOA" />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDesc} />
@@ -139,13 +141,16 @@ import BinaryBackground from '../components/BinaryBackground.astro';
       <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
 
-    {import.meta.env.PROD && Boolean(GA_MEASUREMENT_ID) && (
+    {analyticsEnabled && (
       <>
-        <script
-          is:inline
-          async
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        ></script>
+        {GA_MEASUREMENT_ID && (
+          <script
+            is:inline
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          ></script>
+        )}
+        <!-- Consent defaults go into dataLayer before Google Analytics or Tag Manager read it. -->
         <script
           is:inline
           set:html={`window.dataLayer = window.dataLayer || [];
@@ -160,14 +165,34 @@ try {
   if (localStorage.getItem('0xtsoa_cookie_consent') === 'granted') {
     gtag('consent', 'update', { analytics_storage: 'granted' });
   }
-} catch (e) {}
+} catch (e) {}${GA_MEASUREMENT_ID ? `
 gtag('js', new Date());
-gtag('config', ${JSON.stringify(GA_MEASUREMENT_ID)});`}
+gtag('config', ${JSON.stringify(GA_MEASUREMENT_ID)});` : ''}`}
         />
+        {GTM_CONTAINER_ID && (
+          <script
+            is:inline
+            set:html={`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer',${JSON.stringify(GTM_CONTAINER_ID)});`}
+          />
+        )}
       </>
     )}
   </head>
   <body class="min-h-screen flex flex-col font-sans antialiased text-[#0F172A] selection:bg-[#0F172A] selection:text-white overflow-x-hidden w-full max-w-full">
+    {analyticsEnabled && GTM_CONTAINER_ID && (
+      <noscript>
+        <iframe
+          src={`https://www.googletagmanager.com/ns.html?id=${encodeURIComponent(GTM_CONTAINER_ID)}`}
+          height="0"
+          width="0"
+          style="display:none;visibility:hidden"
+        ></iframe>
+      </noscript>
+    )}
     <!-- Binary paper texture behind everything; the page background is on <html> so it shows through <body>. -->
     <BinaryBackground />
     <Header

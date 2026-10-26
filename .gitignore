@@ -25,3 +25,6 @@ entry-change-result.json
 # Outreach drafts (npm run outreach): never committed
 outreach/
 sync-summary.md
+.vercel
+.env*
+!.env.example
