@@ -2,6 +2,7 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { useTranslations } from '../lib/i18n';
+import { canonicalUrlForPath } from '../lib/seo';
 import { withBase, GA_MEASUREMENT_ID, GTM_CONTAINER_ID, SITE_URL } from '../../site.config';
 import '../styles/global.css';
 
@@ -44,7 +45,8 @@ const pageDesc = description || t('site.description');
 const currentPath = Astro.url.pathname;
 const analyticsEnabled = import.meta.env.PROD && Boolean(GA_MEASUREMENT_ID || GTM_CONTAINER_ID);
 const siteOrigin = Astro.site ? Astro.site.href : SITE_URL;
-const canonicalUrl = canonical || new URL(currentPath, siteOrigin).href;
+const canonicalUrl = canonicalUrlForPath(canonical || currentPath, siteOrigin);
+const sitemapUrl = new URL(withBase('/sitemap-index.xml'), siteOrigin).href;
 
 const defaultOgImage = new URL(withBase('/og.png'), Astro.site).href;
 const isDefaultOgImage =
@@ -68,7 +70,7 @@ let resolvedInitial = propInitial;
 let resolvedFinal = propFinal;
 
 if (!resolvedPrefix || !resolvedInitial || !resolvedFinal) {
-  if (currentPath.includes('/contribute') || currentPath.includes('/contribuer')) {
+  if (currentPath.includes('/contribute')) {
     resolvedPrefix = resolvedPrefix || '[STATUS: ';
     resolvedInitial = resolvedInitial || 'CONTRIBUTOR';
     resolvedFinal = resolvedFinal || 'CONTRIBUTE';
@@ -127,15 +129,13 @@ import BinaryBackground from '../components/BinaryBackground.astro';
     <meta name="twitter:image" content={resolvedOgImage} />
     <meta name="twitter:image:alt" content={resolvedOgImageAlt} />
 
-    <link rel="alternate" type="text/plain" title="LLM summary" href={withBase('/llms.txt')} />
-
     <!-- Favicon SVG Data URI -->
     <link
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230F172A'/><text x='50' y='66' font-size='44' font-family='monospace' font-weight='bold' fill='white' text-anchor='middle'>0xT</text></svg>"
     />
 
-    <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
+    <link rel="sitemap" href={sitemapUrl} />
 
     {jsonLdItems.map((schema) => (
       <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />

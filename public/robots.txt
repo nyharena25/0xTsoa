@@ -5,7 +5,5 @@ User-agent: *
 Allow: /
 # Pagefind search index chunks: binary fragments, no value in search results.
 Disallow: /pagefind/
-# Legacy redirect page.
-Disallow: /contribuer/
 
 Sitemap: https://www.0xtsoa.dev/sitemap-index.xml

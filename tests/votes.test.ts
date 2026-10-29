@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { getDiscussionUrlForConfig, getVotesForConfig, votesFromIssues, upvoteLabel } from '../src/lib/votes';
-import { REPO_URL } from '../site.config';
+import {
+  getDiscussionUrlForConfig,
+  getVotesForConfig,
+  votesFromIssues,
+  upvoteLabel,
+  voteIssueBody,
+  isVoteIssueUpToDate,
+} from '../src/lib/votes';
+import { REPO_URL, SITE_URL } from '../site.config';
 
 describe('Votes & upvote URL resolver', () => {
   it('labels counts as upvotes, singular for one', () => {
@@ -29,5 +36,38 @@ describe('Votes & upvote URL resolver', () => {
 
   it('correctly handles votes lookup fallback to 0 for unknown configs', () => {
     expect(getVotesForConfig('unknown/nonexistent-config')).toBe(0);
+  });
+
+  it('builds canonical vote issue bodies and detects legacy domain links or open issues', () => {
+    const id = 'end-4/dots-hyprland';
+    const body = voteIssueBody(id);
+    expect(body).toContain(`${SITE_URL}/configs/${id}/`);
+
+    expect(
+      isVoteIssueUpToDate(
+        { number: 12, title: `[0xTsoa] ${id}`, html_url: 'https://github.com/o/r/issues/12', body, state: 'closed' },
+        id,
+      ),
+    ).toBe(true);
+
+    expect(
+      isVoteIssueUpToDate(
+        {
+          number: 12,
+          title: `[0xTsoa] ${id}`,
+          html_url: 'https://github.com/o/r/issues/12',
+          body: '📋 **Config page:** https://nyharena25.github.io/0xTsoa/configs/end-4/dots-hyprland/',
+          state: 'closed',
+        },
+        id,
+      ),
+    ).toBe(false);
+
+    expect(
+      isVoteIssueUpToDate(
+        { number: 12, title: `[0xTsoa] ${id}`, html_url: 'https://github.com/o/r/issues/12', body, state: 'open' },
+        id,
+      ),
+    ).toBe(false);
   });
 });

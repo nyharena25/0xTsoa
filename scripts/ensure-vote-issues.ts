@@ -1,22 +1,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { REPO_OWNER, REPO_NAME, VOTE_LABEL, voteIssueTitle, SITE_URL, withBase } from '../site.config';
-import { listVoteIssues } from '../src/lib/votes';
+import { REPO_OWNER, REPO_NAME, VOTE_LABEL, voteIssueTitle } from '../site.config';
+import { listVoteIssues, voteIssueBody, isVoteIssueUpToDate, type VoteIssue } from '../src/lib/votes';
 import { mapPool } from './pool';
 
 /**
- * Ensures every configs/<author>/<slug>.json has one GitHub issue that collects its votes.
+ * Ensures every configs/<author>/<slug>.json has one GitHub issue that collects its votes,
+ * and keeps existing vote issues closed with their canonical SITE_URL link up to date.
  * New vote issues are closed right after creation, so the repository's open issues stay for real
  * reports. Closed issues still take 👍 reactions, and votes are read from open and closed issues alike.
  */
 /** Opens the vote issue of one config and closes it right away (closed, never locked: locking would stop non-collaborators from reacting). */
 async function createVoteIssue(api: string, headers: Record<string, string>, id: string): Promise<void> {
-  const configUrl = `${SITE_URL}${withBase(`/configs/${id}/`)}`;
-  const body =
-    `### Upvotes for \`${id}\`\n\n` +
-    `- 📋 **Config page:** ${configUrl}\n` +
-    `- 👍 **To upvote:** react to this message with 👍 (+1).\n\n` +
-    `Votes are counted at every site rebuild. Please keep comments on-topic (feedback about this setup).`;
+  const body = voteIssueBody(id);
   const res = await fetch(`${api}/issues`, {
     method: 'POST',
     headers,
@@ -34,6 +30,21 @@ async function createVoteIssue(api: string, headers: Record<string, string>, id:
   });
   if (closeRes.ok) console.log(`✓ Vote issue #${number} created (closed) for ${id}`);
   else console.log(`⚠ Vote issue #${number} created for ${id} but left open: ${closeRes.status} ${await closeRes.text()}`);
+}
+
+/** Updates an existing vote issue whose body still points to an old domain or that was left open. */
+async function updateVoteIssue(api: string, headers: Record<string, string>, id: string, issue: VoteIssue): Promise<void> {
+  const res = await fetch(`${api}/issues/${issue.number}`, {
+    method: 'PATCH',
+    headers,
+    body: JSON.stringify({
+      body: voteIssueBody(id),
+      state: 'closed',
+      state_reason: 'completed',
+    }),
+  });
+  if (res.ok) console.log(`✓ Vote issue #${issue.number} updated for ${id}`);
+  else console.log(`⚠ Vote issue #${issue.number} update failed for ${id}: ${res.status} ${await res.text()}`);
 }
 
 async function main() {
@@ -63,21 +74,36 @@ async function main() {
     );
 
   // Throws on API failure: never create issues from an incomplete listing.
-  const existing = new Set((await listVoteIssues(owner, repo, token)).map((i) => i.title.trim()));
-  const missing = configIds.filter((id) => !existing.has(voteIssueTitle(id)));
-  console.log(`${configIds.length} configs, ${missing.length} without a vote issue.`);
-  if (missing.length === 0) return;
+  const issues = await listVoteIssues(owner, repo, token);
+  const existingByTitle = new Map<string, VoteIssue>();
+  for (const issue of issues) {
+    const title = issue.title.trim();
+    if (!existingByTitle.has(title)) existingByTitle.set(title, issue);
+  }
+  const missing = configIds.filter((id) => !existingByTitle.has(voteIssueTitle(id)));
+  const outdated = configIds
+    .map((id) => ({ id, issue: existingByTitle.get(voteIssueTitle(id)) }))
+    .filter((entry): entry is { id: string; issue: VoteIssue } => Boolean(entry.issue) && !isVoteIssueUpToDate(entry.issue!, entry.id));
 
-  // Create the label explicitly (422 = already exists).
-  const labelRes = await fetch(`${api}/labels`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ name: VOTE_LABEL, color: '18181b', description: 'Community upvotes for a configuration' }),
-  });
-  if (!labelRes.ok && labelRes.status !== 422) throw new Error(`Cannot create label: ${labelRes.status}`);
+  console.log(`${configIds.length} configs, ${missing.length} without a vote issue, ${outdated.length} needing canonical URL/state update.`);
+  if (missing.length === 0 && outdated.length === 0) return;
 
-  // One issue at a time: GitHub's secondary rate limits ask for serial writes.
-  await mapPool(missing, 1, (id) => createVoteIssue(api, headers, id));
+  if (missing.length > 0) {
+    // Create the label explicitly (422 = already exists).
+    const labelRes = await fetch(`${api}/labels`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ name: VOTE_LABEL, color: '18181b', description: 'Community upvotes for a configuration' }),
+    });
+    if (!labelRes.ok && labelRes.status !== 422) throw new Error(`Cannot create label: ${labelRes.status}`);
+
+    // One issue at a time: GitHub's secondary rate limits ask for serial writes.
+    await mapPool(missing, 1, (id) => createVoteIssue(api, headers, id));
+  }
+
+  if (outdated.length > 0) {
+    await mapPool(outdated, 1, ({ id, issue }) => updateVoteIssue(api, headers, id, issue));
+  }
 }
 
 try {

@@ -51,13 +51,20 @@ export function foreignUrls(urls: string[], siteUrl: string): string[] {
 }
 
 /** Why a response is not a single permanent redirect to `expected`, or null when it is. */
-export function redirectProblem(status: number, location: string | null, expected: string): string | null {
+export function redirectProblem(
+  status: number,
+  location: string | null,
+  expected: string,
+  fromUrl?: string,
+): string | null {
   if (status !== 301 && status !== 308) {
     return status === 302 || status === 307
       ? `temporary redirect (${status}): search engines keep the old URL; make it 308 in Vercel → Domains`
       : `expected a 308 redirect, got ${status}`;
   }
-  if (location !== expected) return `redirects to ${location ?? '(no Location header)'}, expected ${expected}`;
+  if (!location) return `redirects to (no Location header), expected ${expected}`;
+  const resolved = fromUrl && location.startsWith('/') ? new URL(location, fromUrl).href : location;
+  if (resolved !== expected) return `redirects to ${location}, expected ${expected}`;
   return null;
 }
 
@@ -132,13 +139,24 @@ function checkPage(report: Report, url: string, res: Response): void {
   report.ok(`${url} answers 200 and is its own canonical`);
 }
 
-/** Each former host must send `paths` to the same path on SITE_URL in one permanent redirect. */
+const LEGACY_PATH_REDIRECTS: [fromPath: string, toPath: string][] = [
+  ['/contribuer', '/contribute/'],
+  ['/contribuer/', '/contribute/'],
+  ['/sitemap.xml', '/sitemap-index.xml'],
+];
+
+/** Each former host and legacy path must send requests to SITE_URL in one permanent redirect. */
 async function checkRedirects(report: Report, siteUrl: string, redirectHosts: string[], paths: string[]): Promise<void> {
-  const checks = redirectHosts.flatMap((host) => paths.map((p) => ({ from: `https://${host}${p}`, expected: `${siteUrl}${p}` })));
+  const hostChecks = redirectHosts.flatMap((host) => paths.map((p) => ({ from: `https://${host}${p}`, expected: `${siteUrl}${p}` })));
+  const pathChecks = LEGACY_PATH_REDIRECTS.map(([fromPath, toPath]) => ({
+    from: `${siteUrl}${fromPath}`,
+    expected: `${siteUrl}${toPath}`,
+  }));
+  const checks = [...hostChecks, ...pathChecks];
   const responses = await Promise.all(checks.map((c) => get(c.from)));
   checks.forEach(({ from, expected }, i) => {
     const res = responses[i];
-    const problem = redirectProblem(res.status, res.location, expected);
+    const problem = redirectProblem(res.status, res.location, expected, from);
     if (problem) report.fail(from, problem);
     else report.ok(`${from} → ${res.location} (${res.status})`);
   });

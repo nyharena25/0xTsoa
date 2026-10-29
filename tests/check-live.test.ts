@@ -57,6 +57,13 @@ describe('redirectProblem', () => {
   it('accepts one permanent redirect to the expected URL', () => {
     expect(redirectProblem(308, `${SITE}/catalogue/`, `${SITE}/catalogue/`)).toBeNull();
     expect(redirectProblem(301, `${SITE}/`, `${SITE}/`)).toBeNull();
+    expect(redirectProblem(308, '/contribute/', `${SITE}/contribute/`, `${SITE}/contribuer/`)).toBeNull();
+  });
+
+  it('rejects a relative Location header when redirecting from a foreign host', () => {
+    expect(redirectProblem(308, '/catalogue/', `${SITE}/catalogue/`, 'https://0xtsoa.vercel.app/catalogue/')).toMatch(
+      /expected https:\/\/www\.0xtsoa\.dev\/catalogue\//,
+    );
   });
 
   it('rejects temporary redirects with a hint', () => {
