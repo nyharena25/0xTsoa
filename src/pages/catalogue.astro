@@ -186,7 +186,8 @@ const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
         <nav id="pagination" aria-label="Catalogue pages" class="flex flex-wrap items-center justify-center gap-1.5 font-mono text-xs" data-page-size={PAGE_SIZE}>
           {totalPages > 1 && Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
             <a
-              href={`?p=${n}`}
+              href={n === 1 ? withBase('/catalogue/') : `?p=${n}`}
+              rel={n > 1 ? 'nofollow' : undefined}
               aria-current={n === 1 ? 'page' : undefined}
               class={`min-w-[36px] min-h-[36px] px-2.5 rounded-md border font-semibold transition-colors inline-flex items-center justify-center ${
                 n === 1
@@ -288,8 +289,9 @@ const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
 
     function buildPageHref(n: number): string {
       const p = new URLSearchParams(window.location.search);
-      p.set('p', String(n));
-      return `?${p.toString()}`;
+      if (n > 1) p.set('p', String(n));
+      else p.delete('p');
+      return p.toString() ? `?${p.toString()}` : window.location.pathname;
     }
 
     function goToPage(n: number) {
@@ -316,6 +318,7 @@ const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
         }
         const link = document.createElement('a');
         link.href = buildPageHref(target);
+        if (target > 1) link.rel = 'nofollow';
         link.textContent = label;
         if (active) link.setAttribute('aria-current', 'page');
         link.className = `min-w-[36px] min-h-[36px] px-2.5 rounded-md border font-semibold transition-colors inline-flex items-center justify-center ${

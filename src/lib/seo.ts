@@ -185,3 +185,18 @@ export function configSeoDescription(data: ConfigData, difficulty: InstallDiffic
   }
   return `${dropLastWord(summary.slice(0, DESCRIPTION_MAX - 1))}…`;
 }
+
+/**
+ * Normalizes a page pathname (or URL) to its canonical trailing-slash URL on `siteOrigin`.
+ * Strips query parameters, hash fragments, and `/index.html` suffixes so canonical URLs
+ * always match the sitemap and never point to a redirecting or parameterized URL.
+ */
+export function canonicalUrlForPath(pathnameOrUrl: string, siteOrigin: string): string {
+  const url = new URL(pathnameOrUrl, siteOrigin);
+  const origin = new URL(siteOrigin).origin;
+  let cleanPath = url.pathname.replace(/\/index\.html$/i, '/');
+  if (!cleanPath.endsWith('/') && !/\.[a-z0-9]+$/i.test(cleanPath)) {
+    cleanPath = `${cleanPath}/`;
+  }
+  return new URL(cleanPath, origin).href;
+}

@@ -14,12 +14,12 @@ import { getCollection } from 'astro:content';
 import { getRenderedReadme, extractScreenshotsFromReadme, readmeExcerpt } from '../../../lib/readme';
 import { rawToBlobUrl, blobUrl, hasInstallSteps, isAllowedImageUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
 import { buildInstallScript, renderCommand, verifiedScriptCommand, downloadInstallCommand, installScriptPath, installImpact, installDifficulty, attestationVerifyCommand, UPSTREAM_BACKUP_PATHS } from '../../../lib/install';
-import { configSeoTitle, configSeoDescription } from '../../../lib/seo';
+import { configSeoTitle, configSeoDescription, canonicalUrlForPath } from '../../../lib/seo';
 import { getStarsForConfig, getRepoStats, maintenanceForConfig } from '../../../lib/stats';
 import { relatedConfigs, maintainedAlternatives } from '../../../lib/related';
 import { liveTopics, primaryTopic, topicForFacet, topicPath } from '../../../lib/topics';
 import { useTranslations } from '../../../lib/i18n';
-import { withBase, REPO_URL } from '../../../../site.config';
+import { withBase, REPO_URL, SITE_URL } from '../../../../site.config';
 
 export async function getStaticPaths() {
   const configs = await getCollection('configs');
@@ -110,7 +110,7 @@ const resolvedShotUrl = !ogImageUrl
   : ogImageUrl.startsWith('http://') || ogImageUrl.startsWith('https://')
     ? ogImageUrl
     : new URL(withBase(ogImageUrl), Astro.site).href;
-const canonicalPageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const canonicalPageUrl = canonicalUrlForPath(Astro.url.pathname, Astro.site?.href ?? SITE_URL);
 const siteRootUrl = new URL(withBase('/'), Astro.site).href;
 const aboutUrl = new URL(withBase('/about/'), Astro.site).href;
 
@@ -225,8 +225,8 @@ const renderedSteps = (install?.steps ?? []).map((step) => ({
     <!-- PAGE HEADER: the one H1, then what it is in plain words -->
     <header class="flex flex-col gap-2.5 w-full min-w-0 pt-1">
       <p class="font-mono text-[11px] uppercase tracking-wider text-zinc-500 flex flex-wrap items-center gap-x-1.5 gap-y-1">
-        <a href={categoryHref} class="underline hover:text-zinc-900">{CATEGORY_LABELS[data.category]}</a>
-        {data.wm !== 'any' && <><span aria-hidden="true">·</span><a href={wmHref} class="underline hover:text-zinc-900">{wmLabel}</a></>}
+        <a href={categoryHref} rel={!categoryTopic ? 'nofollow' : undefined} class="underline hover:text-zinc-900">{CATEGORY_LABELS[data.category]}</a>
+        {data.wm !== 'any' && <><span aria-hidden="true">·</span><a href={wmHref} rel={!wmTopic ? 'nofollow' : undefined} class="underline hover:text-zinc-900">{wmLabel}</a></>}
         <span aria-hidden="true">·</span>
         <span>by <a href={`https://github.com/${data.author.github}`} target="_blank" rel="noopener noreferrer" class="underline hover:text-zinc-900 normal-case">@{data.author.github}</a></span>
       </p>
@@ -289,7 +289,7 @@ const renderedSteps = (install?.steps ?? []).map((step) => ({
 
           <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-zinc-50/70 min-w-0 break-words gap-1 md:gap-0">
             <dt class="md:col-span-3 font-semibold uppercase text-zinc-500 tracking-wider text-[11px] mb-1 md:mb-0">Desktop Part</dt>
-            <dd class="md:col-span-9 text-zinc-900 font-medium min-w-0 break-words"><a class="underline" href={categoryHref}>{CATEGORY_LABELS[data.category]}</a></dd>
+            <dd class="md:col-span-9 text-zinc-900 font-medium min-w-0 break-words"><a class="underline" href={categoryHref} rel={!categoryTopic ? 'nofollow' : undefined}>{CATEGORY_LABELS[data.category]}</a></dd>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-12 p-3 sm:p-3.5 bg-white min-w-0 break-words gap-1 md:gap-0">

@@ -44,7 +44,7 @@ const heading = title ?? `All ${rows.length} entries, compared`;
 <section aria-labelledby={headingId} class="not-prose bg-white border border-zinc-200 rounded-xl shadow-xs p-3 sm:p-5 w-full min-w-0">
   <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
     <h2 id={headingId} class="font-mono text-xs sm:text-sm uppercase font-bold text-zinc-900 tracking-wider m-0">{heading}</h2>
-    {catalogueQuery && <a href={withBase(`/catalogue/?${catalogueQuery}`)} class="font-mono text-[11px] underline text-zinc-600 hover:text-zinc-900">Filter in the catalogue &rarr;</a>}
+    {catalogueQuery && <a href={withBase(`/catalogue/?${catalogueQuery}`)} rel="nofollow" class="font-mono text-[11px] underline text-zinc-600 hover:text-zinc-900">Filter in the catalogue &rarr;</a>}
   </div>
   <table class="w-full text-left font-mono text-[11px] border-collapse block md:table">
     <thead class="hidden md:table-header-group bg-zinc-50 border-b border-zinc-200 text-zinc-500 uppercase tracking-wider text-[10px]">

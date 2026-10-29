@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { REPO_URL, VOTE_LABEL, voteIssueTitle } from '../../site.config';
+import { REPO_URL, SITE_URL, VOTE_LABEL, voteIssueTitle, withBase } from '../../site.config';
 
 export interface VoteData {
   votes: number;
@@ -51,8 +51,27 @@ export interface VoteIssue {
   number: number;
   title: string;
   html_url: string;
+  body?: string | null;
+  state?: string;
   reactions?: Record<string, number>;
   pull_request?: unknown;
+}
+
+/** Canonical markdown body for a config's GitHub vote issue, linking to its SITE_URL page. */
+export function voteIssueBody(configId: string, siteUrl = SITE_URL): string {
+  const configUrl = `${siteUrl.replace(/\/$/, '')}${withBase(`/configs/${configId}/`)}`;
+  return (
+    `### Upvotes for \`${configId}\`\n\n` +
+    `- 📋 **Config page:** ${configUrl}\n` +
+    `- 👍 **To upvote:** react to this message with 👍 (+1).\n\n` +
+    `Votes are counted at every site rebuild. Please keep comments on-topic (feedback about this setup).`
+  );
+}
+
+/** True when an existing vote issue already points to the canonical config URL on `siteUrl` and is closed. */
+export function isVoteIssueUpToDate(issue: VoteIssue, configId: string, siteUrl = SITE_URL): boolean {
+  const canonicalConfigUrl = `${siteUrl.replace(/\/$/, '')}${withBase(`/configs/${configId}/`)}`;
+  return Boolean(issue.body?.includes(canonicalConfigUrl)) && issue.state === 'closed';
 }
 
 const POSITIVE_REACTIONS = ['+1'];

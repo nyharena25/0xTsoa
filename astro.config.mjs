@@ -51,8 +51,8 @@ if (docsDates.length) lastMod.set(pageUrl('/docs/'), docsDates.toSorted((a, b) =
 export default defineConfig({
   site: SITE_URL,
   base: BASE_PATH || '/',
+  trailingSlash: 'always',
   output: 'static',
-  // /contribuer/ is a legacy redirect page, keep it out of the index.
   // Prism marks code with classes; Shiki's inline styles would be blocked by the CSP below.
   markdown: {
     syntaxHighlight: 'prism',
@@ -60,7 +60,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      filter: (page) => !page.includes('/contribuer') && !page.endsWith('.sh') && !page.endsWith('.txt'),
+      filter: (page) => !page.includes('/contribuer') && !page.endsWith('.sh') && !page.endsWith('.txt') && !page.endsWith('.json'),
       serialize(item) {
         const lastmod = lastMod.get(item.url);
         if (lastmod) {
