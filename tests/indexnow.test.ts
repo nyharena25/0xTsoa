@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseNameStatus, selectIndexNowUrls } from '../scripts/indexnow';
 
-const SITE = 'https://www.0xtsoa.dev';
+const SITE = 'https://0xtsoa.dev';
 const ALL = [`${SITE}/`, `${SITE}/about/`, `${SITE}/catalogue/`, `${SITE}/configs/a/b/`, `${SITE}/configs/c/d/`];
 const changes = (...paths: string[]) => paths.map((path) => ({ path }));
 

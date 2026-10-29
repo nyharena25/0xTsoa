@@ -97,19 +97,19 @@ describe('configSeoDescription', () => {
 });
 
 describe('canonicalUrlForPath', () => {
-  const origin = 'https://www.0xtsoa.dev';
+  const origin = 'https://0xtsoa.dev';
 
   it('enforces a trailing slash on directory paths and strips index.html, query params, and hashes', () => {
-    expect(canonicalUrlForPath('/', origin)).toBe('https://www.0xtsoa.dev/');
-    expect(canonicalUrlForPath('/catalogue', origin)).toBe('https://www.0xtsoa.dev/catalogue/');
-    expect(canonicalUrlForPath('/catalogue/?wm=hyprland&p=2#top', origin)).toBe('https://www.0xtsoa.dev/catalogue/');
-    expect(canonicalUrlForPath('/about/index.html', origin)).toBe('https://www.0xtsoa.dev/about/');
+    expect(canonicalUrlForPath('/', origin)).toBe('https://0xtsoa.dev/');
+    expect(canonicalUrlForPath('/catalogue', origin)).toBe('https://0xtsoa.dev/catalogue/');
+    expect(canonicalUrlForPath('/catalogue/?wm=hyprland&p=2#top', origin)).toBe('https://0xtsoa.dev/catalogue/');
+    expect(canonicalUrlForPath('/about/index.html', origin)).toBe('https://0xtsoa.dev/about/');
     expect(canonicalUrlForPath('https://0xtsoa.vercel.app/configs/end-4/dots-hyprland', origin)).toBe(
-      'https://www.0xtsoa.dev/configs/end-4/dots-hyprland/',
+      'https://0xtsoa.dev/configs/end-4/dots-hyprland/',
     );
   });
 
   it('preserves file extensions when given an explicit asset path', () => {
-    expect(canonicalUrlForPath('/sitemap-index.xml', origin)).toBe('https://www.0xtsoa.dev/sitemap-index.xml');
+    expect(canonicalUrlForPath('/sitemap-index.xml', origin)).toBe('https://0xtsoa.dev/sitemap-index.xml');
   });
 });

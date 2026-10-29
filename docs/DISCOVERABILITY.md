@@ -15,12 +15,12 @@ Use this exact wording across every profile, README, launch post, and directory 
 ChatGPT Search, Microsoft Copilot, Perplexity, and DuckDuckGo rely heavily on Bing's index.
 
 1. Open [Bing Webmaster Tools](https://www.bing.com/webmasters) and sign in.
-2. Choose **Import from Google Search Console** to verify `https://www.0xtsoa.dev` automatically (or copy the `<meta name="msvalidate.01" content="...">` verification token and replace `TODO_BING_VERIFICATION_CODE` in `src/layouts/Base.astro`).
+2. Choose **Import from Google Search Console** to verify `https://0xtsoa.dev` automatically (or copy the `<meta name="msvalidate.01" content="...">` verification token and replace `TODO_BING_VERIFICATION_CODE` in `src/layouts/Base.astro`).
 3. Under **Sitemaps**, submit:
    ```text
-   https://www.0xtsoa.dev/sitemap-index.xml
+   https://0xtsoa.dev/sitemap-index.xml
    ```
-4. Once deployed to Vercel (so `https://www.0xtsoa.dev/4f8b2e9a1c7d6035e8a4b2c9d1f7063a.txt` is live), trigger an immediate IndexNow push of all sitemap URLs:
+4. Once deployed to Vercel (so `https://0xtsoa.dev/4f8b2e9a1c7d6035e8a4b2c9d1f7063a.txt` is live), trigger an immediate IndexNow push of all sitemap URLs:
    ```bash
    npm run indexnow
    ```
@@ -34,12 +34,12 @@ LinkedIn is one of the highest-authority identity sources for linking a creator'
 1. On [linkedin.com/in/rnyharena-dev/](https://www.linkedin.com/in/rnyharena-dev/), open **Add profile section → Additional → Add projects**:
    - **Project name:** `0xTsoa (ZeroTsoa)`
    - **Description:** `0xTsoa (pronounced ZeroTsoa) is an open-source registry of reproducible Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer.`
-   - **Project URL:** `https://www.0xtsoa.dev`
-2. Add `https://www.0xtsoa.dev` to your **Featured** section with the title `0xTsoa — Reproducible Linux Desktop Registry`.
+   - **Project URL:** `https://0xtsoa.dev`
+2. Add `https://0xtsoa.dev` to your **Featured** section with the title `0xTsoa — Reproducible Linux Desktop Registry`.
 3. Publish one public LinkedIn post announcing `0xTsoa` (`ZeroTsoa`), including:
    - The canonical sentence verbatim
    - How the name `0xTsoa` comes from `0x` + `Tsoa` (from `RAVELOMANANTSOA`)
-   - Links to `https://www.0xtsoa.dev` and `https://github.com/nyharena25/0xTsoa`
+   - Links to `https://0xtsoa.dev` and `https://github.com/nyharena25/0xTsoa`
 
 ---
 
@@ -49,13 +49,13 @@ LinkedIn is one of the highest-authority identity sources for linking a creator'
    ```bash
    gh repo edit nyharena25/0xTsoa \
      --description "0xTsoa (pronounced ZeroTsoa) is an open-source registry of reproducible Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer." \
-     --homepage "https://www.0xtsoa.dev" \
+     --homepage "https://0xtsoa.dev" \
      --add-topic dotfiles,linux,ricing,hyprland,wayland,unixporn,desktop-customization,astro,registry,madagascar
    ```
 2. On your GitHub profile ([github.com/nyharena25](https://github.com/nyharena25)):
-   - Set **Website** to `https://www.0xtsoa.dev/about/` (this completes the bidirectional `rel="me"` / `sameAs` verification loop with `/about/`).
+   - Set **Website** to `https://0xtsoa.dev/about/` (this completes the bidirectional `rel="me"` / `sameAs` verification loop with `/about/`).
    - Pin `nyharena25/0xTsoa` as the first pinned repository.
-   - In your profile repository (`nyharena25/nyharena25` `README.md`), include the canonical sentence and a link to `https://www.0xtsoa.dev`.
+   - In your profile repository (`nyharena25/nyharena25` `README.md`), include the canonical sentence and a link to `https://0xtsoa.dev`.
 
 ---
 
@@ -71,16 +71,16 @@ Open a focused Pull Request adding `0xTsoa` to each of these verified repositori
 
 Suggested list entry format:
 ```markdown
-- [0xTsoa](https://www.0xtsoa.dev) - Open-source, zero-database registry of reproducible Linux desktop configurations and dotfiles with pinned Git refs and SHA-256 verified install scripts. ([Source](https://github.com/nyharena25/0xTsoa))
+- [0xTsoa](https://0xtsoa.dev) - Open-source, zero-database registry of reproducible Linux desktop configurations and dotfiles with pinned Git refs and SHA-256 verified install scripts. ([Source](https://github.com/nyharena25/0xTsoa))
 ```
 
 ---
 
 ## 5. Community Launch Posts
 
-Include the canonical sentence and a link to `https://www.0xtsoa.dev` (and `https://github.com/nyharena25/0xTsoa`) in each launch post:
+Include the canonical sentence and a link to `https://0xtsoa.dev` (and `https://github.com/nyharena25/0xTsoa`) in each launch post:
 
-- **Hacker News:** Submit `Show HN: 0xTsoa – a static registry of reproducible Linux rices` pointing to `https://www.0xtsoa.dev` with an introductory comment explaining the zero-database Git architecture, SHA-256 script verification, and the canonical sentence.
+- **Hacker News:** Submit `Show HN: 0xTsoa – a static registry of reproducible Linux rices` pointing to `https://0xtsoa.dev` with an introductory comment explaining the zero-database Git architecture, SHA-256 script verification, and the canonical sentence.
 - **Reddit:**
   - `r/unixporn`: Follow sub rules strictly (post a qualifying showcase screenshot or approved community resource thread and place the canonical description + link in the details comment).
   - `r/hyprland`: Share how Hyprland configurations are indexed with component specs and pinned refs.
@@ -106,7 +106,7 @@ Independent regional mentions build strong entity co-occurrence between **Ny Har
 1. Create accounts on **X (Twitter)**, **Mastodon (`fosstodon.org`)**, and **dev.to** using:
    - **Name:** `Ny Harena RAVELOMANANTSOA` (or `0xTsoa` for a dedicated project account)
    - **Bio:** `0xTsoa (pronounced ZeroTsoa) is an open-source registry of reproducible Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer.`
-   - **Website:** `https://www.0xtsoa.dev`
+   - **Website:** `https://0xtsoa.dev`
 2. Once those profiles exist, add their exact URLs to:
    - The `TODO` comments in `sameAs` inside `src/pages/index.astro` (`#founder` and `#org`)
    - The `sameAs` array in `src/pages/about.astro`
@@ -119,32 +119,32 @@ Independent regional mentions build strong entity co-occurrence between **Ny Har
 Every config page ends with a "For the author" box (`src/components/AuthorBox.astro`) that shows this snippet already filled in for that entry, with a copy button and links to suggest an edit or request removal. When notifying maintainers that their dotfiles or desktop component is indexed on 0xTsoa, link them to their page, or give them the snippet for their repository `README.md`:
 
 ```markdown
-[![Indexed on 0xTsoa](https://www.0xtsoa.dev/badge.svg)](https://www.0xtsoa.dev/configs/<author>/<slug>/)
+[![Indexed on 0xTsoa](https://0xtsoa.dev/badge.svg)](https://0xtsoa.dev/configs/<author>/<slug>/)
 ```
 
-Each README badge creates a high-relevance GitHub backlink directly to that configuration's specification page on `www.0xtsoa.dev`.
+Each README badge creates a high-relevance GitHub backlink directly to that configuration's specification page on `0xtsoa.dev`.
 
 ---
 
-## 9. Custom Domain (`www.0xtsoa.dev`)
+## 9. Custom Domain (`0xtsoa.dev`)
 
-The canonical host is `https://www.0xtsoa.dev`. Every URL the site publishes (canonical tags, `og:url`, structured data, sitemap, `robots.txt`, `llms.txt`, IndexNow) comes from `SITE_URL` in `site.config.ts`, so it must name the host that answers **200** directly. A canonical or sitemap URL that redirects sends search engines mixed signals: Bing then reports pages as "Discovered but not crawled".
+The canonical host is `https://0xtsoa.dev`. Every URL the site publishes (canonical tags, `og:url`, structured data, sitemap, `robots.txt`, `llms.txt`, IndexNow) comes from `SITE_URL` in `site.config.ts`, so it must name the host that answers **200** directly. A canonical or sitemap URL that redirects sends search engines mixed signals: Bing then reports pages as "Discovered but not crawled".
 
 Redirects are configured in Vercel Project Settings → **Domains**, not in `vercel.json`:
 
 | Host | Setting |
 | :--- | :--- |
-| `www.0xtsoa.dev` | Production (primary, answers 200) |
-| `0xtsoa.dev` | Redirect **308** → `www.0xtsoa.dev` |
-| `0xtsoa.vercel.app` | Redirect **308** → `www.0xtsoa.dev` (a 302 is temporary: search engines keep the old URL, and Google's Change of address tool rejects it) |
+| `0xtsoa.dev` | Production (primary, answers 200) |
+| `www.0xtsoa.dev` | Redirect **308** → `0xtsoa.dev` |
+| `0xtsoa.vercel.app` | Redirect **308** → `0xtsoa.dev` (a 302 is temporary: search engines keep the old URL, and Google's Change of address tool rejects it) |
 
 After each deploy that touches URLs:
 
-1. If `SITE_URL` is set in the Vercel production environment variables, it must be exactly `https://www.0xtsoa.dev` (or unset, to use the default).
-2. Check that `https://www.0xtsoa.dev/` has `<link rel="canonical" href="https://www.0xtsoa.dev/">`, and that `robots.txt` and `sitemap-index.xml` only list `https://www.0xtsoa.dev/` URLs.
-3. Check that `/`, `/catalogue/`, one `/configs/<author>/<slug>/` page and `/sitemap-index.xml` on `0xtsoa.vercel.app` and on `0xtsoa.dev` each reach the matching `www.0xtsoa.dev` URL in a single 308 redirect.
-4. **Google Search Console:** verify `0xtsoa.dev` as a **Domain** property (DNS TXT record; it covers `www`) and submit `https://www.0xtsoa.dev/sitemap-index.xml`. In the old `0xtsoa.vercel.app` property, run **Settings → Change of address** once the redirect is a 308. Keep the old property.
-5. **Bing Webmaster Tools:** in the `www.0xtsoa.dev` site, remove any sitemap that lists `0xtsoa.vercel.app` URLs, submit `https://www.0xtsoa.dev/sitemap-index.xml`, run `npm run indexnow` once (later deploys submit their changed pages automatically through `check-live.yml`), then use **URL Inspection → Request indexing** on the home page and the catalogue.
+1. If `SITE_URL` is set in the Vercel production environment variables, it must be exactly `https://0xtsoa.dev` (or unset, to use the default).
+2. Check that `https://0xtsoa.dev/` has `<link rel="canonical" href="https://0xtsoa.dev/">`, and that `robots.txt` and `sitemap-index.xml` only list `https://0xtsoa.dev/` URLs.
+3. Check that `/`, `/catalogue/`, one `/configs/<author>/<slug>/` page and `/sitemap-index.xml` on `0xtsoa.vercel.app` and on `www.0xtsoa.dev` each reach the matching `0xtsoa.dev` URL in a single 308 redirect.
+4. **Google Search Console:** verify `0xtsoa.dev` as a **Domain** property (DNS TXT record; it covers `www`) and submit `https://0xtsoa.dev/sitemap-index.xml`. In the old `0xtsoa.vercel.app` property, run **Settings → Change of address** once the redirect is a 308. Keep the old property.
+5. **Bing Webmaster Tools:** in the `0xtsoa.dev` site, remove any sitemap that lists `0xtsoa.vercel.app` URLs, submit `https://0xtsoa.dev/sitemap-index.xml`, run `npm run indexnow` once (later deploys submit their changed pages automatically through `check-live.yml`), then use **URL Inspection → Request indexing** on the home page and the catalogue.
 
 ---
 

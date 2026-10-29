@@ -8,7 +8,7 @@ import {
   redirectProblem,
 } from '../scripts/check-live';
 
-const SITE = 'https://www.0xtsoa.dev';
+const SITE = 'https://0xtsoa.dev';
 
 describe('extractCanonical / extractOgUrl', () => {
   it('reads the canonical href whatever the attribute order', () => {
@@ -39,14 +39,14 @@ describe('extractLocs / extractSitemapLines', () => {
 });
 
 describe('foreignUrls', () => {
-  it('flags other hosts, http and the bare apex, but not the site itself', () => {
+  it('flags other hosts, http and www, but not the site itself', () => {
     const urls = [
       `${SITE}/`,
       `${SITE}/configs/a/b/`,
       'https://0xtsoa.vercel.app/',
-      'https://0xtsoa.dev/catalogue/',
-      'http://www.0xtsoa.dev/',
-      'https://www.0xtsoa.dev.evil.example/',
+      'https://www.0xtsoa.dev/catalogue/',
+      'http://0xtsoa.dev/',
+      'https://0xtsoa.dev.evil.example/',
     ];
     expect(foreignUrls(urls, SITE)).toEqual(urls.slice(2));
     expect(foreignUrls(urls.slice(0, 2), `${SITE}/`)).toEqual([]);
@@ -62,7 +62,7 @@ describe('redirectProblem', () => {
 
   it('rejects a relative Location header when redirecting from a foreign host', () => {
     expect(redirectProblem(308, '/catalogue/', `${SITE}/catalogue/`, 'https://0xtsoa.vercel.app/catalogue/')).toMatch(
-      /expected https:\/\/www\.0xtsoa\.dev\/catalogue\//,
+      /expected https:\/\/0xtsoa\.dev\/catalogue\//,
     );
   });
 
@@ -73,7 +73,7 @@ describe('redirectProblem', () => {
 
   it('rejects a direct answer or a redirect to the wrong place', () => {
     expect(redirectProblem(200, null, `${SITE}/`)).toMatch(/got 200/);
-    expect(redirectProblem(308, `${SITE}/`, `${SITE}/catalogue/`)).toMatch(/expected https:\/\/www\.0xtsoa\.dev\/catalogue\//);
+    expect(redirectProblem(308, `${SITE}/`, `${SITE}/catalogue/`)).toMatch(/expected https:\/\/0xtsoa\.dev\/catalogue\//);
     expect(redirectProblem(308, null, `${SITE}/`)).toMatch(/no Location header/);
   });
 });

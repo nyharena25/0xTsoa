@@ -4,18 +4,6 @@
   "outputDirectory": "dist",
   "trailingSlash": true,
   "redirects": [
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "0xtsoa.vercel.app" }],
-      "destination": "https://www.0xtsoa.dev/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "0xtsoa.dev" }],
-      "destination": "https://www.0xtsoa.dev/:path*",
-      "permanent": true
-    },
     { "source": "/contribuer", "destination": "/contribute/", "permanent": true },
     { "source": "/contribuer/", "destination": "/contribute/", "permanent": true },
     { "source": "/sitemap.xml", "destination": "/sitemap-index.xml", "permanent": true }
