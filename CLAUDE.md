@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-0xTsoa is an open registry of Linux desktop configurations (dotfiles, themes, bars, launchers…). It is a static Astro 7 site (Tailwind 4, Zod 4, Pagefind search) with no database: each registry entry is a JSON file at `configs/<author>/<slug>.json`, and GitHub Issues plus Actions do the rest (submissions, votes, upstream sync). Deployed on Vercel at https://www.0xtsoa.dev (root path); `0xtsoa.dev` and `0xtsoa.vercel.app` redirect there through Vercel's domain settings. `SITE_URL` must stay the host that answers 200 (www), or canonicals and the sitemap point at redirects. Node >= 20 (CI uses 22).
+0xTsoa is an open registry of Linux desktop configurations (dotfiles, themes, bars, launchers…). It is a static Astro 7 site (Tailwind 4, Zod 4, Pagefind search) with no database: each registry entry is a JSON file at `configs/<author>/<slug>.json`, and GitHub Issues plus Actions do the rest (submissions, votes, upstream sync). Deployed on Vercel at https://0xtsoa.dev (root path); `www.0xtsoa.dev` and `0xtsoa.vercel.app` redirect there through Vercel's domain settings (not `vercel.json`). `SITE_URL` must stay the host that answers 200 (the apex), or canonicals and the sitemap point at redirects. Node >= 20 (CI uses 22).
 
 ## Commands
 

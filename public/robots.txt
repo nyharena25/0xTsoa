@@ -1,4 +1,4 @@
-# 0xTsoa — https://www.0xtsoa.dev
+# 0xTsoa — https://0xtsoa.dev
 # Public, static registry: all crawlers (search engines and AI agents) welcome.
 
 User-agent: *
@@ -6,4 +6,4 @@ Allow: /
 # Pagefind search index chunks: binary fragments, no value in search results.
 Disallow: /pagefind/
 
-Sitemap: https://www.0xtsoa.dev/sitemap-index.xml
+Sitemap: https://0xtsoa.dev/sitemap-index.xml

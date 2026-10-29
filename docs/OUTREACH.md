@@ -58,7 +58,7 @@ Do not start outreach before the claim flow (`claim-to-pr.yml`) is merged to `ma
 <!-- outreach-template:body -->
 Hi @{{github}},
 
-Thanks for {{projects}}. I listed {{itThem}} on [0xTsoa](https://www.0xtsoa.dev), an open registry of Linux desktop setups, credited to you and linking back here:
+Thanks for {{projects}}. I listed {{itThem}} on [0xTsoa](https://0xtsoa.dev), an open registry of Linux desktop setups, credited to you and linking back here:
 
 {{entryList}}
 

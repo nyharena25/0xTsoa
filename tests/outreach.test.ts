@@ -85,7 +85,7 @@ describe('outreach message', () => {
     expect(m.body).not.toMatch(/\{\{/);
     expect(m.body).toContain('Hi @alice,');
     expect(m.body).toContain('I listed them on');
-    expect(m.body).toContain('https://www.0xtsoa.dev/configs/alice/dots/');
+    expect(m.body).toContain('https://0xtsoa.dev/configs/alice/dots/');
     expect(m.body).toContain('template=claim-entry.yml');
     expect(m.body).toContain('Send a screenshot');
     expect(m.body).toMatch(/\n {2}\[!\[Indexed on 0xTsoa\]\(.+\/configs\/alice\/bar\/\)\n {2}\[!\[Indexed on 0xTsoa\]\(.+\/configs\/alice\/dots\/\)/);

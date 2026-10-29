@@ -1,6 +1,6 @@
 # Contributing to 0xTsoa
 
-Thank you for contributing to **0xTsoa** (`https://www.0xtsoa.dev`).
+Thank you for contributing to **0xTsoa** (`https://0xtsoa.dev`).
 
 0xTsoa is an open-source, zero-database community registry for reproducible Linux desktop environments, dotfiles, and window manager setups (Wayland and X11). Every entry in the catalogue is backed by a validated JSON specification inside `configs/<author>/<slug>.json`. This guide covers every way you can contribute, the complete JSON schema specification, security validation rules, the community voting engine, local development, and pull request conventions.
 
@@ -242,7 +242,7 @@ Every `screenshots[].url` must either be a local file inside `public/` (starting
 Node.js `>= 20` is required. Optional environment variables are documented in `.env.example`:
 - `REPO_OWNER` (defaults to `nyharena25`)
 - `REPO_NAME` (defaults to `0xTsoa`)
-- `SITE_URL` (defaults to `https://www.0xtsoa.dev`)
+- `SITE_URL` (defaults to `https://0xtsoa.dev`)
 - `BASE_PATH` (defaults to `""`)
 - `GA_MEASUREMENT_ID` (optional Google Analytics 4 measurement ID; omitted by default)
 - `GITHUB_TOKEN` (optional GitHub Personal Access Token for higher API rate limits and creating vote issues)

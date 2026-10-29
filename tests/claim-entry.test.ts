@@ -13,7 +13,7 @@ const body = (entry: string) => `### Entry\n\n${entry}\n\n### Confirmation\n\n- 
 describe('claim issue parsing', () => {
   it('reads the entry id, also from a pasted page URL', () => {
     expect(parseClaimEntry(body('catppuccin/hyprland-theme'))).toBe('catppuccin/hyprland-theme');
-    expect(parseClaimEntry(body('https://www.0xtsoa.dev/configs/catppuccin/hyprland-theme/'))).toBe('catppuccin/hyprland-theme');
+    expect(parseClaimEntry(body('https://0xtsoa.dev/configs/catppuccin/hyprland-theme/'))).toBe('catppuccin/hyprland-theme');
     expect(parseClaimEntry(body('/configs/end-4/dots-hyprland/'))).toBe('end-4/dots-hyprland');
   });
 
