@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/nwg-piotr/nwg-hello",
-    "ref": "7377f8c86c9c159fb4636c17f1e402660eccf7f5",
+    "ref": "ec535909b71eb3a669835a43fdf9efe364fd5429",
     "readme": "README.md"
   },
   "install": {
@@ -50,5 +50,5 @@
       }
     ]
   },
-  "version": "v0.5.0"
+  "version": "v0.5.1"
 }
