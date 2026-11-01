@@ -22,7 +22,7 @@ const isoDate = z.preprocess(
 
 export const guideSchema = z
   .object({
-    /** Search title without the " — 0xTsoa" suffix: Base.astro appends it. */
+    /** Search title without the " | 0xTsoa" suffix: Base.astro appends it. */
     title: z.string().min(10).max(51),
     h1: z.string().min(10).max(90),
     /** Short name for breadcrumbs and links. */

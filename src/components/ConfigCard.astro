@@ -6,6 +6,8 @@ import { useTranslations } from '../lib/i18n';
 import { getStarsForConfig, maintenanceForConfig, MAINTENANCE_INFO } from '../lib/stats';
 import { installDifficulty, DIFFICULTY_INFO } from '../lib/install';
 import { type ConfigData, WM_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../lib/schema';
+import { liveTopics, topicForFacet, topicPath, type TopicFacet } from '../lib/topics';
+import { getCollection } from 'astro:content';
 import { withBase } from '../../site.config';
 
 interface Props {
@@ -28,6 +30,13 @@ const thumbUrl = primaryShot.url.startsWith('/') ? withBase(primaryShot.url) : p
 // The four most telling tags; the rest are on the config page and still searchable.
 const tags = data.tags.filter((t) => t !== 'archived').slice(0, 4);
 const updated = new Date(`${data.updatedAt}T00:00:00Z`).toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+// A facet chip goes to its topic page when one is published (a crawlable page worth linking);
+// otherwise it filters the catalogue, and filter URLs stay nofollow like the pagination links.
+const live = liveTopics(await getCollection('configs')).map(({ topic }) => topic);
+const facetLink = (facet: TopicFacet, query: string) => {
+  const topic = topicForFacet(live, facet);
+  return topic ? { href: withBase(topicPath(topic.slug)) } : { href: `?${query}`, rel: 'nofollow' };
+};
 const chip = 'px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-100 text-zinc-700 border border-zinc-200 hover:border-zinc-900 hover:text-zinc-900';
 ---
 
@@ -36,7 +45,7 @@ const chip = 'px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-100 
     <a href={specUrl} tabindex="-1" aria-hidden="true" class="block w-full aspect-video rounded-lg overflow-hidden border border-zinc-200 bg-zinc-950">
       <img
         src={thumbUrl}
-        alt=""
+        alt={primaryShot.alt}
         width="480"
         height="270"
         loading="lazy"
@@ -47,11 +56,11 @@ const chip = 'px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-zinc-100 
 
     <div class="flex flex-col gap-2 min-w-0">
       <div class="flex flex-wrap items-center gap-1.5">
-        <a href={`?category=${data.category}`} rel="nofollow" class="px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase tracking-wider bg-zinc-900 text-white hover:bg-zinc-700">
+        <a {...facetLink({ kind: 'category', value: data.category }, `category=${data.category}`)} class="px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase tracking-wider bg-zinc-900 text-white hover:bg-zinc-700">
           {CATEGORY_LABELS[data.category]}
         </a>
-        {data.wm !== 'any' && <a href={`?wm=${data.wm}`} rel="nofollow" class={chip}>{WM_LABELS[data.wm]}</a>}
-        {data.themeStyle !== 'other' && <a href={`?style=${data.themeStyle}`} rel="nofollow" class={chip}>{STYLE_LABELS[data.themeStyle]}</a>}
+        {data.wm !== 'any' && <a {...facetLink({ kind: 'wm', value: data.wm }, `wm=${data.wm}`)} class={chip}>{WM_LABELS[data.wm]}</a>}
+        {data.themeStyle !== 'other' && <a {...facetLink({ kind: 'style', value: data.themeStyle }, `style=${data.themeStyle}`)} class={chip}>{STYLE_LABELS[data.themeStyle]}</a>}
       </div>
 
       <h2 class="font-display text-lg sm:text-xl font-bold tracking-tight text-zinc-900 m-0 break-words">

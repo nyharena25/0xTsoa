@@ -1,0 +1,51 @@
+---
+// Served by Vercel for every missing route. noindex, so a mistyped link never shows up in search.
+import Base from '../layouts/Base.astro';
+import TopicLinks from '../components/TopicLinks.astro';
+import { useTranslations } from '../lib/i18n';
+import { withBase } from '../../site.config';
+
+const locale = 'en';
+const t = useTranslations(locale);
+---
+
+<Base
+  title={t('notFound.metaTitle')}
+  description={t('notFound.metaDescription')}
+  locale={locale}
+  statusPrefix="[STATUS: "
+  statusInitial="EXIT 0"
+  statusFinal="404"
+  noindex
+>
+  <div class="max-w-3xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-16 flex flex-col gap-6">
+    <section class="bg-white border border-zinc-200 rounded-xl shadow-xs p-6 sm:p-8 flex flex-col gap-5">
+      <p class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-500 m-0">exit 404</p>
+      <h1 class="font-display text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 m-0" data-page-title="true">{t('notFound.heading')}</h1>
+      <p class="font-sans text-sm sm:text-base text-zinc-600 leading-relaxed m-0">{t('notFound.body')}</p>
+
+      <form action={withBase('/catalogue/')} method="GET" role="search" class="flex flex-col sm:flex-row gap-2">
+        <label for="notfound-search" class="sr-only">{t('notFound.searchLabel')}</label>
+        <input
+          id="notfound-search"
+          name="q"
+          type="search"
+          placeholder={t('notFound.searchPlaceholder')}
+          autocomplete="off"
+          class="flex-1 min-h-[44px] bg-zinc-50 border border-zinc-300 rounded-md px-3 font-mono text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+        />
+        <button type="submit" class="btn-solid min-h-[44px] px-5 text-sm cursor-pointer">{t('notFound.searchLabel')}</button>
+      </form>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <a href={withBase('/catalogue/')} class="btn-outline min-h-[44px] px-5 py-2.5 text-sm"><span>{t('notFound.catalogue')}</span><span>→</span></a>
+        <a href={withBase('/')} class="btn-outline min-h-[44px] px-5 py-2.5 text-sm"><span>{t('notFound.home')}</span></a>
+      </div>
+    </section>
+
+    <section class="bg-white border border-zinc-200 rounded-xl shadow-xs p-6 sm:p-8 flex flex-col gap-3" aria-labelledby="notfound-topics">
+      <h2 id="notfound-topics" class="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900 m-0">{t('notFound.topics')}</h2>
+      <TopicLinks />
+    </section>
+  </div>
+</Base>

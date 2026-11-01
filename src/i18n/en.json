@@ -1,6 +1,6 @@
 {
   "site": {
-    "title": "0xTsoa — Reproducible Linux Dotfiles & Desktop Registry",
+    "title": "0xTsoa: Linux Dotfiles and Rices You Can Install and Undo",
     "description": "Open, zero-database Linux dotfiles registry of Wayland and X11 desktop configs (Hyprland, Niri, Sway, i3, BSPWM) with schema-validated specs and pinned Git refs.",
     "status": "STATUS: RC-STABLE",
     "searchPlaceholder": "grep -i tag... [/]"
@@ -63,7 +63,7 @@
     "card4Stat": "Checked by GitHub account"
   },
   "catalogue": {
-    "metaTitle": "Linux Dotfiles Catalogue — Hyprland, Sway, Niri, i3 & BSPWM",
+    "metaTitle": "Linux Dotfiles and Rices: Hyprland, Sway, Niri, i3",
     "metaDescription": "Filter Linux desktop configs and dotfiles by compositor (Hyprland, Sway, Niri, i3, BSPWM), distro (Arch Linux, NixOS, Fedora), desktop part and theme.",
     "breadcrumb": "Linux Desktop Configurations & Dotfiles Catalogue",
     "liveSync": "Schema Validated",
@@ -130,7 +130,7 @@
     "btnViewSchema": "View JSON Schema"
   },
   "about": {
-    "metaTitle": "About 0xTsoa (ZeroTsoa) & Creator Ny Harena RAVELOMANANTSOA",
+    "metaTitle": "About ZeroTsoa and Ny Harena RAVELOMANANTSOA",
     "metaDescription": "0xTsoa (pronounced ZeroTsoa) is an open-source registry of Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer.",
     "badge": "ENTITY & ORIGIN • ABOUT",
     "title": "ABOUT 0xTsoa",
@@ -147,5 +147,16 @@
     "decline": "Decline",
     "currentGranted": "Your current choice: accepted.",
     "currentDenied": "Your current choice: declined."
+  },
+  "notFound": {
+    "metaTitle": "Page not found",
+    "metaDescription": "This page does not exist on 0xTsoa. Search the Linux desktop catalogue or browse setups by topic.",
+    "heading": "Page not found",
+    "body": "Nothing lives at this address. The entry may have been renamed or removed, or the link has a typo.",
+    "searchLabel": "Search the catalogue",
+    "searchPlaceholder": "grep -i hyprland...",
+    "catalogue": "Browse the catalogue",
+    "home": "Back to home",
+    "topics": "Or browse by topic"
   }
 }

@@ -1,7 +1,10 @@
 ---
 // Full-page binary background: slow columns of 0 and 1, almost invisible. One fixed canvas behind
 // all content (z-index -1, pointer-events none); colour, speed and size come from the --binary-*
-// variables in src/styles/global.css. Reduced motion: one frozen frame.
+// variables in src/styles/global.css. Reduced motion: one frozen frame. It is set up once the page
+// has loaded and the browser is idle, and only starts moving on the first interaction, so the
+// first load is not spent repainting a background (PageSpeed counted it in Total Blocking Time
+// and Speed Index).
 ---
 
 <canvas id="binary-bg" aria-hidden="true"></canvas>
@@ -18,6 +21,22 @@
 </style>
 
 <script>
+  const INTERACTION_EVENTS = ['pointerdown', 'pointermove', 'keydown', 'scroll', 'touchstart'];
+  let interacted = false;
+  const onInteraction: (() => void)[] = [];
+  function interact() {
+    interacted = true;
+    for (const name of INTERACTION_EVENTS) window.removeEventListener(name, interact);
+    onInteraction.splice(0).forEach((fn) => fn());
+  }
+  for (const name of INTERACTION_EVENTS) window.addEventListener(name, interact, { passive: true });
+
+  function whenIdle(fn: () => void) {
+    const run = () => ('requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 200));
+    if (document.readyState === 'complete') run();
+    else window.addEventListener('load', run, { once: true });
+  }
+
   function initBinaryBackground() {
     const canvas = document.getElementById('binary-bg') as HTMLCanvasElement | null;
     if (!canvas || canvas.dataset.bound) return;
@@ -33,9 +52,14 @@
     const FONT = `300 ${FONT_SIZE}px ${read('--font-mono', 'monospace')}`;
     const CELL_W = Math.round(FONT_SIZE * 1.15);
     const CELL_H = Math.round(FONT_SIZE * 1.6);
+    // At ~14 px/s, 20 frames a second already move under a pixel each; 60 tripled the work.
+    const FRAME_MS = 50;
 
     // Pre-rendered glyphs: drawImage of a sprite is far cheaper than thousands of fillText calls.
     let sprites: HTMLCanvasElement[] = []; // [digit]
+    // One pre-rendered strip per column, repainted only when its digits shift, so a frame costs
+    // one drawImage per column instead of one per cell.
+    let strips: HTMLCanvasElement[] = [];
     let dpr = 1;
     let cols = 0;
     let rows = 0;
@@ -62,6 +86,31 @@
       });
     }
 
+    function paintStrip(c: number) {
+      const s = strips[c].getContext('2d')!;
+      s.setTransform(dpr, 0, 0, dpr, 0, 0);
+      s.clearRect(0, 0, CELL_W, rows * CELL_H);
+      for (let r = 0; r < rows; r++) {
+        s.drawImage(sprites[digits[c * rows + r]], 0, r * CELL_H, CELL_W, CELL_H);
+      }
+    }
+
+    function buildStrips() {
+      strips = Array.from({ length: cols }, () => {
+        const strip = document.createElement('canvas');
+        strip.width = Math.ceil(CELL_W * dpr);
+        strip.height = Math.ceil(rows * CELL_H * dpr);
+        return strip;
+      });
+      for (let c = 0; c < cols; c++) paintStrip(c);
+    }
+
+    function rebuild() {
+      buildSprites();
+      buildStrips();
+      draw(0);
+    }
+
     function resize() {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = window.innerWidth;
@@ -75,34 +124,34 @@
       offsets = new Float32Array(cols).map(() => Math.random() * CELL_H);
       // Each column drifts at its own pace, between 0.5x and 1.5x the average speed.
       speeds = new Float32Array(cols).map(() => SPEED * (0.5 + Math.random()));
-      buildSprites();
-      draw(0);
+      rebuild();
     }
 
     function draw(dt: number) {
       ctx!.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      const stripH = rows * CELL_H;
       for (let c = 0; c < cols; c++) {
         offsets[c] += speeds[c] * (dt / 1000);
         // A full cell scrolled past: shift the column down by one and add a fresh digit on top.
+        let shifted = false;
         while (offsets[c] >= CELL_H) {
           offsets[c] -= CELL_H;
           const base = c * rows;
           digits.copyWithin(base + 1, base, base + rows - 1);
           digits[base] = Math.random() < 0.5 ? 0 : 1;
+          shifted = true;
         }
-        const x = c * CELL_W;
-        for (let r = 0; r < rows; r++) {
-          const y = (r - 1) * CELL_H + offsets[c];
-          ctx!.drawImage(sprites[digits[c * rows + r]], x, y, CELL_W, CELL_H);
-        }
+        if (shifted) paintStrip(c);
+        ctx!.drawImage(strips[c], c * CELL_W, offsets[c] - CELL_H, CELL_W, stripH);
       }
     }
 
     function loop(now: number) {
+      frame = requestAnimationFrame(loop);
+      if (now - last < FRAME_MS) return;
       const dt = Math.min(now - last, 100); // a background tab must not make the columns jump
       last = now;
       draw(dt);
-      frame = requestAnimationFrame(loop);
     }
 
     function start() {
@@ -128,13 +177,11 @@
 
     resize();
     // Redraw the sprites once the mono font has loaded, so digits never use the fallback face.
-    document.fonts?.load(FONT).then(() => {
-      buildSprites();
-      draw(0);
-    });
-    start();
+    document.fonts?.load(FONT).then(rebuild);
+    if (interacted) start();
+    else onInteraction.push(start);
   }
 
-  initBinaryBackground();
-  document.addEventListener('astro:page-load', initBinaryBackground);
+  whenIdle(initBinaryBackground);
+  document.addEventListener('astro:page-load', () => whenIdle(initBinaryBackground));
 </script>

@@ -87,4 +87,5 @@ export const ALLOWED_IMAGE_HOSTS = [
 export const NEW_CONFIG_ISSUE_URL = `${REPO_URL}/issues/new?template=new-config.yml`;
 
 export const GA_MEASUREMENT_ID = env.GA_MEASUREMENT_ID?.trim() || '';
-export const GTM_CONTAINER_ID = env.GTM_CONTAINER_ID?.trim() || '';
+// Production Tag Manager container; set GTM_CONTAINER_ID to override it.
+export const GTM_CONTAINER_ID = env.GTM_CONTAINER_ID?.trim() || 'GTM-TNS9SDDM';

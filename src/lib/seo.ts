@@ -6,8 +6,8 @@ import { WM_LABELS, DISTRO_LABELS, type ConfigData } from './schema';
 import type { InstallDifficulty, InstallImpact } from './install';
 import { dropLastWord, stripTrailingChars } from './strings';
 
-/** Base.astro appends " — 0xTsoa" (9 characters); Google shows about 60. */
-export const TITLE_SUFFIX = ' — 0xTsoa';
+/** Base.astro appends " | 0xTsoa" (9 characters); Google shows about 60. */
+export const TITLE_SUFFIX = ' | 0xTsoa';
 export const TITLE_MAX = 60 - TITLE_SUFFIX.length;
 export const DESCRIPTION_MAX = 160;
 
