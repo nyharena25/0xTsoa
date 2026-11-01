@@ -74,7 +74,9 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   image: {
-    domains: [...ALLOWED_IMAGE_HOSTS],
+    // github.com/user-attachments URLs redirect to this S3 bucket, and Astro checks the redirect
+    // target too: without it those screenshots ship as multi-megabyte originals.
+    domains: [...ALLOWED_IMAGE_HOSTS, 'github-production-user-asset-6210df.s3.amazonaws.com'],
   },
   security: {
     csp: {

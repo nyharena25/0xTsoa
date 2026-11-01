@@ -138,6 +138,8 @@ Redirects are configured in Vercel Project Settings → **Domains**, not in `ver
 | `www.0xtsoa.dev` | Redirect **308** → `0xtsoa.dev` |
 | `0xtsoa.vercel.app` | Redirect **308** → `0xtsoa.dev` (a 302 is temporary: search engines keep the old URL, and Google's Change of address tool rejects it) |
 
+Keep `0xtsoa.vercel.app` on the project as a redirect; never remove it. It was the site's first host, so search engines and backlinks still know its URLs, and the 308 is what moves their ranking signals to `0xtsoa.dev`. Removed, those URLs would return 404 and lose those signals, and the `vercel.app` name would be free for another Vercel project to claim. Until Google recrawls the old URLs, Search Console can report "Duplicate, Google chose different canonical than user" with `0xtsoa.vercel.app` as Google's choice: that is expected during a move and clears without changes here.
+
 After each deploy that touches URLs:
 
 1. If `SITE_URL` is set in the Vercel production environment variables, it must be exactly `https://0xtsoa.dev` (or unset, to use the default).

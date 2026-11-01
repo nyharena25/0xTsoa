@@ -33,7 +33,7 @@ export interface Topic {
   /** Short name for links and breadcrumbs. */
   label: string;
   facet: TopicFacet;
-  /** Search title without the " — 0xTsoa" suffix (at most 51 characters). `{year}` becomes the build year. */
+  /** Search title without the " | 0xTsoa" suffix (at most 51 characters). `{year}` becomes the build year. */
   title: string;
   /** `{year}` becomes the build year. */
   h1: string;

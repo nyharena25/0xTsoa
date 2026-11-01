@@ -2,7 +2,8 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { useTranslations } from '../lib/i18n';
-import { canonicalUrlForPath } from '../lib/seo';
+import { createHash } from 'node:crypto';
+import { canonicalUrlForPath, TITLE_SUFFIX } from '../lib/seo';
 import { withBase, GA_MEASUREMENT_ID, GTM_CONTAINER_ID, SITE_URL } from '../../site.config';
 import '../styles/global.css';
 
@@ -40,23 +41,72 @@ const {
 } = Astro.props;
 
 const t = useTranslations('en');
-const pageTitle = title ? `${title} — 0xTsoa` : t('site.title');
+const pageTitle = title ? `${title}${TITLE_SUFFIX}` : t('site.title');
 const pageDesc = description || t('site.description');
 const currentPath = Astro.url.pathname;
 const analyticsEnabled = import.meta.env.PROD && Boolean(GA_MEASUREMENT_ID || GTM_CONTAINER_ID);
+// With a Tag Manager container, GA4 is fired by the container; loading gtag.js here as well
+// downloaded it twice (~180 KiB each) and sent every page view twice.
+const directGa = GTM_CONTAINER_ID ? '' : GA_MEASUREMENT_ID;
+// Consent defaults go into dataLayer before Google Analytics or Tag Manager read it.
+const consentScript = `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  analytics_storage: 'denied',
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied'
+});
+try {
+  if (localStorage.getItem('0xtsoa_cookie_consent') === 'granted') {
+    gtag('consent', 'update', { analytics_storage: 'granted' });
+  }
+} catch (e) {}${directGa ? `
+gtag('js', new Date());
+gtag('config', ${JSON.stringify(directGa)});` : ''}`;
+// Google's scripts (~290 KiB) load on the first interaction, or 5 s after the page has loaded, so
+// they stay off the critical path (PageSpeed counted them in Total Blocking Time).
+const analyticsSources = [
+  directGa && `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(directGa)}`,
+  GTM_CONTAINER_ID && `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(GTM_CONTAINER_ID)}`,
+].filter(Boolean);
+const loaderScript = `(function(){
+var events=['pointerdown','keydown','scroll','touchstart'],done=false;
+function load(){
+  if(done)return;done=true;
+  events.forEach(function(e){removeEventListener(e,load);});${GTM_CONTAINER_ID ? `
+  dataLayer.push({'gtm.start':new Date().getTime(),event:'gtm.js'});` : ''}
+  ${JSON.stringify(analyticsSources)}.forEach(function(src){
+    var s=document.createElement('script');s.async=true;s.src=src;document.head.appendChild(s);
+  });
+}
+events.forEach(function(e){addEventListener(e,load,{passive:true});});
+function later(){setTimeout(load,5000);}
+if(document.readyState==='complete')later();else addEventListener('load',later);
+})();`;
+// is:inline scripts are not hashed by Astro, so the CSP would block them without these.
+if (analyticsEnabled) {
+  for (const script of [consentScript, loaderScript]) {
+    Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(script).digest('base64')}`);
+  }
+}
 const siteOrigin = Astro.site ? Astro.site.href : SITE_URL;
 const canonicalUrl = canonicalUrlForPath(canonical || currentPath, siteOrigin);
 const sitemapUrl = new URL(withBase('/sitemap-index.xml'), siteOrigin).href;
 
 const defaultOgImage = new URL(withBase('/og.png'), Astro.site).href;
+// Social cards (X, LinkedIn, Discord, Slack) and Google Discover reject SVG, so an SVG
+// screenshot (the terminal fallback many entries use) falls back to the raster default.
+const isSvgOgImage = !!propOgImage && /\.svg(?:[?#]|$)/i.test(propOgImage);
 const isDefaultOgImage =
-  !propOgImage || propOgImage === '/og.png' || propOgImage === withBase('/og.png');
-const resolvedOgImage = !propOgImage
+  !propOgImage || isSvgOgImage || propOgImage === '/og.png' || propOgImage === withBase('/og.png');
+const resolvedOgImage = isDefaultOgImage
   ? defaultOgImage
   : propOgImage.startsWith('http://') || propOgImage.startsWith('https://')
     ? propOgImage
     : new URL(withBase(propOgImage), Astro.site).href;
-const resolvedOgImageAlt = ogImageAlt || '0xTsoa — Linux desktop configuration registry';
+const resolvedOgImageAlt =
+  (!isSvgOgImage && ogImageAlt) || '0xTsoa — Linux desktop configuration registry';
 const modifiedTimeIso =
   ogType === 'article' && updatedAt
     ? updatedAt.includes('T')
@@ -118,8 +168,8 @@ import BinaryBackground from '../components/BinaryBackground.astro';
     <meta property="og:description" content={pageDesc} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={resolvedOgImage} />
-    {isDefaultOgImage && <meta property="og:image:width" content="1024" />}
-    {isDefaultOgImage && <meta property="og:image:height" content="526" />}
+    {isDefaultOgImage && <meta property="og:image:width" content="1200" />}
+    {isDefaultOgImage && <meta property="og:image:height" content="630" />}
     <meta property="og:image:alt" content={resolvedOgImageAlt} />
     {modifiedTimeIso && <meta property="article:modified_time" content={modifiedTimeIso} />}
 
@@ -130,11 +180,11 @@ import BinaryBackground from '../components/BinaryBackground.astro';
     <meta name="twitter:image" content={resolvedOgImage} />
     <meta name="twitter:image:alt" content={resolvedOgImageAlt} />
 
-    <!-- Favicon SVG Data URI -->
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230F172A'/><text x='50' y='66' font-size='44' font-family='monospace' font-weight='bold' fill='white' text-anchor='middle'>0xT</text></svg>"
-    />
+    <!-- Crawlable favicon files: Google ignores data: URIs for the icon next to search results. -->
+    <link rel="icon" href={withBase('/favicon.ico')} sizes="48x48" />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={withBase('/favicon-96x96.png')} type="image/png" sizes="96x96" />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
 
     <link rel="sitemap" href={sitemapUrl} />
 
@@ -144,42 +194,8 @@ import BinaryBackground from '../components/BinaryBackground.astro';
 
     {analyticsEnabled && (
       <>
-        {GA_MEASUREMENT_ID && (
-          <script
-            is:inline
-            async
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          ></script>
-        )}
-        <!-- Consent defaults go into dataLayer before Google Analytics or Tag Manager read it. -->
-        <script
-          is:inline
-          set:html={`window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('consent', 'default', {
-  analytics_storage: 'denied',
-  ad_storage: 'denied',
-  ad_user_data: 'denied',
-  ad_personalization: 'denied'
-});
-try {
-  if (localStorage.getItem('0xtsoa_cookie_consent') === 'granted') {
-    gtag('consent', 'update', { analytics_storage: 'granted' });
-  }
-} catch (e) {}${GA_MEASUREMENT_ID ? `
-gtag('js', new Date());
-gtag('config', ${JSON.stringify(GA_MEASUREMENT_ID)});` : ''}`}
-        />
-        {GTM_CONTAINER_ID && (
-          <script
-            is:inline
-            set:html={`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer',${JSON.stringify(GTM_CONTAINER_ID)});`}
-          />
-        )}
+        <script is:inline set:html={consentScript} />
+        <script is:inline set:html={loaderScript} />
       </>
     )}
   </head>
