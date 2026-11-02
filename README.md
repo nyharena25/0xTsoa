@@ -70,7 +70,7 @@ Each configuration page brings together everything needed to inspect and reprodu
 
 - **Overview**: purpose, supported distributions, display server, window manager, key components, and assurance badges (**Schema validated**, **Source pinned**, **Script hash-checked**, **Install reviewed**).
 - **Installation**: step-by-step commands that check out `{{ref}}`, plus a downloadable script.
-- **Screenshots and documentation**: a gallery and the upstream README rendered at `source.ref`.
+- **Screenshots and documentation**: a gallery and an excerpt of the upstream README rendered at `source.ref`.
 - **Keyboard shortcuts** and a **community upvote** counter backed by a GitHub issue.
 
 <picture>
@@ -101,32 +101,32 @@ Each configuration page brings together everything needed to inspect and reprodu
 <div align="center">
 
 ### 01. Home
-<p>Registry landing page with quick search, the community Spotlight and shortcuts by window manager and style.</p>
+<p>Registry landing page with quick search, a Spotlight of recently updated entries and links to topic pages.</p>
 <img src=".github/assets/screenshots/01-home.png" alt="0xTsoa home page" width="100%" />
 
 <br/><br/>
 
 ### 02. Catalogue and Filters
-<p>Every entry in one list, filterable by desktop part, window manager, theme style and distribution, and sortable by approvals, date or upstream stars.</p>
+<p>Every entry in one list, filterable by desktop part, window manager, theme style and distribution, and sortable by upvotes, date or upstream stars.</p>
 <img src=".github/assets/screenshots/02-catalogue.png" alt="0xTsoa catalogue with desktop-part, window manager, style and distribution filters" width="100%" />
 
 <br/><br/>
 
 ### 03. Configuration Overview
-<p>Purpose, compatibility, desktop part, window manager, theme and key components of a setup, with its community upvote counter.</p>
-<img src=".github/assets/screenshots/03-overview.png" alt="0xTsoa configuration overview page" width="100%" />
+<p>Difficulty, what an install changes, how to undo it, maintenance status and pinned version at a glance, with a community upvote counter.</p>
+<img src=".github/assets/screenshots/03-overview.png" alt="0xTsoa configuration page with its At a glance summary" width="100%" />
 
 <br/><br/>
 
 ### 04. Installation and Deployment
-<p>Step-by-step install commands (dependencies, deploy, reload) pinned to the recorded commit, plus a downloadable shell script.</p>
+<p>What the install changes and how to recover, manual steps pinned to the reviewed commit, and a guided installer with <code>--dry-run</code> and <code>--rollback</code>.</p>
 <img src=".github/assets/screenshots/04-install.png" alt="0xTsoa installation steps and script download" width="100%" />
 
 <br/><br/>
 
 ### 05. Screenshot Gallery and Upstream README
-<p>Fullscreen screenshot gallery and the project's README, rendered and sanitized at the pinned commit.</p>
-<img src=".github/assets/screenshots/05-gallery-readme.png" alt="0xTsoa screenshot gallery and rendered upstream README" width="100%" />
+<p>Fullscreen screenshot gallery and an excerpt of the project's README, rendered and sanitized at the pinned commit.</p>
+<img src=".github/assets/screenshots/05-gallery-readme.png" alt="0xTsoa screenshot gallery and upstream README excerpt" width="100%" />
 
 <br/><br/>
 
