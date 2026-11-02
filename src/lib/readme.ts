@@ -7,6 +7,10 @@ import { fetchLimited } from './fetch-limited';
 import { replaceTags, stripTrailingSlashes } from './strings';
 
 const CACHE_DIR = path.resolve(process.cwd(), 'node_modules/.cache/0xtsoa-readme');
+/** Alt text for README images whose authors left it out (badges and screenshots alike). */
+export const README_IMAGE_ALT = 'Image from the project README';
+/** Part of the cache file name: bump it when rendering changes, or cached READMEs keep the old output. */
+const RENDER_VERSION = 'v2';
 const README_MAX_BYTES = 2 * 1024 * 1024;
 const README_TIMEOUT_MS = 8_000;
 export const README_HOSTS = [
@@ -47,7 +51,7 @@ function rewriteGitHubAssetUuidUrl(raw: string): string | null {
 function getCachePath(id: string, ref: string): string {
   const safeId = id.replace(/[^a-zA-Z0-9_-]/g, '_');
   const safeRef = ref.replace(/[^a-zA-Z0-9_-]/g, '_');
-  return path.join(CACHE_DIR, `${safeId}-${safeRef}.html`);
+  return path.join(CACHE_DIR, `${safeId}-${safeRef}-${RENDER_VERSION}.html`);
 }
 
 /**
@@ -185,7 +189,7 @@ export function extractScreenshotsFromReadme(
 
     const altMatch = fullTag.match(/alt=["']([^"']*)["']/i);
     const titleMatch = fullTag.match(/title=["']([^"']*)["']/i);
-    const rawAlt = (altMatch ? altMatch[1] : '') || (titleMatch ? titleMatch[1] : '');
+    const rawAlt = (altMatch && altMatch[1] !== README_IMAGE_ALT ? altMatch[1] : '') || (titleMatch ? titleMatch[1] : '');
     const alt = rawAlt && rawAlt !== 'image' ? rawAlt : 'Desktop showcase capture';
     const cleanCaption =
       (rawAlt && rawAlt !== 'image'
@@ -400,7 +404,7 @@ export async function getRenderedReadme(
 /**
  * Parses markdown with marked and rewrites URLs for GitHub compatibility
  */
-async function renderMarkdownToGithubHtml(
+export async function renderMarkdownToGithubHtml(
   markdown: string,
   readmeRawDir: string,
   readmeBlobDir: string,
@@ -419,11 +423,11 @@ async function renderMarkdownToGithubHtml(
   };
 
   // Rewrite Markdown hyperlinks: [text](relative/link.md)
-  renderer.link = function ({ href, title, text }) {
+  renderer.link = function ({ href, title, tokens }) {
     const finalHref = normalizeGitHubLinkUrl(href || '', readmeBlobDir, repoBlobRoot);
     const isAnchor = finalHref.startsWith('#');
     const target = isAnchor ? '' : ' target="_blank" rel="noopener noreferrer nofollow"';
-    return `<a href="${finalHref}"${target}${title ? ` title="${title}"` : ''}>${text}</a>`;
+    return `<a href="${finalHref}"${target}${title ? ` title="${title}"` : ''}>${this.parser.parseInline(tokens)}</a>`;
   };
 
   const rawHtml = await marked.parse(processedMd, {
@@ -491,6 +495,7 @@ export function sanitizeAndRewriteHtml(
           attribs: {
             ...attribs,
             src,
+            alt: attribs.alt?.trim() ? attribs.alt : README_IMAGE_ALT,
             loading: 'lazy',
           },
         };
@@ -590,4 +595,27 @@ export function readmeExcerpt(html: string, maxWords = 220): { html: string; tru
   // A trailing heading with nothing under it reads as a cut-off.
   while (kept.length > 1 && /^<h[1-6]\b/i.test(kept.at(-1)!)) kept.pop();
   return { html: kept.join('\n'), truncated: kept.length < blocks.length };
+}
+
+/**
+ * Renumbers README headings to sit under the page's h2: the top level becomes h3 and no heading
+ * skips a level, whatever levels the upstream README jumps between.
+ */
+export function nestReadmeHeadings(html: string): string {
+  const open: { from: number; to: number }[] = [];
+  let out = '';
+  let cursor = 0;
+  let current = 3;
+  for (const { index, end, name, closing } of scanTags(html)) {
+    if (!/^h[1-6]$/i.test(name)) continue;
+    if (!closing) {
+      const from = Number(name[1]);
+      while (open.length > 0 && open.at(-1)!.from >= from) open.pop();
+      current = open.length > 0 ? Math.min(6, open.at(-1)!.to + 1) : 3;
+      open.push({ from, to: current });
+    }
+    out += html.slice(cursor, index) + html.slice(index, end).replace(/h[1-6]/i, `h${current}`);
+    cursor = end;
+  }
+  return out + html.slice(cursor);
 }

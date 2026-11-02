@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/Fabric-Development/fabric",
-    "ref": "094db66e54bcfc0d30a910090fbfef3447c9a5c9",
+    "ref": "e8162e4eae8aefa7e8fe0295bf986ef094073030",
     "readme": "README.md"
   },
   "install": {

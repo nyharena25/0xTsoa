@@ -16,7 +16,7 @@ const live = liveTopics(await getCollection('configs'));
 {variant === 'pills' ? (
   <ul class="flex flex-wrap items-center gap-2">
     {live.map(({ topic, entries }) => (
-      <li><a href={withBase(topicPath(topic.slug))} class="tag-pill">{topic.label} <span class="text-zinc-400">({entries.length})</span></a></li>
+      <li><a href={withBase(topicPath(topic.slug))} class="tag-pill">{topic.label} <span class="text-zinc-600">({entries.length})</span></a></li>
     ))}
   </ul>
 ) : variant === 'columns' ? (

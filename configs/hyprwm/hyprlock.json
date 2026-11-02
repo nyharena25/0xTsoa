@@ -29,7 +29,7 @@
   ],
   "source": {
     "repo": "https://github.com/hyprwm/hyprlock",
-    "ref": "b222d9b1f87e980cac379371df57913a53b99d7f",
+    "ref": "74efcdc96ee6d08480815064dab5112e0101eb1a",
     "readme": "README.md"
   },
   "install": {
@@ -44,5 +44,5 @@
       }
     ]
   },
-  "version": "v0.9.6"
+  "version": "v0.9.7"
 }

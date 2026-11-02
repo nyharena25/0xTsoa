@@ -140,7 +140,8 @@ function checkPage(report: Report, url: string, res: Response): void {
 }
 
 const LEGACY_PATH_REDIRECTS: [fromPath: string, toPath: string][] = [
-  ['/contribuer', '/contribute/'],
+  // vercel.json's trailingSlash runs before its redirects, so this path takes the slash first.
+  ['/contribuer', '/contribuer/'],
   ['/contribuer/', '/contribute/'],
   ['/sitemap.xml', '/sitemap-index.xml'],
 ];

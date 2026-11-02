@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { relatedConfigs, maintainedAlternatives, relatednessScore, type RelatedEntry } from '../src/lib/related';
-import { topLevelBlocks, readmeExcerpt } from '../src/lib/readme';
+import { topLevelBlocks, readmeExcerpt, nestReadmeHeadings, sanitizeAndRewriteHtml, extractScreenshotsFromReadme, renderMarkdownToGithubHtml, README_IMAGE_ALT } from '../src/lib/readme';
 import { maintenanceForConfig } from '../src/lib/stats';
 import { configSchema, type ConfigData } from '../src/lib/schema';
 
@@ -110,5 +110,68 @@ describe('tools and reading lists', () => {
     const all = [swww, make('h/hyprpaper', { category: 'tool', tags: ['wallpaper'] }), make('f/fastfetch', { category: 'tool', tags: ['fetch'] })];
     expect(relatedConfigs(swww, all, opts).map((e) => e.id)).toEqual(['h/hyprpaper']);
     expect(maintainedAlternatives(swww, all, opts).map((e) => e.id)).toEqual(['h/hyprpaper']);
+  });
+});
+
+describe('nestReadmeHeadings', () => {
+  const levels = (html: string) => [...html.matchAll(/<h(\d)/g)].map((m) => Number(m[1]));
+
+  it('starts at h3 and closes each heading at its new level', () => {
+    expect(nestReadmeHeadings('<h1 id="a">A</h1>')).toBe('<h3 id="a">A</h3>');
+  });
+
+  it('removes skipped levels but keeps the nesting', () => {
+    expect(levels(nestReadmeHeadings('<h1>A</h1><h3>B</h3><h3>C</h3><h2>D</h2><h5>E</h5>'))).toEqual([3, 4, 4, 4, 5]);
+  });
+
+  it('never goes past h6', () => {
+    expect(levels(nestReadmeHeadings('<h1>a</h1><h2>b</h2><h3>c</h3><h4>d</h4><h5>e</h5><h6>f</h6>'))).toEqual([3, 4, 5, 6, 6, 6]);
+  });
+
+  it('ignores text that only looks like a heading', () => {
+    const html = '<p title="<h1>">x</p><pre>&lt;h1&gt;</pre>';
+    expect(nestReadmeHeadings(html)).toBe(html);
+  });
+});
+
+describe('README image alt text', () => {
+  const root = 'https://raw.githubusercontent.com/u/r/abc/';
+  const clean = (html: string) => sanitizeAndRewriteHtml(html, root, root, root, root);
+
+  it('fills in missing and blank alt text', () => {
+    expect(clean('<img src="https://example.com/a.png">')).toContain(`alt="${README_IMAGE_ALT}"`);
+    expect(clean('<img src="https://example.com/a.png" alt=" ">')).toContain(`alt="${README_IMAGE_ALT}"`);
+  });
+
+  it('keeps alt text the author wrote', () => {
+    expect(clean('<img src="https://example.com/a.png" alt="Lock screen">')).toContain('alt="Lock screen"');
+  });
+
+  it('does not show the fallback as a screenshot caption', () => {
+    const [shot] = extractScreenshotsFromReadme(clean(`<img src="${root}preview.png">`));
+    expect(shot?.alt).toBe('Desktop showcase capture');
+  });
+});
+
+describe('README link contents', () => {
+  const root = 'https://raw.githubusercontent.com/u/r/abc/';
+  const blob = 'https://github.com/u/r/blob/abc/';
+  const render = async (md: string) => (await renderMarkdownToGithubHtml(md, root, blob, root, blob, root + 'README.md')).html;
+
+  it('renders a linked badge as an image, not as markdown text', async () => {
+    const html = await render('# Waybar [![Licence](https://img.shields.io/x.svg)](LICENSE)');
+    expect(html).not.toContain('![');
+    expect(html).toContain('<img src="https://img.shields.io/x.svg" alt="Licence"');
+    expect(html).toContain(`href="${blob}LICENSE"`);
+  });
+
+  it('renders inline formatting inside a link', async () => {
+    const html = await render('[**bold** and `code`](https://example.com/)');
+    expect(html).toContain('<strong>bold</strong>');
+    expect(html).toContain('<code>code</code>');
+  });
+
+  it('escapes markup in link text', async () => {
+    expect(await render('[a <b](https://example.com/)')).not.toContain('<b>');
   });
 });
