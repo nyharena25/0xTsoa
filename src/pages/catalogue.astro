@@ -41,12 +41,31 @@ const sortedConfigs = allConfigs
   .slice()
   .sort((a, b) => getVotesForConfig(b.id) - getVotesForConfig(a.id) || getStarsForConfig(b.id) - getStarsForConfig(a.id));
 const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Linux desktop catalogue',
+  description: t('catalogue.metaDescription'),
+  url: new URL(withBase('/catalogue/'), Astro.site).href,
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: sortedConfigs.length,
+    itemListElement: sortedConfigs.map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: new URL(withBase(`/configs/${c.id}/`), Astro.site).href,
+      name: c.data.name,
+    })),
+  },
+};
 ---
 
 <Base
   title={t('catalogue.metaTitle')}
   description={t('catalogue.metaDescription')}
   locale={locale}
+  jsonLd={jsonLd}
   statusPrefix="[STATUS: "
   statusInitial="CATALOGUE"
   statusFinal="SHOW CASE"
@@ -177,7 +196,7 @@ const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
               data-votes={getVotesForConfig(c.id)}
               data-date={c.data.updatedAt}
             >
-              <ConfigCard id={c.id} data={c.data} locale={locale} />
+              <ConfigCard id={c.id} data={c.data} locale={locale} eager={idx === 0} />
             </div>
           ))}
         </div>

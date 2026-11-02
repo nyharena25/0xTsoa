@@ -11,9 +11,9 @@ import RelatedSetups from '../../../components/RelatedSetups.astro';
 import AuthorBox from '../../../components/AuthorBox.astro';
 import SubmitCta from '../../../components/SubmitCta.astro';
 import { getCollection } from 'astro:content';
-import { getRenderedReadme, extractScreenshotsFromReadme, readmeExcerpt } from '../../../lib/readme';
+import { getRenderedReadme, extractScreenshotsFromReadme, readmeExcerpt, nestReadmeHeadings } from '../../../lib/readme';
 import { rawToBlobUrl, blobUrl, hasInstallSteps, isAllowedImageUrl, WM_LABELS, DISTRO_LABELS, STYLE_LABELS, CATEGORY_LABELS } from '../../../lib/schema';
-import { buildInstallScript, renderCommand, verifiedScriptCommand, downloadInstallCommand, installScriptPath, installImpact, installDifficulty, attestationVerifyCommand, UPSTREAM_BACKUP_PATHS } from '../../../lib/install';
+import { renderCommand, verifiedScriptCommand, downloadInstallCommand, installScriptPath, installImpact, installDifficulty, attestationVerifyCommand, UPSTREAM_BACKUP_PATHS } from '../../../lib/install';
 import { configSeoTitle, configSeoDescription, canonicalUrlForPath } from '../../../lib/seo';
 import { getStarsForConfig, getRepoStats, maintenanceForConfig } from '../../../lib/stats';
 import { relatedConfigs, maintainedAlternatives } from '../../../lib/related';
@@ -40,18 +40,17 @@ const locale = 'en';
 const t = useTranslations(locale);
 
 const { html: rawReadmeHtml, rawUrl: rawReadmeUrl, missing: readmeMissing } = await getRenderedReadme(entry.id, data.source);
-const readmeHtml = rawReadmeHtml.replace(
-  /<(\/?)h([1-5])(\b[^>]*)>/gi,
-  (_, slash: string, level: string, attrs: string) =>
-    `<${slash}h${Math.min(6, Math.max(3, Number(level) + 1))}${attrs}>`,
-);
+const readmeHtml = nestReadmeHeadings(rawReadmeHtml);
 
 const readme = readmeExcerpt(readmeHtml);
 const forgeName = ({ 'github.com': 'GitHub', 'gitlab.com': 'GitLab', 'codeberg.org': 'Codeberg' } as Record<string, string>)[new URL(data.source.repo).hostname] ?? 'the forge';
 const readmeScreenshots = extractScreenshotsFromReadme(readmeHtml).filter((s) => isAllowedImageUrl(s.url));
 const existingShotUrls = new Set(data.screenshots.map((s) => s.url));
 const mergedScreenshots = [...data.screenshots];
+// Some READMEs are galleries of hundreds of images: those stay on the forge. Screenshots from the config are always kept.
+const MAX_GALLERY_SHOTS = 12;
 for (const shot of readmeScreenshots) {
+  if (mergedScreenshots.length >= MAX_GALLERY_SHOTS) break;
   if (!existingShotUrls.has(shot.url)) {
     existingShotUrls.add(shot.url);
     mergedScreenshots.push({
@@ -176,7 +175,6 @@ const setupJsonLd = [
 
 const scriptBlobUrl = install?.script ? rawToBlobUrl(install.script.url) : '';
 const verifiedScriptCmd = install?.script ? verifiedScriptCommand(install.script) : null;
-const installScriptContent = install ? buildInstallScript(data, entry.id) : '';
 const downloadCmd = downloadInstallCommand(entry.id);
 const scriptHref = withBase(installScriptPath(entry.id));
 const verifyCmd = attestationVerifyCommand();
@@ -418,18 +416,16 @@ const renderedSteps = (install?.steps ?? []).map((step) => ({
             >
               View script in browser
             </a>
-            <button
-              type="button"
-              id="btn-download-sh"
-              data-filename="install.sh"
-              data-script={installScriptContent}
-              class="min-h-[44px] inline-flex items-center justify-center gap-2 border border-zinc-300 bg-white hover:bg-zinc-100 text-zinc-800 px-4 py-2 rounded-lg font-mono text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+            <a
+              href={scriptHref}
+              download="install.sh"
+              class="min-h-[44px] inline-flex items-center justify-center gap-2 border border-zinc-300 bg-white hover:bg-zinc-100 text-zinc-800 px-4 py-2 rounded-lg font-mono text-xs font-semibold shadow-2xs transition-colors"
             >
               <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
               </svg>
               <span>Download install.sh</span>
-            </button>
+            </a>
             <span class="font-mono text-[11px] text-zinc-500">Other options: <code class="text-zinc-800">--force</code> (replace conflicts, backed up first), <code class="text-zinc-800">--yes</code>, <code class="text-zinc-800">--help</code></span>
           </div>
         </div>
@@ -664,29 +660,4 @@ const renderedSteps = (install?.steps ?? []).map((step) => ({
     <SubmitCta heading="Have a setup like this one?" context={{ category: data.category, wm: data.wm }} />
   </div>
 
-  <script>
-    function setupDetailActions() {
-      // 1. Download shell script (.sh)
-      const btnDownloadSh = document.getElementById('btn-download-sh');
-      if (btnDownloadSh && !btnDownloadSh.dataset.bound) {
-        btnDownloadSh.dataset.bound = 'true';
-        btnDownloadSh.addEventListener('click', () => {
-          const filename = btnDownloadSh.getAttribute('data-filename') || 'install.sh';
-          const scriptContent = btnDownloadSh.getAttribute('data-script') || '';
-          const blob = new Blob([scriptContent], { type: 'text/x-shellscript;charset=utf-8' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        });
-      }
-    }
-
-    setupDetailActions();
-    document.addEventListener('astro:page-load', setupDetailActions);
-  </script>
 </Base>

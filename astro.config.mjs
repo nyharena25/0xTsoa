@@ -8,7 +8,8 @@ import { SITE_URL, BASE_PATH, ALLOWED_IMAGE_HOSTS, withBase } from './site.confi
 import { TOPICS, topicEntries, topicModified, topicPath } from './src/lib/topics';
 
 // Sitemap lastmod per page URL: config pages from updatedAt, topic pages from topicModified,
-// guides from their `updated` frontmatter, and /docs/ from the latest of those.
+// guides from their `updated` frontmatter, /docs/ from the latest of those, and the home page and
+// catalogue from the latest entry or doc, since they list both.
 const lastMod = new Map();
 const pageUrl = (p) => new URL(withBase(p), SITE_URL).href;
 const configs = [];
@@ -47,6 +48,11 @@ if (fs.existsSync(guidesDir)) {
   }
 }
 if (docsDates.length) lastMod.set(pageUrl('/docs/'), docsDates.toSorted((a, b) => a.localeCompare(b)).at(-1));
+const latest = [...docsDates, ...configs.map((c) => c.data.updatedAt)].toSorted((a, b) => a.localeCompare(b)).at(-1);
+if (latest) {
+  lastMod.set(pageUrl('/'), latest);
+  lastMod.set(pageUrl('/catalogue/'), latest);
+}
 
 export default defineConfig({
   site: SITE_URL,
