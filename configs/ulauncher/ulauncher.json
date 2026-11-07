@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/Ulauncher/Ulauncher",
-    "ref": "5ba6eb1ec507d0c90cae80a8b4c33df473ade7be",
+    "ref": "dbbcb7af1b8e8ab30ab536b10c0b752a5cb87547",
     "readme": "README.md"
   },
   "install": {
@@ -51,5 +51,5 @@
       }
     ]
   },
-  "version": "5.16.2"
+  "version": "5.16.3"
 }

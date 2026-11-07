@@ -33,7 +33,7 @@
   ],
   "source": {
     "repo": "https://github.com/mylinuxforwork/dotfiles",
-    "ref": "55865490412a00d711a054f373a5cb0208e18224",
+    "ref": "9ead14e78a9bff5f1ae7df3aec7a775730cf4431",
     "readme": "README.md"
   },
   "install": {
@@ -55,5 +55,6 @@
         ]
       }
     ]
-  }
+  },
+  "version": "2.17"
 }

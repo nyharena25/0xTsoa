@@ -32,7 +32,7 @@
   ],
   "source": {
     "repo": "https://github.com/mjakeman/extension-manager",
-    "ref": "0a3f6c96f9fe0fd10c57987007f5c27397ed8632",
+    "ref": "07fa3c852ef2038cd969a5519496695045aff54a",
     "readme": "README.md"
   },
   "install": {
@@ -47,5 +47,5 @@
       }
     ]
   },
-  "version": "v0.6.5"
+  "version": "v0.7.0"
 }
