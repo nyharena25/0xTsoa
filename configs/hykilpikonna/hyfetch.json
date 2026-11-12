@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/hykilpikonna/hyfetch",
-    "ref": "0fd343e6d54a231673bc6d3ae2fd0c1fc102cebe",
+    "ref": "0151630a356e3b8ec9ce4f9f188921e13b614a7c",
     "readme": "README.md"
   },
   "install": {
@@ -51,5 +51,5 @@
       }
     ]
   },
-  "version": "2.1.0"
+  "version": "2.1.1"
 }
