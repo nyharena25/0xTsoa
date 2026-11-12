@@ -45,7 +45,7 @@ const totalPages = Math.max(1, Math.ceil(sortedConfigs.length / PAGE_SIZE));
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  name: 'Linux desktop catalogue',
+  name: 'Linux Dotfiles & Desktop Ricing Catalog',
   description: t('catalogue.metaDescription'),
   url: new URL(withBase('/catalogue/'), Astro.site).href,
   mainEntity: {
@@ -72,9 +72,9 @@ const jsonLd = {
 >
   <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
     <header class="flex flex-col gap-2 max-w-3xl">
-      <h1 class="font-display text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight m-0" data-page-title="true">Linux desktop catalogue</h1>
+      <h1 class="font-display text-3xl sm:text-4xl font-bold text-zinc-900 tracking-tight m-0" data-page-title="true">Linux Dotfiles & Desktop Ricing Catalog</h1>
       <p class="font-sans text-base text-zinc-700 leading-relaxed m-0">
-        {allConfigs.length} setups, themes and tools, each pinned to an exact upstream version and installed with a preview and a rollback.
+        {allConfigs.length} setups, themes and tools in an open desktop catalog, directory, and showcase. Each pinned to an exact upstream version and installed with a preview and a rollback.
         <a href={withBase(startHere ? topicPath(startHere.id) : '/docs/')} class="underline text-zinc-900 font-semibold whitespace-nowrap">New here? {startHere ? 'Start with the basics' : 'Read the guides'} &rarr;</a>
       </p>
     </header>

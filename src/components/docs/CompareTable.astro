@@ -62,7 +62,15 @@ const heading = title ?? `All ${rows.length} entries, compared`;
         <tr class="block md:table-row py-3 md:py-0 align-top">
           <th scope="row" class="block md:table-cell p-0 md:p-2.5 font-normal text-left">
             <a href={withBase(`/configs/${r.id}/`)} class="group flex gap-3 no-underline min-w-0">
-              <img src={thumb(r.data.screenshots[0].url)} alt="" width="96" height="60" loading="lazy" decoding="async" class="w-24 h-[60px] object-cover rounded-md border border-zinc-200 bg-zinc-100 shrink-0" />
+              <img
+                src={thumb(r.data.screenshots[0].url)}
+                alt={r.data.screenshots[0]?.alt || `${r.data.name} preview`}
+                width="96"
+                height="60"
+                loading="lazy"
+                decoding="async"
+                class="w-24 h-[60px] object-cover rounded-md border border-zinc-200 bg-zinc-100 shrink-0"
+              />
               <span class="flex flex-col gap-0.5 min-w-0">
                 <span class="text-xs font-bold text-zinc-900 group-hover:underline">{r.data.name}</span>
                 <span class="font-sans text-xs text-zinc-600 leading-snug">{r.data.summary}</span>

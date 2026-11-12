@@ -28,7 +28,7 @@ const thumb = (url: string) => (url.startsWith('http') ? url : withBase(url));
         >
           <img
             src={thumb(data.screenshots[0].url)}
-            alt=""
+            alt={data.screenshots[0]?.alt || `${data.name} screenshot preview`}
             width="112"
             height="70"
             loading="lazy"

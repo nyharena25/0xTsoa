@@ -46,6 +46,12 @@ const picks = choosePicks(topic, entries, (e) => retiredIds.has(e.id)).map((p) =
   difficulty: installDifficulty(p.entry.data),
   maintenance: status(p.entry.id, p.entry.data),
 }));
+const siteRootUrl = new URL(withBase('/'), Astro.site).href;
+const previewShot =
+  picks.find((p) => !p.entry.data.screenshots[0]?.url.endsWith('.svg'))?.entry.data.screenshots[0]?.url ??
+  entries.find((e) => !e.data.screenshots[0]?.url.endsWith('.svg'))?.data.screenshots[0]?.url;
+const ogImage = previewShot && !previewShot.endsWith('.svg') ? previewShot : undefined;
+const ogImageAlt = ogImage ? `${topic.label} desktop rice preview` : undefined;
 const byId = new Map(all.map((e) => [e.id, e]));
 const moves = retired.map((r) => ({
   ...r,
@@ -59,9 +65,24 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
+    '@id': `${pageUrl}#collection`,
     name: h1,
     description,
     url: pageUrl,
+    inLanguage: 'en',
+    isPartOf: {
+      '@type': 'WebSite',
+      '@id': `${siteRootUrl}#website`,
+      name: '0xTsoa',
+      url: siteRootUrl,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: '0xTsoa',
+      url: siteRootUrl,
+      logo: new URL(withBase('/logo.png'), Astro.site).href,
+    },
+    datePublished: topic.updated,
     dateModified: updated,
     mainEntity: {
       '@type': 'ItemList',
@@ -76,6 +97,21 @@ const jsonLd = [
   },
   {
     '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    '@id': `${pageUrl}#article`,
+    headline: h1,
+    description,
+    image: [ogImage || new URL(withBase('/og.png'), Astro.site).href],
+    url: pageUrl,
+    datePublished: topic.updated,
+    dateModified: updated,
+    inLanguage: 'en',
+    author: { '@type': 'Person', name: 'Ny Harena RAVELOMANANTSOA', url: 'https://github.com/nyharena25' },
+    publisher: { '@type': 'Organization', name: '0xTsoa', url: siteRootUrl },
+    mainEntityOfPage: pageUrl,
+  },
+  {
+    '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: new URL(withBase('/'), Astro.site).href },
@@ -83,12 +119,29 @@ const jsonLd = [
       { '@type': 'ListItem', position: 3, name: topic.label, item: pageUrl },
     ],
   },
+  ...(topic.faq?.length
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: topic.faq.map(({ q, a }) => ({
+            '@type': 'Question',
+            name: q,
+            acceptedAnswer: { '@type': 'Answer', text: a },
+          })),
+        },
+      ]
+    : []),
 ];
 ---
 
 <Base
   title={title}
   description={description}
+  ogType="article"
+  updatedAt={updated}
+  ogImage={ogImage}
+  ogImageAlt={ogImageAlt}
   statusPrefix="[DOCS: "
   statusInitial={topic.label.toUpperCase()}
   statusFinal={`${entries.length} ENTRIES`}
@@ -121,7 +174,15 @@ const jsonLd = [
             <li class="bg-white border border-zinc-200 rounded-xl shadow-xs p-4 flex flex-col gap-2.5 min-w-0">
               <span class="font-mono text-[10px] uppercase font-bold text-zinc-500 tracking-wider">{need}</span>
               <a href={withBase(`/configs/${entry.id}/`)} class="group flex items-center gap-3 no-underline min-w-0">
-                <img src={thumb(entry.data.screenshots[0].url)} alt="" width="80" height="50" loading="lazy" decoding="async" class="w-20 h-[50px] object-cover rounded-md border border-zinc-200 bg-zinc-100 shrink-0" />
+                <img
+                  src={thumb(entry.data.screenshots[0].url)}
+                  alt={entry.data.screenshots[0]?.alt || `${entry.data.name} screenshot`}
+                  width="80"
+                  height="50"
+                  loading="lazy"
+                  decoding="async"
+                  class="w-20 h-[50px] object-cover rounded-md border border-zinc-200 bg-zinc-100 shrink-0"
+                />
                 <span class="font-display text-base font-bold text-zinc-900 group-hover:underline">{entry.data.name}</span>
               </a>
               <p class="font-sans text-sm text-zinc-700 leading-relaxed m-0">{reason}</p>
