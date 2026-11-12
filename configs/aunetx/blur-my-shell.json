@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/aunetx/blur-my-shell",
-    "ref": "b1e415cc5ff3dffef72a69b552d8c64ae7d28a45",
+    "ref": "66c7e7a282f6cbee7b3d36004a7aca91d8ce35af",
     "readme": "README.md"
   },
   "install": {
@@ -58,5 +58,5 @@
       }
     ]
   },
-  "version": "v77"
+  "version": "v78"
 }
