@@ -146,6 +146,8 @@ import BinaryBackground from '../components/BinaryBackground.astro';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#FAF9F5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
     <meta name="google-site-verification" content="teSYi3Oiia7lE7wcbzWwjfrd3Qm3kc_pdzAQbeYXb2M" />
     <meta name="google-site-verification" content="TOl5l9RbtdQFkWuaPyACJu-rNxh6jcenYQnZuFLrIEA" />
     <meta name="msvalidate.01" content="4C14EB4C4B5C040EE11FD5659E28A3BB" />
@@ -170,11 +172,22 @@ import BinaryBackground from '../components/BinaryBackground.astro';
     <meta property="og:image" content={resolvedOgImage} />
     {isDefaultOgImage && <meta property="og:image:width" content="1200" />}
     {isDefaultOgImage && <meta property="og:image:height" content="630" />}
+    {isDefaultOgImage ? (
+      <meta property="og:image:type" content="image/png" />
+    ) : /\.webp(?:[?#]|$)/i.test(resolvedOgImage) ? (
+      <meta property="og:image:type" content="image/webp" />
+    ) : /\.(?:jpe?g)(?:[?#]|$)/i.test(resolvedOgImage) ? (
+      <meta property="og:image:type" content="image/jpeg" />
+    ) : /\.png(?:[?#]|$)/i.test(resolvedOgImage) ? (
+      <meta property="og:image:type" content="image/png" />
+    ) : null}
     <meta property="og:image:alt" content={resolvedOgImageAlt} />
     {modifiedTimeIso && <meta property="article:modified_time" content={modifiedTimeIso} />}
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@nyharena25" />
+    <meta name="twitter:creator" content="@nyharena25" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDesc} />
     <meta name="twitter:image" content={resolvedOgImage} />
@@ -185,6 +198,7 @@ import BinaryBackground from '../components/BinaryBackground.astro';
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <link rel="icon" href={withBase('/favicon-96x96.png')} type="image/png" sizes="96x96" />
     <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+    <link rel="manifest" href={withBase('/site.webmanifest')} />
 
     <link rel="sitemap" href={sitemapUrl} />
 

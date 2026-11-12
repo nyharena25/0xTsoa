@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/fastfetch-cli/fastfetch",
-    "ref": "17bb3fd2384bd814b421d73b8c8b8d08e06cfa26",
+    "ref": "8c9d9c0449dd515e0088c4a60a38d2dc40c5ccd0",
     "readme": "README.md"
   },
   "install": {
@@ -51,5 +51,5 @@
       }
     ]
   },
-  "version": "2.70.0"
+  "version": "2.71.0"
 }

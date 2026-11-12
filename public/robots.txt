@@ -7,3 +7,4 @@ Allow: /
 Disallow: /pagefind/
 
 Sitemap: https://0xtsoa.dev/sitemap-index.xml
+Sitemap: https://0xtsoa.dev/sitemap-0.xml

@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "0xTsoa: Linux Dotfiles and Rices You Can Install and Undo",
-    "description": "Open registry of Linux dotfiles and rices for Hyprland, GNOME, KDE Plasma and more. See what each install changes, then install it and undo it.",
+    "description": "Open catalog, directory, showcase, and registry of Linux dotfiles and rices for Hyprland, GNOME, KDE Plasma and more. See what each install changes, then install it and undo it.",
     "status": "STATUS: RC-STABLE",
     "searchPlaceholder": "grep -i tag... [/]"
   },
@@ -18,9 +18,9 @@
     "docs": "Docs"
   },
   "hero": {
-    "badge": "OPEN DOTFILES REGISTRY • WAYLAND & X11",
+    "badge": "OPEN DOTFILES CATALOG & REGISTRY • WAYLAND & X11",
     "title": "Reproducible Linux desktop configs & dotfiles.",
-    "subtitle": "An open-source registry of Linux dotfiles, rices and desktop configs. Browse setups for Hyprland, GNOME, KDE Plasma and AwesomeWM, see what each install changes, then install it and undo it. Every entry is pinned to a Git commit or release tag."
+    "subtitle": "An open-source catalog, directory, and registry of Linux dotfiles, rices and desktop configs. Browse setups for Hyprland, GNOME, KDE Plasma and AwesomeWM, see what each install changes, then install it and undo it. Every entry is pinned to a Git commit or release tag."
   },
   "spotlight": {
     "title": "TOP 5 SPOTLIGHT",
@@ -64,9 +64,9 @@
     "card4Stat": "Checked by GitHub account"
   },
   "catalogue": {
-    "metaTitle": "Linux Dotfiles and Rices: Hyprland, Sway, Niri, i3",
-    "metaDescription": "Filter Linux desktop configs and dotfiles by compositor (Hyprland, Sway, Niri, i3, BSPWM), distro (Arch Linux, NixOS, Fedora), desktop part and theme.",
-    "breadcrumb": "Linux Desktop Configurations & Dotfiles Catalogue",
+    "metaTitle": "Linux Dotfiles & Desktop Ricing Catalog",
+    "metaDescription": "Explore the Linux dotfiles and desktop ricing catalog, directory, and showcase. Filter setups by compositor (Hyprland, Sway, Niri, i3), distro, and style.",
+    "breadcrumb": "Linux Dotfiles & Desktop Ricing Catalog",
     "liveSync": "Schema Validated",
     "totalRecords": "Total:",
     "interfacesIndexed": "configurations indexed",
@@ -132,10 +132,10 @@
   },
   "about": {
     "metaTitle": "About ZeroTsoa and Ny Harena RAVELOMANANTSOA",
-    "metaDescription": "0xTsoa (pronounced ZeroTsoa) is an open-source registry of Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer.",
+    "metaDescription": "0xTsoa (pronounced ZeroTsoa) is an open-source catalog and registry of Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer.",
     "badge": "ENTITY & ORIGIN • ABOUT",
     "title": "ABOUT 0xTsoa",
-    "canonicalIntro": "0xTsoa (pronounced ZeroTsoa) is an open-source registry of Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer.",
+    "canonicalIntro": "0xTsoa (pronounced ZeroTsoa) is an open-source catalog and registry of Linux desktop configurations, created by Ny Harena RAVELOMANANTSOA, a Malagasy developer.",
     "privacyHeading": "06 // Analytics & cookies",
     "privacyNote": "0xTsoa uses Google Analytics to count visits and time spent on pages. No analytics cookie is stored until you accept, and nothing is ever used for advertising or personalization. Before you choose, and if you decline, Google still receives anonymous, cookie-free signals (Google Consent Mode v2). Declining also deletes analytics cookies set earlier. Change your choice at any time with \"Cookie settings\" in the footer."
   },
@@ -151,12 +151,12 @@
   },
   "notFound": {
     "metaTitle": "Page not found",
-    "metaDescription": "This page does not exist on 0xTsoa. Search the Linux desktop catalogue or browse setups by topic.",
+    "metaDescription": "This page does not exist on 0xTsoa. Search the Linux desktop catalog or browse setups by topic.",
     "heading": "Page not found",
     "body": "Nothing lives at this address. The entry may have been renamed or removed, or the link has a typo.",
-    "searchLabel": "Search the catalogue",
+    "searchLabel": "Search the catalog",
     "searchPlaceholder": "grep -i hyprland...",
-    "catalogue": "Browse the catalogue",
+    "catalogue": "Browse the catalog",
     "home": "Back to home",
     "topics": "Or browse by topic"
   }

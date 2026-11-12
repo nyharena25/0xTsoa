@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import CopyButton from '../components/CopyButton.astro';
 import BdBrickLogo from '../components/BdBrickLogo.astro';
 import { useTranslations } from '../lib/i18n';
-import { NEW_CONFIG_ISSUE_URL, REPO_URL, ALLOWED_IMAGE_HOSTS } from '../../site.config';
+import { NEW_CONFIG_ISSUE_URL, REPO_URL, ALLOWED_IMAGE_HOSTS, withBase } from '../../site.config';
 import { CATEGORIES } from '../lib/schema';
 // Single source for the example: validated against the schema in tests/schema.test.ts
 import exampleJsonSnippet from '../../schema/example.config.json?raw';
@@ -11,6 +11,31 @@ import exampleJsonSnippet from '../../schema/example.config.json?raw';
 const locale = 'en';
 const t = useTranslations(locale);
 
+const pageUrl = new URL(withBase('/contribute/'), Astro.site).href;
+
+const contributeJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'How to Submit a Linux Desktop Configuration to 0xTsoa',
+  description: t('contribute.metaDescription'),
+  url: pageUrl,
+  step: [
+    {
+      '@type': 'HowToStep',
+      position: 1,
+      name: 'Fork repository and create config JSON',
+      text: 'Fork https://github.com/nyharena25/0xTsoa and create a JSON file under configs/<author>/<slug>.json conforming to the schema.',
+      url: REPO_URL,
+    },
+    {
+      '@type': 'HowToStep',
+      position: 2,
+      name: 'Submit via GitHub Pull Request or Issue Form',
+      text: 'Submit your configuration via pull request or the new-config issue form for automated validation.',
+      url: NEW_CONFIG_ISSUE_URL,
+    },
+  ],
+};
 ---
 
 <Base
@@ -20,6 +45,7 @@ const t = useTranslations(locale);
   statusPrefix="[STATUS: "
   statusInitial="CONTRIBUTOR"
   statusFinal="CONTRIBUTE"
+  jsonLd={[contributeJsonLd]}
 >
   <div class="max-w-5xl mx-auto px-4 lg:px-8 py-8 flex flex-col gap-8">
     <!-- Header banner -->
@@ -32,7 +58,7 @@ const t = useTranslations(locale);
         class="flex flex-wrap items-center gap-x-3 gap-y-2 font-display text-2xl sm:text-4xl uppercase font-bold text-zinc-900 tracking-tight"
       >
         <span data-page-title="true">{t('contribute.title').replace(/\s*0xTsoa$/i, '')}</span>{' '}
-        <BdBrickLogo size="md" class="inline-flex text-zinc-900 align-middle shrink-0" />
+        <BdBrickLogo size="md" class="inline-flex text-zinc-900 align-middle shrink-0" alt="0xTsoa Logo" />
       </h1>
       <p class="font-sans text-base text-zinc-600 mt-2 leading-relaxed">
         {t('contribute.subtitle')}
@@ -56,7 +82,7 @@ const t = useTranslations(locale);
           </p>
 
           <ol class="list-decimal list-inside font-mono text-xs space-y-2 text-zinc-700 bg-zinc-50 p-3.5 rounded-lg border border-zinc-200/60">
-            <li>Fork the <span class="inline-flex items-center align-middle bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded mx-1"><BdBrickLogo size="xs" class="inline-block text-zinc-900" /></span> repository on GitHub.</li>
+            <li>Fork the <span class="inline-flex items-center align-middle bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded mx-1"><BdBrickLogo size="xs" class="inline-block text-zinc-900" alt="0xTsoa" /></span> repository on GitHub.</li>
             <li>Create the file <code>configs/&lt;your-handle&gt;/&lt;slug&gt;.json</code>.</li>
             <li>Validate locally with <code>npm run validate</code>.</li>
             <li>Open your Pull Request towards <code>dev</code>.</li>

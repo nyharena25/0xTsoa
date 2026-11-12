@@ -32,7 +32,7 @@
   ],
   "source": {
     "repo": "https://github.com/jgmenu/jgmenu",
-    "ref": "bc01a950d8f02606bd47840d1cfb624cc20aa57b",
+    "ref": "36f0a455ffabfdf59942c8c6885c57d9cbe43e90",
     "readme": "README.md"
   },
   "install": {
@@ -47,5 +47,5 @@
       }
     ]
   },
-  "version": "v4.7.0"
+  "version": "v4.7.1"
 }

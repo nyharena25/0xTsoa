@@ -3,12 +3,16 @@ interface Props {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'hero';
   class?: string;
   animated?: boolean;
+  alt?: string;
+  label?: string;
 }
 
 const {
   size = 'md',
   class: className = '',
   animated = false,
+  alt,
+  label = alt ?? '0xTsoa',
 } = Astro.props;
 
 // Size mapping for font-based rendering
@@ -23,21 +27,21 @@ const sizeClasses = {
 
 <div
   class={`inline-flex items-center select-none font-brick ${animated ? 'cursor-pointer group' : ''} ${className}`}
-  aria-label="0xTsoa"
+  aria-label={label}
   data-animated-logo={animated ? 'true' : undefined}
-  title={animated ? "0xTsoa (Click to replay animation)" : undefined}
+  title={animated ? `${label} (Click to replay animation)` : undefined}
 >
   <span
     class={`font-brick font-normal leading-none inline-flex items-baseline ${sizeClasses} text-current shrink-0`}
     role="img"
-    aria-label="0xTsoa"
+    aria-label={label}
   >
-    <span class="bd-brick-char inline-block" data-char="0">0</span>
-    <span class="bd-brick-char inline-block" data-char="x">x</span>
-    <span class="bd-brick-char inline-block" data-char="T">T</span>
-    <span class="bd-brick-char inline-block" data-char="s">s</span>
-    <span class="bd-brick-char inline-block" data-char="o">o</span>
-    <span class="bd-brick-char inline-block" data-char="a">a</span>
+    <span class="bd-brick-char inline-block" data-char="0" aria-hidden="true">0</span>
+    <span class="bd-brick-char inline-block" data-char="x" aria-hidden="true">x</span>
+    <span class="bd-brick-char inline-block" data-char="T" aria-hidden="true">T</span>
+    <span class="bd-brick-char inline-block" data-char="s" aria-hidden="true">s</span>
+    <span class="bd-brick-char inline-block" data-char="o" aria-hidden="true">o</span>
+    <span class="bd-brick-char inline-block" data-char="a" aria-hidden="true">a</span>
   </span>
 </div>
 
