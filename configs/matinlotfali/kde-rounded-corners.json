@@ -28,7 +28,7 @@
   ],
   "source": {
     "repo": "https://github.com/matinlotfali/KDE-Rounded-Corners",
-    "ref": "66d7ce91a4f26062bba91bc7274ba85b6211391f",
+    "ref": "c0a1b8e510a1c2e2fa4edbaa65b88a129d44a279",
     "readme": "README.md"
   },
   "install": {
@@ -50,6 +50,5 @@
         ]
       }
     ]
-  },
-  "version": "v0.11.0"
+  }
 }
