@@ -33,7 +33,7 @@
   ],
   "source": {
     "repo": "https://github.com/nix-community/stylix",
-    "ref": "3e27b6c499e507df6e3bb8eca3614f5c95e28140",
+    "ref": "44aafe27b8b3427201dd53c6a464c196b6a956dd",
     "readme": "README.md"
   },
   "install": {
