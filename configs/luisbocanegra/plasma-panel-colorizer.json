@@ -36,7 +36,7 @@
   ],
   "source": {
     "repo": "https://github.com/luisbocanegra/plasma-panel-colorizer",
-    "ref": "a8f8b1cee7bbc670cf2a5f5d194c24c314073b82",
+    "ref": "b16e9784a93282e9a6bf6377c677710a2ac2e49d",
     "readme": "README.md"
   },
   "install": {
@@ -58,5 +58,5 @@
       }
     ]
   },
-  "version": "v8.1.0"
+  "version": "v8.2.0"
 }
